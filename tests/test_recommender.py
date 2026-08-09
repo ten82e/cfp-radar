@@ -242,6 +242,73 @@ console.log(JSON.stringify(R.venueCategories(lines, rows)));
     assert json.loads(out.strip()) == []
 
 
+# ---- セマンティック（埋め込み） ----
+
+
+def test_cosine_identical_and_orthogonal():
+    out = _run_node("""
+const a = [1, 0, 0], b = [0, 1, 0], c = [2, 0, 0];
+console.log(JSON.stringify([
+  R.cosine(a, c),        // 同じ方向 → 1
+  R.cosine(a, b),        // 直交 → 0
+  R.cosine([], a),       // 空 → 0
+  R.cosine(null, a)      // null → 0
+]));
+""")
+    res = json.loads(out.strip())
+    assert res[0] == 1
+    assert res[1] == 0
+    assert res[2] == 0
+    assert res[3] == 0
+
+
+def test_semantic_score_scaling():
+    """cosine 0.2 以下は 0、1.0 で 100 にスケーリングされる"""
+    out = _run_node("""
+const emb = {
+  "same": [1, 0, 0],
+  "partial": [0.8, 0.6, 0],
+  "orth": [0, 1, 0]
+};
+const q = [1, 0, 0];
+console.log(JSON.stringify([
+  R.semanticScore("same", q, emb),    // cosine=1 → 100
+  R.semanticScore("orth", q, emb),    // cosine=0 → 0
+  R.semanticScore("missing", q, emb), // キー無し → 0
+  R.semanticScore("same", null, emb)  // query 無し → 0
+]));
+""")
+    res = json.loads(out.strip())
+    assert res[0] == 100
+    assert res[1] == 0
+    assert res[2] == 0
+    assert res[3] == 0
+    assert 0 < res[0]
+
+
+def test_query_text_joins_lines():
+    out = _run_node("""
+const lines = R.parsePaperLines("Paper A | kw1, kw2 | RTSS\\nPaper B | kw3");
+console.log(JSON.stringify(R.queryText(lines)));
+""")
+    assert json.loads(out.strip()) == "Paper A kw1, kw2 Paper B kw3"
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_embeddings_json_exists_and_covers_conferences():
+    """embeddings.json が build で生成され、全会議をカバーしている"""
+    emb_path = ROOT / "public" / "embeddings.json"
+    if not emb_path.is_file():
+        pytest.skip("embeddings.json 未生成（fastembed 依存のため）")
+    emb = json.loads(emb_path.read_text(encoding="utf-8"))
+    data = json.loads(DATA_JSON.read_text(encoding="utf-8"))
+    keys = {c["key"] for c in data["conferences"]}
+    emb_keys = set(emb.get("embeddings", {}))
+    assert keys <= emb_keys, f"埋め込みが無い会議: {sorted(keys - emb_keys)[:5]}"
+    dims = {len(v) for v in emb["embeddings"].values()}
+    assert dims == {emb["dim"]}, f"次元が不揃い: {dims}"
+
+
 # ---- 実データ統合テスト ----
 
 @pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")

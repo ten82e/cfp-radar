@@ -707,6 +707,15 @@ def build_all(
     write("data.json", json_text + "\n")
     write("data.csv", _to_csv(records))
     write("upcoming.md", _to_upcoming_md(records, now))
+    # セマンティックレコメンド用の埋め込み（fastembed が無ければスキップして語彙のみで動作）
+    try:
+        from .embeddings import build_embeddings
+
+        if not (outdir / "embeddings.json").is_file():
+            build_embeddings(outdir / "data.json", outdir / "embeddings.json")
+            written.append("embeddings.json")
+    except Exception as exc:  # noqa: BLE001 — 任意の依存欠落でビルド全体を落とさない
+        print(f"warning: embeddings を生成しなかった（{exc.__class__.__name__}: {exc}）")
     write(
         "llms.txt",
         _to_llms_txt(base_url, [(f[0], f[2]) for f in feeds] + [

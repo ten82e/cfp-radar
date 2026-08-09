@@ -226,6 +226,40 @@
     return { score: scorePapers(r, lines), venueHit: venueHitAny, perLine: perLine, agg: agg };
   }
 
+  /* コサイン類似度（埋め込みベクトル）。0 ベクトルは 0 を返す。 */
+  function cosine(a, b) {
+    if (!a || !b || !a.length || a.length !== b.length) return 0;
+    var dot = 0, na = 0, nb = 0;
+    for (var i = 0; i < a.length; i++) {
+      dot += a[i] * b[i];
+      na += a[i] * a[i];
+      nb += b[i] * b[i];
+    }
+    if (na === 0 || nb === 0) return 0;
+    return dot / (Math.sqrt(na) * Math.sqrt(nb));
+  }
+
+  /* セマンティック適合度 0..100。
+   * query: ユーザー論文の埋め込みベクトル、emb: {key: [...]} の会議埋め込み表。
+   * 掲載先タグ付きの行が複数あってもクエリは 1 本に集約して類似度を出す。
+   */
+  function semanticScore(confKey, queryVec, emb) {
+    if (!queryVec || !emb) return 0;
+    var v = emb[confKey] || emb[(confKey || "").toLowerCase()];
+    if (!v) return 0;
+    var c = cosine(queryVec, v);
+    return Math.round(Math.max(0, (c - 0.2) / 0.8) * 100); // 0.2 以下は 0、1.0 で 100
+  }
+
+  /* 論文テキスト（全行連結）を埋め込み用の単一クエリ文にする */
+  function queryText(lines) {
+    return (lines || [])
+      .map(function (p) { return (p.title || "") + " " + (p.keywords || ""); })
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   var api = {
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     parsePaperLines: parsePaperLines,
@@ -234,7 +268,10 @@
     scorePapers: scorePapers,
     breakdown: breakdown,
     pickRepresentative: pickRepresentative,
-    comparePapers: comparePapers
+    comparePapers: comparePapers,
+    cosine: cosine,
+    semanticScore: semanticScore,
+    queryText: queryText
   };
 
   if (typeof module !== "undefined" && module.exports) {

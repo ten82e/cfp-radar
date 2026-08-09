@@ -864,6 +864,59 @@ footer a:hover { text-decoration: underline; }
 
   // Paper Text Matching Score — ロジックは recommender.js (Recommender.breakdown) に移管
 
+  // ---- SEMANTIC MATCH (AI 補助: transformers.js + embeddings.json) ----
+  // embeddings.json は build 時に生成（scripts/embeddings.py）。
+  // ブラウザでは transformers.js でユーザー入力を埋め込み、語彙スコアと合成する。
+  var EMBEDDINGS = null;       // {model, dim, embeddings: {key: [...]}}
+  var semLoaded = false;       // transformers.js 読込済みか
+  var semQuery = null;         // 現在のユーザー入力の埋め込みベクトル
+  var semModel = null;         // transformers.js の pipeline
+  var semBusy = false;
+
+  function loadEmbeddings(cb) {
+    if (EMBEDDINGS) { cb(); return; }
+    fetch("embeddings.json")
+      .then(function (r) { if (!r.ok) throw new Error("embeddings.json " + r.status); return r.json(); })
+      .then(function (d) { EMBEDDINGS = d; cb(); })
+      .catch(function () { cb(); }); // 無ければ語彙スコアのみで動作
+  }
+
+  function loadTransformers(cb) {
+    if (semLoaded) { cb(); return; }
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+    s.onload = function () {
+      window.transformers.pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2")
+        .then(function (m) { semModel = m; semLoaded = true; cb(); })
+        .catch(function () { cb(); });
+    };
+    s.onerror = function () { cb(); };
+    document.head.appendChild(s);
+  }
+
+  // 論文テキストが変わったら埋め込みを再計算し、完了後に render する
+  function scheduleSemantic() {
+    var pe = $("paperText");
+    var text = pe ? pe.value : "";
+    if (!text.trim() || !Recommender) { semQuery = null; return; }
+    if (semBusy) return; // 前回の計算中はスキップ（次の入力で再スケジュール）
+    loadEmbeddings(function () {
+      if (!EMBEDDINGS) return;
+      loadTransformers(function () {
+        if (!semLoaded || !semModel) return;
+        semBusy = true;
+        var q = Recommender.queryText(Recommender.parsePaperLines(text));
+        semModel(q, { pooling: "mean", normalize: true })
+          .then(function (out) {
+            semQuery = Array.from(out.data);
+            render();
+          })
+          .catch(function () {})
+          .finally(function () { semBusy = false; });
+      });
+    });
+  }
+
   // ---- FILTERING ----
   function filter() {
     var now = Date.now();
@@ -902,6 +955,12 @@ footer a:hover { text-decoration: underline; }
 
       r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
       r._matchScore = r._match ? r._match.score : 0;
+      r._semScore = 0;
+      // セマンティック（AI 埋め込み）スコア: 語彙スコアと 0.7/0.3 で合成
+      if (pLines.length && semQuery && EMBEDDINGS && Rec) {
+        r._semScore = Rec.semanticScore(r.conf.key, semQuery, EMBEDDINGS.embeddings);
+        r._matchScore = Math.round(r._matchScore * 0.7 + r._semScore * 0.3);
+      }
       // 掲載先タグの会議と同カテゴリなら +10（例: RTSS タグ → RTAS/ECRTS も僅かに優先）
       if (r._match && venueCats.length && !r._match.venueHit) {
         var sharedCat = (r.cats || []).some(function (k) { return venueCats.indexOf(k) >= 0; });
@@ -1009,6 +1068,7 @@ footer a:hover { text-decoration: underline; }
         if (a.jp > 0) parts.push("日本語一致 +" + a.jp);
         if (a.tags > 0) parts.push("領域タグ +" + a.tags);
         if (a.venue > 0) parts.push("掲載先一致 +" + a.venue);
+        if (r._semScore > 0) parts.push("AI類似度 " + r._semScore + "%");
         if (parts.length) ms.title = parts.join(" ／ ");
       }
       tags.appendChild(ms);
@@ -1171,7 +1231,7 @@ footer a:hover { text-decoration: underline; }
   });
   $("paperText").addEventListener("input", function () {
     clearTimeout(timer);
-    timer = setTimeout(apply, 200);
+    timer = setTimeout(function () { apply(); scheduleSemantic(); }, 200);
   });
   ["kind", "rank", "win", "est", "past", "domestic"].forEach(function (id) {
     $(id).addEventListener("change", apply);
