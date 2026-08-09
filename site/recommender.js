@@ -16,11 +16,11 @@
   /* 既存 template.html の DOMAIN_SIGNAL と同一（ここが正典）
    * 変更時は template.html 側の重複定義も同じ内容に保つこと。 */
   var DOMAIN_SIGNAL = {
-    hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster"],
-    systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler", "real-time", "realtime", "embedded", "deterministic", "tsn"],
-    networking: ["network", "sdn", "p4", "protocol", "wireless", "5g", "routing", "bpf", "ebpf", "packet"],
-    ai: ["machine learning", "deep learning", "neural", "sysml", "gnn", "transformer", "llm", "ai"],
-    security: ["security", "privacy", "crypto", "vulnerability", "binary", "enclave", "sgx", "confidential"]
+    hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster", "ハイパフォーマンス", "スーパーコンピュータ", "並列"],
+    systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler", "real-time", "realtime", "embedded", "deterministic", "tsn", "ストレージ", "カーネル", "分散システム", "ミドルウェア", "オペレーティングシステム"],
+    networking: ["network", "sdn", "p4", "protocol", "wireless", "5g", "routing", "bpf", "ebpf", "packet", "ネットワーク", "通信", "ルーティング", "無線"],
+    ai: ["machine learning", "deep learning", "neural", "sysml", "gnn", "transformer", "llm", "ai", "機械学習", "深層学習", "ニューラル", "生成"],
+    security: ["security", "privacy", "crypto", "vulnerability", "binary", "enclave", "sgx", "confidential", "セキュリティ", "プライバシー", "暗号"]
   };
 
   var STOPWORDS = new Set(
@@ -58,14 +58,15 @@
     return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   }
 
-  /* 会議側の照合文字列（key / title / full_name / tags） */
+  /* 会議側の照合文字列（key / title / full_name / tags / 日本語表記） */
   function confHay(r) {
     var c = r.conf || {};
     return {
       key: normKey(c.key),
       title: normKey(c.title),
       full: normKey(c.full_name),
-      tags: (c.tags || []).map(normKey)
+      tags: (c.tags || []).map(normKey),
+      jp: ((c.title || "") + " " + (c.full_name || "")).match(/[\u3000-\u9fff]+/g) || []
     };
   }
 
@@ -107,6 +108,16 @@
       if (pt.indexOf(w) !== -1) score += 15;
     });
 
+    // 日本語の部分一致: 論文の日本語チャンク（4 文字以上）が会議名の日本語に含まれれば加点
+    // 例: 論文に「分散処理」→ DPS 研究会の full_name「マルチメディア通信と分散処理研究会」に含まれる
+    // 長いチャンクが複数あっても 1 会議あたり最大 1 回（分野シグナル相当の重み）にする
+    var jpChunks = (pt.match(/[\u3000-\u9fff]+/g) || []).filter(function (s) { return s.length >= 4; });
+    if (jpChunks.length && conf.jp.length) {
+      var jpHay = conf.jp.join(" ");
+      var jpHit = jpChunks.some(function (chunk) { return jpHay.indexOf(chunk) !== -1; });
+      if (jpHit) score += 15;
+    }
+
     // tags 語彙一致（data-mining 等の領域タグ）
     conf.tags.forEach(function (t) {
       if (t && t.length > 3 && pt.indexOf(t) !== -1) score += 10;
@@ -116,9 +127,14 @@
     var venueHit = false;
     if (p.venue) {
       var nv = normKey(p.venue);
-      if (nv.length > 2) {
+      if (nv.length >= 2) {
         var hay = [conf.key, conf.title, conf.full].filter(Boolean);
-        venueHit = hay.some(function (h) { return h && (h.indexOf(nv) !== -1 || nv.indexOf(h) !== -1); });
+        if (nv.length === 2) {
+          // 2 文字タグ（SC 等）は key と完全一致のときだけ許可（部分一致は誤爆する）
+          venueHit = hay.some(function (h) { return h === nv; });
+        } else {
+          venueHit = hay.some(function (h) { return h && (h.indexOf(nv) !== -1 || nv.indexOf(h) !== -1); });
+        }
         if (venueHit) score += 40;
       }
     }

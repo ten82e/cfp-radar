@@ -342,3 +342,39 @@ def test_real_data_venue_tag_beats_generic_category_noise():
     # 掲載先一致タグが付いている
     rtss = next(t for t in top if t["key"] == "rtss")
     assert rtss["hit"] is True
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_real_data_short_venue_tag_sc_matches():
+    """2 文字タグ（SC）は key 完全一致で掲載先として効く"""
+    rows = _load_rows()
+    papers = (
+        "Scheduling Large-Scale MPI Jobs on Heterogeneous Supercomputers | HPC, MPI, scheduling, cluster, GPU\n"
+        "Supercomputing Interconnect for Exascale Systems | interconnect, HPC, network | SC"
+    )
+    script = _make_test_script(rows, papers, top_n=12)
+    out = _run_node(script)
+    top = json.loads(out.split("TOP=")[1].splitlines()[0])
+    sc = next((t for t in top if t["key"] == "sc"), None)
+    assert sc is not None, f"SC not in top: {[t['key'] for t in top]}"
+    assert sc["hit"] is True
+    # SC は cluster より上（掲載先一致のため）
+    cluster = next((t for t in top if t["key"] == "cluster"), None)
+    if cluster:
+        assert sc["score"] > cluster["score"]
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_real_data_japanese_paper_finds_japanese_venues():
+    """日本語論文 → 国内研究会（日本語会議名と部分一致）が無関係会議より上位"""
+    rows = _load_rows()
+    papers = "分散システムにおける低遅延ミドルウェア | 分散, ミドルウェア, 低遅延, システム"
+    script = _make_test_script(rows, papers, top_n=12)
+    out = _run_node(script)
+    top = json.loads(out.split("TOP=")[1].splitlines()[0])
+    scores = {t["key"]: t["score"] for t in top}
+    # 日本語会議名（comsys/ipsj-sigarc/ipsj-sigos 等）が拾われる
+    jp_hits = [t["key"] for t in top if t["score"] >= 20]
+    assert len(jp_hits) >= 1, f"no Japanese venue above 20: {scores}"
+    # 無関係の英語 systems 会議（asap/ase）より上
+    assert max(scores.get(k, 0) for k in jp_hits) > scores.get("asap", 0), f"scores: {scores}"
