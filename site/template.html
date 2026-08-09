@@ -259,6 +259,13 @@ label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.
 .theme-dot.cyan { background: #38bdf8; }
 .theme-dot.emerald { background: #34d399; }
 
+/* Pulsating Animation for Soon Deadlines */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+}
+
 /* Buttons */
 button {
   font: inherit; font-size: 0.85rem; padding: 6px 12px;
@@ -308,8 +315,8 @@ tr:hover td { background: var(--bg-card-hover); }
 .nowrap { white-space: nowrap; }
 .left { font-weight: 600; font-family: var(--font-code); }
 .left.past { color: var(--muted); font-weight: 400; }
-.left.soon { color: var(--accent-amber); }
-.left.today { color: var(--warn); }
+.left.soon { color: var(--accent-amber); animation: pulseGlow 2s infinite; border-radius: 4px; padding: 2px 6px; }
+.left.today { color: var(--warn); font-weight: 700; }
 
 .tag {
   display: inline-block; padding: 2px 8px; border-radius: 6px;
@@ -342,22 +349,43 @@ tr:hover td { background: var(--bg-card-hover); }
   background: var(--bg-card-hover);
 }
 
-/* Timeline View */
+/* Timeline View & Month Grid Widget */
 .timeline-wrap { display: flex; flex-direction: column; gap: 24px; }
-.timeline-group { margin-bottom: 20px; }
-.timeline-header {
-  font-family: var(--font-title);
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 12px;
+.month-calendar-widget {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+  margin-top: 12px;
+}
+.cal-day-header { font-family: var(--font-title); font-size: 0.8rem; color: var(--muted); font-weight: 700; }
+.cal-day-cell {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 4px;
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
 }
-.timeline-header::after {
-  content: ""; flex: 1; height: 1px; background: var(--line);
-}
+.cal-day-cell:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.dot-wrap { display: flex; gap: 3px; margin-top: 2px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot.paper { background: var(--warn); }
+.dot.event { background: var(--accent); }
 
 /* Drawer Modal */
 .drawer-overlay {
@@ -986,6 +1014,22 @@ tr:hover td { background: var(--bg-card-hover); }
   function renderTimeline(slice) {
     var container = $("timelineView");
     container.innerHTML = "";
+
+    // Render Month Calendar Grid
+    var calWidget = document.createElement("div");
+    calWidget.className = "month-calendar-widget";
+    var daysHeader = ['日', '月', '火', '水', '木', '金', '土'].map(function(d) {
+      return '<div class="cal-day-header">' + d + '</div>';
+    }).join("");
+
+    var daysGrid = "";
+    for (var d = 1; d <= 31; d++) {
+      daysGrid += '<div class="cal-day-cell"><span>' + d + '</span><div class="dot-wrap"><div class="dot paper"></div><div class="dot event"></div></div></div>';
+    }
+
+    calWidget.innerHTML = '<div style="font-family: var(--font-title); font-weight: 700; color: var(--accent); margin-bottom: 8px;">月間アクティビティカレンダー (2026年8月)</div><div class="calendar-grid">' + daysHeader + daysGrid + '</div>';
+    container.appendChild(calWidget);
+
     var groups = {};
     slice.forEach(function(r) {
       var d = new Date(r.t);
