@@ -322,3 +322,23 @@ def test_real_data_ml_paper_lands_neurips_icml():
     assert "ai" in cats
     keys = [t["key"] for t in top]
     assert any("neurips" in k for k in keys), f"NeurIPS not in top: {keys}"
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_real_data_venue_tag_beats_generic_category_noise():
+    """タグ付き掲載先（RTSS）は、カテゴリ一致だけの無関係会議（ASAP 等）より明確に上位"""
+    rows = _load_rows()
+    papers = (
+        "投稿予定: Credit-Based Shaping for Deterministic Latency in TSN | TSN, CBS, latency, scheduling, Ethernet, real-time\n"
+        "似た論文: Design and Analysis of Credit-Based Shapers in TSN | TSN, CBS, QoS | RTSS"
+    )
+    script = _make_test_script(rows, papers, top_n=12)
+    out = _run_node(script)
+    top = json.loads(out.split("TOP=")[1].splitlines()[0])
+    scores = {t["key"]: t["score"] for t in top}
+    # RTSS（掲載先一致）は systems カテゴリだけの会議（asap/ase/apsys）より必ず上
+    assert scores.get("rtss", 0) > scores.get("asap", 0), f"scores: {scores}"
+    assert scores.get("rtss", 0) > scores.get("ase", 0), f"scores: {scores}"
+    # 掲載先一致タグが付いている
+    rtss = next(t for t in top if t["key"] == "rtss")
+    assert rtss["hit"] is True

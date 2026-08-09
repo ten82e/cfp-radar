@@ -30,7 +30,9 @@
       "which who what how why not no nor only into onto upon about above below out off they them he she his " +
       "her you your i me my mine do does did has have had will would could should may might must shall there " +
       "here been being was were am if else whether either neither yet still already just even though although " +
-      "because system systems network networks").split(/\s+/)
+      "because system systems network networks conference symposium workshop international annual proceedings " +
+      "ieee acm usenix journal letters transactions magazine association machinery electronics engineers " +
+      "special interest group review about applications application computer computing science institute technical").split(/\s+/)
   );
 
   /* 1行: "タイトル | キーワード | 掲載先(任意)" または "タイトル<TAB>キーワード<TAB>掲載先" */
@@ -89,15 +91,18 @@
     if (!pt.trim()) return { score: 0, venueHit: false };
     var score = 0;
 
-    // 分野シグナル: 論文にキーワードがあり、会議がそのカテゴリを持つ
+    // 分野シグナル: 論文にキーワードがあり、会議がそのカテゴリを持つ。
+    // ヒット数ではなく「カテゴリにヒットしたか」で +15（累積しない）。
     Object.keys(DOMAIN_SIGNAL).forEach(function (dom) {
       if ((r.cats || []).indexOf(dom) === -1) return;
-      var hitCount = DOMAIN_SIGNAL[dom].filter(function (kw) { return pt.indexOf(kw) !== -1; }).length;
-      if (hitCount > 0) score += hitCount * 20;
+      var hit = DOMAIN_SIGNAL[dom].some(function (kw) { return pt.indexOf(kw) !== -1; });
+      if (hit) score += 15;
     });
 
-    // 会議名（title + full_name）の語彙一致
-    var words = (conf.title + " " + conf.full).split(" ").filter(function (w) { return w.length > 3 && !STOPWORDS.has(w); });
+    // 会議名（title + full_name）の語彙一致（一般語は STOPWORDS で除外）
+    var words = (conf.title + " " + conf.full).split(" ").filter(function (w) {
+      return w.length > 3 && !STOPWORDS.has(w);
+    });
     words.forEach(function (w) {
       if (pt.indexOf(w) !== -1) score += 15;
     });
@@ -121,15 +126,19 @@
     return { score: Math.min(100, score), venueHit: venueHit };
   }
 
-  /* 全行の平均（行ごとに cap してから平均）。0 行なら 0。 */
+  /* 全行のスコア: 平均と最大の加重平均（0.6×平均 + 0.4×最大）。
+   * タグ付き論文 1 本の強シグナルが多数行の平均で薄まらないようにする。 */
   function scorePapers(r, lines) {
     if (!lines || !lines.length) return 0;
     var conf = confHay(r);
-    var sum = 0;
+    var sum = 0, max = 0;
     for (var i = 0; i < lines.length; i++) {
-      sum += scoreLine(r, lines[i], conf).score;
+      var s = scoreLine(r, lines[i], conf).score;
+      sum += s;
+      if (s > max) max = s;
     }
-    return Math.round(sum / lines.length);
+    var avg = sum / lines.length;
+    return Math.round(avg * 0.6 + max * 0.4);
   }
 
   /* 論文モード: 会議単位に代表行を選ぶ。
