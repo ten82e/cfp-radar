@@ -1327,3 +1327,36 @@ conferences:
     categories: [networking, systems]
     tags: [niche, journal]
     editions: []
+
+  # 根拠: https://mid4cc.netsons.org/2026/index.html (2026-08-10 取得)
+  #   4th Int'l Workshop on Middleware for the Computing Continuum (Mid4CC 2026)
+  #   Dec 14-18, 2026, Tarragona, Spain (Middleware 2026 併設).
+  #   Paper 9/30/2026（延長 11/1）、Camera-ready 11/15/2026。
+  #   谷口 1 本・伊達研 1 本の実績（Middleware 2023 併設 Mid4CC に採録）。
+  - key: mid4cc
+    title: Mid4CC
+    full_name: International Workshop on Middleware for the Computing Continuum
+    link: https://mid4cc.netsons.org/
+    categories: [systems, networking]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: mid4cc26
+        link: https://mid4cc.netsons.org/2026/index.html
+        place: Tarragona, Spain
+        date_text: December 14-18, 2026
+        event_start: '2026-12-14'
+        event_end: '2026-12-18'
+        deadlines:
+          - kind: paper
+            date: '2026-09-30T23:59:59Z'
+            tz: AoE
+            comment: Paper Submission Deadline
+          - kind: paper
+            date: '2026-11-01T23:59:59Z'
+            tz: AoE
+            comment: Paper Submission (extended)
+          - kind: camera_ready
+            date: '2026-11-15T23:59:59Z'
+            tz: AoE
+            comment: Camera-ready Submission
