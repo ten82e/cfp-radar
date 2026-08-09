@@ -449,10 +449,11 @@ footer a:hover { text-decoration: underline; }
 
     <!-- Paper Title / Abstract / Keyword Smart Recommender -->
     <div style="margin-top: 14px;">
-      <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">📝 論文タイトル・アブストラクトペースト（投稿先最適マッチング）</span>
+      <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">📝 投稿予定・似た論文ペースト（投稿先最適マッチング）</span>
       <div style="position: relative; margin-top: 4px;">
-        <input type="text" id="paperText" placeholder="論文タイトルやキーワードを貼り付け (例: High-Performance Key-Value Store using RDMA and NVMe)..." style="padding-left: 12px;">
+        <textarea id="paperText" rows="3" placeholder="1行1本: タイトル | キーワード | 掲載先(任意)&#10;例: High-Performance Key-Value Store using RDMA and NVMe | storage, rdma, nvme | USENIX FAST&#10;例: A Scalable LSM-Tree Storage Engine | lsm, storage | (掲載先は空でもOK)"></textarea>
       </div>
+      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">投稿予定の論文と、似た論文をまとめて貼ると、掲載先タグの傾向も加味して会議をランク付けします。分野チップが空なら自動判定。</div>
     </div>
 
     <div class="field">
@@ -515,6 +516,7 @@ footer a:hover { text-decoration: underline; }
 
 <div class="toast" id="toast">コピーしました</div>
 
+<script src="recommender.js"></script>
 <script>
 (function () {
   // SPEC.md section 7: DATA is injected by build.py. Defaults to empty so that
@@ -544,7 +546,9 @@ footer a:hover { text-decoration: underline; }
     other: "締切"
   };
 
-  var DOMAIN_SIGNAL = {
+  // recommender.js から供給（テスト可能な単一正典）。無ければこの場で縮退定義。
+  var Recommender = (typeof window !== "undefined" && window.Recommender) || null;
+  var DOMAIN_SIGNAL = (Recommender && Recommender.DOMAIN_SIGNAL) || {
     hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster"],
     systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler"],
     networking: ["network", "sdn", "p4", "protocol", "wireless", "5g", "routing", "bpf", "ebpf", "packet"],
@@ -850,31 +854,7 @@ footer a:hover { text-decoration: underline; }
     return { text: days(t0, r.tLast) + " 日前に終了", cls: "past" };
   }
 
-  // Paper Text Matching Score
-  function calcPaperMatch(r, pText) {
-    if (!pText) return 0;
-    var ptLower = pText.toLowerCase();
-    var score = 0;
-
-    // Check domain signals
-    Object.keys(DOMAIN_SIGNAL).forEach(function(dom) {
-      var kws = DOMAIN_SIGNAL[dom];
-      var hitCount = kws.filter(function(kw) { return ptLower.indexOf(kw) !== -1; }).length;
-      if (hitCount > 0 && (r.cats || []).indexOf(dom) !== -1) {
-        score += hitCount * 20;
-      }
-    });
-
-    // Check direct title overlap
-    var titleWords = (r.conf.title + " " + r.conf.full_name).toLowerCase().split(/\s+/);
-    titleWords.forEach(function(w) {
-      if (w.length > 3 && ptLower.indexOf(w) !== -1) {
-        score += 15;
-      }
-    });
-
-    return Math.min(100, score);
-  }
+  // Paper Text Matching Score — ロジックは recommender.js (Recommender.breakdown) に移管
 
   // ---- FILTERING ----
   function filter() {
@@ -883,35 +863,44 @@ footer a:hover { text-decoration: underline; }
     var limit = state.win === "all" ? Infinity : now + parseInt(state.win, 10) * DAY;
     var pElem = (typeof document !== 'undefined') ? document.getElementById("paperText") : null;
     var pText = pElem ? pElem.value.trim() : "";
+    // 単体抽出テスト（node probe）でも動くよう、filter 内では window 経由で解決する
+    var Rec = (typeof window !== "undefined" && window.Recommender) || null;
+    var pLines = Rec ? Rec.parsePaperLines(pText) : (pText ? [{ title: pText, keywords: "", venue: "" }] : []);
+    // 分野: 手動チップがあればそれで絞る。論文モードでチップが空なら絞らない
+    // （スコア順ソートで自然に候補が上位に来る。自動判定は表示用に留める）。
+    var cats = state.cats;
+    var autoCats = (!cats.length && pLines.length && Rec) ? Rec.autoDetectCats(pLines) : [];
 
     var out = rows.filter(function (r) {
-      if (!state.est && r.est) { return false; }
-      if (!state.past && (r.kind === "event" ? now >= r.tLast + DAY : r.t < now)) {
+      // 論文モード（候補探索）では推定・過去の行も候補として出す（会議単位へ後段で集約）
+      if (!state.est && r.est && !pLines.length) { return false; }
+      if (!state.past && (r.kind === "event" ? now >= r.tLast + DAY : r.t < now) && !pLines.length) {
         return false;
       }
       if (r.t > limit) { return false; }
       if (state.kind && r.kind !== state.kind) { return false; }
       if (state.rank && r.rankPairs.indexOf(state.rank) < 0) { return false; }
-      if (state.cats.length) {
+      if (cats.length) {
         var hit = false;
-        for (var i = 0; i < state.cats.length; i++) {
-          if (r.cats.indexOf(state.cats[i]) >= 0) { hit = true; break; }
+        for (var i = 0; i < cats.length; i++) {
+          if (r.cats.indexOf(cats[i]) >= 0) { hit = true; break; }
         }
         if (!hit) { return false; }
       }
       if (state.domestic && (r.tags || []).indexOf("domestic-jp") < 0) { return false; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
 
-      r._matchScore = pText ? calcPaperMatch(r, pText) : 0;
-      if (pText && r._matchScore < 10) return false;
+      r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
+      r._matchScore = r._match ? r._match.score : 0;
+      if (pLines.length && r._matchScore < 10) return false;
 
       return true;
     });
 
     // Custom Sorting
     out.sort(function (a, b) {
-      if (pText) {
-        return b._matchScore - a._matchScore;
+      if (pLines.length && Rec) {
+        return Rec.comparePapers(a, b, now);
       }
       var mult = sortAsc ? 1 : -1;
       if (sortKey === "conf") {
@@ -921,6 +910,11 @@ footer a:hover { text-decoration: underline; }
       }
       return (a.t - b.t) * mult;
     });
+
+    // 論文モード: 会議単位に代表行へ集約（締切行優先 → 未来締切優先 → 早い締切 / 直近過去）
+    if (pLines.length && Rec && out.length > 1) {
+      out = Rec.pickRepresentative(out, now);
+    }
 
     return out;
   }
@@ -994,6 +988,11 @@ footer a:hover { text-decoration: underline; }
       ms.className = "tag match"; ms.textContent = "適合度 " + r._matchScore + "%";
       tags.appendChild(ms);
     }
+    if (r._match && r._match.venueHit) {
+      var vh = document.createElement("span");
+      vh.className = "tag match"; vh.textContent = "掲載先一致";
+      tags.appendChild(vh);
+    }
     if (r.est) {
       var es = document.createElement("span");
       es.className = "tag est"; es.textContent = "推定";
@@ -1066,7 +1065,16 @@ footer a:hover { text-decoration: underline; }
     drawn = 0;
     selectedIndex = -1;
     $("tbody").textContent = "";
-    $("count").textContent = shown.length + " 件 / 全 " + rows.length + " 件";
+    var cnt = shown.length + " 件 / 全 " + rows.length + " 件";
+    var pe = $("paperText");
+    if (pe && pe.value.trim() && Recommender) {
+      var _lines = Recommender.parsePaperLines(pe.value);
+      var _auto = _lines.length ? Recommender.autoDetectCats(_lines) : [];
+      if (_auto.length && !state.cats.length) {
+        cnt += " ｜ 分野自動判定: " + _auto.map(function (k) { return (DATA.categories && DATA.categories[k]) ? DATA.categories[k] : k; }).join(", ");
+      }
+    }
+    $("count").textContent = cnt;
     $("empty").hidden = shown.length > 0;
     drawMore();
   }

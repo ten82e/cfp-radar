@@ -108,6 +108,19 @@ iOS と iPadOS の場合。
 
 他に、1 行 1 締切の平坦な表 `data.csv` と、直近 180 日の締切と開催の表 `upcoming.md` がある。
 
+## サイトの使い方（投稿先レコメンド）
+
+公開サイト https://ten82e.github.io/cfp-radar/ の上部の入力欄に、**投稿予定の論文と似た論文**を 1 行 1 本で貼り付けると、合いそうな会議・ジャーナルを適合度順にランク付けする。
+
+```
+投稿予定: Credit-Based Shaping for Deterministic Latency in TSN | TSN, CBS, latency, scheduling
+似た論文: Design and Analysis of Credit-Based Shapers in TSN | TSN, CBS, QoS | RTSS
+```
+
+- 各行の形式は `タイトル | キーワード | 掲載先(任意)`。掲載先が分かっている「似た論文」にはタグを付けると、その会議が「掲載先一致」として優先される（タグ無しの投稿予定論文は内容だけからマッチする）。
+- 分野チップが空のときは論文内容から分野を自動判定して表示する（手動でチップを選ぶとその分野に絞る）。
+- 適合度は、分野シグナル・会議名・領域タグとの語彙一致と掲載先タグの合算。スコアリングの実装は `site/recommender.js` で、`tests/test_recommender.py` が実データで回帰検証する。
+
 ## データ源とライセンス
 
 | 名前 | リポジトリ | ライセンス |

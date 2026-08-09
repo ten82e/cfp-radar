@@ -731,6 +731,12 @@ def build_all(
                 TEMPLATE_MARKER, _embed_json(json.dumps(data, ensure_ascii=False))
             )
         write("index.html", html)
+        # recommender.js をテンプレートと同じ場所から同梱（ブラウザから src 参照）
+        rec = template.parent / "recommender.js"
+        if rec.is_file():
+            write("recommender.js", rec.read_text(encoding="utf-8"))
+        else:
+            print(f"warning: {rec} が無い。index.html の src 参照が 404 になる")
     else:
         print(f"warning: {template} が無いので index.html を生成しない")
 
