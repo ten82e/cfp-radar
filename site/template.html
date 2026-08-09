@@ -11,9 +11,9 @@
 :root {
   color-scheme: dark;
   --bg-dark: #0a0d14;
-  --bg-panel: rgba(18, 24, 38, 0.75);
+  --bg-panel: rgba(18, 24, 38, 0.85);
   --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-card-hover: rgba(28, 36, 56, 0.85);
+  --bg-card-hover: rgba(28, 36, 56, 0.9);
   --line: rgba(255, 255, 255, 0.12);
   --border-accent: rgba(99, 102, 241, 0.5);
 
@@ -35,6 +35,11 @@
   --font-code: 'Fira Code', monospace;
 }
 
+/* Theme Accents */
+body.theme-cyan { --accent: #38bdf8; --accent-purple: #38bdf8; }
+body.theme-emerald { --accent: #34d399; --accent-purple: #34d399; }
+body.theme-purple { --accent: #818cf8; --accent-purple: #818cf8; }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { max-width: 100%; overflow-x: hidden; }
 body {
@@ -53,8 +58,8 @@ body {
   left: -10%;
   width: 120vw;
   height: 120vh;
-  background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-              radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 40%);
+  background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+              radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.15) 0%, transparent 45%);
   z-index: -1;
   pointer-events: none;
 }
@@ -209,6 +214,51 @@ select {
 
 label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer; }
 
+/* View Mode Switcher */
+.view-switcher {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.view-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.view-btn.active {
+  background: var(--accent-purple);
+  color: var(--bright);
+}
+
+/* Theme Picker */
+.theme-picker {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.theme-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease;
+}
+.theme-dot:hover { transform: scale(1.2); }
+.theme-dot.purple { background: #818cf8; }
+.theme-dot.cyan { background: #38bdf8; }
+.theme-dot.emerald { background: #34d399; }
+
 /* Buttons */
 button {
   font: inherit; font-size: 0.85rem; padding: 6px 12px;
@@ -248,6 +298,7 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+tr { cursor: pointer; transition: background 0.15s ease; }
 tr:hover td { background: var(--bg-card-hover); }
 
 .conf { font-weight: 700; font-family: var(--font-title); font-size: 1.05rem; }
@@ -267,6 +318,72 @@ tr:hover td { background: var(--bg-card-hover); }
 }
 .tag.est { color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.1); }
 
+/* Grid Cards View */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.card-item {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card-item:hover {
+  border-color: var(--accent-purple);
+  transform: translateY(-3px);
+  background: var(--bg-card-hover);
+}
+
+/* Timeline View */
+.timeline-wrap { display: flex; flex-direction: column; gap: 24px; }
+.timeline-group { margin-bottom: 20px; }
+.timeline-header {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.timeline-header::after {
+  content: ""; flex: 1; height: 1px; background: var(--line);
+}
+
+/* Drawer Modal */
+.drawer-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(10, 13, 20, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.drawer-overlay.active { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed;
+  top: 0; right: -520px; width: 500px; max-width: 90vw; height: 100vh;
+  background: #0d121f;
+  border-left: 1px solid var(--line);
+  z-index: 101;
+  padding: 32px;
+  overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.6);
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-overlay.active .drawer { right: 0; }
+
 /* Toast Notifications */
 .toast {
   position: fixed;
@@ -285,7 +402,7 @@ tr:hover td { background: var(--bg-card-hover); }
 .toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
-<body>
+<body class="theme-purple">
 
 <div class="glow-bg"></div>
 
@@ -299,6 +416,15 @@ tr:hover td { background: var(--bg-card-hover); }
           <span class="brand-tag">v2.0 Autonomous</span>
         </div>
         <p class="lead" style="margin-top: 4px;">高性能計算・ネットワーク・システム・人工知能・セキュリティ分野の会議の投稿締切と開催日。<span id="genat"></span></p>
+      </div>
+
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <div class="theme-picker">
+          <span style="font-size: 0.75rem; color: var(--muted);">テーマ:</span>
+          <div class="theme-dot purple" onclick="setTheme('purple')" title="Cyber Purple"></div>
+          <div class="theme-dot cyan" onclick="setTheme('cyan')" title="Neon Cyan"></div>
+          <div class="theme-dot emerald" onclick="setTheme('emerald')" title="Emerald Matrix"></div>
+        </div>
       </div>
     </div>
 
@@ -354,6 +480,11 @@ tr:hover td { background: var(--bg-card-hover); }
             <option value="180d">直近 180 日以内</option>
           </select>
         </div>
+        <div class="view-switcher">
+          <button class="view-btn active" id="btnViewTable" onclick="switchView('table')">📊 表</button>
+          <button class="view-btn" id="btnViewCards" onclick="switchView('cards')">🃏 カード</button>
+          <button class="view-btn" id="btnViewTimeline" onclick="switchView('timeline')">📅 タイムライン</button>
+        </div>
         <button class="btn-reset" id="reset">条件クリア</button>
       </div>
 
@@ -372,21 +503,31 @@ tr:hover td { background: var(--bg-card-hover); }
 
   <div class="count" id="count"></div>
 
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr>
-          <th>残り</th>
-          <th>日時</th>
-          <th>会議</th>
-          <th>種別</th>
-          <th>ランク</th>
-          <th>会期</th>
-          <th>開催地</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <!-- Multi-View Containers -->
+  <div id="viewContainer">
+    <!-- Table View -->
+    <div class="tablewrap" id="tableView">
+      <table>
+        <thead>
+          <tr>
+            <th>残り</th>
+            <th>日時</th>
+            <th>会議</th>
+            <th>種別</th>
+            <th>ランク</th>
+            <th>会期</th>
+            <th>開催地</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Cards Grid View -->
+    <div class="cards-grid" id="cardsView" style="display: none;"></div>
+
+    <!-- Timeline View -->
+    <div class="timeline-wrap" id="timelineView" style="display: none;"></div>
   </div>
 
   <div class="empty" id="empty" hidden>該当する締切はありません。</div>
@@ -396,6 +537,21 @@ tr:hover td { background: var(--bg-card-hover); }
     <div>データ源: <span id="sources">-</span></div>
     <div id="repolink"><a href="https://github.com/ten82e/cfp-radar" style="color: var(--accent);">GitHub リポジトリ</a></div>
   </footer>
+</div>
+
+<!-- Slide Drawer Modal -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+  <div class="drawer" id="drawer">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+      <div>
+        <h2 id="drawerTitle" style="font-family: var(--font-title); font-size: 1.8rem; color: var(--bright);"></h2>
+        <div id="drawerTags" style="margin-top: 8px;"></div>
+      </div>
+      <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.1); border: none; font-size: 1.1rem; padding: 4px 10px;">✕</button>
+    </div>
+    <p id="drawerFullName" style="color: var(--muted); margin-bottom: 24px; font-size: 0.95rem;"></p>
+    <div id="drawerBody"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast">コピーしました！</div>
@@ -411,6 +567,7 @@ tr:hover td { background: var(--bg-card-hover); }
 
   var DAY = 86400000;
   var PAGE = 40;
+  var currentViewMode = "table";
 
   var KIND_LABEL = {
     abstract: "概要締切",
@@ -450,7 +607,58 @@ tr:hover td { background: var(--bg-card-hover); }
     return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
   }
 
-  // ---- UI Toast ----
+  // ---- UI Controls ----
+  window.setTheme = function(theme) {
+    document.body.className = "theme-" + theme;
+  };
+
+  window.switchView = function(mode) {
+    currentViewMode = mode;
+    ["Table", "Cards", "Timeline"].forEach(function(m) {
+      var btn = $("btnView" + m);
+      if (btn) btn.classList.toggle("active", m.toLowerCase() === mode);
+    });
+    $("tableView").style.display = mode === "table" ? "block" : "none";
+    $("cardsView").style.display = mode === "cards" ? "grid" : "none";
+    $("timelineView").style.display = mode === "timeline" ? "flex" : "none";
+    render();
+  };
+
+  window.openDrawer = function(r) {
+    $("drawerOverlay").classList.add("active");
+    $("drawerTitle").textContent = (r.conf.title || r.conf.key) + " " + (r.ed.year || "");
+    $("drawerFullName").textContent = r.conf.full_name || "";
+
+    var tagsHtml = (r.cats || []).map(function(c) {
+      return '<span class="tag">' + c.toUpperCase() + '</span>';
+    }).join("") + (r.rankPairs || []).map(function(p) {
+      return '<span class="tag" style="border-color: var(--accent-purple); color: var(--accent-purple);">' + p.toUpperCase() + '</span>';
+    }).join("");
+    $("drawerTags").innerHTML = tagsHtml;
+
+    var bodyHtml = '<div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--line);">' +
+      '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">種別 / 締切</div>' +
+      '<div style="font-family: var(--font-title); font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
+      '<div style="font-family: var(--font-code); font-size: 0.9rem; margin-top: 6px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>' +
+      '</div>';
+
+    if (r.conf.link || r.ed.link) {
+      bodyHtml += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; width: 100%; text-align: center; background: var(--accent-purple); color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 600; margin-bottom: 24px;">公式サイトを開く ↗</a>';
+    }
+
+    bodyHtml += '<h3 style="font-family: var(--font-title); font-size: 1.1rem; color: var(--accent); margin-bottom: 12px;">開催情報</h3>' +
+      '<p><strong>会期:</strong> ' + (r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
+      '<p><strong>開催地:</strong> ' + (r.ed.place || "未定") + '</p>';
+
+    $("drawerBody").innerHTML = bodyHtml;
+  };
+
+  window.closeDrawer = function(e) {
+    if (!e || e.target === $("drawerOverlay") || e.target.tagName === "BUTTON") {
+      $("drawerOverlay").classList.remove("active");
+    }
+  };
+
   window.copyToClipboard = function(text) {
     navigator.clipboard.writeText(text).then(function() {
       var t = $("toast");
@@ -656,16 +864,22 @@ tr:hover td { background: var(--bg-card-hover); }
 
   function makeRow(r) {
     var tr = document.createElement("tr");
+    tr.onclick = function(e) {
+      if (e.target.tagName !== "A") { openDrawer(r); }
+    };
     var isEvent = r.kind === "event";
     var rem = isEvent ? remainEvent(r) : remain(r.t);
 
-    var c1 = td(tr, "", "c-deadline");
-    line(c1, rem.text, "left " + rem.cls);
+    var c0 = td(tr, "", "c-deadline");
+    line(c0, rem.text, "left " + rem.cls);
+
+    var c1 = td(tr, "日時");
     if (isEvent) {
-      line(c1, r.ed.event_start + " 開催開始", "sub nowrap");
+      line(c1, r.ed.event_start || "-", "nowrap");
     } else {
-      line(c1, fmtLocal(r.t) + " (現地時刻)", "sub nowrap");
-      if (r.dl.aoe) { line(c1, r.dl.aoe, "sub nowrap"); }
+      var d = new Date(r.t);
+      line(c1, fmtDate(d) + " UTC", "nowrap");
+      line(c1, fmtJst(d), "sub nowrap");
     }
 
     var c2 = td(tr, "会議");
@@ -742,12 +956,84 @@ tr:hover td { background: var(--bg-card-hover); }
     return tr;
   }
 
+  function renderCards(slice) {
+    var container = $("cardsView");
+    container.innerHTML = "";
+    slice.forEach(function(r) {
+      var card = document.createElement("div");
+      card.className = "card-item";
+      card.onclick = function() { openDrawer(r); };
+
+      var isEvent = r.kind === "event";
+      var rem = isEvent ? remainEvent(r) : remain(r.t);
+
+      card.innerHTML = '<div>' +
+        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
+        '<span style="font-family: var(--font-code); font-size: 0.75rem; color: var(--accent);">' + (r.cats || []).join(", ").toUpperCase() + '</span>' +
+        '<span class="tag" style="color: var(--accent-purple); border-color: var(--accent-purple);">' + (r.rankPairs[0] ? r.rankPairs[0].toUpperCase() : "Niche") + '</span>' +
+        '</div>' +
+        '<h3 style="font-family: var(--font-title); font-size: 1.3rem; margin-bottom: 4px; color: var(--bright);">' + (r.conf.title || r.conf.key) + ' ' + (r.ed.year || '') + '</h3>' +
+        '<p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">' + (r.conf.full_name || '') + '</p>' +
+        '</div>' +
+        '<div style="border-top: 1px solid var(--line); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">' +
+        '<div><span style="font-size: 0.8rem; color: var(--muted);">' + (KIND_LABEL[r.kind] || r.kind) + '</span><br><strong style="font-family: var(--font-code); font-size: 0.9rem;">' + (isEvent ? r.ed.event_start : fmtDate(new Date(r.t)).substring(0, 10)) + '</strong></div>' +
+        '<span class="left ' + rem.cls + '" style="font-size: 0.85rem;">' + rem.text + '</span>' +
+        '</div>';
+      container.appendChild(card);
+    });
+  }
+
+  function renderTimeline(slice) {
+    var container = $("timelineView");
+    container.innerHTML = "";
+    var groups = {};
+    slice.forEach(function(r) {
+      var d = new Date(r.t);
+      var m = d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1);
+      if (!groups[m]) groups[m] = [];
+      groups[m].push(r);
+    });
+
+    Object.keys(groups).sort().forEach(function(m) {
+      var grp = document.createElement("div");
+      grp.className = "timeline-group";
+      grp.innerHTML = '<div class="timeline-header">' + m + '</div>';
+      groups[m].forEach(function(r) {
+        var item = document.createElement("div");
+        item.style.padding = "14px 18px";
+        item.style.background = "var(--bg-panel)";
+        item.style.border = "1px solid var(--line)";
+        item.style.borderRadius = "12px";
+        item.style.marginBottom = "10px";
+        item.style.cursor = "pointer";
+        item.onclick = function() { openDrawer(r); };
+
+        var rem = r.kind === "event" ? remainEvent(r) : remain(r.t);
+        item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+          '<div><strong style="color: var(--bright);">' + (r.conf.title || r.conf.key) + ' ' + (r.ed.year || '') + '</strong> — <span style="color: var(--accent);">' + (KIND_LABEL[r.kind] || r.kind) + '</span></div>' +
+          '<span class="left ' + rem.cls + '" style="font-size: 0.85rem;">' + rem.text + '</span>' +
+          '</div>';
+        grp.appendChild(item);
+      });
+      container.appendChild(grp);
+    });
+  }
+
   function drawMore() {
     var tbody = $("tbody");
-    var frag = document.createDocumentFragment();
     var end = Math.min(drawn + PAGE, shown.length);
-    for (var i = drawn; i < end; i++) { frag.appendChild(makeRow(shown[i])); }
-    tbody.appendChild(frag);
+    var slice = shown.slice(0, end);
+
+    if (currentViewMode === "table") {
+      var frag = document.createDocumentFragment();
+      for (var i = drawn; i < end; i++) { frag.appendChild(makeRow(shown[i])); }
+      tbody.appendChild(frag);
+    } else if (currentViewMode === "cards") {
+      renderCards(slice);
+    } else if (currentViewMode === "timeline") {
+      renderTimeline(slice);
+    }
+
     drawn = end;
     var btn = $("more");
     if (drawn < shown.length) {
