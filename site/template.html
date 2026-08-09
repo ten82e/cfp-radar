@@ -593,6 +593,24 @@ footer a:hover { text-decoration: underline; }
     render();
   };
 
+  // Google Calendar URL Generator
+  function getGCalUrl(r) {
+    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key) + "] " + (KIND_LABEL[r.kind] || r.kind));
+    var d = new Date(r.t);
+    var dEnd = new Date(r.t + 3600000);
+    var isoStart = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    var details = encodeURIComponent((r.conf.full_name || "") + "\nCFP Link: " + (r.ed.link || r.conf.link || ""));
+    var location = encodeURIComponent(r.ed.place || "");
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + isoStart + "/" + isoEnd + "&details=" + details + "&location=" + location;
+  }
+
+  // Copy Markdown Reference
+  window.copyMarkdownRef = function(r) {
+    var text = "[" + (r.conf.title || r.conf.key) + " '" + String(r.ed.year || "").slice(-2) + "] " + (r.ed.date_text || r.ed.event_start || "") + " " + (r.ed.link || r.conf.link || "");
+    copyToClipboard(text);
+  };
+
   // Drawer Controls
   window.openDrawer = function(r) {
     $("drawerBackdrop").classList.add("active");
@@ -602,11 +620,16 @@ footer a:hover { text-decoration: underline; }
     var html = '<div style="background: #18181b; padding: 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px;">' +
       '<div style="font-size: 0.78rem; color: var(--muted);">種別・日時</div>' +
       '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
-      '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC</div>' +
+      '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>' +
+      '</div>';
+
+    html += '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">' +
+      '<a href="' + getGCalUrl(r) + '" target="_blank" style="flex: 1; text-align: center; background: #27272a; color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid #3f3f46;">📅 Google カレンダーに追加</a>' +
+      '<button onclick="copyMarkdownRef(window._activeRef)" style="flex: 1; font-size: 0.82rem;">📝 Markdown 参照コピー</button>' +
       '</div>';
 
     if (r.conf.link || r.ed.link) {
-      html += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #000; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く ↗</a>';
+      html += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #000; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く ↗</a>';
     }
 
     html += '<div style="font-size: 0.85rem;">' +
@@ -614,6 +637,7 @@ footer a:hover { text-decoration: underline; }
       '<p style="margin-bottom: 8px;"><strong>会期:</strong> ' + (r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
       '</div>';
 
+    window._activeRef = r;
     $("drawerBody").innerHTML = html;
   };
 
