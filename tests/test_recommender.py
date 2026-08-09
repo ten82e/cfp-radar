@@ -220,6 +220,28 @@ console.log(JSON.stringify([
     assert json.loads(out.strip()) == [True, True, True]
 
 
+def test_venue_categories_from_tag():
+    """RTSS タグ → systems カテゴリが推定される"""
+    out = _run_node("""
+const lines = R.parsePaperLines("Paper A | kw | RTSS");
+const rows = [
+  { conf: { key: "rtss", title: "RTSS", full_name: "IEEE Real-Time Systems Symposium" }, cats: ["systems"] },
+  { conf: { key: "sigcomm", title: "SIGCOMM", full_name: "ACM SIGCOMM" }, cats: ["networking"] }
+];
+console.log(JSON.stringify(R.venueCategories(lines, rows).sort()));
+""")
+    assert json.loads(out.strip()) == ["systems"]
+
+
+def test_venue_categories_empty_without_tag():
+    out = _run_node("""
+const lines = R.parsePaperLines("Paper A | kw");
+const rows = [{ conf: { key: "rtss", title: "RTSS", full_name: "IEEE Real-Time Systems Symposium" }, cats: ["systems"] }];
+console.log(JSON.stringify(R.venueCategories(lines, rows)));
+""")
+    assert json.loads(out.strip()) == []
+
+
 # ---- 実データ統合テスト ----
 
 @pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")

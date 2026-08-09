@@ -870,6 +870,8 @@ footer a:hover { text-decoration: underline; }
     // （スコア順ソートで自然に候補が上位に来る。自動判定は表示用に留める）。
     var cats = state.cats;
     var autoCats = (!cats.length && pLines.length && Rec) ? Rec.autoDetectCats(pLines) : [];
+    // 掲載先タグの属するカテゴリ（例: RTSS タグ → systems）。同カテゴリの会議を僅かにブースト
+    var venueCats = (pLines.length && Rec) ? Rec.venueCategories(pLines, rows) : [];
 
     var out = rows.filter(function (r) {
       // 論文モード（候補探索）では推定・過去の行も候補として出す（会議単位へ後段で集約）
@@ -892,6 +894,11 @@ footer a:hover { text-decoration: underline; }
 
       r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
       r._matchScore = r._match ? r._match.score : 0;
+      // 掲載先タグの会議と同カテゴリなら +10（例: RTSS タグ → RTAS/ECRTS も僅かに優先）
+      if (r._match && venueCats.length && !r._match.venueHit) {
+        var sharedCat = (r.cats || []).some(function (k) { return venueCats.indexOf(k) >= 0; });
+        if (sharedCat) r._matchScore = Math.min(100, r._matchScore + 10);
+      }
       if (pLines.length && r._matchScore < 10) return false;
 
       return true;

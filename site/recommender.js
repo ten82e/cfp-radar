@@ -164,6 +164,24 @@
     return a.t - b.t;
   }
 
+  /* 掲載先タグが属するカテゴリを全会議から推定する。
+   * 例: lines の venue="RTSS" が systems カテゴリの会議に一致 → ["systems"]。 */
+  function venueCategories(lines, rows) {
+    var out = {};
+    (lines || []).forEach(function (p) {
+      if (!p.venue) return;
+      var nv = normKey(p.venue);
+      if (nv.length <= 2) return;
+      (rows || []).forEach(function (r) {
+        var c = r.conf || {};
+        var hay = [normKey(c.key), normKey(c.title), normKey(c.full_name)].filter(Boolean);
+        var hit = hay.some(function (h) { return h && (h.indexOf(nv) !== -1 || nv.indexOf(h) !== -1); });
+        if (hit) (r.cats || []).forEach(function (k) { out[k] = true; });
+      });
+    });
+    return Object.keys(out);
+  }
+
   function breakdown(r, lines) {
     var conf = confHay(r);
     var perLine = [];
@@ -180,6 +198,7 @@
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     parsePaperLines: parsePaperLines,
     autoDetectCats: autoDetectCats,
+    venueCategories: venueCategories,
     scorePapers: scorePapers,
     breakdown: breakdown,
     pickRepresentative: pickRepresentative,
