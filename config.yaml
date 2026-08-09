@@ -44,6 +44,10 @@ categories:
   systems: Systems, Architecture and Storage
   ai: AI and Machine Learning
   security: Security and Privacy
+  db: Database and Data Mining
+  graphics: Graphics and Multimedia
+  hci: Human-Computer Interaction
+  theory: Theory and Algorithms
 
 taxonomy:
   # ---- HPC ----------------------------------------------------------------
@@ -144,6 +148,24 @@ taxonomy:
   security:
     ccfddl_subs: [SC]
 
+  # ---- Database / Data Mining ---------------------------------------------
+  db:
+    ccfddl_subs: [DB]
+    venues:
+      - bigdata        # IEEE International Conference on Big Data (上流 MX)
+
+  # ---- Graphics / Multimedia ----------------------------------------------
+  graphics:
+    ccfddl_subs: [CG]
+
+  # ---- Human-Computer Interaction -----------------------------------------
+  hci:
+    ccfddl_subs: [HI]
+
+  # ---- Theory / Algorithms ------------------------------------------------
+  theory:
+    ccfddl_subs: [CT]
+
 # 収録しない会議。SE を丸ごと取り込む代償として、プログラミング言語・形式手法寄りの
 # 会議がまとめて入ってくるのでここで落とす。OS/システム寄り(osdi, sosp, hotos,
 # middleware, ispass, eurosys ほか)と、ソフトウェア工学本体(icse, ase, fse-se,
@@ -167,8 +189,8 @@ exclude:
   - vmcai    # Verification, Model Checking, and Abstract Interpretation
 
 rank_filter:
-  ccf: [A, B]           # 空リストなら無条件
-  core: ['A*', A, B]
+  ccf: []                # 空リストなら無条件（ワークショップ・C ランクも収録）
+  core: []
   keep_if_no_rank: true # ランク情報が無い会議(local 由来など)は残す
   # ランクが低い/付いていないが分野の中核である会議はランク判定を迂回する。
   # 加えて taxonomy.*.venues に名指しした会議は自動で迂回する（select 実装）。

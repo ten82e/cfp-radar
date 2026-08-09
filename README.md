@@ -1,6 +1,6 @@
 # cfp-radar
 
-高性能計算・ネットワーク・システム・人工知能・セキュリティ分野の国際会議および穴場ワークショップ・ジャーナルについて、論文投稿の締切と開催日を全自動で探知・配信する。
+高性能計算・ネットワーク・システム・人工知能・セキュリティ・データベース・グラフィックス・HCI・理論の国際会議および穴場ワークショップ・ジャーナルについて、論文投稿の締切と開催日を全自動で探知・配信する。
 毎日 1 回自動で上流データを取得・自律探索し、ICS / JSON / CSV / Markdown と静的サイトを生成して GitHub Pages で公開する。
 サーバも外部サービスも使わず、GitHub の中だけで完結している。
 
@@ -84,6 +84,10 @@ iOS と iPadOS の場合。
 | システム | `https://ten82e.github.io/cfp-radar/systems.ics` | `systems` 分野のみ |
 | 人工知能 | `https://ten82e.github.io/cfp-radar/ai.ics` | `ai` 分野のみ |
 | セキュリティ | `https://ten82e.github.io/cfp-radar/security.ics` | `security` 分野のみ |
+| データベース | `https://ten82e.github.io/cfp-radar/db.ics` | `db` 分野のみ |
+| グラフィックス | `https://ten82e.github.io/cfp-radar/graphics.ics` | `graphics` 分野のみ |
+| HCI | `https://ten82e.github.io/cfp-radar/hci.ics` | `hci` 分野のみ |
+| 理論 | `https://ten82e.github.io/cfp-radar/theory.ics` | `theory` 分野のみ |
 | 締切のみ | `https://ten82e.github.io/cfp-radar/deadlines.ics` | 投稿・査読応答などの締切だけ |
 | 開催日のみ | `https://ten82e.github.io/cfp-radar/events.ics` | 会期の終日イベントだけ |
 | 推定・全分野 | `https://ten82e.github.io/cfp-radar/all-estimated.ics` | 前年からの推定で作った締切。確定フィードには混ぜていない |

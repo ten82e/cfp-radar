@@ -1070,4 +1070,178 @@ conferences:
     tags: [niche, journal]
     editions: []
 
+  # -------------------------------------------------- 研究室実績ベニュー (lab-venues) --
+  # 伊達研・下條研・谷口（ten82e）の DBLP 出版実績がある会議（2026-08-10 調査）。
+  # 上流 ccfddl に無いものを local で収録する。
+
+  # 根拠: http://www.escience-conference.org/2026 (2026-08-10 取得)
+  #   IEEE eScience 2026: Sep 28 - Oct 2, 2026, Naples, Italy.
+  #   伊達研で最多の出版実績（eScience/e-Science 12 本）。科学データ基盤・HPC 連携。
+  - key: escience
+    title: eScience
+    full_name: IEEE International Conference on eScience
+    link: http://www.escience-conference.org/
+    categories: [hpc, systems]
+    tags: [niche]
+    editions:
+      - year: 2026
+        id: escience26
+        link: http://www.escience-conference.org/2026
+        place: Naples, Italy
+        date_text: September 28 - October 2, 2026
+        event_start: '2026-09-28'
+        event_end: '2026-10-02'
+        deadlines: []
+
+  # 根拠: https://closer.scitevents.org/ (2026-08-10 取得)
+  #   CLOSER 2027: Rome, Italy. Regular Paper 11/17/2026, Position 12/21/2026.
+  #   伊達研 4 本・谷口 1 本の実績（クラウドコンピューティング・サービス）。
+  - key: closer
+    title: CLOSER
+    full_name: International Conference on Cloud Computing and Services Science
+    link: https://closer.scitevents.org/
+    categories: [systems, networking]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: closer27
+        link: https://closer.scitevents.org/
+        place: Rome, Italy
+        date_text: TBD 2027
+        deadlines:
+          - kind: paper
+            date: '2026-11-17T23:59:59Z'
+            tz: AoE
+            comment: Regular Paper Submission
+          - kind: paper
+            date: '2026-12-21T23:59:59Z'
+            tz: AoE
+            comment: Position/Regular Paper Submission
+
+  # 根拠: https://mipro.hr/MIPRO2027/ELink.aspx (2026-08-10 取得)
+  #   MIPRO 2027: May 31 - Jun 4, 2027, Opatija, Croatia. 最終レビュー 2027-02-01.
+  #   伊達研 3 本・谷口 1 本の実績（産学連携・情報通信の国際会議）。
+  - key: mipro
+    title: MIPRO
+    full_name: International Convention on Information, Communication and Electronic Technology (MIPRO)
+    link: https://mipro.hr/
+    categories: [systems, networking]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: mipro27
+        link: https://mipro.hr/MIPRO2027/ELink.aspx
+        place: Opatija, Croatia
+        date_text: May 31 - June 4, 2027
+        event_start: '2027-05-31'
+        event_end: '2027-06-04'
+        deadlines:
+          - kind: paper
+            date: '2027-02-01T23:59:59Z'
+            tz: AoE
+            comment: Final review deadline (paper submission earlier)
+
+  # 根拠: https://www.ieee-gcce.org/2026/index.html (2026-08-10 取得)
+  #   IEEE GCCE 2026: Oct 26-29, 2026, Kobe, Japan. Paper 5/31/2026 締切済み.
+  #   下條研 4 本の実績（コンシューマエレクトロニクス、IEEE 消費者向け）。
+  - key: ieee-gcce
+    title: IEEE GCCE
+    full_name: IEEE Global Conference on Consumer Electronics
+    link: https://www.ieee-gcce.org/
+    categories: [systems]
+    tags: [niche]
+    editions:
+      - year: 2026
+        id: gcce26
+        link: https://www.ieee-gcce.org/2026/index.html
+        place: Kobe, Japan
+        date_text: October 26-29, 2026
+        event_start: '2026-10-26'
+        event_end: '2026-10-29'
+        deadlines: []
+
+  # 根拠: https://pearc.acm.org/ (2026-08-10 取得)
+  #   PEARC 2026: Jul 26-30, 2026（開催済み）。毎年開催、2027 は CfP 未公開.
+  #   谷口 1 本・伊達研 1 本の実績（研究用コンピューティングの実践会議）。
+  - key: pearc
+    title: PEARC
+    full_name: Practice and Experience in Advanced Research Computing
+    link: https://pearc.acm.org/
+    categories: [hpc, systems]
+    tags: [niche]
+    editions:
+      - year: 2026
+        id: pearc26
+        link: https://pearc.acm.org/
+        place: TBD
+        date_text: July 26-30, 2026
+        event_start: '2026-07-26'
+        event_end: '2026-07-30'
+        deadlines: []
+
+  # 根拠: https://www.icce.org/ (2026-08-10 取得)
+  #   IEEE ICCE 2027: Jan 8-11, 2027, Las Vegas, NV, USA. Tuscany Suites and Casino.
+  #   下條研 4 本の実績（コンシューマエレクトロニクス）。
+  - key: icce
+    title: IEEE ICCE
+    full_name: IEEE International Conference on Consumer Electronics
+    link: https://www.icce.org/
+    categories: [systems]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: icce27
+        link: https://www.icce.org/
+        place: Las Vegas, NV, USA
+        date_text: January 8-11, 2027
+        event_start: '2027-01-08'
+        event_end: '2027-01-11'
+        deadlines:
+          - kind: paper
+            date: '2026-09-15T23:59:59Z'
+            tz: AoE
+            comment: Paper Submission
+
+  # 根拠: https://icoin.org/ (2026-08-10 取得)
+  #   ICOIN 2027: Jan 13-15, 2027 (Seoul 開催予定).
+  #   下條研 2 本の実績（情報通信ネットワーク、韓国情報通信学会主催）。
+  - key: icoin
+    title: ICOIN
+    full_name: International Conference on Information Networking
+    link: https://icoin.org/
+    categories: [networking]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: icoin27
+        link: https://icoin.org/
+        place: Seoul, Republic of Korea
+        date_text: January 13-15, 2027
+        event_start: '2027-01-13'
+        event_end: '2027-01-15'
+        deadlines: []
+
+  # 根拠: https://www.icmlc.org/ (2026-08-10 取得)
+  #   ICMLC 2027: Feb 26 - Mar 1, 2027, Shenzhen, China.
+  #   伊達研 2 本の実績（機械学習とコンピューティング）。
+  - key: icmlc
+    title: ICMLC
+    full_name: International Conference on Machine Learning and Computing
+    link: https://www.icmlc.org/
+    categories: [ai, systems]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: icmlc27
+        link: https://www.icmlc.org/
+        place: Shenzhen, China
+        date_text: February 26 - March 1, 2027
+        event_start: '2027-02-26'
+        event_end: '2027-03-01'
+        deadlines:
+          - kind: paper
+            date: '2026-09-25T23:59:59Z'
+            tz: AoE
+            comment: Submission Deadline
+
 

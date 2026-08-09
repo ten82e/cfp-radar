@@ -143,8 +143,16 @@ def test_expected_fixture_conferences_are_present(data):
 
 
 def test_out_of_scope_upstream_conference_is_filtered_out(data):
-    """PRCV is CG / CCF-C: outside the taxonomy and the rank filter."""
-    assert "prcv" not in {c["key"] for c in data["conferences"]}
+    """exclude 指定の PL/形式手法系（popl 等）は収録されない。
+
+    PRCV は 2026-08-10 の CG サブ分野収録拡大で graphics として収録対象に
+    なったため、範囲外の例は exclude リストの代表に置き換えた。
+    """
+    keys = {c["key"] for c in data["conferences"]}
+    assert "prcv" in keys  # CG 収録拡大で graphics として収録
+    assert "popl" not in keys
+    assert "oopsla" not in keys
+    assert "aplas" not in keys
 
 
 def test_ccfddl_plain_deadline_becomes_a_paper_deadline(data):
