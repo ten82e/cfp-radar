@@ -3,586 +3,433 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>cfp-radar — CS国際会議・穴場ワークショップ全自動探知＆締切カレンダー</title>
+<title>cfp-radar — CS国際会議・穴場ワークショップ締切探知</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: dark;
-  --bg-dark: #0a0d14;
-  --bg-panel: rgba(18, 24, 38, 0.85);
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-card-hover: rgba(28, 36, 56, 0.9);
-  --line: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(99, 102, 241, 0.5);
-
-  --accent: #38bdf8;
-  --accent-purple: #818cf8;
-  --accent-pink: #f472b6;
-  --accent-emerald: #34d399;
-  --accent-amber: #fbbf24;
-  --warn: #fb7185;
+  --bg: #09090b;
+  --panel: #121215;
+  --panel-hover: #1a1a1e;
+  --border: #27272a;
+  --border-subtle: #1f1f23;
+  --fg: #f4f4f5;
+  --muted: #a1a1aa;
+  --accent: #60a5fa;
+  --accent-subtle: rgba(96, 165, 250, 0.1);
+  --warn: #f87171;
   --soon: #fbbf24;
-  --chip: rgba(255, 255, 255, 0.08);
+  --chip: #18181b;
 
-  --fg: #f3f4f6;
-  --muted: #9ca3af;
-  --bright: #ffffff;
-
-  --font-title: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-code: 'Fira Code', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
-
-/* Theme Accents */
-body.theme-cyan { --accent: #38bdf8; --accent-purple: #38bdf8; }
-body.theme-emerald { --accent: #34d399; --accent-purple: #34d399; }
-body.theme-purple { --accent: #818cf8; --accent-purple: #818cf8; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { max-width: 100%; overflow-x: hidden; }
 body {
-  background: var(--bg-dark);
+  background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
-  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Ambient Lighting Background */
-.glow-bg {
-  position: fixed;
-  top: -10%;
-  left: -10%;
-  width: 120vw;
-  height: 120vh;
-  background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
-              radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.15) 0%, transparent 45%);
-  z-index: -1;
-  pointer-events: none;
-}
+.wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 96px; }
 
-.wrap { max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; }
-
-/* Hero Dashboard */
-.hero {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 24px 32px;
-  backdrop-filter: blur(16px);
-  margin-bottom: 24px;
+/* Header & Editorial Branding */
+header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
 }
-.hero-top {
+.brand-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-.brand-title {
-  font-family: var(--font-title);
-  font-size: 2.2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--accent), var(--accent-purple), var(--accent-pink));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: flex;
-  align-items: center;
   gap: 12px;
 }
-.brand-tag {
-  font-size: 0.8rem;
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--accent);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-family: var(--font-code);
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 18px;
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--fg);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
-.stat-num {
-  font-family: var(--font-title);
-  font-size: 1.8rem;
-  font-weight: 800;
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   color: var(--accent);
+  background: var(--accent-subtle);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
-.stat-label { font-size: 0.8rem; color: var(--muted); }
+.lead {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+.meta-info {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
 
-/* Controls Panel */
+/* Stats Summary Row */
+.summary-bar {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+.stat-item { display: flex; align-items: center; gap: 8px; }
+.stat-item strong { font-family: var(--font-mono); color: var(--fg); font-size: 0.95rem; }
+
+/* Feeds Bar */
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.feeds-panel {
+  margin-bottom: 32px;
+}
+.feeds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.feed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+.feed strong { font-weight: 500; color: var(--fg); }
+.feed button {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background: #27272a;
+  color: var(--fg);
+  border: 1px solid #3f3f46;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.feed button:hover { background: #3f3f46; }
+
+/* Control Toolbar */
 .panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 20px;
-  backdrop-filter: blur(16px);
   margin-bottom: 24px;
 }
-.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
 .field { display: flex; flex-direction: column; gap: 6px; }
-.field > span { font-size: 0.8rem; color: var(--muted); }
+.field > span { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
 
-.search-box-wrap {
+.search-wrap {
+  flex: 1 1 280px;
   position: relative;
-  flex: 1 1 300px;
 }
 input[type=search] {
   width: 100%;
-  padding: 10px 16px 10px 40px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  color: var(--bright);
+  padding: 8px 12px 8px 34px;
+  background: #18181b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg);
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
 }
-input[type=search]:focus {
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 12px rgba(129, 140, 248, 0.3);
-}
+input[type=search]:focus { border-color: var(--accent); }
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--muted);
+  font-size: 0.85rem;
   pointer-events: none;
-}
-.kbd-hint {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--font-code);
-  font-size: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 2px 6px;
-  color: var(--muted);
 }
 
 select {
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--bright);
+  background: #18181b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg);
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   outline: none;
 }
 
-/* Category Checkbox Chips */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .chips label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--bg-card);
-  font-size: 0.85rem;
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: #18181b;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  color: var(--muted);
+  transition: all 0.15s ease;
 }
 .chips label:hover, .chips input:checked + span {
   border-color: var(--accent);
-  color: var(--bright);
+  color: var(--fg);
 }
 .chips input { display: none; }
-.chips input:checked + span { font-weight: 600; color: var(--accent); }
+.chips input:checked + span { color: var(--accent); font-weight: 500; }
 
-label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer; }
-
-/* View Mode Switcher */
-.view-switcher {
-  display: flex;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 3px;
-  gap: 2px;
-}
-.view-btn {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.view-btn.active {
-  background: var(--accent-purple);
-  color: var(--bright);
-}
-
-/* Theme Picker */
-.theme-picker {
-  display: flex;
-  gap: 6px;
+label.check {
+  display: inline-flex;
   align-items: center;
-}
-.theme-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.2s ease;
-}
-.theme-dot:hover { transform: scale(1.2); }
-.theme-dot.purple { background: #818cf8; }
-.theme-dot.cyan { background: #38bdf8; }
-.theme-dot.emerald { background: #34d399; }
-
-/* Pulsating Animation for Soon Deadlines */
-@keyframes pulseGlow {
-  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
-}
-
-/* Buttons */
-button {
-  font: inherit; font-size: 0.85rem; padding: 6px 12px;
-  border: 1px solid var(--line); border-radius: 8px;
-  background: var(--bg-card); color: var(--fg); cursor: pointer;
-  transition: all 0.2s ease;
-}
-button:hover { border-color: var(--accent-purple); color: var(--bright); }
-.btn-reset { background: rgba(251, 113, 133, 0.15); color: var(--warn); border-color: rgba(251, 113, 133, 0.3); }
-
-/* Feeds */
-.feeds { display: flex; flex-wrap: wrap; gap: 10px; }
-.feed {
-  display: inline-flex; align-items: center; gap: 8px;
-  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px;
-  background: var(--bg-card);
-}
-.feed code { font-family: var(--font-code); font-size: 0.82rem; color: var(--muted); }
-
-/* Table View */
-.count { color: var(--muted); font-size: 0.88rem; margin: 12px 0; }
-.tablewrap {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  overflow-x: auto;
-  backdrop-filter: blur(16px);
-}
-table { border-collapse: collapse; width: 100%; min-width: 900px; }
-th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-th {
-  background: rgba(0, 0, 0, 0.5);
-  font-family: var(--font-title);
-  font-weight: 700;
+  gap: 6px;
   font-size: 0.82rem;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  cursor: pointer;
 }
-tr { cursor: pointer; transition: background 0.15s ease; }
-tr:hover td { background: var(--bg-card-hover); }
+label.check input:checked + span { color: var(--fg); }
 
-.conf { font-weight: 700; font-family: var(--font-title); font-size: 1.05rem; }
-.conf a { color: var(--accent); text-decoration: none; }
-.conf a:hover { text-decoration: underline; }
-.sub { color: var(--muted); font-size: 0.82rem; }
+.btn-reset {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.btn-reset:hover { color: var(--fg); border-color: var(--muted); }
+
+/* Main Table */
+.count { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+.tablewrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--panel);
+}
+table { border-collapse: collapse; width: 100%; min-width: 880px; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+th {
+  background: #161619;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--panel-hover); }
+
+.conf { font-weight: 600; font-size: 0.95rem; }
+.conf a { color: var(--fg); text-decoration: none; }
+.conf a:hover { color: var(--accent); text-decoration: underline; }
+.sub { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
 .nowrap { white-space: nowrap; }
-.left { font-weight: 600; font-family: var(--font-code); }
-.left.past { color: var(--muted); font-weight: 400; }
-.left.soon { color: var(--accent-amber); animation: pulseGlow 2s infinite; border-radius: 4px; padding: 2px 6px; }
-.left.today { color: var(--warn); font-weight: 700; }
+
+.left { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
+.left.past { color: #52525b; font-weight: 400; }
+.left.soon { color: var(--soon); }
+.left.today { color: var(--warn); font-weight: 600; }
 
 .tag {
-  display: inline-block; padding: 2px 8px; border-radius: 6px;
-  background: var(--chip); font-size: 0.75rem; color: var(--muted); margin-right: 4px;
-  border: 1px solid var(--line);
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #18181b;
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-right: 4px;
+  font-family: var(--font-mono);
 }
-.tag.est { color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.1); }
+.tag.est { color: var(--soon); border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05); }
 
-/* Grid Cards View */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-}
-.card-item {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 20px;
-  backdrop-filter: blur(16px);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.card-item:hover {
-  border-color: var(--accent-purple);
-  transform: translateY(-3px);
-  background: var(--bg-card-hover);
-}
-
-/* Timeline View & Month Grid Widget */
-.timeline-wrap { display: flex; flex-direction: column; gap: 24px; }
-.month-calendar-widget {
-  background: var(--bg-panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
-}
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  text-align: center;
-  margin-top: 12px;
-}
-.cal-day-header { font-family: var(--font-title); font-size: 0.8rem; color: var(--muted); font-weight: 700; }
-.cal-day-cell {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 8px 4px;
-  font-family: var(--font-code);
+#more {
   font-size: 0.85rem;
+  padding: 8px 20px;
+  background: #18181b;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 44px;
+}
+#more:hover { border-color: var(--muted); }
+
+/* Footer */
+footer {
+  margin-top: 64px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--muted);
+  font-size: 0.8rem;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
-.cal-day-cell:hover { border-color: var(--accent); background: var(--bg-card-hover); }
-.dot-wrap { display: flex; gap: 3px; margin-top: 2px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; }
-.dot.paper { background: var(--warn); }
-.dot.event { background: var(--accent); }
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 
-/* Drawer Modal */
-.drawer-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(10, 13, 20, 0.75);
-  backdrop-filter: blur(8px);
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.drawer-overlay.active { opacity: 1; pointer-events: auto; }
-.drawer {
-  position: fixed;
-  top: 0; right: -520px; width: 500px; max-width: 90vw; height: 100vh;
-  background: #0d121f;
-  border-left: 1px solid var(--line);
-  z-index: 101;
-  padding: 32px;
-  overflow-y: auto;
-  box-shadow: -10px 0 40px rgba(0,0,0,0.6);
-  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.drawer-overlay.active .drawer { right: 0; }
-
-/* Toast Notifications */
+/* Toast */
 .toast {
   position: fixed;
-  bottom: 30px; right: 30px;
-  background: var(--accent-purple);
+  bottom: 24px; right: 24px;
+  background: #27272a;
   color: #fff;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  transform: translateY(100px);
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border: 1px solid #3f3f46;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transform: translateY(60px);
   opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 200;
+  transition: all 0.2s ease;
+  z-index: 100;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
-<body class="theme-purple">
-
-<div class="glow-bg"></div>
+<body>
 
 <div class="wrap">
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="hero-top">
+  <!-- Header & Editorial Branding -->
+  <header>
+    <div class="brand-row">
       <div>
-        <div class="brand-title">
+        <h1 class="brand-name">
           <span>cfp-radar</span>
-          <span class="brand-tag">v2.0 Autonomous</span>
-        </div>
-        <p class="lead" style="margin-top: 4px;">高性能計算・ネットワーク・システム・人工知能・セキュリティ分野の会議の投稿締切と開催日。<span id="genat"></span></p>
+          <span class="brand-badge">CS / Systems Radar</span>
+        </h1>
+        <p class="lead">高性能計算・ネットワーク・システム・人工知能・セキュリティ会議締切探知</p>
       </div>
-
-      <div style="display: flex; gap: 16px; align-items: center;">
-        <div class="theme-picker">
-          <span style="font-size: 0.75rem; color: var(--muted);">テーマ:</span>
-          <div class="theme-dot purple" onclick="setTheme('purple')" title="Cyber Purple"></div>
-          <div class="theme-dot cyan" onclick="setTheme('cyan')" title="Neon Cyan"></div>
-          <div class="theme-dot emerald" onclick="setTheme('emerald')" title="Emerald Matrix"></div>
-        </div>
-      </div>
+      <div class="meta-info" id="genat"></div>
     </div>
 
-    <!-- Live Statistics Dashboard -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-num" id="statConfs">--</span>
-        <span class="stat-label">追跡会議・ワークショップ数</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" style="color: var(--accent-purple);" id="statUpcoming">--</span>
-        <span class="stat-label">直近30日以内の締切</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" style="color: var(--accent-pink);" id="statNiche">--</span>
-        <span class="stat-label">自律探知穴場・特化ジャーナル</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" style="color: var(--accent-emerald);" id="statDomestic">--</span>
-        <span class="stat-label">国内研究会・国内シンポジウム</span>
-      </div>
+    <!-- Editorial Stats Summary -->
+    <div class="summary-bar">
+      <div class="stat-item"><span>追跡会議数:</span> <strong id="statConfs">--</strong></div>
+      <div class="stat-item"><span>直近30日締切:</span> <strong id="statUpcoming" style="color: var(--accent);">--</strong></div>
+      <div class="stat-item"><span>穴場/特化誌:</span> <strong id="statNiche">--</strong></div>
+      <div class="stat-item"><span>国内研究会:</span> <strong id="statDomestic">--</strong></div>
     </div>
   </header>
 
-  <section>
-    <h2 style="font-family: var(--font-title); color: var(--accent-purple); margin-bottom: 12px;">📡 購読カレンダーフィード (ICS Feeds)</h2>
-    <div class="panel feeds" id="feeds"></div>
-  </section>
-
-  <section>
-    <div class="panel">
-      <div class="row" style="margin-bottom:14px">
-        <div class="search-box-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="search" id="q" placeholder="文字列検索 (例: nsdi, MobiCom, Denver)...">
-          <span class="kbd-hint">⌘K</span>
-        </div>
-        <div class="field">
-          <span>種別（締切・開催）</span>
-          <select id="kind"></select>
-        </div>
-        <div class="field">
-          <span>ランク</span>
-          <select id="rank"></select>
-        </div>
-        <div class="field">
-          <span>期間</span>
-          <select id="win">
-            <option value="all">すべて</option>
-            <option value="future">未来のみ</option>
-            <option value="30d">直近 30 日以内</option>
-            <option value="90d">直近 90 日以内</option>
-            <option value="180d">直近 180 日以内</option>
-          </select>
-        </div>
-        <div class="view-switcher">
-          <button class="view-btn active" id="btnViewTable" onclick="switchView('table')">📊 表</button>
-          <button class="view-btn" id="btnViewCards" onclick="switchView('cards')">🃏 カード</button>
-          <button class="view-btn" id="btnViewTimeline" onclick="switchView('timeline')">📅 タイムライン</button>
-        </div>
-        <button class="btn-reset" id="reset">条件クリア</button>
-      </div>
-
-      <div class="field">
-        <span>分野（複数選択可。空ならすべて）</span>
-        <div class="chips" id="cats"></div>
-      </div>
-
-      <div class="row" style="margin-top:14px">
-        <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
-        <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
-        <label class="check"><input type="checkbox" id="past"> <span>過去の締切も含める</span></label>
-      </div>
-    </div>
-  </section>
-
-  <div class="count" id="count"></div>
-
-  <!-- Multi-View Containers -->
-  <div id="viewContainer">
-    <!-- Table View -->
-    <div class="tablewrap" id="tableView">
-      <table>
-        <thead>
-          <tr>
-            <th>残り</th>
-            <th>日時</th>
-            <th>会議</th>
-            <th>種別</th>
-            <th>ランク</th>
-            <th>会期</th>
-            <th>開催地</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-
-    <!-- Cards Grid View -->
-    <div class="cards-grid" id="cardsView" style="display: none;"></div>
-
-    <!-- Timeline View -->
-    <div class="timeline-wrap" id="timelineView" style="display: none;"></div>
+  <!-- Feeds Bar -->
+  <div class="feeds-panel">
+    <div class="section-title">カレンダー自動同期フィード (ICS Feeds)</div>
+    <div class="feeds" id="feeds"></div>
   </div>
 
-  <div class="empty" id="empty" hidden>該当する締切はありません。</div>
-  <div style="margin-top: 16px; text-align: center;"><button id="more">さらに表示</button></div>
+  <!-- Filter & Controls Toolbar -->
+  <div class="panel">
+    <div class="row" style="margin-bottom: 14px;">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="q" placeholder="会議名・フルネーム・開催地を検索 (例: NSDI, NVMW)...">
+      </div>
+      <div class="field">
+        <span>種別（締切・開催）</span>
+        <select id="kind"></select>
+      </div>
+      <div class="field">
+        <span>ランク</span>
+        <select id="rank"></select>
+      </div>
+      <div class="field">
+        <span>期間</span>
+        <select id="win">
+          <option value="all">すべて</option>
+          <option value="future">未来のみ</option>
+          <option value="30d">直近 30 日以内</option>
+          <option value="90d">直近 90 日以内</option>
+          <option value="180d">直近 180 日以内</option>
+        </select>
+      </div>
+      <button class="btn-reset" id="reset">条件クリア</button>
+    </div>
 
-  <footer style="margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); font-size: 0.85rem;">
+    <div class="field">
+      <span>分野（複数選択可。空ならすべて）</span>
+      <div class="chips" id="cats"></div>
+    </div>
+
+    <div class="row" style="margin-top: 14px;">
+      <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
+      <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
+      <label class="check"><input type="checkbox" id="past"> <span>過去の締切も含める</span></label>
+    </div>
+  </div>
+
+  <!-- Items Counter -->
+  <div class="count" id="count"></div>
+
+  <!-- Table Container -->
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>残り</th>
+          <th>日時</th>
+          <th>会議</th>
+          <th>種別</th>
+          <th>ランク</th>
+          <th>会期</th>
+          <th>開催地</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="empty" id="empty" style="padding: 32px; text-align: center; color: var(--muted);" hidden>該当する締切はありません。</div>
+  <div style="margin-top: 20px; text-align: center;"><button id="more">さらに表示</button></div>
+
+  <!-- Footer -->
+  <footer>
     <div>データ源: <span id="sources">-</span></div>
-    <div id="repolink"><a href="https://github.com/ten82e/cfp-radar" style="color: var(--accent);">GitHub リポジトリ</a></div>
+    <div id="repolink"><a href="https://github.com/ten82e/cfp-radar">GitHub リポジトリ</a></div>
   </footer>
 </div>
 
-<!-- Slide Drawer Modal -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
-  <div class="drawer" id="drawer">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-      <div>
-        <h2 id="drawerTitle" style="font-family: var(--font-title); font-size: 1.8rem; color: var(--bright);"></h2>
-        <div id="drawerTags" style="margin-top: 8px;"></div>
-      </div>
-      <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.1); border: none; font-size: 1.1rem; padding: 4px 10px;">✕</button>
-    </div>
-    <p id="drawerFullName" style="color: var(--muted); margin-bottom: 24px; font-size: 0.95rem;"></p>
-    <div id="drawerBody"></div>
-  </div>
-</div>
-
-<div class="toast" id="toast">コピーしました！</div>
+<div class="toast" id="toast">コピーしました</div>
 
 <script>
 (function () {
@@ -595,7 +442,6 @@ tr:hover td { background: var(--bg-card-hover); }
 
   var DAY = 86400000;
   var PAGE = 40;
-  var currentViewMode = "table";
 
   var KIND_LABEL = {
     abstract: "概要締切",
@@ -635,58 +481,7 @@ tr:hover td { background: var(--bg-card-hover); }
     return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
   }
 
-  // ---- UI Controls ----
-  window.setTheme = function(theme) {
-    document.body.className = "theme-" + theme;
-  };
-
-  window.switchView = function(mode) {
-    currentViewMode = mode;
-    ["Table", "Cards", "Timeline"].forEach(function(m) {
-      var btn = $("btnView" + m);
-      if (btn) btn.classList.toggle("active", m.toLowerCase() === mode);
-    });
-    $("tableView").style.display = mode === "table" ? "block" : "none";
-    $("cardsView").style.display = mode === "cards" ? "grid" : "none";
-    $("timelineView").style.display = mode === "timeline" ? "flex" : "none";
-    render();
-  };
-
-  window.openDrawer = function(r) {
-    $("drawerOverlay").classList.add("active");
-    $("drawerTitle").textContent = (r.conf.title || r.conf.key) + " " + (r.ed.year || "");
-    $("drawerFullName").textContent = r.conf.full_name || "";
-
-    var tagsHtml = (r.cats || []).map(function(c) {
-      return '<span class="tag">' + c.toUpperCase() + '</span>';
-    }).join("") + (r.rankPairs || []).map(function(p) {
-      return '<span class="tag" style="border-color: var(--accent-purple); color: var(--accent-purple);">' + p.toUpperCase() + '</span>';
-    }).join("");
-    $("drawerTags").innerHTML = tagsHtml;
-
-    var bodyHtml = '<div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--line);">' +
-      '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 4px;">種別 / 締切</div>' +
-      '<div style="font-family: var(--font-title); font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
-      '<div style="font-family: var(--font-code); font-size: 0.9rem; margin-top: 6px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>' +
-      '</div>';
-
-    if (r.conf.link || r.ed.link) {
-      bodyHtml += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; width: 100%; text-align: center; background: var(--accent-purple); color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: 600; margin-bottom: 24px;">公式サイトを開く ↗</a>';
-    }
-
-    bodyHtml += '<h3 style="font-family: var(--font-title); font-size: 1.1rem; color: var(--accent); margin-bottom: 12px;">開催情報</h3>' +
-      '<p><strong>会期:</strong> ' + (r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
-      '<p><strong>開催地:</strong> ' + (r.ed.place || "未定") + '</p>';
-
-    $("drawerBody").innerHTML = bodyHtml;
-  };
-
-  window.closeDrawer = function(e) {
-    if (!e || e.target === $("drawerOverlay") || e.target.tagName === "BUTTON") {
-      $("drawerOverlay").classList.remove("active");
-    }
-  };
-
+  // Toast Notify
   window.copyToClipboard = function(text) {
     navigator.clipboard.writeText(text).then(function() {
       var t = $("toast");
@@ -802,7 +597,7 @@ tr:hover td { background: var(--bg-card-hover); }
     });
   });
 
-  // Update Stats Dashboard
+  // Update Summary Dashboard Stats
   $("statConfs").textContent = (DATA.conferences || []).length;
   var nowMs = Date.now();
   var next30 = rows.filter(function(r) { return r.t >= nowMs && (r.t - nowMs) <= 30*DAY; }).length;
@@ -892,9 +687,6 @@ tr:hover td { background: var(--bg-card-hover); }
 
   function makeRow(r) {
     var tr = document.createElement("tr");
-    tr.onclick = function(e) {
-      if (e.target.tagName !== "A") { openDrawer(r); }
-    };
     var isEvent = r.kind === "event";
     var rem = isEvent ? remainEvent(r) : remain(r.t);
 
@@ -984,100 +776,12 @@ tr:hover td { background: var(--bg-card-hover); }
     return tr;
   }
 
-  function renderCards(slice) {
-    var container = $("cardsView");
-    container.innerHTML = "";
-    slice.forEach(function(r) {
-      var card = document.createElement("div");
-      card.className = "card-item";
-      card.onclick = function() { openDrawer(r); };
-
-      var isEvent = r.kind === "event";
-      var rem = isEvent ? remainEvent(r) : remain(r.t);
-
-      card.innerHTML = '<div>' +
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
-        '<span style="font-family: var(--font-code); font-size: 0.75rem; color: var(--accent);">' + (r.cats || []).join(", ").toUpperCase() + '</span>' +
-        '<span class="tag" style="color: var(--accent-purple); border-color: var(--accent-purple);">' + (r.rankPairs[0] ? r.rankPairs[0].toUpperCase() : "Niche") + '</span>' +
-        '</div>' +
-        '<h3 style="font-family: var(--font-title); font-size: 1.3rem; margin-bottom: 4px; color: var(--bright);">' + (r.conf.title || r.conf.key) + ' ' + (r.ed.year || '') + '</h3>' +
-        '<p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">' + (r.conf.full_name || '') + '</p>' +
-        '</div>' +
-        '<div style="border-top: 1px solid var(--line); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">' +
-        '<div><span style="font-size: 0.8rem; color: var(--muted);">' + (KIND_LABEL[r.kind] || r.kind) + '</span><br><strong style="font-family: var(--font-code); font-size: 0.9rem;">' + (isEvent ? r.ed.event_start : fmtDate(new Date(r.t)).substring(0, 10)) + '</strong></div>' +
-        '<span class="left ' + rem.cls + '" style="font-size: 0.85rem;">' + rem.text + '</span>' +
-        '</div>';
-      container.appendChild(card);
-    });
-  }
-
-  function renderTimeline(slice) {
-    var container = $("timelineView");
-    container.innerHTML = "";
-
-    // Render Month Calendar Grid
-    var calWidget = document.createElement("div");
-    calWidget.className = "month-calendar-widget";
-    var daysHeader = ['日', '月', '火', '水', '木', '金', '土'].map(function(d) {
-      return '<div class="cal-day-header">' + d + '</div>';
-    }).join("");
-
-    var daysGrid = "";
-    for (var d = 1; d <= 31; d++) {
-      daysGrid += '<div class="cal-day-cell"><span>' + d + '</span><div class="dot-wrap"><div class="dot paper"></div><div class="dot event"></div></div></div>';
-    }
-
-    calWidget.innerHTML = '<div style="font-family: var(--font-title); font-weight: 700; color: var(--accent); margin-bottom: 8px;">月間アクティビティカレンダー (2026年8月)</div><div class="calendar-grid">' + daysHeader + daysGrid + '</div>';
-    container.appendChild(calWidget);
-
-    var groups = {};
-    slice.forEach(function(r) {
-      var d = new Date(r.t);
-      var m = d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1);
-      if (!groups[m]) groups[m] = [];
-      groups[m].push(r);
-    });
-
-    Object.keys(groups).sort().forEach(function(m) {
-      var grp = document.createElement("div");
-      grp.className = "timeline-group";
-      grp.innerHTML = '<div class="timeline-header">' + m + '</div>';
-      groups[m].forEach(function(r) {
-        var item = document.createElement("div");
-        item.style.padding = "14px 18px";
-        item.style.background = "var(--bg-panel)";
-        item.style.border = "1px solid var(--line)";
-        item.style.borderRadius = "12px";
-        item.style.marginBottom = "10px";
-        item.style.cursor = "pointer";
-        item.onclick = function() { openDrawer(r); };
-
-        var rem = r.kind === "event" ? remainEvent(r) : remain(r.t);
-        item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-          '<div><strong style="color: var(--bright);">' + (r.conf.title || r.conf.key) + ' ' + (r.ed.year || '') + '</strong> — <span style="color: var(--accent);">' + (KIND_LABEL[r.kind] || r.kind) + '</span></div>' +
-          '<span class="left ' + rem.cls + '" style="font-size: 0.85rem;">' + rem.text + '</span>' +
-          '</div>';
-        grp.appendChild(item);
-      });
-      container.appendChild(grp);
-    });
-  }
-
   function drawMore() {
     var tbody = $("tbody");
+    var frag = document.createDocumentFragment();
     var end = Math.min(drawn + PAGE, shown.length);
-    var slice = shown.slice(0, end);
-
-    if (currentViewMode === "table") {
-      var frag = document.createDocumentFragment();
-      for (var i = drawn; i < end; i++) { frag.appendChild(makeRow(shown[i])); }
-      tbody.appendChild(frag);
-    } else if (currentViewMode === "cards") {
-      renderCards(slice);
-    } else if (currentViewMode === "timeline") {
-      renderTimeline(slice);
-    }
-
+    for (var i = drawn; i < end; i++) { frag.appendChild(makeRow(shown[i])); }
+    tbody.appendChild(frag);
     drawn = end;
     var btn = $("more");
     if (drawn < shown.length) {
@@ -1155,14 +859,6 @@ tr:hover td { background: var(--bg-card-hover); }
     writeUrl();
     render();
   }
-
-  // Keyboard Shortcuts (⌘K)
-  window.addEventListener("keydown", function(e) {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      e.preventDefault();
-      $("q").focus();
-    }
-  });
 
   // ---- wiring ----
   var timer = null;
