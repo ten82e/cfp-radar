@@ -378,3 +378,70 @@ def test_real_data_japanese_paper_finds_japanese_venues():
     assert len(jp_hits) >= 1, f"no Japanese venue above 20: {scores}"
     # 無関係の英語 systems 会議（asap/ase）より上
     assert max(scores.get(k, 0) for k in jp_hits) > scores.get("asap", 0), f"scores: {scores}"
+
+
+# ---- 論文モード統合（filter の論文モード相当の動作契約） ----
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_paper_mode_pipeline_keeps_past_and_est_rows_and_dedupes():
+    """論文モード: est/past の行も候補に残り、会議単位に集約され、スコア順に並ぶ"""
+    rows = _load_rows()
+    papers = (
+        "Credit-Based Shaping for Deterministic Latency in TSN | TSN, CBS, latency, real-time\n"
+        "Similar Paper on TSN Scheduling | scheduling, TSN | RTSS"
+    )
+    script = f"""
+const fs = require("fs");
+const data = JSON.parse(fs.readFileSync("{DATA_JSON}", "utf8"));
+const NOW = Date.parse("2026-08-10T00:00:00Z");
+const DAY = 86400000;
+// _load_rows と同一の行組み立て
+const rows = [];
+for (const c of data.conferences) {{
+  for (const ed of c.editions || []) {{
+    for (const dl of ed.deadlines || []) {{
+      rows.push({{ conf: c, cats: c.categories || [], key: c.key, kind: dl.kind || "deadline",
+        t: Date.parse(dl.utc), tLast: Date.parse(dl.utc), est: !!(dl.estimated || ed.estimated),
+        rankPairs: [], name: c.title, year: ed.year }});
+    }}
+  }}
+}}
+const pLines = R.parsePaperLines({json.dumps(papers)});
+// filter の論文モード相当:
+// 1. est/past 除外なし（!pLines.length のときだけ除外する条件を再現）
+// 2. score 計算 + venueCats ブースト
+const venueCats = R.venueCategories(pLines, rows);
+let out = rows.map(r => {{
+  const m = R.breakdown(r, pLines);
+  let score = m.score;
+  if (!m.venueHit && venueCats.length) {{
+    const shared = (r.cats || []).some(k => venueCats.indexOf(k) >= 0);
+    if (shared) score = Math.min(100, score + 10);
+  }}
+  r._matchScore = score;
+  return r;
+}}).filter(r => r._matchScore >= 10);
+// 3. スコア順ソート + 会議単位集約
+out.sort((a, b) => R.comparePapers(a, b, NOW));
+out = R.pickRepresentative(out, NOW);
+// 検証: est 行・past 行が残っている（除外されていない）
+const hasEst = out.some(r => r.est);
+const hasPast = out.some(r => r.kind !== "event" && r.t < NOW);
+// 検証: 会議単位（key 重複なし）
+const keys = out.map(r => r.conf.key);
+const unique = new Set(keys).size === keys.length;
+// 検証: スコア降順
+const sorted = out.every((r, i) => i === 0 || out[i-1]._matchScore >= r._matchScore);
+// 検証: 掲載先タグの RTSS がトップ圏内
+const rtssIdx = keys.indexOf("rtss");
+console.log(JSON.stringify({{ hasEst, hasPast, unique, sorted, n: out.length, rtssIdx,
+  top: out.slice(0, 3).map(r => r.conf.key + ":" + r._matchScore) }}));
+"""
+    out = _run_node(script)
+    res = json.loads(out.strip())
+    assert res["hasEst"], "論文モードで推定行が消えている"
+    assert res["hasPast"], "論文モードで過去行が消えている"
+    assert res["unique"], "会議単位に集約されていない"
+    assert res["sorted"], "スコア降順になっていない"
+    assert 0 <= res["rtssIdx"] < 3, f"RTSS が上位にない: {res['top']}"
