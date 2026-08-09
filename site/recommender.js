@@ -89,15 +89,16 @@
   /* 1行ぶんのスコア (0..100)。venueHit は掲載先タグ一致なら true */
   function scoreLine(r, p, conf) {
     var pt = (p.title + " " + p.keywords).toLowerCase();
-    if (!pt.trim()) return { score: 0, venueHit: false };
+    if (!pt.trim()) return { score: 0, venueHit: false, details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 } };
     var score = 0;
+    var details = { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
 
     // 分野シグナル: 論文にキーワードがあり、会議がそのカテゴリを持つ。
     // ヒット数ではなく「カテゴリにヒットしたか」で +15（累積しない）。
     Object.keys(DOMAIN_SIGNAL).forEach(function (dom) {
       if ((r.cats || []).indexOf(dom) === -1) return;
       var hit = DOMAIN_SIGNAL[dom].some(function (kw) { return pt.indexOf(kw) !== -1; });
-      if (hit) score += 15;
+      if (hit) { score += 15; details.domain += 15; }
     });
 
     // 会議名（title + full_name）の語彙一致（一般語は STOPWORDS で除外）
@@ -105,7 +106,7 @@
       return w.length > 3 && !STOPWORDS.has(w);
     });
     words.forEach(function (w) {
-      if (pt.indexOf(w) !== -1) score += 15;
+      if (pt.indexOf(w) !== -1) { score += 15; details.name += 15; }
     });
 
     // 日本語の部分一致: 論文の日本語チャンク（4 文字以上）が会議名の日本語に含まれれば加点
@@ -115,12 +116,12 @@
     if (jpChunks.length && conf.jp.length) {
       var jpHay = conf.jp.join(" ");
       var jpHit = jpChunks.some(function (chunk) { return jpHay.indexOf(chunk) !== -1; });
-      if (jpHit) score += 15;
+      if (jpHit) { score += 15; details.jp += 15; }
     }
 
     // tags 語彙一致（data-mining 等の領域タグ）
     conf.tags.forEach(function (t) {
-      if (t && t.length > 3 && pt.indexOf(t) !== -1) score += 10;
+      if (t && t.length > 3 && pt.indexOf(t) !== -1) { score += 10; details.tags += 10; }
     });
 
     // 掲載先タグ一致: この論文がこの会議に載ったことがある
@@ -135,11 +136,11 @@
         } else {
           venueHit = hay.some(function (h) { return h && (h.indexOf(nv) !== -1 || nv.indexOf(h) !== -1); });
         }
-        if (venueHit) score += 40;
+        if (venueHit) { score += 40; details.venue += 40; }
       }
     }
 
-    return { score: Math.min(100, score), venueHit: venueHit };
+    return { score: Math.min(100, score), venueHit: venueHit, details: details };
   }
 
   /* 全行のスコア: 平均と最大の加重平均（0.6×平均 + 0.4×最大）。
@@ -211,12 +212,14 @@
     var conf = confHay(r);
     var perLine = [];
     var venueHitAny = false;
+    var agg = { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
     for (var i = 0; i < (lines || []).length; i++) {
       var s = scoreLine(r, lines[i], conf);
       if (s.venueHit) venueHitAny = true;
-      perLine.push({ score: s.score, venueHit: s.venueHit });
+      perLine.push({ score: s.score, venueHit: s.venueHit, details: s.details });
+      Object.keys(agg).forEach(function (k) { agg[k] += s.details[k]; });
     }
-    return { score: scorePapers(r, lines), venueHit: venueHitAny, perLine: perLine };
+    return { score: scorePapers(r, lines), venueHit: venueHitAny, perLine: perLine, agg: agg };
   }
 
   var api = {

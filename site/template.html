@@ -993,6 +993,16 @@ footer a:hover { text-decoration: underline; }
     if (r._matchScore && r._matchScore >= 10) {
       var ms = document.createElement("span");
       ms.className = "tag match"; ms.textContent = "適合度 " + r._matchScore + "%";
+      if (r._match && r._match.agg) {
+        var a = r._match.agg;
+        var parts = [];
+        if (a.domain > 0) parts.push("分野シグナル +" + a.domain);
+        if (a.name > 0) parts.push("会議名一致 +" + a.name);
+        if (a.jp > 0) parts.push("日本語一致 +" + a.jp);
+        if (a.tags > 0) parts.push("領域タグ +" + a.tags);
+        if (a.venue > 0) parts.push("掲載先一致 +" + a.venue);
+        if (parts.length) ms.title = parts.join(" ／ ");
+      }
       tags.appendChild(ms);
     }
     if (r._match && r._match.venueHit) {
