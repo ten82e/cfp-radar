@@ -606,7 +606,9 @@ def select(confs: list[Conference], config: dict) -> list[Conference]:
             continue
         if conf.key not in always_keep and not _rank_ok(conf, schemes, keep_if_no_rank):
             continue
-        if not _has_dates(conf):
+        # ジャーナル（tags: [journal]）は特集号 CFP の締切が出るまで日付を持たないが、
+        # 「index されている」ことが価値なので日付なしでも残す。
+        if not _has_dates(conf) and "journal" not in (conf.tags or []):
             continue
         out.append(replace(conf, categories=categories))
     return out

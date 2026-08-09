@@ -711,8 +711,18 @@ def build_all(
     try:
         from .embeddings import build_embeddings
 
-        if not (outdir / "embeddings.json").is_file():
-            build_embeddings(outdir / "data.json", outdir / "embeddings.json")
+        emb_path = outdir / "embeddings.json"
+        need_emb = not emb_path.is_file()
+        if not need_emb:
+            try:
+                existing = json.loads(emb_path.read_text(encoding="utf-8"))
+                # 会議が増えたら埋め込みも作り直す（欠落キーのみ追記ではなく全再生成）
+                have = set(existing.get("embeddings", {}))
+                need_emb = have != {c.key for c in confs}
+            except Exception:
+                need_emb = True
+        if need_emb:
+            build_embeddings(outdir / "data.json", emb_path)
             written.append("embeddings.json")
     except Exception as exc:  # noqa: BLE001 — 任意の依存欠落でビルド全体を落とさない
         print(f"warning: embeddings を生成しなかった（{exc.__class__.__name__}: {exc}）")

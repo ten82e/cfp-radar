@@ -1244,4 +1244,86 @@ conferences:
             tz: AoE
             comment: Submission Deadline
 
+  # -------------------------------------------------- 研究室実績ジャーナル (lab-journals) --
+  # 伊達研・下條研の DBLP 出版実績があるジャーナル（2026-08-10 調査）。
+  # 特集号 CFP の締切は不定期なので editions は空（index として収録）。
 
+  # 根拠: DBLP 実績（伊達研 4 本・下條研 2 本）
+  #   IEEE Access: オープンアクセス常設 CFP。幅広い工学・情報分野。
+  - key: ieee-access
+    title: IEEE Access
+    full_name: IEEE Access
+    link: https://ieeeaccess.ieee.org/
+    categories: [systems, ai]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（下條研 4 本）
+  #   IEICE Transactions on Information and Systems: 情報処理・ネットワークの特集号 CFP が頻繁。
+  - key: ieice-trans-inf
+    title: IEICE Trans. Inf. & Syst.
+    full_name: IEICE Transactions on Information and Systems
+    link: https://www.ieice.org/eng/transactions/
+    categories: [systems, networking]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（下條研 4 本）
+  #   情報処理学会論文誌 Journal of Information Processing (JIP)。英語特集号あり。
+  - key: jip
+    title: JIP
+    full_name: Journal of Information Processing (情報処理学会)
+    link: https://www.ipsj.or.jp/english/jip/
+    categories: [systems]
+    tags: [niche, journal, domestic-jp]
+    editions: []
+
+  # 根拠: DBLP 実績（伊達研 1 本・下條研 2 本）
+  #   Future Generation Computer Systems (Elsevier): 並列・分散・科学計算の特集号 CFP が頻繁。
+  - key: fgcs
+    title: FGCS
+    full_name: Future Generation Computer Systems
+    link: https://www.sciencedirect.com/journal/future-generation-computer-systems
+    categories: [hpc, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（伊達研 2 本・下條研 2 本）
+  #   Concurrency and Computation: Practice and Experience (Wiley)。
+  - key: ccpe
+    title: CCPE
+    full_name: "Concurrency and Computation: Practice and Experience"
+    link: https://onlinelibrary.wiley.com/journal/15320634
+    categories: [hpc, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（下條研 1 本）
+  #   Internet of Things (Elsevier): IoT 特集号 CFP が頻繁。
+  - key: internet-of-things
+    title: Internet of Things
+    full_name: Internet of Things (Elsevier)
+    link: https://www.sciencedirect.com/journal/internet-of-things
+    categories: [networking, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（下條研 1 本）
+  #   Computer Networks (Elsevier): ネットワーク特集号 CFP が頻繁。
+  - key: computer-networks
+    title: Computer Networks
+    full_name: Computer Networks (Elsevier)
+    link: https://www.sciencedirect.com/journal/computer-networks
+    categories: [networking]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: DBLP 実績（下條研 1 本）
+  #   ACM Transactions on Internet Technology (TOIT)。
+  - key: acm-toit
+    title: ACM TOIT
+    full_name: ACM Transactions on Internet Technology
+    link: https://dl.acm.org/journal/toit
+    categories: [networking, systems]
+    tags: [niche, journal]
+    editions: []
