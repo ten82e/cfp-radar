@@ -12,7 +12,7 @@
   color-scheme: dark;
   --bg: #09090b;
   --panel: #121215;
-  --panel-hover: #1a1a1e;
+  --panel-hover: #18181c;
   --border: #27272a;
   --border-subtle: #1f1f23;
   --fg: #f4f4f5;
@@ -138,6 +138,29 @@ header {
 }
 .feed button:hover { background: #3f3f46; }
 
+/* Quick Preset Filter Bar */
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.preset-btn {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  background: #18181b;
+  color: var(--muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.preset-btn:hover, .preset-btn.active {
+  color: var(--fg);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
 /* Control Toolbar */
 .panel {
   background: var(--panel);
@@ -237,7 +260,7 @@ label.check input:checked + span { color: var(--fg); }
 .btn-reset:hover { color: var(--fg); border-color: var(--muted); }
 
 /* Main Table */
-.count { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+.count { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 .tablewrap {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -254,9 +277,13 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
 }
+th:hover { color: var(--fg); }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--panel-hover); }
+tr.selected td { background: rgba(96, 165, 250, 0.08); border-color: rgba(96, 165, 250, 0.2); }
 
 .conf { font-weight: 600; font-size: 0.95rem; }
 .conf a { color: var(--fg); text-decoration: none; }
@@ -293,6 +320,31 @@ tr:hover td { background: var(--panel-hover); }
 }
 #more:hover { border-color: var(--muted); }
 
+/* Conference Details Drawer Modal */
+.drawer-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(9, 9, 11, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.drawer-backdrop.active { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed;
+  top: 0; right: -480px; width: 440px; max-width: 90vw; height: 100vh;
+  background: #141417;
+  border-left: 1px solid var(--border);
+  z-index: 101;
+  padding: 28px;
+  overflow-y: auto;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+  transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-backdrop.active .drawer { right: 0; }
+
 /* Footer */
 footer {
   margin-top: 64px;
@@ -322,7 +374,7 @@ footer a:hover { text-decoration: underline; }
   transform: translateY(60px);
   opacity: 0;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 200;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 </style>
@@ -360,6 +412,14 @@ footer a:hover { text-decoration: underline; }
 
   <!-- Filter & Controls Toolbar -->
   <div class="panel">
+    <div class="presets-bar">
+      <span style="font-size: 0.78rem; color: var(--muted); align-self: center; margin-right: 4px;">クイック抽出:</span>
+      <button class="preset-btn" onclick="applyPreset('7d')">🔥 締切直近 (7日以内)</button>
+      <button class="preset-btn" onclick="applyPreset('a_star')">⭐ Top Tier (A*)</button>
+      <button class="preset-btn" onclick="applyPreset('hpc_sys')">⚡ HPC & Systems</button>
+      <button class="preset-btn" onclick="applyPreset('domestic')">🇯🇵 国内研究会</button>
+    </div>
+
     <div class="row" style="margin-bottom: 14px;">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -398,19 +458,22 @@ footer a:hover { text-decoration: underline; }
     </div>
   </div>
 
-  <!-- Items Counter -->
-  <div class="count" id="count"></div>
+  <!-- Items Counter & Keyboard Shortcuts Hint -->
+  <div class="count">
+    <span id="count"></span>
+    <span style="font-family: var(--font-mono); font-size: 0.75rem;">Shortcuts: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>/</kbd> 検索</span>
+  </div>
 
   <!-- Table Container -->
   <div class="tablewrap">
     <table>
       <thead>
         <tr>
-          <th>残り</th>
-          <th>日時</th>
-          <th>会議</th>
+          <th onclick="toggleSort('rem')">残り ↕</th>
+          <th onclick="toggleSort('date')">日時 ↕</th>
+          <th onclick="toggleSort('conf')">会議 ↕</th>
           <th>種別</th>
-          <th>ランク</th>
+          <th onclick="toggleSort('rank')">ランク ↕</th>
           <th>会期</th>
           <th>開催地</th>
         </tr>
@@ -429,6 +492,18 @@ footer a:hover { text-decoration: underline; }
   </footer>
 </div>
 
+<!-- Conference Details Drawer Modal -->
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer(event)">
+  <div class="drawer" id="drawer">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+      <h2 id="drawerTitle" style="font-size: 1.4rem; font-weight: 700; color: var(--fg);"></h2>
+      <button onclick="closeDrawer()" style="background: transparent; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+    <p id="drawerFullName" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 20px;"></p>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast">コピーしました</div>
 
 <script>
@@ -442,6 +517,9 @@ footer a:hover { text-decoration: underline; }
 
   var DAY = 86400000;
   var PAGE = 40;
+  var selectedIndex = -1;
+  var sortKey = "rem";
+  var sortAsc = true;
 
   var KIND_LABEL = {
     abstract: "概要締切",
@@ -491,6 +569,99 @@ footer a:hover { text-decoration: underline; }
       }
     });
   };
+
+  // Quick Presets
+  window.applyPreset = function(type) {
+    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, past: false, domestic: false };
+    if (type === '7d') state.win = "30d";
+    if (type === 'a_star') state.rank = "A*";
+    if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
+    if (type === 'domestic') state.domestic = true;
+    toForm();
+    writeUrl();
+    render();
+  };
+
+  // Column Sorting
+  window.toggleSort = function(key) {
+    if (sortKey === key) {
+      sortAsc = !sortAsc;
+    } else {
+      sortKey = key;
+      sortAsc = true;
+    }
+    render();
+  };
+
+  // Drawer Controls
+  window.openDrawer = function(r) {
+    $("drawerBackdrop").classList.add("active");
+    $("drawerTitle").textContent = (r.conf.title || r.conf.key) + " " + (r.ed.year || "");
+    $("drawerFullName").textContent = r.conf.full_name || "";
+
+    var html = '<div style="background: #18181b; padding: 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px;">' +
+      '<div style="font-size: 0.78rem; color: var(--muted);">種別・日時</div>' +
+      '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
+      '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC</div>' +
+      '</div>';
+
+    if (r.conf.link || r.ed.link) {
+      html += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #000; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く ↗</a>';
+    }
+
+    html += '<div style="font-size: 0.85rem;">' +
+      '<p style="margin-bottom: 8px;"><strong>開催地:</strong> ' + (r.ed.place || "未定") + '</p>' +
+      '<p style="margin-bottom: 8px;"><strong>会期:</strong> ' + (r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
+      '</div>';
+
+    $("drawerBody").innerHTML = html;
+  };
+
+  window.closeDrawer = function(e) {
+    if (!e || e.target === $("drawerBackdrop") || e.target.tagName === "BUTTON") {
+      $("drawerBackdrop").classList.remove("active");
+    }
+  };
+
+  // Keyboard Navigation (j/k/Enter/Esc//)
+  window.addEventListener("keydown", function(e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
+      if (e.key === "Escape") { e.target.blur(); }
+      return;
+    }
+    if (e.key === "/") {
+      e.preventDefault();
+      $("q").focus();
+    } else if (e.key === "j" || e.key === "ArrowDown") {
+      e.preventDefault();
+      if (selectedIndex < shown.length - 1) {
+        selectedIndex++;
+        updateRowSelection();
+      }
+    } else if (e.key === "k" || e.key === "ArrowUp") {
+      e.preventDefault();
+      if (selectedIndex > 0) {
+        selectedIndex--;
+        updateRowSelection();
+      }
+    } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < shown.length) {
+      var r = shown[selectedIndex];
+      var href = r.ed.link || r.conf.link;
+      if (href) window.open(href, "_blank");
+    } else if (e.key === "Escape") {
+      closeDrawer();
+    }
+  });
+
+  function updateRowSelection() {
+    var trs = $("tbody").querySelectorAll("tr");
+    Array.prototype.forEach.call(trs, function(tr, idx) {
+      tr.classList.toggle("selected", idx === selectedIndex);
+    });
+    if (trs[selectedIndex]) {
+      trs[selectedIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }
 
   // ---- FEEDS ----
   var feedsBox = $("feeds");
@@ -643,7 +814,7 @@ footer a:hover { text-decoration: underline; }
     var now = Date.now();
     var q = state.q.toLowerCase();
     var limit = state.win === "all" ? Infinity : now + parseInt(state.win, 10) * DAY;
-    return rows.filter(function (r) {
+    var out = rows.filter(function (r) {
       if (!state.est && r.est) { return false; }
       if (!state.past && (r.kind === "event" ? now >= r.tLast + DAY : r.t < now)) {
         return false;
@@ -662,6 +833,19 @@ footer a:hover { text-decoration: underline; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
       return true;
     });
+
+    // Custom Sorting
+    out.sort(function (a, b) {
+      var mult = sortAsc ? 1 : -1;
+      if (sortKey === "conf") {
+        return (a.conf.title || "").localeCompare(b.conf.title || "") * mult;
+      } else if (sortKey === "rank") {
+        return ((a.rankPairs[0] || "") > (b.rankPairs[0] || "") ? 1 : -1) * mult;
+      }
+      return (a.t - b.t) * mult;
+    });
+
+    return out;
   }
 
   // ---- RENDERING ----
@@ -687,6 +871,9 @@ footer a:hover { text-decoration: underline; }
 
   function makeRow(r) {
     var tr = document.createElement("tr");
+    tr.onclick = function(e) {
+      if (e.target.tagName !== "A") { openDrawer(r); }
+    };
     var isEvent = r.kind === "event";
     var rem = isEvent ? remainEvent(r) : remain(r.t);
 
@@ -795,6 +982,7 @@ footer a:hover { text-decoration: underline; }
   function render() {
     shown = filter();
     drawn = 0;
+    selectedIndex = -1;
     $("tbody").textContent = "";
     $("count").textContent = shown.length + " 件 / 全 " + rows.length + " 件";
     $("empty").hidden = shown.length > 0;
