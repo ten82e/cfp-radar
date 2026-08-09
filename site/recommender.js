@@ -17,7 +17,7 @@
    * 変更時は template.html 側の重複定義も同じ内容に保つこと。 */
   var DOMAIN_SIGNAL = {
     hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster"],
-    systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler"],
+    systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler", "real-time", "realtime", "embedded", "deterministic", "tsn"],
     networking: ["network", "sdn", "p4", "protocol", "wireless", "5g", "routing", "bpf", "ebpf", "packet"],
     ai: ["machine learning", "deep learning", "neural", "sysml", "gnn", "transformer", "llm", "ai"],
     security: ["security", "privacy", "crypto", "vulnerability", "binary", "enclave", "sgx", "confidential"]

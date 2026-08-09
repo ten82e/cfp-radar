@@ -113,6 +113,19 @@ console.log(JSON.stringify(R.autoDetectCats(lines)));
     assert cats[0] == "networking"
 
 
+def test_auto_detect_cats_tsn_includes_systems():
+    """TSN は networking と systems（real-time）の両方に判定される"""
+    out = _run_node("""
+const lines = R.parsePaperLines(
+  "Credit-Based Shaping for Deterministic Latency in TSN | TSN, CBS, real-time, embedded, network"
+);
+console.log(JSON.stringify(R.autoDetectCats(lines)));
+""")
+    cats = json.loads(out.strip())
+    assert "networking" in cats
+    assert "systems" in cats
+
+
 def test_auto_detect_cats_empty():
     out = _run_node("""
 console.log(JSON.stringify(R.autoDetectCats([])));
@@ -253,3 +266,37 @@ def test_real_data_no_papers_no_match():
     rows = _load_rows()
     out = _run_node(_make_test_script(rows, "", top_n=5))
     assert out.strip() == "CATS=[]\nTOP=[]\nN=0"
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_real_data_security_paper_lands_top_tier():
+    """セキュリティ論文 → S&P / USENIX Security / CCS が上位に来る"""
+    rows = _load_rows()
+    papers = (
+        "Post-Quantum Key Exchange for Encrypted Network Traffic | security, crypto, encryption, privacy, attack\n"
+        "SoK: Hardware-Enforced Memory Isolation | security, enclave, sgx, memory | IEEE Symposium on Security & Privacy"
+    )
+    script = _make_test_script(rows, papers, top_n=10)
+    out = _run_node(script)
+    cats = json.loads(out.split("CATS=")[1].splitlines()[0])
+    top = json.loads(out.split("TOP=")[1].splitlines()[0])
+    assert "security" in cats
+    keys = " ".join(t["key"] for t in top)
+    # IEEE S&P / USENIX Security / CCS のいずれかが上位に来る（タグ投票で S&P が必ず入る）
+    assert any(x in keys for x in ["ieee-symposium-on-security", "usenix-security", "ccs"]), f"top: {keys}"
+
+
+@pytest.mark.skipif(not DATA_JSON.is_file(), reason="public/data.json が無い（build 未実行）")
+def test_real_data_ml_paper_lands_neurips_icml():
+    rows = _load_rows()
+    papers = (
+        "Scaling Laws for Transformer Language Models | transformer, llm, deep learning, neural, machine learning\n"
+        "Diffusion Models for Generative Image Synthesis | diffusion, generative, image | NeurIPS"
+    )
+    script = _make_test_script(rows, papers, top_n=10)
+    out = _run_node(script)
+    cats = json.loads(out.split("CATS=")[1].splitlines()[0])
+    top = json.loads(out.split("TOP=")[1].splitlines()[0])
+    assert "ai" in cats
+    keys = [t["key"] for t in top]
+    assert any("neurips" in k for k in keys), f"NeurIPS not in top: {keys}"
