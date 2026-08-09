@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:31:24Z",
+  "generated_at": "2026-08-09T17:38:36Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -31526,6 +31526,66 @@
               "tz_raw": "UTC-4",
               "round": 1,
               "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mid4cc",
+      "title": "Mid4CC",
+      "full_name": "International Workshop on Middleware for the Computing Continuum",
+      "categories": [
+        "systems",
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://mid4cc.netsons.org/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "mid4cc26",
+          "link": "https://mid4cc.netsons.org/2026/index.html",
+          "place": "Tarragona, Spain",
+          "date_text": "December 14-18, 2026",
+          "event_start": "2026-12-14",
+          "event_end": "2026-12-18",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "paper",
+              "utc": "2026-10-01T11:59:59Z",
+              "aoe": "2026-09-30 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Paper Submission Deadline"
+            },
+            {
+              "kind": "paper",
+              "label": "paper",
+              "utc": "2026-11-02T11:59:59Z",
+              "aoe": "2026-11-01 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Paper Submission (extended)"
+            },
+            {
+              "kind": "camera_ready",
+              "label": "camera_ready",
+              "utc": "2026-11-16T11:59:59Z",
+              "aoe": "2026-11-15 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Camera-ready Submission"
             }
           ]
         }
