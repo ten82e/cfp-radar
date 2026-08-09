@@ -1,0 +1,21 @@
+# Reduced copy of huggingface/ai-deadlines src/data/conferences/coling.yml (MIT).
+# Edge case: free-text `date` that crosses a year boundary and repeats the month
+# abbreviation ('Jan 19 - Jan 24, 2025'); the deadline itself falls in the prior year.
+- title: COLING
+  year: 2025
+  id: coling25
+  full_name: International Conference on Computational Linguistics
+  link: https://coling2025.org/
+  deadlines:
+    - type: submission
+      label: Paper submission deadline
+      date: '2024-09-16 23:59:59'
+      timezone: AoE
+  date: Jan 19 - Jan 24, 2025
+  start: '2025-01-19'
+  end: '2025-01-24'
+  city: Abu Dhabi
+  country: UAE
+  tags:
+  - natural-language-processing
+  era_rating: a

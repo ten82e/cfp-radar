@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    paths-ignore:
+      - 'data/snapshot.json'
+  pull_request:
+    paths-ignore:
+      - 'data/snapshot.json'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest -q
+
+  # 実際の上流を取りに行く。上流障害で PR が赤くならないよう必須にしない。
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build against live upstream
+        run: python -m scripts.cli build --out /tmp/site --now 2026-08-09T00:00:00Z
+
+      # 終了コードだけでは上流のスキーマ変更を検出できない(退避経路が働くと
+      # 成功したまま件数だけ落ちる)ので、件数の下限を検査する。
+      - name: Check the result is not degraded
+        run: |
+          python - <<'PY'
+          import json, sys
+          with open('/tmp/site/data.json', encoding='utf-8') as fh:
+              data = json.load(fh)
+          n = len(data['conferences'])
+          print(f'{n} conferences')
+          sys.exit(0 if n >= 150 else 1)
+          PY

@@ -1,0 +1,34 @@
+# Reduced copy of ccfddl/ccf-deadlines conference/DS/isca.yml (MIT).
+# Edge case: two timeline entries distinguished only by `comment`,
+# and a free-text `date` that crosses a month boundary without spaces.
+- title: ISCA
+  description: International Symposium on Computer Architecture
+  sub: DS
+  rank:
+    ccf: A
+    core: A*
+    thcpl: A
+  dblp: isca
+  confs:
+    - year: 2024
+      id: isca24
+      link: https://iscaconf.org/isca2024/
+      timeline:
+        - deadline: '2023-11-14 23:59:59'
+          comment: abstract deadline
+        - deadline: '2023-11-21 23:59:59'
+          comment: full paper deadline
+      timezone: AoE
+      date: June 29-July 3, 2024
+      place: Buenos Aires, Argentina
+    - year: 2026
+      id: isca26
+      link: https://iscaconf.org/isca2026/
+      timeline:
+        - deadline: '2025-11-14 23:59:59'
+          comment: abstract deadline
+        - deadline: '2025-11-21 23:59:59'
+          comment: full paper deadline
+      timezone: AoE
+      date: June 20-24, 2026
+      place: Seoul, South Korea

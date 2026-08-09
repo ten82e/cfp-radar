@@ -1,0 +1,108 @@
+name: update
+
+on:
+  schedule:
+    # 20:17 UTC = 05:17 JST（毎日）
+    - cron: '17 20 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # 上流取得に失敗しても、コミット済み data/snapshot.json から生成を続ける
+      # (SPEC.md 3.5)。退避にも失敗したときは cli が非ゼロで終了し、後続の
+      # Upload / Deploy がスキップされて前回の公開内容がそのまま残る。
+      - name: Build
+        id: build
+        run: python -m scripts.cli build --out public
+
+      # スナップショットは上流が変わった日にだけ更新される。
+      # SPEC.md 6 のとおり、活動を偽装するハートビートコミットは実装しない。
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          if [ ! -f data/snapshot.json ]; then
+            echo 'no snapshot produced; nothing to commit'
+            exit 0
+          fi
+
+          # generated_at を除いて中身を比べ、実データが変わったときだけコミットする。
+          # 行単位の差分では JSON が 1 行に出力されたときに判定できないので値で比べる。
+          git show HEAD:data/snapshot.json > /tmp/snapshot-prev.json 2>/dev/null || true
+          changed=$(python -c '
+          import json, sys
+
+          def norm(path):
+              try:
+                  with open(path, encoding="utf-8") as fh:
+                      data = json.load(fh)
+              except Exception:
+                  return None
+              if isinstance(data, dict):
+                  data.pop("generated_at", None)
+              return json.dumps(data, sort_keys=True, ensure_ascii=False)
+
+          new = norm(sys.argv[2])
+          # 読めない snapshot は書きかけとみなしてコミットしない
+          print("1" if new is not None and norm(sys.argv[1]) != new else "0")
+          ' /tmp/snapshot-prev.json data/snapshot.json)
+
+          if [ "$changed" != '1' ]; then
+            echo 'no substantive change; nothing to commit'
+            exit 0
+          fi
+
+          git add data/snapshot.json
+          git commit -m 'chore: update deadline snapshot [skip ci]'
+          # 実行中に人手のコミットが入ると非 fast-forward で弾かれるので、
+          # 取り込んでから押し直す。
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "push rejected (attempt ${attempt}); rebasing onto origin/${GITHUB_REF_NAME}"
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+          done
+          echo 'could not push the snapshot' >&2
+          exit 1
+
+      # 配信はビルドの成否だけに依存させる。コミット/push の失敗で
+      # その日の配信ごと落とさない。
+      - name: Upload Pages artifact
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/deploy-pages@v4

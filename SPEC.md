@@ -1,0 +1,829 @@
+# conf-deadlines 設計仕様（実装の正）
+
+HPC・ネットワーク・システム・AI 系会議の投稿締切と開催日を、GitHub Actions だけで
+日次に自動収集し、ICS / JSON / CSV / Markdown / 静的サイトとして公開する。
+サーバも外部サービスも使わない。GitHub 内で完結する。
+
+この文書は実装の契約である。ここに書かれた型・関数シグネチャ・ファイル分担から逸脱しない。
+
+## 0. 改訂
+
+**rev.2（反証レビュー反映済み）。rev.1 を読んで実装を始めた担当は、本書を読み直すこと。**
+rev.1 には実データ走査で確認された欠陥が 30 件あった。主要な修正:
+
+- `kind_of` に ccfddl の主キー `deadline` の規則が無く、本文締切 1591 件が `other` に落ちていた（§3）
+- `edition_id` が上流で一意でない（`ica3pp` が 4 版で同一、`fse23`〜`fse26` が別会議で重複）。
+  UID の基底を `key + year + kind + 序数` に変更（§4.1）
+- 突き合わせキー `(year, round, kind)` で hf の締切 473 件中 127 件が消えていた（§3）
+- `slug(title)` が別会議を潰す組が実在（`FSE` × 2、`SEC` × 2）。曖昧性解消表を導入（§3, §5）
+- rank_filter で HotNets・APNet が落ち、MX 分野（MLSys, RTSS, EMSOFT）が丸ごと落ちていた（§5）
+- venue の綴りが実データと不一致（`atc` → `sigops-atc`、`europar` → `euro-par`）（§5）
+- **MLSys は上流 ccfddl の `MX/mlsys.yml` に実在する。** extra.yaml に重複登録しない（§5）
+- snapshot からの復旧経路が §3 に存在せず、§6 の障害耐性が実現不能だった（§3, §6）
+- サイトへの差し込みマーカーが 2 通り書かれていた（§7）
+- `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
+
+**rev.3（生成物の実測レビュー反映済み）。** rev.2 の規則のうち、生成物を実測して
+誤りが確認されたものを直した。
+
+- 締切の重複統合が源を区別せず一律 3600 秒だった。源をまたぐ食い違いは 24 時間まで
+  分布する一方、同一源の同時刻 2 件は別トラックのことがある。規則を源ごとに分けた（§3.6）
+- 統合時の `round` を優先源から採っていたため、round の概念が無い aideadlines が
+  ccfddl の round 2 を潰していた（実測 11 件）。源をまたぐときは大きい方を採る（§3.6）
+- `rollforward` の後に統合が走らず、残った重複が推定版へ複製されていた（§3.6）
+- 開催回の過去判定が開始日だったため、会期初日から最終日まで一覧から消えていた。
+  終了日 + 1 日で判定する（§7）
+- `upcoming.md` に開催回が 1 行も無かった（§4）
+- 開催 UID が同一年 2 回開催を表現できていなかった（§4.1）
+
+---
+
+## 1. データ源（実データ全件走査で検証済み・2026-08-09 時点）
+
+| 名前 | リポジトリ | ライセンス | 形状 |
+|---|---|---|---|
+| `ccfddl` | `ccfddl/ccf-deadlines` (main) | MIT | `conference/**/*.yml` **353 本 / 1150 版** |
+| `aideadlines` | `huggingface/ai-deadlines` (main) | MIT | `src/data/conferences/*.yml` 68 本 / 122 版 |
+| `local` | 本リポジトリ `data/extra.yaml` | - | 上流が扱わない会議 |
+
+取得方法は **tarball 一括ダウンロード**（`https://codeload.github.com/<repo>/tar.gz/refs/heads/main`）。
+Git API のファイル単位取得はレート制限に当たるので使わない。
+
+### 1.1 ccfddl のスキーマ（実データから確認済み）
+
+```yaml
+- title: SIGCOMM
+  description: ACM International Conference on ...   # = full_name
+  sub: NW                                            # AI CG CT DB DS HI MX NW SC SE
+  rank: {ccf: A, core: A*, thcpl: A}
+  dblp: sigcomm
+  confs:
+    - year: 2026
+      id: sigcomm26
+      link: https://...
+      timeline:
+        - abstract_deadline: '2026-01-30 23:59:59'   # 任意
+          deadline: '2026-02-06 23:59:59'            # 必須
+          comment: '...'                             # 任意
+      timezone: AoE
+      date: August 17 - 21, 2026                     # 自由文
+      place: Denver, Colorado, USA
+```
+
+**確認済みの罠（実測値つき。推測ではない）**
+
+1. **再帰探索が必要**。`conference/*/*.yml` の 1 階層グロブでは `conference/DB/pods/pods.yml`
+   を取りこぼす。`conference/**/*.yml` で辿り、`conference/types.yml`（分野定義であり
+   会議ファイルではない）を除外する。結果は 353 本 / 1150 版。
+2. `timeline` は配列で **複数ラウンドあり**（NSDI は年 2 回）。
+   ただし **timeline は締切昇順とは限らない**（`sac26`・`issre23` で逆順）。
+   配列添字を UID に使わない（§4.1 参照）。
+3. **キー `abstract deadline`（空白入り）が実データにちょうど 1 件**存在する。
+   `abstract_deadline` と同義に扱う。
+4. **本文締切のキー名は `deadline`**（1591 件）。`kind_of` はこれを `paper` に落とすこと。
+   ここを落とすと本文締切が全滅する。
+5. `timezone` の実在値は 19 種（全件一致を確認）:
+   `AoE`(622) `UTC-12`(216) `UTC-8`(59) `UTC+0`(55) `UTC-7`(44) `UTC`(40) `UTC+8`(29)
+   `UTC-5`(28) `UTC-4`(23) `PT`(10) `UTC+1`(7) `UTC+7`(3) `UTC+10`(3) `UTC+2`(2)
+   `UTC+3`(2) `UTC-10`(2) `UTC-11`(2) `UTC-6`(1) `UTC+9`(1)。
+   `PT` は固定オフセットにしてはならない。VLDB は毎月 1 日の締切を持ち夏時間境界をまたぐ。
+6. `date` は自由文。構造化された開始終了日は **無い**。実在形状の上位:
+   `July 20-23, 2026` / `September 29 - October 3, 2025` / `Oct 12-16, 2025` /
+   `June 28 - July 2, 2026`。
+   §3 の 6 例をそのまま正規表現化した厳密版で **96.4%**、月略記の `.`・en dash・`Sept`
+   を許した寛容版で **97.4%** が構造化できることを実測済み（rev.2）。rev.4（2026-08-09）で月のみ（`November, 2026`）・月範囲（`March-April, 2025`）・括弧内 TBD 注記・`Septemper` typo を追加し、実測 **99.4%**（1143/1150、残 7 件は TBD/TBA/年のみ）。目標は 95% 以上。
+7. 非日付は `deadline` に `TBD` が 4 件、`date` に `TBD` が 3 件（`cgo2027` `iss25` `sp27`）。
+   パース失敗はスキップし警告を出す（例外にしない）。
+   `confs` 空・`timeline` 空・`deadline` 欠落・不正日付形式は 0 件。
+8. **`id`（edition_id）は一意でない。** 重複 5 種を実測:
+   `ica3pp` は 2022/2023/2025/2026 の 4 版すべてが同じ `id: ica3pp`（年が入っていない）。
+   `fse23` `fse24` `fse25` `fse26` は `SC/fse.yml`（Fast Software Encryption）と
+   `SE/fse.yml`（Foundations of Software Engineering）という **別会議**が同じ id を使う。
+   **UID の基底に edition_id を使わない。**
+9. `year` と `date` の年がずれる版がある（`ICA3PP 2023` は `date: 'October 20-22, 2022'`）。
+   `parse_date_range` は date 中の明示年を優先するので、開催日が過去年になる。許容する。
+10. rank 値 `'N'` はランク無しの意味（`ccf: N` 33 件、`core: N` 78 件）。
+    `core` キー自体の欠落が 3 件（`codes-isss` `hipeac` `performance`）。
+    §5 の rank_filter は `'N'` を「該当ランク無し」として扱い、通過条件に数えない。
+
+### 1.2 huggingface/ai-deadlines のスキーマ（実データから確認済み）
+
+```yaml
+- title: NeurIPS
+  year: 2026
+  id: neurips26
+  full_name: Conference on Neural Information Processing Systems
+  link: https://neurips.cc/
+  deadlines:
+    - {type: abstract, label: '...', date: '2026-05-04 23:59:59', timezone: AoE}
+    - {type: paper,    label: '...', date: '2026-05-06 23:59:59', timezone: AoE}
+  date: December 6-12, 2026
+  start: '2026-12-06'      # 構造化。113/122 版に存在
+  end: '2026-12-12'
+  city: Sydney
+  country: Australia
+  era_rating: a
+  rankings: 'CCF: A, CORE: A*, THCPL: A'   # 自由文字列。構造化 dict ではない
+  tags: [machine-learning]
+```
+
+**確認済みの罠（実測値つき）**
+
+1. **旧形式は 13 版**（`deadlines` キー自体を持たない）。うち 8 版がトップレベルに
+   `deadline` / `abstract_deadline` / `timezone` を直に持つ。
+2. **`cvpr26` は新旧両形式を併存させている**（`deadlines` 7 本 + トップレベル `deadline`）。
+   **`deadlines` があるときはトップレベルの `deadline`/`abstract_deadline` を読まない。**
+   両方読むと二重登録になる。
+3. **締切を一切持たない版が 10 版**（うち 5 版は `deadlines: []` の空リスト）。
+   開催イベントのみとして扱う。
+4. `deadlines[]` に規定外キーが 1 件（`cec2025` が `date` と `deadline` の両方を持つ）。
+   `date` を正とする。
+5. `deadlines[].type` の実在値は 20 種:
+   `abstract` `paper` `submission` `supplementary` `registration` `reviewer_registration`
+   `commitment_deadline` `notification` `first-notification` `final-notification`
+   `review_release` `rebuttal_start` `rebuttal_end` `rebuttal` `rebuttal_and_revision`
+   `author_response` `withdrawal` `camera_ready` `camera-ready` `revision-deadline`。
+6. `timezone` の実在値は 12 種: `AoE` `UTC` `UTC+0` `UTC-08`（ゼロ埋め） `UTC-8` `UTC-7`
+   `UTC-5` `UTC+02` `GMT+02` `PST` `Europe/London` `Pacific/Honolulu`（IANA 名）。
+7. **ccf/core の構造化ランクを持つ版は 0 / 122。** `rankings` は
+   `'CCF: A, CORE: A*, THCPL: A'` という自由文字列（64 版）か `None`（58 版）。
+   §3 の `parse_rankings` でこれを dict に落とす。
+8. ファイルはリスト形式のこともスカラー（単一 dict）のこともある。両方受ける。
+9. トップレベルに `rebuttal_period_end` `final_decision_date` `review_release_date` が
+   各 2 件ある。**これらは読まない**（`deadlines` を持つ版にのみ現れる冗長データ）。
+10. `date`/`start`/`end` が全て無い版が 1 件（`eurographics27`）。
+
+---
+
+## 2. ディレクトリ構成とファイル分担
+
+```
+conf-deadlines/
+├── SPEC.md                      # 本書
+├── README.md                    # 購読手順（手書き。自動更新しない）      [担当E]
+├── LICENSE                      # MIT                                    [担当E]
+├── NOTICE.md                    # 上流 MIT の帰属表示                     [担当E]
+├── requirements.txt             # PyYAML のみ                            [担当E]
+├── requirements-dev.txt         # pytest, icalendar                      [担当E]
+├── config.yaml                  # 収録範囲・カテゴリ・フィード定義        [担当B]
+├── data/
+│   ├── extra.yaml               # 上流に無い会議                          [担当B]
+│   ├── overrides.yaml           # 上流の訂正・別名・カテゴリ上書き        [担当B]
+│   └── snapshot.json            # 生成物(コミットされる。上流障害時の退避) [自動]
+├── scripts/
+│   ├── __init__.py
+│   ├── model.py                 # 型・時刻解決・日付パーサ・snapshot 入出力 [担当A]
+│   ├── sources/__init__.py      #                                        [担当A]
+│   ├── sources/base.py          #                                        [担当A]
+│   ├── sources/ccfddl.py        #                                        [担当A]
+│   ├── sources/aideadlines.py   #                                        [担当A]
+│   ├── sources/local.py         # data/extra.yaml 読み込み                [担当A]
+│   ├── merge.py                 # 名寄せ・分類・上書き・推定              [担当B]
+│   ├── discover.py              # 穴場会議・ジャーナル自律探索           [担当G]
+│   ├── build.py                 # ICS/JSON/CSV/MD/llms.txt/HTML 出力      [担当C]
+│   └── cli.py                   # エントリポイント                        [担当C]
+├── site/template.html           # 単一ファイル静的サイト                  [担当D]
+├── public/                      # 生成物(git 管理外)
+├── tests/                       # pytest                                 [担当F]
+└── .github/workflows/
+    ├── update.yml               # 日次 cron: 収集→生成→コミット→Pages    [担当E]
+    ├── discover.yml             # 週次 cron: 穴場会議・ジャーナル自律探索 [担当G]
+    └── ci.yml                   # PR/push: pytest + 出力検証             [担当E]
+```
+
+**担当は自分のファイルだけを書く。他担当のファイルを作成・編集しない。**
+**ビルドが他担当の所有ファイル（README.md 等）を書き換えることはしない。**
+
+---
+
+## 3. 凍結インタフェース（`scripts/model.py`・担当A が実装、他は前提として使う）
+
+```python
+from __future__ import annotations
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta, timezone, tzinfo
+from pathlib import Path
+from typing import Protocol
+
+AOE = timezone(timedelta(hours=-12))          # Anywhere on Earth
+
+# 締切種別は 10 種。上流の意味を潰さないことを優先する
+DeadlineKind = str   # 'abstract'|'paper'|'supplementary'|'notification'|'camera_ready'
+                     # |'rebuttal_start'|'rebuttal_end'|'review_release'|'registration'|'other'
+
+@dataclass(frozen=True)
+class Deadline:
+    kind: DeadlineKind
+    label: str                 # 表示用（例 'Paper submission'）。上流の label を優先
+    at_utc: datetime           # tz-aware, UTC。必ず aware
+    tz_raw: str                # 元の文字列（'AoE' 等）
+    round: int = 1             # 1 起点。複数投稿ラウンド。UID には使わない
+    comment: str | None = None
+
+@dataclass
+class Edition:
+    year: int
+    edition_id: str            # 'sigcomm26'。表示用。上流で一意ではないので UID に使わない
+    link: str
+    place: str                 # 'Denver, Colorado, USA'
+    date_text: str             # 'August 17 - 21, 2026'（自由文のまま保持）
+    event_start: date | None
+    event_end: date | None
+    deadlines: list[Deadline] = field(default_factory=list)
+    estimated: bool = False    # 推定で生成した版
+    source: str = ''           # 'ccfddl' | 'aideadlines' | 'local'
+
+@dataclass
+class Conference:
+    key: str                   # 正規化キー。§3.1 の規則で決まる。例 'sigcomm'
+    title: str                 # 'SIGCOMM'
+    full_name: str
+    link: str
+    rank: dict[str, str] = field(default_factory=dict)   # {'ccf':'A','core':'A*'}
+    dblp: str | None = None
+    upstream_sub: str | None = None    # ccfddl の sub。分類とキー曖昧性解消に使う
+    tags: list[str] = field(default_factory=list)
+    categories: list[str] = field(default_factory=list)  # merge 段階で確定
+    editions: list[Edition] = field(default_factory=list)
+    sources: list[str] = field(default_factory=list)
+```
+
+### 3.1 キーの決め方（衝突が実在するので規則を凍結する）
+
+```python
+def slug(title: str) -> str: ...
+    # 小文字化、英数字以外を '-'、連続 '-' を畳む、前後 '-' 除去
+    # 'Hot Interconnects' -> 'hot-interconnects', 'IH&MMSec' -> 'ih-mmsec'
+
+def conference_key(title: str, upstream_sub: str | None, key_overrides: dict[str, str]) -> str: ...
+    # 1. key_overrides に '<SUB>/<slug(title)>' があればその値を使う（最優先・安定）
+    # 2. 無ければ slug(title)
+```
+
+実データで確認された衝突は 2 組。`config.yaml` の `key_overrides` に **固定値として**書く。
+
+| 上流 | title | 実体 | 割り当てる key |
+|---|---|---|---|
+| `SC/fse.yml` | FSE | Fast Software Encryption | `fse-crypto` |
+| `SE/fse.yml` | FSE | Foundations of Software Engineering | `fse-se` |
+| `DS/sec.yml` | SEC | ACM/IEEE Symposium on Edge Computing | `sec-edge` |
+| `SC/sec.yml` | SEC | IFIP Information Security Conference | `sec-ifip` |
+
+**新たな衝突が上流に生じたら CI を落とす。** `tests/test_keys.py` で
+「`key_overrides` に載っていない slug 衝突が 0 件」を検査する。
+自動で `-{sub}` を付けて回避してはならない（既存 key が動いて UID が変わり、
+購読者のカレンダーにイベントが重複登録される）。
+
+ccfddl と hf で同一会議が別 title になっている組は `data/overrides.yaml` の
+`aliases` で寄せる。実データで確認済みの 3 組を初期値とする:
+`kdd`→`sigkdd`、`siggraph`→`acm-siggraph`、`cec`→`ieee-cec`。
+
+### 3.2 時刻と日付
+
+```python
+def resolve_tz(tz_raw: str | None) -> tzinfo: ...
+    # 'AoE'/'aoe' -> UTC-12
+    # 'UTC' / 'GMT' / '' / None -> UTC
+    # 'UTC+8' 'UTC-08' 'GMT+02' 'UTC+0' 'UTC+05:30' -> 固定オフセット
+    #   （ゼロ埋め・1〜2桁・コロン区切りの全てを受ける）
+    # 'PT' 'PST' 'PDT' -> ZoneInfo('America/Los_Angeles')   ※固定オフセット禁止
+    # 'EST'/'EDT'/'ET' -> ZoneInfo('America/New_York'), 'CET'/'CEST' -> ZoneInfo('Europe/Paris')
+    # IANA 名（'/' を含む）-> ZoneInfo
+    # 不明 -> UTC を返し、警告を 1 回だけ記録
+
+def parse_instant(text: str, tz_raw: str | None) -> datetime | None: ...
+    # 'YYYY-MM-DD HH:MM:SS' / 'YYYY-MM-DD HH:MM' / 'YYYY-MM-DD' を受ける
+    # naive として読み、resolve_tz の tz を付与し、UTC に変換して返す
+    # 'TBD' 等パース不能は None（例外にしない）
+    # 日付のみの場合は 23:59:59 とみなす
+
+def parse_date_range(text: str, fallback_year: int) -> tuple[date | None, date | None]: ...
+    # 'August 17 - 21, 2026'            -> (2026-08-17, 2026-08-21)
+    # 'September 29 - October 3, 2025'  -> (2025-09-29, 2025-10-03)
+    # 'June 28 - July 2, 2026'          -> (2026-06-28, 2026-07-02)
+    # 'Oct 12-16, 2025' / 'Sept. 12-16, 2025' -> 略記・ピリオド・'Sept' を受ける
+    # 'November 15, 2026'               -> (2026-11-15, 2026-11-15)
+    # 'July 31-August 8, 2022'          -> (2022-07-31, 2022-08-08)
+    # en dash '–' も区切りとして受ける
+    # 年跨ぎ 'December 28, 2025 - January 3, 2026' は各側の明示年を優先
+    # date 中の明示年が Edition.year と食い違う場合も date を優先する（罠 §1.1-9）
+    # 解釈不能 -> (None, None)。例外にしない
+
+def parse_rankings(s: str | None) -> dict[str, str]: ...
+    # hf の 'CCF: A, CORE: A*, THCPL: A' -> {'ccf':'A','core':'A*','thcpl':'A'}
+    # None / 解釈不能 -> {}
+```
+
+### 3.3 締切種別の正規化
+
+```python
+def kind_of(raw: str) -> DeadlineKind: ...
+```
+
+`raw` の入力は **ccfddl の timeline キー名**と **hf の `type` 値**の両方である。
+実在値からの写像を全て書き下す。ここに漏れがあると締切が消える。
+
+| raw | kind |
+|---|---|
+| `deadline`, `paper`, `submission`, `full_paper` | `paper` |
+| `abstract_deadline`, `abstract deadline`, `abstract` | `abstract` |
+| `supplementary` | `supplementary` |
+| `notification`, `first-notification`, `final-notification` | `notification` |
+| `camera_ready`, `camera-ready`, `revision-deadline` | `camera_ready` |
+| `rebuttal_start` | `rebuttal_start` |
+| `rebuttal_end`, `rebuttal`, `rebuttal_and_revision`, `author_response` | `rebuttal_end` |
+| `review_release` | `review_release` |
+| `registration`, `reviewer_registration`, `commitment_deadline` | `registration` |
+| 上記以外（`withdrawal` 等） | `other` |
+
+`supplementary` を `paper` に落としてはならない（CVPR は本文と補足で別日）。
+`rebuttal_start` と `rebuttal_end` を同一 kind にしてはならない（AAAI は開始と終了が別日）。
+
+### 3.4 取得源
+
+```python
+class Source(Protocol):
+    name: str
+    def load(self, cache_dir: Path, *, offline: bool = False) -> list[Conference]: ...
+
+def fetch_tarball(repo: str, ref: str, cache_dir: Path, *, offline: bool = False) -> Path: ...
+    # codeload から tar.gz を取得して cache_dir 配下へ展開、展開先ルートを返す
+    # 展開時に path traversal を防ぐ（'..' や絶対パスを含むメンバを拒否）
+    # offline=True かつキャッシュがあればそれを使う。無ければ FileNotFoundError
+    # ネットワーク失敗時は既存キャッシュへフォールバックし警告
+```
+
+### 3.5 スナップショット（上流障害時の復旧経路）
+
+`.cache/` は git 管理外であり、GitHub Actions の checkout には存在しない。
+上流取得が失敗したときに頼れるのはコミット済みの `data/snapshot.json` だけである。
+
+```python
+def dump_snapshot(confs: list[Conference], path: Path) -> None: ...
+    # data.json と同一スキーマ（§4.2）で書く。generated_at は含めない
+    # キーの順序を安定させ、差分がデータ変更時にのみ出るようにする
+
+def load_snapshot(path: Path) -> list[Conference]: ...
+    # dump_snapshot の逆。ファイルが無ければ空リスト
+```
+
+`cli.build` の取得順序を凍結する:
+
+1. 各 Source を順に `load()` する。
+2. **全 Source が失敗した場合に限り** `load_snapshot('data/snapshot.json')` へ退避し、
+   警告を出して処理を継続する（サイトを壊さない）。
+3. 一部の Source だけ失敗した場合は、成功した分に snapshot の該当分をマージして継続する。
+4. snapshot も空なら異常終了する（黙って空のカレンダーを公開しない）。
+
+### 3.6 統合
+
+```python
+def merge_sources(groups: list[list[Conference]], config: dict,
+                  stats: dict | None = None) -> list[Conference]: ...
+    # key で名寄せ（aliases 適用後）。同一 key の Conference をマージ
+    # Edition は year で突き合わせる
+    # Deadline は和集合を取ったあと、下記「締切の重複統合」の許容幅で畳む
+    # 競合時の優先順は config['source_priority']（既定 ['local','aideadlines','ccfddl']）
+    # stats は任意の出力引数。merged_deadlines と merged_by_key を受け取る
+
+def classify(confs: list[Conference], config: dict) -> list[Conference]: ...
+def apply_overrides(confs: list[Conference], overrides: dict) -> list[Conference]: ...
+def rollforward(confs: list[Conference], today: date, config: dict) -> list[Conference]: ...
+    # 最新版の paper 締切が過去で、未来の版が無い会議に推定版を 1 つ足す
+    # 推定間隔は直近 2 版の実間隔の中央値、取れなければ 364 日。曜日を保つ
+    # 未来の版が既に存在する会議には足さない
+def select(confs: list[Conference], config: dict) -> list[Conference]: ...
+    # カテゴリ・exclude・rank_filter に加え、締切も開催日も持たない会議を落とす
+    # （全出力が日付を軸にするので、そういう会議はどこにも描画されず件数だけ増やす）
+```
+
+#### 締切の重複統合
+
+対象は同一 Conference・同一 Edition・同一 `kind` の 2 件で、**畳む条件は源が同じか
+異なるかで別**である。`round` は突き合わせに使わない。
+
+| 2 件の出どころ | 畳む条件 |
+|---|---|
+| **異なる源** | `at_utc` の差が許容幅以内。既定 **90000 秒（25 時間）**。`config['deadline_merge_cross_source_seconds']` で変えられる |
+| **同じ源** | `at_utc` が完全一致し、かつ空白と大小文字を正規化した `label` も一致 |
+
+窓の中に候補が複数あるときは**最も近いもの**に畳む。先頭一致にすると、SIGGRAPH 2026 で
+ccfddl の `Paper submission`（`2026-01-22T22:00:00Z`）が aideadlines の
+`Upload and conflicts deadline`（24 時間後）に吸われうる。
+
+**なぜ源で規則を分けるか（実データ全件走査で確認済み・2026-08-09 時点）**
+
+源をまたぐ食い違いは秒の丸めから暦日そのもののずれまで連続的に分布する。
+
+| 差 | 実例 |
+|---|---|
+| 1 秒 | NeurIPS の paper が ccfddl `11:59:00Z`・aideadlines `11:59:59Z` |
+| 1 時間 + 59 秒 | SGP 2026 の abstract / paper（時差解釈 1 時間と秒丸めの合成で 3659 秒） |
+| 4〜12 時間 | FG・IROS・ICASSP・COLT・ICDAR・Interspeech。源ごとに元の壁時計を別のタイムゾーンで読んでいる |
+| 24 時間 | CVPR 2026 の abstract（`11-07 11:59:00Z` と `11-08 11:59:59Z`）、IROS 2025・WACV 2027 の paper |
+
+3600 秒では源をまたぐ重複が **21 組**残り（実測）、`rollforward` がそのうち
+**9 件**を推定版へ複製して増幅していた。
+一方で**同じ源が同一時刻に並べた 2 件は本当に別トラックのことがある**
+（SIGGRAPH 2026 は `2026-04-21T22:00:00Z` に投稿トラックを 3 本持ち、
+WACV は Round 1 と Round 2 の通知を同一時刻に置く）。源を問わず窓で畳むと
+これらが消えるため、同一源には完全一致を要求する。
+
+25 時間という値は「タイムゾーン解釈差の上限」ではなく実測に対する閾値である。
+源をまたぐ同一 kind の差の分布には 24.02 時間の次が 26 時間で、
+そこから先（ALT 26h・ICRA 27h・ECCV 130h ほか）は投稿締切の延長や
+別トラックが混ざるので畳まない。**この境界はテストで固定する。**
+
+**畳むときの規則**
+
+- 残すのは `source_priority` が高い側の値・ラベル・`comment`・リンク。同順位のときは
+  和集合に先に入った側（＝上流の記載順）が残る。
+- `round` は**大きい方**を採る。ただし源をまたぐときに限る。aideadlines には
+  round の概念が無く常に 1 を返すので、優先源に決めさせると ccfddl の round 2 が
+  round 1 に潰れる（実測 11 件。WACV 2027 が「概要締切 R2 / 論文締切 R1」という
+  自己矛盾した表示になっていた）。同一源どうしの `round` は比較可能なので勝者のものを残す
+  （GECCO の同時刻 2 トラックは round 1 のままにする）。
+- 落とした側の `label` と `comment` は、残した側の `comment` に
+  `同時刻の別記載: <label>` として退避する。**文字列を捨ててはならない。**
+- `kind` が違えば畳まない（CVPR の paper と supplementary は同時刻でも別物）。
+- 窓を超えて離れた同一 `kind` は畳まない。NSDI の年 2 ラウンドは数か月離れており
+  影響を受けない。**この不変条件はテストで固定する。**
+
+**畳んだ後に残る同時刻の重複**
+
+同一源の別トラックは残るので、同一 Edition・同一 `kind`・同一 `at_utc` に 2 件以上
+並ぶことがある。このとき ICS の `SUMMARY` と `upcoming.md` の種別欄、サイトの種別欄には
+`論文締切: Posters deadline` のように `label` を添えて**区別できるようにする**。
+区別できない同一表題の重複を出力に残してはならない。
+
+**適用箇所**
+
+この畳み込みは `merge_sources` の中で全源が寄与した後に 1 回、
+`rollforward` の**後にもう 1 回**適用する（`dedup_deadlines`）。推定版は直前の実版の
+締切を写すので、残った重複はそのまま推定版へ複製される。統合済みの Edition は
+どの締切がどの源から来たかを保持していないため、後段の 1 回は同一源の規則
+（時刻とラベルの完全一致）だけを適用する。
+
+統合件数は `build` の統計に出す。件数は **収録された会議のぶんだけ**数える
+（`merge` は `select` より前に走るため、収録しない会議まで数えると `data.json` と
+突き合わせられない）。
+
+### 3.7 出力と CLI
+
+```python
+def build_all(confs: list[Conference], config: dict, outdir: Path, now: datetime) -> dict: ...
+def render_ics(entries: list[dict], *, calname: str, caldesc: str) -> str: ...
+```
+
+```
+python -m scripts.cli build [--out public] [--config config.yaml]
+                            [--offline] [--now 2026-08-09T00:00:00Z] [--cache .cache]
+```
+
+`--offline` は「新規取得をせず、キャッシュ → snapshot の順で退避する」。
+`--now` は決定的テストのため必須で実装する。既定は実時刻 UTC。
+（rev.1 にあった `--no-fetch` は `--offline` と区別がつかないので削除した。）
+
+---
+
+## 4. 生成物（`public/` 配下）
+
+| ファイル | 内容 |
+|---|---|
+| `index.html` | 静的サイト（担当D のテンプレートに JSON を埋め込み） |
+| `all.ics` | 全カテゴリ・全種別（推定は含めない） |
+| `hpc.ics` `networking.ics` `systems.ics` `ai.ics` `security.ics` | カテゴリ別 |
+| `deadlines.ics` | 締切のみ |
+| `events.ics` | 開催日のみ（終日イベント） |
+| `all-estimated.ics` | 推定締切のみ・全カテゴリ（別フィード。`all.ics` には混ぜない） |
+| `hpc-estimated.ics` `networking-estimated.ics` `systems-estimated.ics` `ai-estimated.ics` `security-estimated.ics` | 推定締切のカテゴリ別 |
+| `data.json` | 正規化データ全体（機械可読の正）。**推定版も含む** |
+| `data.csv` | 1 行 1 締切のフラット表。**推定版も含み `estimated` 列で区別** |
+| `upcoming.md` | 直近 180 日の締切と開催の表。推定行は「推定」列で区別する |
+| `llms.txt` | エージェント向け索引 |
+| `.nojekyll` | Pages の Jekyll 処理を無効化 |
+
+確定フィード（`all.ics` とカテゴリ別 5 本、`deadlines.ics`、`events.ics`）に
+推定を混ぜてはならない。推定は `*-estimated.ics` にのみ出す。
+
+**推定フィードをカテゴリ別に割る理由（実測）**: 2026-08-09 時点で `hpc.ics` に
+未来の確定締切を持つ会議は IPDPS の 1 件しかない。SC・HPDC・ICPP・CLUSTER・PPoPP・
+Euro-Par・CCGRID・ICS・PACT・SPAA・ICPADS は上流が次回版を持たず推定扱いになる。
+単一の `estimated.ics` だと、HPC の利用者が推定を足すために AI を含む全分野の
+推定を丸ごと購読することになる。
+
+サイトに埋め込む JSON は `data.json` と同一（推定を含む）。
+§7 の「推定の表示切替」はサイト側の絞り込みで行う。
+
+**`upcoming.md` の行の選び方**: 締切行は `at_utc` が `now` から 180 日以内のもの。
+開催行は**開始日が 180 日以内**で、かつ**最終日をまだ過ぎていない**もの
+（判定は §7 のサイトと同じで、開催は終了日 + 1 日で過去になる）。README が最初に
+案内する表なので、締切を持たない会議（HOTI・P4 Workshop・LPC・情報処理学会 HPC 研究会など）
+がここに現れないと事実上どこからも見えない。開催行の「残り」欄は
+開始前が日数、開始日が `本日開催`、会期中が `開催中(残りN日)`（当日を含めた残り日数）。
+
+### 4.1 ICS の要求（担当C）
+
+**準拠先の区別**: 基本構造は RFC 5545。`REFRESH-INTERVAL` は **RFC 7986 §5.7** の拡張。
+`X-PUBLISHED-TTL` は Microsoft 由来の**非標準**プロパティで、[MS-OXCICAL] 自身が
+「読み込み時は無視すべき」と規定している。いずれも主要クライアントが尊重する保証は無い。
+README に「12 時間ごとに更新される」と書かない。
+
+- 改行は **CRLF**。行は 75 オクテットで折り返し、継続行は先頭 1 空白。
+  マルチバイト文字を UTF-8 バイト境界で割らないこと。
+- テキスト値のエスケープ: `\` → `\\`、`;` → `\;`、`,` → `\,`、改行 → `\n`。
+  **`:` はエスケープしない**（RFC 5545 §3.3.11 が明示的に禁じている。URL が壊れる）。
+- カレンダープロパティ: `BEGIN:VCALENDAR` / `VERSION:2.0` /
+  `PRODID:-//conf-deadlines//conf-deadlines//EN` / `CALSCALE:GREGORIAN` /
+  `X-WR-CALNAME` / `X-WR-CALDESC` / `X-WR-TIMEZONE:UTC` /
+  `REFRESH-INTERVAL;VALUE=DURATION:PT12H` / `X-PUBLISHED-TTL:PT12H`。
+  **`METHOD:PUBLISH` は出力しない。** METHOD を出すと RFC 5546 §2.1.5 により
+  DTSTAMP が新旧判定に使われるが、本仕様は DTSTAMP を固定するため両立しない。
+  METHOD を出さなければ DTSTAMP は RFC 5545 §3.8.7.2 により LAST-MODIFIED 相当となり、
+  固定してよい。
+- 締切イベント: `DTSTART` = 締切時刻 − 30 分（UTC 形式 `YYYYMMDDTHHMMSSZ`）、
+  `DTEND` = 締切時刻。`SUMMARY` は `SIGCOMM 2026 論文締切` のような形。
+  `DESCRIPTION` に AoE 表記・ラウンド・ランク・開催地・リンク・出典を入れる。
+  `URL` に会議リンク。`CATEGORIES` にカテゴリと種別。
+- 開催イベント: 終日。`DTSTART;VALUE=DATE:YYYYMMDD`、
+  `DTEND;VALUE=DATE:` は **終了日 + 1 日**（RFC 5545 §3.6.1 の排他終端）。VALARM は付けない。
+- `VALARM`（DISPLAY）を締切イベントにのみ `-P7D`・`-P1D`・`-PT3H` の 3 本。
+  **実効性はクライアント依存**。Apple カレンダーは購読時にアラート取り込みを選べる。
+  Google カレンダーの URL 購読では通知が出ない可能性がある。仕様上の保証にしない。
+
+#### UID の規則（衝突と不安定性を両方避ける）
+
+```
+締切: {key}-{year}-{kind}-{ordinal}@conf-deadlines.github.io
+開催: {key}-{year}-event[-{ordinal}]@conf-deadlines.github.io
+```
+
+- `key` は §3.1 の会議キー。`edition_id` は上流で一意でないので**使わない**。
+- `ordinal` は 1 起点の連番。締切は同一 `(key, year, kind)` 内で `at_utc` 昇順に振る。
+  timeline の配列添字（`round`）は上流の並べ替えで動くので使わない。
+- 開催の `ordinal` は同一 `(key, year)` 内で `event_start` 昇順に振り、
+  **`ordinal` が 1 のものは接尾辞ごと省略する**（`-1` を付けない）。
+  1 年に 2 回開催する会議が実在するため
+  （`data/extra.yaml` の情報処理学会 DPS 研究会は 2026 年に 9 月と 11 月の 2 回）、
+  接尾辞の無い形だけでは表現できない。省略規則があるので、
+  年 1 回の会議の UID は 2 回目が増えても変わらない。
+- `@` 以降のドメインは **`conf-deadlines.github.io` に固定**する。
+  リポジトリ名やカスタムドメインを変えてもここは変えない。
+  変更は購読者のカレンダーに全イベントを重複登録させる破壊的変更である。
+- `DTSTAMP` は `--now` を丸めた値を使い、内容が変わらない限り出力が bit 一致するようにする。
+- `LAST-MODIFIED` と `SEQUENCE` は使わない。
+
+### 4.2 `data.json` の形
+
+```json
+{
+  "generated_at": "2026-08-09T00:00:00Z",
+  "sources": [{"name": "ccfddl", "repo": "...", "license": "MIT"}],
+  "categories": {"hpc": "High Performance Computing", "...": "..."},
+  "conferences": [
+    {"key":"sigcomm","title":"SIGCOMM","full_name":"...","categories":["networking"],
+     "rank":{"ccf":"A","core":"A*"},"link":"...","sources":["ccfddl"],"tags":[],
+     "editions":[{"year":2026,"id":"sigcomm26","place":"...","link":"...",
+       "event_start":"2026-08-17","event_end":"2026-08-21","estimated":false,
+       "deadlines":[{"kind":"paper","label":"...","utc":"2026-02-06T23:59:59Z",
+                     "aoe":"2026-02-06 23:59:59 AoE","tz_raw":"AoE","round":1}]}]}
+  ]
+}
+```
+
+---
+
+## 5. 分類とキュレーション（`config.yaml`・担当B）
+
+カテゴリは `hpc` / `networking` / `systems` / `ai` / `security` の 5 つ。
+方針は **上流サブ分野の丸ごと取り込み + 例外リスト**（新規会議が自動で現れることが要件）。
+
+rev.1 の設定を実データに当てたところ、351 会議中カテゴリが付くのは 196、
+rank_filter 通過は 149 で、**HotNets・APNet・SIGMETRICS・MLSys・USENIX ATC・Euro-Par が
+落ちていた**。以下はその実測を踏まえた修正版である。
+
+```yaml
+key_overrides:            # §3.1。固定値。勝手に変えない
+  SC/fse: fse-crypto
+  SE/fse: fse-se
+  DS/sec: sec-edge
+  SC/sec: sec-ifip
+
+taxonomy:
+  networking: {ccfddl_subs: [NW]}
+  ai:         {ccfddl_subs: [AI], include_sources: [aideadlines]}   # OR 合成
+  security:   {ccfddl_subs: [SC]}
+  hpc:        {venue_slugs: [sc, ipdps, hpdc, icpp, cluster, ppopp, ics, euro-par,
+                             ccgrid, pact, hpcc, ica3pp, ispa, pdcat, appt, mlsys, ...]}
+  systems:    {ccfddl_subs: [SE], venue_slugs: [asplos, isca, micro, hpca, fast,
+                             sigops-atc, eurosys, socc, sigmetrics, icdcs, podc, rtas,
+                             msst, vee, apsys, hot-chips, hotstorage, lisa, ...]}
+
+# taxonomy 内の条件は OR 合成。exclude が最優先で打ち消す
+exclude: [popl, pldi, icfp, oopsla, ecoop, aplas, cp, sas, vmcai, ...]
+
+category_overrides:       # 上流の分野割り当てが実態と合わない会議
+  pam: [networking]       # ccfddl は sub=SC。実体は Passive and Active Measurement
+
+rank_filter:
+  ccf: [A, B]
+  core: ['A*', A, B]
+  thcpl: [A, B]           # HotNets は ccf C / core N / thcpl B。thcpl 無しだと落ちる
+  # 3 つの OR。'N' とキー欠落は「該当ランク無し」であり通過条件に数えない
+  venue_allowlist: [hotnets, apnet, apsys, hot-chips, hotstorage, sec-edge]
+                          # ランクに関わらず必ず残す
+  keep_sources: [local]   # rev.1 の keep_if_no_rank は hf 全 68 会議を素通りさせるので廃止
+```
+
+**綴りの罠（実データと照合済み）**: `atc` は存在せず `sigops-atc`（USENIX ATC 相当、ccf A）、
+`europar` は存在せず `euro-par`。`hoti` と `ancs` は ccfddl に存在しない。
+
+**MX 分野の扱い**: `MX/mlsys.yml` に **MLSys が実在する**。`MX/rtss.yml` `MX/emsoft.yml`
+（実時間システム、TSN/DetNet に近い）も同様。MX 全体を取り込むと `www` `miccai` 等が
+混ざるので、venue_slugs で名指しして拾う。`data/extra.yaml` に MLSys を重複登録しない。
+
+**DS 分野の全数割り当て**: DS 60 会議のうち rev.1 では 44 会議が無カテゴリだった。
+担当B は `conference/DS/` を一件ずつ見て hpc / systems / exclude のいずれかに割り当て、
+未分類が 0 件であることを検査スクリプトで実測すること。
+
+### `data/extra.yaml`（上流に無い会議）
+
+収録対象: ISC High Performance / Hot Interconnects (HOTI) / OCP Global Summit /
+Netdev / Linux Plumbers Conference / P4 Workshop / IEEE HPSR /
+情報処理学会 HPC 研究会・ARC 研究会・OS 研究会・DPS 研究会 /
+電子情報通信学会 NS 研究会・IN 研究会 / ComSys / IOTS / インターネットコンファレンス。
+
+**MLSys は上流にあるので入れない。**
+ANCS は 2021 年以降開催されていない。収録しない旨を §9 に記す。
+
+**でっち上げた締切を入れない。** 日付の裏が取れないものは開催イベントとしてのみ出し、
+`deadlines` を空にする。各エントリに根拠 URL をコメントで残す。
+公式サイトで確認できなかったものは「未確認のため日付なし」と明記する。
+
+`local` 由来は `key` を明示指定でき、`slug(title)` の規則より優先する。
+
+```yaml
+conferences:
+  - key: isc-hpc                      # 明示指定。slug(title) より優先
+    title: ISC High Performance
+    full_name: ISC High Performance
+    link: https://isc-hpc.com/
+    categories: [hpc]
+    editions:
+      - year: 2026
+        id: isc26
+        link: https://isc-hpc.com/
+        place: Hamburg, Germany
+        date_text: June 14-18, 2026
+        deadlines:
+          - {kind: paper, label: Research Paper submission, date: '2025-10-27 23:59:59', tz: AoE}
+```
+
+---
+
+## 6. GitHub Actions（担当E）
+
+### `.github/workflows/update.yml`
+
+- `on: {schedule: [{cron: '17 20 * * *'}], workflow_dispatch: }`（20:17 UTC = 05:17 JST）
+- `permissions: {contents: write, pages: write, id-token: write}`
+- `concurrency: {group: pages, cancel-in-progress: false}`（**update.yml にのみ付ける**。
+  concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
+  デプロイと直列化して不利益になる）
+- 手順: checkout → setup-python 3.12 → `pip install -r requirements.txt` →
+  `python -m scripts.cli build --out public` →
+  `data/snapshot.json` に差分があればコミット → `actions/upload-pages-artifact@v3` →
+  `actions/deploy-pages@v4`
+- 上流取得に失敗しても §3.5 の退避経路でサイトを壊さない。
+- GITHUB_TOKEN による push は workflow を再起動しない（公式明記）ため、
+  無限ループは起きない。`[skip ci]` は不要だが付けても害は無い。
+- update.yml に `pull_request` / `pull_request_target` トリガを**追加しない**
+  （`contents: write` と組み合わせると公開リポジトリで危険になる）。
+
+**cron の 60 日無効化について（未検証と明記する）**
+GitHub は公開リポジトリで「60 日間リポジトリ活動が無いと scheduled workflow を自動停止する」
+と公式に述べている。しかし **「活動」の定義も、GITHUB_TOKEN による bot コミットが
+それに数えられるかも公式ドキュメントに記載が無い**。
+既知の keepalive 実装のうち、PhrozenByte は GITHUB_TOKEN では権限不足として PAT を要求し、
+gautamkrishnar/keepalive-workflow は GitHub Staff により利用規約違反として無効化されている。
+
+したがって:
+
+- 活動を偽装する目的のハートビートコミットは実装しない。
+- `data/snapshot.json` は上流が変わるたびに更新されるので、副次効果として活動が発生する。
+  これを唯一の対策とし、**効果は未検証であると README に明記する。**
+- `workflow_dispatch` を残し、停止した場合の手動再有効化手順を README に書く。
+
+### `.github/workflows/ci.yml`
+
+配列形式の `on` はフィルタを受け取れない。次の形で書く。
+
+```yaml
+on:
+  push:
+    paths-ignore: [data/snapshot.json]
+  pull_request:
+    paths-ignore: [data/snapshot.json]
+```
+
+- job `test`（ネットワーク非依存）:
+  `pip install -r requirements.txt -r requirements-dev.txt` → `pytest -q`。
+  pytest 側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含め、
+  生成 ICS は `icalendar` で読み直して構文検証する（自前パーサで検証しない）。
+- job `smoke`（`continue-on-error: true`・ネットワーク依存）:
+  実際の上流を取りにいく `python -m scripts.cli build --out /tmp/site --now 2026-08-09T00:00:00Z`。
+- `paths-ignore` でスキップされたジョブは required check として Pending のまま残るため、
+  ブランチ保護を掛ける場合は required check に指定しない旨を README に注記する。
+
+---
+
+## 7. 静的サイト（`site/template.html`・担当D）
+
+- **単一ファイル**。外部 CDN・Web フォント・外部画像を使わない。
+- ビルド時に、テンプレート中の文字列 **`/*__DATA__*/null`** が
+  `data.json` 相当の JSON リテラルに置換される。これが唯一のマーカーである
+  （rev.1 にあった `<!--DATA-->` は削除した）。
+  担当C は JSON を JS ソースへ埋めるので `<` を `<` に、
+  U+2028 / U+2029 をエスケープすること（実データに `&` を含む文字列が 17 箇所ある）。
+  テンプレートが無ければ警告して index.html をスキップする（テストのため）。
+- 表示: 締切までの残り時間（ブラウザのローカル時刻）と AoE 表記を併記。
+- 絞り込み: カテゴリ / 締切種別 / ランク / フリーテキスト / 推定の表示切替 / 期間(30・90・180・全)。
+  絞り込み状態は URL のクエリに反映する（`replaceState` で履歴を汚さない）。
+- **開催回を一覧に含める。** 締切を持たず開催日だけを持つ会議
+  （ISC High Performance・HOTI・情報処理学会 HPC 研究会・P4 Workshop・Netdev・LPC など）は
+  締切行だけを描く一覧からは完全に消えるため、利用者の分野の中核が見えなくなる。
+  - 種別に擬似種別 `event`（表示は「開催」）を足し、種別の絞り込みから選べるようにする。
+  - **既定表示に含める。** 開催回は締切と同じ表に、開催開始日を軸にして時系列で並べる。
+    種別欄が「開催」になり、日付欄が「あと N 日」「開催開始」表記になるので締切と混ざらない。
+  - **過去かどうかは終了日 + 1 日で判定する。** 開始日で判定すると、会期の初日から
+    最終日まで既定表示から消える（HOTI 2026 は 8/19〜21 開催で、8/19 に消えて
+    前日 8/18 に「本日開催」と出ていた）。並び順と期間の絞り込みの軸は開始日のまま。
+  - 残り日数はローカル暦日で比較する。開始前「あと N 日」、開始日「本日開催」、
+    会期中「開催中（残り N 日）」（当日を含めた残り日数。最終日は 1）、
+    終了後「N 日前に終了」。締切行の判定と表記はこれとは別で、従来どおり残り時間で行う。
+  - 推定版には開催日を持たせないので、開催行が推定になることはない。
+- 過去の締切は既定で非表示、トグルで表示。既定の並びは締切が近い順。
+- ICS 購読 URL のコピーボタン（失敗時は選択可能なテキストにフォールバック）。
+- ライト/ダーク両対応（`prefers-color-scheme`）。表は `overflow-x: auto` の中でだけ
+  横スクロールし、body は横スクロールさせない。狭い画面ではカード表示に落とす。
+- 日本語 UI。ラテン文字の英単語を不必要に混ぜない
+  （「フィルタ」ではなく「絞り込み」、「デッドライン」ではなく「締切」）。
+- 1000 件規模でも操作が引っかからないこと。依存ライブラリなし。
+
+---
+
+## 8. テスト（`tests/`・担当F）
+
+実装を読まずに本仕様だけから書く。
+
+- `test_timezone.py`: `resolve_tz` の実在値 19 + 12 種すべて。`AoE` = UTC-12。
+  `UTC-08` と `UTC-8` が同じ。IANA 名。**`PT` が夏と冬で異なるオフセットになること**。
+  不明値が UTC にフォールバックすること。
+- `test_parse.py`: `parse_instant` の AoE→UTC 変換
+  （`2026-04-08 23:59:00 AoE` → `2026-04-09T11:59:00Z`）。`TBD` が None。
+  `parse_date_range` の月跨ぎ・年跨ぎ・略記月・`Sept.`・en dash・単日。
+  `parse_rankings` の自由文字列変換。
+- `test_kind.py`: §3.3 の表の全 20 行。特に **`deadline` → `paper`**、
+  `supplementary` が `paper` に潰れないこと、`rebuttal_start` と `rebuttal_end` が別物であること。
+- `test_keys.py`: `key_overrides` に載っていない slug 衝突が 0 件であること
+  （上流に新しい衝突が入ったら落ちる）。`aliases` が cross-source 名寄せを行うこと。
+- `test_merge.py`: 同一版に同じ kind の締切が複数あっても消えないこと
+  （notification 3 本、submission 4 本のケース）。round の保持。overrides 適用。
+  rollforward が未来版のある会議に推定を足さないこと。
+  §3.6「締切の重複統合」の 3 事象（源間の丸め違い・上流内の同日ラウンド重複・
+  源間の round 表現差）がそれぞれ 1 件に畳まれること。
+  NSDI 型の数か月離れたラウンドと、許容幅の外側（3601 秒差）が畳まれないこと。
+  締切も開催日も持たない会議が `select` で落ちること。
+- `test_ics.py`: CRLF、75 オクテット折り返し（**日本語 3 バイト文字を壊さない**）、
+  エスケープ（`,` `;` `\` と `:` を区別）、終日イベントの `DTEND` が +1 日、
+  `METHOD` を出力しないこと、UID が §4.1 の形であること、
+  **UID が全 VEVENT で一意であること**、同一入力で 2 回生成した出力が bit 一致すること。
+  `icalendar` で読み直して検証する。
+- `test_snapshot.py`: `dump_snapshot` → `load_snapshot` の往復で情報が落ちないこと。
+  全 Source が失敗したとき snapshot から復旧すること。
+- `test_build_golden.py`: 小さな固定入力から `--now` 固定でビルドし、
+  ファイル一式が生成されること・JSON スキーマが §4.2 どおりであること。
+  推定フィードがカテゴリ別に分かれ、確定フィードに推定が混ざらないこと。
+  締切を持たない会議（ISC High Performance・HOTI・情報処理学会 HPC 研究会）の
+  開催回が index.html に届いていること。
+
+`tests/fixtures/` に上流 YAML の**縮小版**を置く（ネットワーク不要）。
+実物から次のエッジケースを含む代表を抜く:
+nsdi（複数ラウンド）、sc（AoE）、sigcomm（abstract あり）、
+ica3pp（**edition_id が全版で同一**）、fse（**別会議で id 重複**）、
+neurips（hf 新形式）、cvpr（**新旧形式併存 + supplementary**）、
+aaai（**rebuttal_start と rebuttal_end が別日**）、hf 旧形式 1 本、
+`abstract deadline`（空白キー）1 本、date 自由文の月跨ぎ、`TBD` を含む 1 本。
+
+---
+
+## 9. 非目標
+
+- WikiCFP など HTML スクレイピング（壊れやすく、利得が小さい）。
+- 会議の採択率・査読統計。
+- ユーザ登録・購読管理。
+- 上流に無い会議の締切を推測で書くこと（推定は `estimated` 版としてのみ、別フィードで扱う）。
+- ANCS の収録（2021 年以降開催されていない）。
+- README の締切テーブル自動更新（ビルドが他担当の所有ファイルを書き換える設計を避ける。
+  README からは `public/upcoming.md` へリンクする）。
+- 活動を偽装するハートビートコミット（§6 参照）。

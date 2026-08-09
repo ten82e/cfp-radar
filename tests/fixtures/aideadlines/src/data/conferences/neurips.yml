@@ -1,0 +1,63 @@
+# Reduced copy of huggingface/ai-deadlines src/data/conferences/neurips.yml (MIT).
+# Edge case: new format with a `deadlines` list covering many upstream `type` values,
+# plus structured `start` / `end` and a free-text `date` crossing a month boundary.
+- title: NeurIPS
+  year: 2025
+  id: neurips25
+  full_name: Conference on Neural Information Processing Systems
+  link: https://neurips.cc/
+  deadlines:
+    - type: abstract
+      label: Abstract submission deadline
+      date: '2025-05-11 23:59:59'
+      timezone: AoE
+    - type: paper
+      label: Paper submission deadline
+      date: '2025-05-15 23:59:59'
+      timezone: AoE
+    - type: supplementary
+      label: Supplementary materials deadline
+      date: '2025-05-22 23:59:59'
+      timezone: AoE
+    - type: rebuttal_start
+      label: Author rebuttal begins
+      date: '2025-07-24 00:00:00'
+      timezone: AoE
+    - type: notification
+      label: Author notification
+      date: '2025-09-18 23:59:59'
+      timezone: AoE
+    - type: camera_ready
+      label: Camera-ready deadline
+      date: '2025-10-23 23:59:59'
+      timezone: AoE
+  city: San Diego
+  country: USA
+  date: November 30 - December 7, 2025
+  start: '2025-11-30'
+  end: '2025-12-07'
+  era_rating: a
+  tags:
+  - machine-learning
+- title: NeurIPS
+  year: 2026
+  id: neurips26
+  full_name: Conference on Neural Information Processing Systems
+  link: https://neurips.cc/
+  deadlines:
+    - type: abstract
+      label: Abstract submission deadline
+      date: '2026-05-04 23:59:59'
+      timezone: AoE
+    - type: paper
+      label: Paper submission deadline
+      date: '2026-05-06 23:59:59'
+      timezone: AoE
+  city: Sydney
+  country: Australia
+  date: December 6-12, 2026
+  start: '2026-12-06'
+  end: '2026-12-12'
+  era_rating: a
+  tags:
+  - machine-learning

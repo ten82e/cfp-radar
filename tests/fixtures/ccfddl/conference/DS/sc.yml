@@ -1,0 +1,30 @@
+# Reduced copy of ccfddl/ccf-deadlines conference/DS/sc.yml (MIT).
+# Edge case: AoE timezone; sc26 paper deadline is the AoE boundary case
+# '2026-04-08 23:59:00' AoE -> 2026-04-09T11:59:00Z.
+- title: SC
+  description: International Conference for High Performance Computing, Networking, Storage, and Analysis
+  sub: DS
+  rank:
+    ccf: A
+    core: A
+    thcpl: A
+  dblp: sc
+  confs:
+    - year: 2025
+      id: sc25
+      link: https://sc25.supercomputing.org/
+      timeline:
+        - abstract_deadline: '2025-04-07 23:59:59'
+          deadline: '2025-04-14 23:59:00'
+      timezone: AoE
+      date: November 16-21, 2025
+      place: St. louis, Missouri, USA
+    - year: 2026
+      id: sc26
+      link: https://sc26.supercomputing.org/
+      timeline:
+        - abstract_deadline: '2026-04-01 23:59:59'
+          deadline: '2026-04-08 23:59:00'
+      timezone: AoE
+      date: November 15-20, 2026
+      place: McCormick Place, Chicago, Illinois, USA

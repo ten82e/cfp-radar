@@ -1,0 +1,216 @@
+# conf-deadlines: 収録範囲・分類・フィード定義
+#
+# 方針は「上流サブ分野の丸ごと取り込み + 例外リスト」。
+# 個別許可リストにすると上流(ccfddl / ai-deadlines)に新規追加された会議が永久に
+# 現れないため採らない。落としたいものだけ exclude に書く。
+#
+# venues に書く識別子は Conference.key = slug(title) であってファイル名ではない。
+# 例: atc.yml の title は "SIGOPS ATC" なので key は sigops-atc、
+#     cgo.yml は "IEEE/ACM CGO" なので ieee-acm-cgo。
+#
+# 上流には key が衝突する別会議が 2 組ある(FSE = Fast Software Encryption(SC) と
+# Foundations of Software Engineering(SE)、SEC = Edge Computing(DS) と
+# IFIP Information Security(SC))。merge.py は sub が違えば別会議として分割し、
+# sub の辞書順で先頭のものが素の key を保持する。したがって
+#   fse  -> SC(Fast Software Encryption) / fse-se -> SE(Foundations of SE)
+#   sec  -> DS(Edge Computing)           / sec-sc -> SC(IFIP Information Security)
+# となる。SE 側は ccfddl_subs で拾うので venues に書く必要はない。
+
+source_priority: [local, aideadlines, ccfddl]
+
+# 源が異なる 2 件の締切を「同じ締切の二重記載」とみなす条件 (SPEC.md 3.6)。
+#
+# 主たる規則は 1 対 1 である。同一版・同一 kind について源 X がちょうど 1 件、
+# 源 Y もちょうど 1 件しか持たないなら、2 つの資料が同じ欄を違う解釈で書いただけ
+# であり同一の締切とみなす (本当に別の締切なら、どちらかの源が両方を並べる)。
+# この場合に使うのは暴走防止の上限だけで、既定 604800 秒 = 7 日。
+deadline_merge_one_to_one_max_seconds: 604800
+#
+# どちらかの源が同一 kind を複数持つときは 1 対 1 の前提が成り立たない
+# (SIGGRAPH は投稿トラックを十数本並べる)。この場合は時刻の近さで対応づけ、
+# 同一版・同一 kind でこの秒数以内かつ最近傍のものだけを畳む。既定 90000 秒 =
+# 25 時間で、源間の食い違いは秒の丸め (1 秒) からタイムゾーン解釈差 (4〜12 時間)、
+# 暦日そのもののずれ (CVPR 2026 概要の 24 時間) まで分布する。
+deadline_merge_cross_source_seconds: 90000
+#
+# 源が同じ 2 件はどちらの窓も使わず、時刻とラベルが完全一致するときだけ畳む
+# (SIGGRAPH の同時刻別トラックを潰さないため)。
+# NSDI の年 2 ラウンドは数か月離れており、どの規則でも影響を受けない。
+
+# data.json の categories と、収録する分類の全体集合を兼ねる。
+categories:
+  hpc: High Performance Computing
+  networking: Networking
+  systems: Systems, Architecture and Storage
+  ai: AI and Machine Learning
+  security: Security and Privacy
+
+taxonomy:
+  # ---- HPC ----------------------------------------------------------------
+  # DS(体系構造/並列分散/ストレージ)は HPC と systems が混在しているので、
+  # DS の 60 会議を 1 件ずつ hpc / systems に割り振る。
+  # ここに置くのは「並列・分散高性能計算/スパコンのコミュニティ」の会議。
+  hpc:
+    venues:
+      - appt          # Advanced Parallel Programming Technologies
+      - ccgrid        # Cluster, Cloud and Internet Computing
+      - cluster       # IEEE Cluster
+      - euro-par      # Euro-Par
+      - hpcc          # High Performance Computing and Communications
+      - hpdc          # High-Performance Parallel and Distributed Computing
+      - ica3pp        # Algorithms and Architectures for Parallel Processing
+      - icpads        # Parallel and Distributed Systems
+      - icpp          # International Conference on Parallel Processing
+      - ics           # ACM International Conference on Supercomputing
+      - ipdps         # IEEE IPDPS
+      - ispa          # Parallel and Distributed Processing with Applications
+      - pact          # Parallel Architectures and Compilation Techniques
+      - pdcat         # Parallel and Distributed Computing, Applications, Technologies
+      - ppopp         # Principles and Practice of Parallel Programming
+      - sc            # SC (Supercomputing)
+      - spaa          # Parallelism in Algorithms and Architectures
+
+  # ---- Networking ---------------------------------------------------------
+  # 上流 SC(セキュリティ)配下でも、計測・運用管理を主題にする会議は
+  # networking を併記する(security 側からは外さない)。
+  networking:
+    ccfddl_subs: [NW]
+    venues:
+      - pam           # Passive and Active Measurement (上流 sub は SC)
+      - noms          # Network Operations and Management Symposium (同上)
+
+  # ---- Systems ------------------------------------------------------------
+  # SE 全体(PL 寄りは exclude で落とす) + DS のうち hpc に入れなかった残り。
+  # アーキテクチャ・OS・ストレージ・クラウド・分散システム・性能評価・EDA/回路。
+  # 判断に迷ったものはすべてこちら側に置いた(cf, hipeac, podc など)。
+  systems:
+    ccfddl_subs: [SE]
+    venues:
+      - apsys         # SIGOPS Asia-Pacific Workshop on Systems
+      - asap          # Application-Specific Systems, Architectures, Processors
+      - asp-dac       # Asia and South Pacific Design Automation Conference
+      - asplos
+      - ats           # IEEE Asian Test Symposium
+      - cf            # Computing Frontiers (HPC 隣接だが迷うので systems)
+      - codes-isss    # Hardware/Software Co-design and System Synthesis
+      - dac
+      - date
+      - emsoft        # Embedded Software (MX。実時間・組込み。venues で名指しして拾う)
+      - ets           # IEEE European Test Symposium
+      - eurosys
+      - fast
+      - fccm          # Field-Programmable Custom Computing Machines
+      - fpga
+      - fpt           # Field Programmable Technology
+      - glsvlsi
+      - hipeac        # High Performance and Embedded Architectures and Compilers
+      - hot-chips
+      - hotstorage
+      - hpca
+      - iccad
+      - iccd
+      - icdcs         # Distributed Computing Systems
+      - ieee-acm-cgo  # Code Generation and Optimization
+      - iiswc         # Workload Characterization
+      - isca
+      - iscas
+      - itc           # International Test Conference
+      - itc-asia
+      - jcc           # JointCloud Computing
+      - lisa          # Large Installation System Administration
+      - micro
+      - mlsys         # Machine Learning and Systems (MX。上流 ccfddl の MX/mlsys.yml)
+      - msst          # Massive Storage Systems and Technology
+      - netys         # Networked Systems
+      - performance   # IFIP Performance
+      - podc          # Principles of Distributed Computing
+      - rtas          # Real-Time and Embedded Technology and Applications
+      - rtss          # Real-Time Systems Symposium (MX。TSN/DetNet の主要会場)
+      - sec           # ACM/IEEE Symposium on Edge Computing (DS 側の SEC)
+      - sigmetrics
+      - sigops-atc    # USENIX/SIGOPS Annual Technical Conference
+      - socc          # ACM Symposium on Cloud Computing
+      - systor
+      - vee           # Virtual Execution Environments
+
+  # ---- AI -----------------------------------------------------------------
+  ai:
+    ccfddl_subs: [AI]
+    sources: [aideadlines]
+    venues:
+      - mlsys         # 機械学習とシステムの両分野にまたがるので systems と併記
+
+  # ---- Security -----------------------------------------------------------
+  security:
+    ccfddl_subs: [SC]
+
+# 収録しない会議。SE を丸ごと取り込む代償として、プログラミング言語・形式手法寄りの
+# 会議がまとめて入ってくるのでここで落とす。OS/システム寄り(osdi, sosp, hotos,
+# middleware, ispass, eurosys ほか)と、ソフトウェア工学本体(icse, ase, fse-se,
+# issta, msr ほか)は残す。
+exclude:
+  - aplas    # Asian Symposium on Programming Languages and Systems
+  - atva     # Automated Technology for Verification and Analysis
+  - cp       # Principles and Practice of Constraint Programming
+  - ecoop    # European Conference on Object-Oriented Programming
+  - etaps    # European Joint Conferences on Theory and Practice of Software
+  - fm       # International Symposium on Formal Methods
+  - icfem    # International Conference on Formal Engineering Methods
+  - icfp     # International Conference on Functional Programming
+  - lctes    # Languages, Compilers and Tools for Embedded Systems
+  - oopsla
+  - pldi
+  - popl
+  - rv       # Runtime Verification
+  - sas      # Static Analysis Symposium
+  - tase     # Theoretical Aspects of Software Engineering
+  - vmcai    # Verification, Model Checking, and Abstract Interpretation
+
+rank_filter:
+  ccf: [A, B]           # 空リストなら無条件
+  core: ['A*', A, B]
+  keep_if_no_rank: true # ランク情報が無い会議(local 由来など)は残す
+  # ランクが低い/付いていないが分野の中核である会議はランク判定を迂回する。
+  # 加えて taxonomy.*.venues に名指しした会議は自動で迂回する（select 実装）。
+  # venues はカテゴリ付けだけでなく「収録する」意思表示でもある。
+  always_keep:
+    - apnet        # Asia-Pacific Workshop on Networking (ccf C)
+    - apsys        # SIGOPS Asia-Pacific Workshop on Systems (ランク無し)
+    - hotnets      # ACM HotNets (ccf C)
+    - hotstorage   # ACM HotStorage (ccf C)
+    - iiswc        # IEEE IISWC (ランク無し)
+
+rollforward:
+  enabled: true
+  kinds: [abstract, paper]      # 推定するのは投稿締切だけ
+  default_interval_days: 364    # 52 週。曜日が保たれる
+  interval_lookback_editions: 3 # 直近 3 版 = 直近 2 間隔の中央値を使う
+  max_stale_days: 730           # 最後の締切がこれより古い会議は終了扱いで推定しない
+  # 上流の最新版が 1 年以上前の場合、1 間隔ぶんでは推定日が過去に落ちる。
+  # merge.py は間隔の整数倍だけ進めて(曜日は保たれる)未来に届かなければ推定を出さない。
+
+# data.json の sources 欄と NOTICE の帰属表示に使う。
+sources:
+  - name: ccfddl
+    repo: ccfddl/ccf-deadlines
+    license: MIT
+    url: https://github.com/ccfddl/ccf-deadlines
+  - name: aideadlines
+    repo: huggingface/ai-deadlines
+    license: MIT
+    url: https://github.com/huggingface/ai-deadlines
+  - name: local
+    repo: data/extra.yaml
+    license: MIT
+    url: https://github.com/ten82e/cfp-radar
+
+site:
+  title: cfp-radar
+  description: HPC・ネットワーク・システム・AI・セキュリティ会議・穴場ワークショップの投稿締切と開催日
+  repo: ten82e/cfp-radar
+  # Pages の公開 URL。プロジェクトページなのでリポジトリ名のパスが付く。
+  # llms.txt のフィード URL はここから作る。ICS の UID 右辺は別物で、
+  # SPEC.md 4.1 により conf-deadlines.github.io に固定されている(設定不可)。
+  base_url: https://ten82e.github.io/cfp-radar
+  domain: ten82e.github.io
+  upcoming_days: 180            # upcoming.md に載せる期間

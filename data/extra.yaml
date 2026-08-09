@@ -1,0 +1,1073 @@
+# 上流(ccfddl / huggingface-ai-deadlines)が扱わない会議。
+#
+# 原則: 締切を推測で書かない。公式サイトで日付の裏が取れたものだけ deadlines に入れ、
+# 取れないものは開催イベント(date_text と event 日付)だけ、あるいはリンクだけを持たせる。
+# 各エントリのコメントに根拠 URL と確認状況(2026-08-09 時点)を残す。
+#
+# 国内研究会は categories に既存カテゴリを与え、tags に domestic-jp を付ける。
+# 研究会の発表申込締切は開催 2 か月前ごろに個別告示されるため、年度予定表からは
+# 取得できない。よって開催日のみを持たせる。
+
+conferences:
+
+  # ------------------------------------------------------------------ HPC --
+  # 根拠: https://isc-hpc.com/ (2026-08-09 取得)
+  #   「JUNE 7-11, 2027 HAMBURG, GERMANY」
+  #   ISC 2026 の締切は同ページに Abstract 2025-12-12 / Full paper 2025-12-19 と
+  #   記載があるが既に経過済み。ISC 2027 の締切は未公開のため日付なし。
+  #   締切のタイムゾーン表記が公式にないため deadlines は入れない。
+  - key: isc-hpc
+    title: ISC High Performance
+    full_name: ISC High Performance
+    link: https://isc-hpc.com/
+    categories: [hpc]
+    editions:
+      - year: 2027
+        id: isc27
+        link: https://isc-hpc.com/
+        place: Hamburg, Germany
+        date_text: June 7-11, 2027
+        deadlines: []
+
+  # 根拠: https://www.hoti.org/2026/ (2026-08-09 取得)「19-21 Aug 2026」、Virtual event。
+  #   投稿締切は同ページに記載なし。未確認のため日付なし。
+  - key: hoti
+    title: HOTI
+    full_name: IEEE Symposium on High-Performance Interconnects (Hot Interconnects)
+    link: https://www.hoti.org/
+    categories: [networking, hpc]
+    editions:
+      - year: 2026
+        id: hoti26
+        link: https://www.hoti.org/2026/
+        place: Virtual
+        date_text: August 19-21, 2026
+        deadlines: []
+
+  # MLSys はここに書かない。上流 ccfddl の MX/mlsys.yml に 2021〜2026 版が実在し、
+  # SPEC.md 5 が重複登録を禁じている。分類は config.yaml の taxonomy(systems, ai)の
+  # venues で拾う。
+
+  # 根拠: 公式 https://www.opencompute.org/events は WebFetch に対し 403 を返し未取得。
+  #   日程 October 12-15, 2026 / San Jose Convention Center は複数の第三者掲載
+  #   (baxtel.com, vendelux.com, 10times.com, 出展企業の告知ページ)が一致した値であり、
+  #   公式一次情報では未確認。投稿締切のある会議ではないため deadlines は無い。
+  - key: ocp-global-summit
+    title: OCP Global Summit
+    full_name: Open Compute Project Global Summit
+    link: https://www.opencompute.org/summit/global-summit
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: ocp-summit26
+        link: https://www.opencompute.org/summit/global-summit
+        place: San Jose Convention Center, San Jose, CA, USA
+        date_text: October 12-15, 2026
+        deadlines: []
+
+  # 根拠: https://netdevconf.info/ (2026-08-09 取得)
+  #   「0x1A: Rome, Italy (July 13th-16th, 2026)」。CFP 締切は同ページに記載なし。
+  #   次回(0x1B)は未告知。未確認のため締切の日付なし。
+  - key: netdev
+    title: Netdev
+    full_name: Netdev Conference on Linux Networking
+    link: https://netdevconf.info/
+    categories: [networking, systems]
+    editions:
+      - year: 2026
+        id: netdev-0x1a
+        link: https://netdevconf.info/0x1a/
+        place: Rome, Italy
+        date_text: July 13-16, 2026
+        deadlines: []
+
+  # 根拠: https://lpc.events/ (2026-08-09 取得)
+  #   「Monday 5th, Tuesday 6th and Wednesday 7th of October」/
+  #   「Prague Congress Centre, Prague, Czechia」。CFP 締切は同ページに記載なし。
+  - key: lpc
+    title: LPC
+    full_name: Linux Plumbers Conference
+    link: https://lpc.events/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: lpc26
+        link: https://lpc.events/event/20/
+        place: Prague Congress Centre, Prague, Czechia
+        date_text: October 5-7, 2026
+        deadlines: []
+
+  # 根拠: https://p4.org/events/ (2026-08-09 取得)「October 12」開催。
+  #   同ページに「CFP closes on August 1」とあるが年の記載がないため締切は入れない。
+  - key: p4-workshop
+    title: P4 Workshop
+    full_name: P4 Workshop (P4 Language Consortium)
+    link: https://p4.org/events/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: p4ws26
+        link: https://p4.org/events/
+        place: ''
+        date_text: October 12, 2026
+        deadlines: []
+
+  # 根拠: 公式 https://hpsr2026.ieee-hpsr.org/ は WebFetch に対し HTTP 418 を返し未取得。
+  #   IEEE ComSoc の告知に HPSR 2026 の final submission deadline が 30 January 2026 と
+  #   あるが一次情報で未確認、かつ既に経過済み。開催日も未確認のため版を持たせない。
+  - key: hpsr
+    title: HPSR
+    full_name: IEEE International Conference on High Performance Switching and Routing
+    link: https://hpsr2026.ieee-hpsr.org/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: hpsr26
+        link: https://hpsr2026.ieee-hpsr.org/
+        place: Montreal, Canada
+        date_text: June 17-19, 2026
+        event_start: '2026-06-17'
+        event_end: '2026-06-19'
+        deadlines: []
+
+  # -------------------------------------------------------- 国内研究会 (JP) --
+  # 情報処理学会の研究会は年度予定表に開催日のみが載る。発表申込締切は各回の
+  # 開催案内で個別に告示されるため、ここでは締切を入れない。
+  # 根拠: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html (2026 年度予定・2026-08-09 取得)
+  # 2026-08-09 より前に終了した回、および「未定」の回は収録しない。
+
+  - key: ipsj-sighpc
+    title: 情報処理学会 HPC 研究会
+    full_name: 情報処理学会 ハイパフォーマンスコンピューティング研究会 (SIGHPC)
+    # 根拠: https://sighpc.ipsj.or.jp/ (2026-08-09)
+    #   第206回 9/28 名大 + 原稿 8/28。第207回 12/1-2 沖縄 exact（月のみを置換）。
+    link: https://sighpc.ipsj.or.jp/
+    categories: [hpc]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-hpc-2026-08-swopp
+        link: https://www.ipsj.or.jp/kenkyukai/event/hpc205.html
+        place: 飛騨・世界生活文化センター（岐阜県高山市）
+        date_text: 2026年8月6日-7日 (SWoPP 2026 / 第205回)
+        event_start: '2026-08-06'
+        event_end: '2026-08-07'
+        deadlines: []
+      - year: 2026
+        id: ipsj-hpc-2026-09
+        link: https://www.ipsj.or.jp/kenkyukai/event/hpc206.html
+        place: 名古屋大学 基盤センター２F演習室
+        date_text: 2026年9月28日 (第206回)
+        event_start: '2026-09-28'
+        event_end: '2026-09-28'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-07-28 23:59:00', tz: UTC+9}
+          - {kind: paper, label: 発表原稿締切, date: '2026-08-28 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ipsj-hpc-2026-12
+        link: https://sighpc.ipsj.or.jp/
+        place: 沖縄産業支援センター（那覇）
+        date_text: 2026年12月1日-2日 (第207回)
+        event_start: '2026-12-01'
+        event_end: '2026-12-02'
+        deadlines: []
+      - year: 2027
+        id: ipsj-hpc-2027-03
+        link: https://sighpc.ipsj.or.jp/
+        place: 北海道大学 学術交流会館／オンライン
+        date_text: 2027年3月7日-9日 (第208回)
+        event_start: '2027-03-07'
+        event_end: '2027-03-09'
+        deadlines: []
+  - key: ipsj-sigarc
+    title: 情報処理学会 ARC 研究会
+    full_name: 情報処理学会 システム・アーキテクチャ研究会 (SIGARC)
+    # 根拠: IPSJ plan2026 + SIGHPC 第207回が ARC 合同で 12/1-2 exact（sighpc.ipsj.or.jp）
+    link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-arc-2026-08-swopp
+        link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
+        place: 飛騨・世界生活文化センター（岐阜県高山市）
+        date_text: 2026年8月5日-7日 (SWoPP 2026)
+        event_start: '2026-08-05'
+        event_end: '2026-08-07'
+        deadlines: []
+      - year: 2026
+        id: ipsj-arc-2026-12
+        link: https://sighpc.ipsj.or.jp/
+        place: 沖縄産業支援センター（HPCと合同）
+        date_text: 2026年12月1日-2日
+        event_start: '2026-12-01'
+        event_end: '2026-12-02'
+        deadlines: []
+  - key: ipsj-sigos
+    title: 情報処理学会 OS 研究会
+    full_name: 情報処理学会 システムソフトウェアとオペレーティング・システム研究会 (SIGOS)
+    # 根拠: https://sigos.ipsj.or.jp/event/sigos2026-09/ および swopp2026 (2026-08-09 取得)
+    link: https://sigos.ipsj.or.jp/
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-os-2026-08-swopp
+        link: https://sigos.ipsj.or.jp/event/swopp2026/
+        place: 飛騨・世界生活文化センター（岐阜県高山市）／オンライン
+        date_text: 2026年8月6日-7日 (SWoPP 2026)
+        event_start: '2026-08-06'
+        event_end: '2026-08-07'
+        deadlines: []
+      - year: 2026
+        id: ipsj-os-2026-09
+        link: https://sigos.ipsj.or.jp/event/sigos2026-09/
+        place: 高知工科大学 香美キャンパス（高知県香美市）／オンライン
+        date_text: 2026年9月24日-25日
+        event_start: '2026-09-24'
+        event_end: '2026-09-25'
+        deadlines:
+          - {kind: abstract, label: 発表申込〆切（延長後）, date: '2026-07-31 23:59:00', tz: UTC+9}
+          - {kind: paper, label: 発表原稿〆切, date: '2026-08-21 23:59:00', tz: UTC+9}
+  - key: ipsj-sigdps
+    title: 情報処理学会 DPS 研究会
+    full_name: 情報処理学会 マルチメディア通信と分散処理研究会 (SIGDPS)
+    link: https://www.ipsj.or.jp/kenkyukai/sig-dps.html
+    categories: [networking, systems]
+    tags: [domestic-jp]
+    editions:
+      # 予定表の記載: 「9月10日(木)～11日(金)：倉敷市芸文館」
+      - year: 2026
+        id: ipsj-dps-2026-09
+        link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
+        place: 倉敷市芸文館
+        date_text: 2026年9月10日-11日
+        event_start: '2026-09-10'
+        event_end: '2026-09-11'
+        deadlines: []
+      # 予定表の記載: 「11月4日(水)～6日(金)：花びしホテル」
+      - year: 2026
+        id: ipsj-dps-2026-11
+        link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
+        place: 花びしホテル（北海道 函館）
+        date_text: 2026年11月4日-6日
+        event_start: '2026-11-04'
+        event_end: '2026-11-06'
+        deadlines: []
+
+  # 根拠: 公式 https://www.ieice.org/cs/ns/jpn/ は WebFetch に対し 403 を返し未取得。
+  #   NS 研究会は年 6 回程度の開催だが、開催日・発表申込締切とも未確認のため日付なし。
+  - key: ieice-ns
+    title: 電子情報通信学会 NS 研究会
+    full_name: 電子情報通信学会 ネットワークシステム研究会 (NS)
+    # 根拠: https://ken.ieice.org/ken/program/?tgid=IEICE-NS (2026-08-09 再取得・復旧)
+    #   発表申込締切は [月日] 列。10月研究会は 8/17 受付中。
+    link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-ns-2026-09
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 東北大学 電気通信研究所／オンライン（宮城）
+        date_text: 2026年9月3日-4日
+        event_start: '2026-09-03'
+        event_end: '2026-09-04'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-07-14 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-ns-2026-10
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 北海道大学／オンライン
+        date_text: 2026年10月7日-9日
+        event_start: '2026-10-07'
+        event_end: '2026-10-09'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-08-17 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-ns-2026-11
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 大分県（未定）／オンライン
+        date_text: 2026年11月5日-6日
+        event_start: '2026-11-05'
+        event_end: '2026-11-06'
+        deadlines: []
+      - year: 2026
+        id: ieice-ns-2026-12
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 函館サーモン・まるなまアリーナ／オンライン（北海道）
+        date_text: 2026年12月17日-18日
+        event_start: '2026-12-17'
+        event_end: '2026-12-18'
+        deadlines: []
+      - year: 2027
+        id: ieice-ns-2027-01
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 愛媛県（未定）／オンライン
+        date_text: 2027年1月21日-22日
+        event_start: '2027-01-21'
+        event_end: '2027-01-22'
+        deadlines: []
+      - year: 2027
+        id: ieice-ns-2027-03
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-NS
+        place: 沖縄産業支援センター
+        date_text: 2027年3月4日-5日
+        event_start: '2027-03-04'
+        event_end: '2027-03-05'
+        deadlines: []
+  - key: ieice-in
+    title: 電子情報通信学会 IN 研究会
+    full_name: 電子情報通信学会 情報ネットワーク研究会 (IN)
+    # 根拠: https://ken.ieice.org/ken/program/?tgid=IEICE-IN (2026-08-09 再取得)
+    link: https://ken.ieice.org/ken/program/?tgid=IEICE-IN
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-in-2026-08
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-IN
+        place: 札幌市教育文化会館（北海道）
+        date_text: 2026年8月6日-7日
+        event_start: '2026-08-06'
+        event_end: '2026-08-07'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-06-11 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-in-2026-09
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-IN
+        place: 東北大学 電気通信研究所／オンライン（宮城）
+        date_text: 2026年9月3日-4日
+        event_start: '2026-09-03'
+        event_end: '2026-09-04'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-07-14 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-in-2026-12
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-IN
+        place: 大阪府（未定）／オンライン
+        date_text: 2026年12月3日-4日
+        event_start: '2026-12-03'
+        event_end: '2026-12-04'
+        deadlines: []
+      - year: 2027
+        id: ieice-in-2027-03
+        link: https://ken.ieice.org/ken/program/?tgid=IEICE-IN
+        place: 沖縄産業支援センター
+        date_text: 2027年3月4日-5日
+        event_start: '2027-03-04'
+        event_end: '2027-03-05'
+        deadlines: []
+  - key: ieice-ia
+    title: 電子情報通信学会 IA 研究会
+    full_name: 電子情報通信学会 インターネットアーキテクチャ研究会 (IA)
+    # 根拠: https://www.ieice.org/cs/ia/jpn/doku.php?id=start (2026-08-09 取得)
+    #   9/15-16 の発表申込締切は 7/14（済）。10月以降の締切は「X日」表記のため未記入。
+    link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-ia-2026-09
+        link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+        place: 北海道大学 情報基盤センター南館2階（ハイブリッド）
+        date_text: 2026年9月15日-16日
+        event_start: '2026-09-15'
+        event_end: '2026-09-16'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-07-14 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-ia-2026-10
+        link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+        place: 東京（ハイブリッド）
+        date_text: 2026年10月16日
+        event_start: '2026-10-16'
+        event_end: '2026-10-16'
+        deadlines: []
+      - year: 2026
+        id: ieice-ia-2026-11
+        link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+        place: 能登方面の予定（ハイブリッド）
+        date_text: 2026年11月2日
+        event_start: '2026-11-02'
+        event_end: '2026-11-02'
+        deadlines: []
+      - year: 2026
+        id: ieice-ia-2026-12
+        link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+        place: 大阪
+        date_text: 2026年12月3日-4日
+        event_start: '2026-12-03'
+        event_end: '2026-12-04'
+        deadlines: []
+      - year: 2027
+        id: ieice-ia-2027-03
+        link: https://www.ieice.org/cs/ia/jpn/doku.php?id=start
+        place: 沖縄（ハイブリッド）
+        date_text: 2027年3月1日-3日
+        event_start: '2027-03-01'
+        event_end: '2027-03-03'
+        deadlines: []
+  - key: ieice-cq
+    title: 電子情報通信学会 CQ 研究会
+    full_name: 電子情報通信学会 コミュニケーションクオリティ研究会 (CQ)
+    # 根拠: https://www.ieice.org/cs/cq/ (2026-08-09 取得)
+    #   11月研究会: 2026-11-05〜06 和歌山ビッグ愛、申込受付中(9/3締切)
+    #   9月研究会: 2026-09-10〜11 NTT武蔵野（申込は7/14締切済）
+    link: https://www.ieice.org/cs/cq/
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-cq-2026-09
+        link: https://www.ieice.org/cs/cq/
+        place: NTT 武蔵野研究開発センタ
+        date_text: 2026年9月10日-11日
+        event_start: '2026-09-10'
+        event_end: '2026-09-11'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切（延長後）, date: '2026-07-14 23:59:00', tz: UTC+9}
+      - year: 2026
+        id: ieice-cq-2026-11
+        link: https://www.ieice.org/cs/cq/
+        place: 和歌山ビッグ愛（和歌山県）／オンライン
+        date_text: 2026年11月5日-6日
+        event_start: '2026-11-05'
+        event_end: '2026-11-06'
+        deadlines:
+          - {kind: abstract, label: 発表申込締切, date: '2026-09-03 23:59:00', tz: UTC+9}
+  - key: ieice-icm
+    title: 電子情報通信学会 ICM 研究会
+    full_name: 電子情報通信学会 情報通信マネジメント研究会 (ICM)
+    # 根拠: https://www.ieice.org/cs/icm/jpn/ (2026-08-09 取得)
+    #   発表申込締切は各回の案内で別途。ここでは開催日を載せる。
+    #   APNOMS は別 key (apnoms)。
+    link: https://www.ieice.org/cs/icm/jpn/
+    categories: [networking, systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-icm-2026-11
+        link: https://www.ieice.org/cs/icm/jpn/
+        place: 大分県（予定）
+        date_text: 2026年11月5日-6日
+        event_start: '2026-11-05'
+        event_end: '2026-11-06'
+        deadlines: []
+      - year: 2027
+        id: ieice-icm-2027-01
+        link: https://www.ieice.org/cs/icm/jpn/
+        place: 鹿児島県（予定）
+        date_text: 2027年1月28日-29日
+        event_start: '2027-01-28'
+        event_end: '2027-01-29'
+        deadlines: []
+      - year: 2027
+        id: ieice-icm-2027-03
+        link: https://www.ieice.org/cs/icm/jpn/
+        place: 久米島（予定）
+        date_text: 2027年3月18日-19日
+        event_start: '2027-03-18'
+        event_end: '2027-03-19'
+        deadlines: []
+  - key: apnoms
+    title: APNOMS
+    full_name: Asia-Pacific Network Operations and Management Symposium
+    # 根拠: https://www.ieice.org/cs/icm/jpn/ (2026-08-09) — APNOMS2026@熊本 9/9-11
+    #   ネットワーク運用管理のアジア太平洋会議。通しやすい国際枠として domestic 近傍で維持。
+    link: https://www.ieice.org/cs/icm/jpn/
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: apnoms2026
+        link: https://www.ieice.org/cs/icm/jpn/
+        place: 熊本城ホール（熊本）
+        date_text: 2026年9月9日-11日
+        event_start: '2026-09-09'
+        event_end: '2026-09-11'
+        deadlines: []
+  - key: comsys
+    title: ComSys
+    full_name: コンピュータシステム・シンポジウム (ComSys)
+    # 根拠: IPSJ plan2026 / SIGOS。ComSys2026 は「11月下旬～12月上旬 (未定)」。
+    #   旧エントリは OS 9月研究会（高知）の日付を誤って載せていた → 訂正。
+    link: https://sigos.ipsj.or.jp/
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: comsys26
+        link: https://sigos.ipsj.or.jp/
+        place: 未定
+        date_text: 2026年11月下旬～12月上旬（詳細未定）
+        event_start: '2026-11-20'
+        event_end: '2026-12-10'
+        deadlines: []
+  - key: iots
+    title: IOTS
+    full_name: インターネットと運用技術シンポジウム (IOTS)
+    link: https://www.iot.ipsj.or.jp/symposium/
+    categories: [networking, systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: iots2026
+        link: https://www.iot.ipsj.or.jp/symposium/iots2026/
+        place: 島根県立産業交流会館 くにびきメッセ（島根県松江市）／オンライン
+        date_text: 2026年12月17日-18日
+        event_start: '2026-12-17'
+        event_end: '2026-12-18'
+        deadlines:
+          - {kind: paper, label: 論文投稿締切, date: '2026-08-28 23:59:00', tz: 'UTC+9'}
+
+  # 根拠: https://www.internetconference.org/ (2026-08-09 取得)。
+  #   掲載は IC2018(2018年11月26日-27日, 秋葉原)が最新で、以降の開催告知が無い。
+  #   現在も開催されているか未確認のため版を持たせない。
+  - key: fit
+    title: FIT
+    full_name: 情報科学技術フォーラム (Forum on Information Technology)
+    # 根拠: https://www.ipsj.or.jp/event/fit/fit2026/index.html (2026-08-09 取得)
+    #   会期 2026年9月2日（水）～9月4日（金）。講演申込・原稿締切は既に終了（原稿 6/24）。
+    #   通しやすい国内総合フォーラムとして開催日を載せる。
+    link: https://www.ipsj.or.jp/event/fit/fit2026/index.html
+    categories: [systems, networking, ai]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: fit2026
+        link: https://www.ipsj.or.jp/event/fit/fit2026/index.html
+        place: 北九州市（FIT2026）
+        date_text: 2026年9月2日-4日
+        event_start: '2026-09-02'
+        event_end: '2026-09-04'
+        deadlines: []
+  - key: internet-conference
+    title: インターネットコンファレンス
+    full_name: インターネットコンファレンス (Internet Conference)
+    # 2026-08-09: 公式 https://www.internetconference.org/ は IC2018 で停止。
+    #   ic2025/ic2026 は 404。現行日程は取得不能のため editions なし（select で非公開）。
+    link: https://www.internetconference.org/
+    categories: [networking]
+    tags: [domestic-jp]
+    editions: []
+  - key: ecrts
+    title: ECRTS
+    full_name: European Conference on Real-Time Systems
+    link: https://www.ecrts.org/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: ecrts26
+        link: https://www.ecrts.org/
+        place: Lund, Sweden
+        date_text: July 7-10, 2026
+        event_start: '2026-07-07'
+        event_end: '2026-07-10'
+        deadlines:
+          - {kind: paper, label: Submission deadline, date: '2026-02-26 23:59:00', tz: AoE}
+          - {kind: notification, label: Notification, date: '2026-04-20 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera-ready deadline, date: '2026-05-05 23:59:00', tz: AoE}
+
+  # 根拠: https://www.irtf.org/anrw/2026/ (2026-08-09 取得)
+  #   Paper submission deadline 4 May 2026 (11:59pm AoE) /
+  #   Paper notification 8 June 2026 / Camera-ready 17 June 2026 /
+  #   Workshop Monday, July 20, 2026. HotCRP: https://anrw2026.hotcrp.com/
+  #   2026-08-09 時点で投稿締切・会期とも経過済み。次回推定の根拠として残す。
+  - key: anrw
+    title: ANRW
+    full_name: ACM/IRTF Applied Networking Research Workshop
+    link: https://www.irtf.org/anrw/2026/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: anrw26
+        link: https://www.irtf.org/anrw/2026/
+        place: ''
+        date_text: July 20, 2026
+        event_start: '2026-07-20'
+        event_end: '2026-07-20'
+        deadlines:
+          - {kind: paper, label: Paper submission deadline, date: '2026-05-04 23:59:00', tz: AoE}
+          - {kind: notification, label: Paper notification deadline, date: '2026-06-08 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera-ready paper deadline, date: '2026-06-17 23:59:00', tz: AoE}
+
+  # 根拠: https://www.systor.org/2026/cfp/ (2026-08-09 取得)
+  #   Full and Short Papers: Monday, May 25, 2026 (23:59 AoE) /
+  #   Virtual Conference September 8-9, 2026.
+  #   上流 ccfddl DS/systor.yml は 2024-2025 まで。2026 版を local で補う。
+  #   ccf C のため rank_filter で落ちていたが、taxonomy venues 経由で保持する。
+  - key: systor
+    title: SYSTOR
+    full_name: ACM International Systems and Storage Conference
+    link: https://www.systor.org/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: systor26
+        link: https://www.systor.org/2026/
+        place: Virtual
+        date_text: September 8-9, 2026
+        event_start: '2026-09-08'
+        event_end: '2026-09-09'
+        deadlines:
+          - {kind: paper, label: Full and Short Papers Track, date: '2026-05-25 23:59:00', tz: AoE}
+          - {kind: other, label: Poster Abstract Submission, date: '2026-07-20 23:59:00', tz: AoE}
+
+  # 根拠: https://2027.rtas.org/ (2026-08-09 取得)
+  #   Submission Deadline (Firm) Thursday, November 5, 2026 / All times UTC-12 (AoE) /
+  #   Conference Tuesday, May 17 – Friday, May 20, 2027.
+  #   上流 ccfddl は 2026 版までしか無く、rollforward が 2028 推定を出していた。
+  #   local の 2027 版をマージして推定を正す。
+  - key: rtas
+    title: RTAS
+    full_name: IEEE Real-Time and Embedded Technology and Applications Symposium
+    link: https://2027.rtas.org/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: rtas2027
+        link: https://2027.rtas.org/
+        place: ''
+        date_text: May 17-20, 2027
+        event_start: '2027-05-17'
+        event_end: '2027-05-20'
+        deadlines:
+          - {kind: paper, label: Submission Deadline (Firm), date: '2026-11-05 23:59:00', tz: AoE}
+          - {kind: notification, label: Author Notification (tentative), date: '2027-01-28 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera-Ready Submission Deadline, date: '2027-03-30 23:59:00', tz: AoE}
+
+  # 根拠: https://middleware-conf.github.io/2026/important-dates/ (2026-08-09 取得)
+  #   Round 1 abstract Dec 9, 2025 / full Dec 12, 2025 (AoE) /
+  #   Round 2 abstract May 29, 2026 / full June 5, 2026 (AoE) /
+  #   Conference December 14-18, 2026, Tarragona, Spain.
+  #   上流 ccfddl は 2022 版のみで stale。2026 版を local で補う。
+  - key: middleware
+    title: Middleware
+    full_name: ACM International Middleware Conference
+    link: https://middleware-conf.github.io/2026/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: middleware26
+        link: https://middleware-conf.github.io/2026/
+        place: Universitat Rovira i Virgili, Tarragona, Spain
+        date_text: December 14-18, 2026
+        event_start: '2026-12-14'
+        event_end: '2026-12-18'
+        deadlines:
+          - {kind: abstract, label: Paper abstract registration (R1), date: '2025-12-09 23:59:00', tz: AoE, round: 1}
+          - {kind: paper, label: Full Paper Submission (R1), date: '2025-12-12 23:59:00', tz: AoE, round: 1}
+          - {kind: abstract, label: Paper abstract registration (R2), date: '2026-05-29 23:59:00', tz: AoE, round: 2}
+          - {kind: paper, label: Full Paper Submission (R2), date: '2026-06-05 23:59:00', tz: AoE, round: 2}
+          - {kind: notification, label: Author Notification (R2), date: '2026-08-28 23:59:00', tz: AoE, round: 2}
+          - {kind: camera_ready, label: Camera Ready Due, date: '2026-10-16 23:59:00', tz: AoE}
+
+  # 根拠: https://logconference.org/cfp/ および https://logconference.org/ (2026-08-09 取得)
+  #   Abstract: July 29 → August 5, 2026 AoE（延長後を採用） /
+  #   Full paper: August 1 → August 7, 2026 AoE /
+  #   Camera-ready October 15, 2026 / Conference November 20-22, 2026,
+  #   Northeastern University, Boston.
+  #   上流は 2025 版のみで rollforward が 2026-08-22/29 推定を出していた → 公式で置換。
+  - key: log
+    title: LOG
+    full_name: Learning on Graphs Conference
+    link: https://logconference.org/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: log26
+        link: https://logconference.org/
+        place: Northeastern University, Boston, MA, USA
+        date_text: November 20-22, 2026
+        event_start: '2026-11-20'
+        event_end: '2026-11-22'
+        deadlines:
+          - {kind: abstract, label: Abstract Submission Deadline (Both Tracks), date: '2026-08-05 23:59:00', tz: AoE}
+          - {kind: paper, label: Full Paper Submission Deadline (Both Tracks), date: '2026-08-07 23:59:00', tz: AoE}
+          - {kind: notification, label: Final Decisions Released, date: '2026-09-13 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera Ready Deadline, date: '2026-10-15 23:59:00', tz: AoE}
+
+  # 根拠: https://www.pd-cat.org/2026/call_for_paper.html (2026-08-09 取得)
+  #   Paper Submission Deadline: 31 August 2026 (AoE) /
+  #   Notification 10 October 2026 / Camera-Ready 31 October 2026 /
+  #   Conference 4-6 December 2026, Changsha, China.
+  #   上流は 2025 版のみで rollforward が 2026-08-14 推定を出していた → 公式で置換。
+  - key: pdcat
+    title: PDCAT
+    full_name: International Conference on Parallel and Distributed Computing, Applications and Technologies
+    link: https://www.pd-cat.org/
+    categories: [hpc]
+    editions:
+      - year: 2026
+        id: pdcat26
+        link: https://www.pd-cat.org/2026/
+        place: Changsha, China
+        date_text: December 4-6, 2026
+        event_start: '2026-12-04'
+        event_end: '2026-12-06'
+        deadlines:
+          - {kind: paper, label: Paper Submission Deadline, date: '2026-08-31 23:59:00', tz: AoE}
+          - {kind: notification, label: Notification of Acceptance, date: '2026-10-10 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera-Ready Submission Deadline, date: '2026-10-31 23:59:00', tz: AoE}
+
+  # 根拠: https://sigops.org/s/conferences/hotos/2027/ (2026-08-09 取得)
+  #   Workshop May 24–26, 2027, Burghausen, Bavaria, Germany.
+  #   Paper/Panel Proposal Submission Deadline: TBA（未公開）→ deadlines なし。
+  #   上流は 2025 版のみで rollforward が 2027-01-14 推定 paper を出していた。
+  #   local の会期のみ 2027 版で推定を止める。
+  - key: hotos
+    title: HotOS
+    full_name: ACM SIGOPS Workshop on Hot Topics in Operating Systems
+    link: https://sigops.org/s/conferences/hotos/2027/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: hotos27
+        link: https://sigops.org/s/conferences/hotos/2027/
+        place: Burghausen, Bavaria, Germany
+        date_text: May 24-26, 2027
+        event_start: '2027-05-24'
+        event_end: '2027-05-26'
+        deadlines: []
+
+  # 根拠: https://satml.org/ (2026-08-09 取得) IEEE SaTML 2027
+  #   Paper submission deadline: Tue, Sep 29, 2026 (11:59 PM AoE) /
+  #   Conference: Early May, 2027, Reykjavik, Iceland.
+  #   上流 rollforward 推定は 2026-09-17（12 日早い）だった → 公式で置換。
+  - key: satml
+    title: SaTML
+    full_name: IEEE Conference on Secure and Trustworthy Machine Learning
+    link: https://satml.org/
+    categories: [security, ai]
+    editions:
+      - year: 2027
+        id: satml27
+        link: https://satml.org/
+        place: Reykjavik, Iceland
+        date_text: May, 2027
+        event_start: '2027-05-01'
+        event_end: '2027-05-31'
+        deadlines:
+          - {kind: paper, label: Paper submission deadline, date: '2026-09-29 23:59:00', tz: AoE}
+
+  # 根拠: https://2027.msrconf.org/ (2026-08-09 取得)
+  #   Technical Papers Abstract Fri 20 Oct 2026 / Paper Fri 23 Oct 2026 /
+  #   Conference Mon 26 - Tue 27 April 2027, Dublin, Ireland (co-located ICSE 2027).
+  #   上流推定は abs 10/6 paper 10/9（約 2 週早い）→ 公式で置換。
+  - key: msr
+    title: MSR
+    full_name: IEEE/ACM International Conference on Mining Software Repositories
+    link: https://2027.msrconf.org/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: msr27
+        link: https://2027.msrconf.org/
+        place: Dublin, Ireland
+        date_text: April 26-27, 2027
+        event_start: '2027-04-26'
+        event_end: '2027-04-27'
+        deadlines:
+          - {kind: abstract, label: Technical Papers Abstract, date: '2026-10-20 23:59:00', tz: AoE}
+          - {kind: paper, label: Technical Papers Paper Deadline, date: '2026-10-23 23:59:00', tz: AoE}
+
+  # 根拠: https://fg2027.ieee-biometrics.org/call-for-papers/ (2026-08-09 取得)
+  #   Abstract Friday October 9th, 2026 / Paper Friday October 16th, 2026 /
+  #   Conference April 26-30, 2027, Marrakesh, Morocco.
+  #   上流推定は abs 9/25 paper 10/2–10/6（約 2 週早い）→ 公式で置換。
+  - key: fg
+    title: FG
+    full_name: IEEE International Conference on Automatic Face and Gesture Recognition
+    link: https://fg2027.ieee-biometrics.org/
+    categories: [ai]
+    editions:
+      - year: 2027
+        id: fg27
+        link: https://fg2027.ieee-biometrics.org/
+        place: Marrakesh, Morocco
+        date_text: April 26-30, 2027
+        event_start: '2027-04-26'
+        event_end: '2027-04-30'
+        deadlines:
+          - {kind: abstract, label: Abstract submission deadline (main/special sessions), date: '2026-10-09 23:59:00', tz: AoE}
+          - {kind: paper, label: Paper submission deadline (main/special sessions), date: '2026-10-16 23:59:00', tz: AoE}
+
+  # 根拠: https://conf.researchr.org/home/icpc-2027 (2026-08-09 取得)
+  #   Research Track Paper Submission Deadline: Thu 5 Nov 2026 /
+  #   Conference Sun 25 - Mon 26 April 2027, Dublin (co-located ICSE 2027).
+  #   上流推定は abs 10/12 paper 10/16 → 公式 paper 11/5 で置換。
+  - key: icpc
+    title: ICPC
+    full_name: IEEE/ACM International Conference on Program Comprehension
+    link: https://conf.researchr.org/home/icpc-2027
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: icpc27
+        link: https://conf.researchr.org/home/icpc-2027
+        place: Dublin, Ireland
+        date_text: April 25-26, 2027
+        event_start: '2027-04-25'
+        event_end: '2027-04-26'
+        deadlines:
+          - {kind: paper, label: Research Track Paper Submission Deadline, date: '2026-11-05 23:59:00', tz: AoE}
+
+  # 根拠: https://algorithmiclearningtheory.org/alt2027/call-for-papers/ (2026-08-09 取得)
+  #   Paper submission deadline: October 12, 2026, 11:59 p.m. AoE /
+  #   Conference March 9–12, 2027, Leiden, the Netherlands.
+  #   上流推定は 2026-10-09 → 公式 10/12 で置換。
+  - key: alt
+    title: ALT
+    full_name: International Conference on Algorithmic Learning Theory
+    link: https://algorithmiclearningtheory.org/alt2027/
+    categories: [ai]
+    editions:
+      - year: 2027
+        id: alt27
+        link: https://algorithmiclearningtheory.org/alt2027/
+        place: Leiden, Netherlands
+        date_text: March 9-12, 2027
+        event_start: '2027-03-09'
+        event_end: '2027-03-12'
+        deadlines:
+          - {kind: paper, label: Paper submission deadline, date: '2026-10-12 23:59:00', tz: AoE}
+
+  # 根拠: https://conf.researchr.org/home/hpca-2027 (2026-08-09 取得)
+  #   Sat 20 - Wed 24 March 2027, Salt Lake City, Utah, co-located HPCA/CGO/PPoPP/CC 2027.
+  #   上流は 2027-01-30..02-03（HPCA 2026 系の日付混入）で会期が誤っていた。
+  #   Paper CFP は researchr に未掲載 → deadlines なし（会期のみで推定を止める）。
+  - key: hpca
+    title: HPCA
+    full_name: IEEE International Symposium on High-Performance Computer Architecture
+    link: https://conf.researchr.org/home/hpca-2027
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: hpca27
+        link: https://conf.researchr.org/home/hpca-2027
+        place: Salt Lake City, Utah, USA
+        date_text: March 20-24, 2027
+        event_start: '2027-03-20'
+        event_end: '2027-03-24'
+        deadlines: []
+
+  # 根拠: https://dac.com/2026 (2026-08-09 取得)「DAC 2027 July 11-14, 2027
+  #   San Jose Convention Center San Jose, CA」。投稿締切は未公開。
+  #   上流 rollforward が 2026-11-11/18 推定を出していた → 会期のみ real で置換。
+  - key: dac
+    title: DAC
+    full_name: Design Automation Conference
+    link: https://www.dac.com/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: dac27
+        link: https://www.dac.com/
+        place: San Jose Convention Center, San Jose, CA, USA
+        date_text: July 11-14, 2027
+        event_start: '2027-07-11'
+        event_end: '2027-07-14'
+        deadlines: []
+
+  # 根拠: https://conf.researchr.org/home/cgo-2027 (2026-08-09 取得)
+  #   Sat 20 - Wed 24 March 2027, Salt Lake City, co-located HPCA/CGO/PPoPP/CC 2027.
+  #   上流は place のみで event_start/end が空。R2 paper は 10 Sep 2026（上流 9/11 UTC で整合）。
+  - key: ieee-acm-cgo
+    title: IEEE/ACM CGO
+    full_name: IEEE/ACM International Symposium on Code Generation and Optimization
+    link: https://conf.researchr.org/home/cgo-2027
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: cgo27
+        link: https://conf.researchr.org/home/cgo-2027
+        place: Salt Lake City, Utah, USA
+        date_text: March 20-24, 2027
+        event_start: '2027-03-20'
+        event_end: '2027-03-24'
+        deadlines:
+          - {kind: paper, label: First Submission Deadline (R1), date: '2026-06-11 23:59:00', tz: AoE}
+          - {kind: paper, label: Second Submission Deadline (R2), date: '2026-09-10 23:59:00', tz: AoE}
+
+  # 根拠: https://2027.eurosys.org/cfp.html (2026-08-09 取得)
+  #   Conference April 19—23, 2027 Rabat. 上流 event_end が 04-24（1 日長い）。
+  #   Fall abs Sep 17 / paper Sep 24 AoE は上流 UTC 9/18・9/25 と整合 → 会期のみ上書き。
+  - key: eurosys
+    title: EuroSys
+    full_name: European Conference on Computer Systems
+    link: https://2027.eurosys.org/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: eurosys27
+        link: https://2027.eurosys.org/
+        place: Rabat, Morocco
+        date_text: April 19-23, 2027
+        event_start: '2027-04-19'
+        event_end: '2027-04-23'
+
+  # 根拠: https://www.sigmobile.org/mobicom/2026/ (2026-08-09 取得)
+  #   「Oct 26-30, 2026, Austin, Texas, USA」。上流は November, 2026 の月のみ
+  #   （2026-11-01..11-30）で 1 ヶ月ずれ。
+  - key: mobicom
+    title: MobiCom
+    full_name: ACM International Conference on Mobile Computing and Networking
+    link: https://www.sigmobile.org/mobicom/2026/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: mobicom26
+        link: https://www.sigmobile.org/mobicom/2026/
+        place: Austin, Texas, USA
+        date_text: October 26-30, 2026
+        event_start: '2026-10-26'
+        event_end: '2026-10-30'
+
+  # 根拠: https://www.sigcomm.org/events/conext-conference (2026-08-09 取得)
+  #   「CoNEXT’26, Utrecht, The Netherlands, 7 - 11 December 2026」。
+  #   上流は December 7-10（終了日が 1 日短い）。
+  - key: conext
+    title: CoNEXT
+    full_name: International Conference on emerging Networking EXperiments and Technologies
+    link: https://conferences.sigcomm.org/co-next/2026/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: conext26
+        link: https://conferences.sigcomm.org/co-next/2026/
+        place: Utrecht, The Netherlands
+        date_text: December 7-11, 2026
+        event_start: '2026-12-07'
+        event_end: '2026-12-11'
+
+  # -------------------------------------------------- 穴場・ワークショップ・ジャーナル (Niche) --
+  # 根拠: https://nvmw.ucsd.edu/ (2026-08-09 取得)
+  #   Non-Volatile Memories Workshop (NVMW 2026) March 8-10, 2026, UCSD San Diego.
+  #   ストレージ・非揮発性メモリの穴場著名ワークショップ。
+  - key: nvmw
+    title: NVMW
+    full_name: Non-Volatile Memories Workshop
+    link: https://nvmw.ucsd.edu/
+    categories: [systems]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: nvmw26
+        link: https://nvmw.ucsd.edu/
+        place: UCSD, San Diego, CA, USA
+        date_text: March 8-10, 2026
+        event_start: '2026-03-08'
+        event_end: '2026-03-10'
+        deadlines: []
+
+  # 根拠: https://www.eurosec.org/ (2026-08-09 取得)
+  #   European Workshop on Systems Security (EuroSec 2026) April 20, 2026, co-located EuroSys.
+  #   システムセキュリティ特化型ワークショップ。
+  - key: eurosec
+    title: EuroSec
+    full_name: European Workshop on Systems Security
+    link: https://www.eurosec.org/
+    categories: [security, systems]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: eurosec26
+        link: https://www.eurosec.org/
+        place: Europe
+        date_text: April 20, 2026
+        event_start: '2026-04-20'
+        event_end: '2026-04-20'
+        deadlines: []
+
+  # 根拠: https://www.edgesys.org/ (2026-08-09 取得)
+  #   EdgeSys 2026: ACM International Workshop on Edge Systems, Analytics and Networking.
+  #   エッジコンピューティング・分散アナリティクスの穴場国際ワークショップ。
+  - key: edgesys
+    title: EdgeSys
+    full_name: ACM International Workshop on Edge Systems, Analytics and Networking
+    link: https://www.edgesys.org/
+    categories: [systems, networking]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: edgesys26
+        link: https://www.edgesys.org/
+        place: Online / Co-located
+        date_text: May 15, 2026
+        event_start: '2026-05-15'
+        event_end: '2026-05-15'
+        deadlines: []
+
+  # 根拠: https://www.computer.org/csdl/magazine/mu (2026-08-09 取得)
+  #   IEEE Micro Special Issue on Microarchitecture and System Architecture.
+  #   Topical Journal / Magazine Call for Papers.
+  - key: ieee-micro
+    title: IEEE Micro
+    full_name: IEEE Micro Special Issues Call for Papers
+    link: https://www.computer.org/csdl/magazine/mu
+    categories: [systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.sciencedirect.com/journal/journal-of-parallel-and-distributed-computing (2026-08-09 取得)
+  #   Journal of Parallel and Distributed Computing (JPDC) Elsevier.
+  #   HPC/並列分散計算分野のオープンジャーナル投稿枠。
+  - key: jpdc
+    title: JPDC
+    full_name: Journal of Parallel and Distributed Computing (Elsevier)
+    link: https://www.sciencedirect.com/journal/journal-of-parallel-and-distributed-computing
+    categories: [hpc, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.percom.org/ (2026-08-09 取得)
+  #   IEEE PerCom 2026 Workshops (Pervasive Computing and Communications).
+  #   モバイル・エッジ・IoT計算の主要ワークショップ群。
+  - key: percom-workshops
+    title: PerCom Workshops
+    full_name: IEEE International Conference on Pervasive Computing and Communications Workshops
+    link: https://www.percom.org/
+    categories: [networking, systems]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: percom-ws26
+        link: https://www.percom.org/
+        place: IEEE PerCom Co-located
+        date_text: March 16-20, 2026
+        event_start: '2026-03-16'
+        event_end: '2026-03-20'
+        deadlines: []
+
+  # 根拠: https://ccgrid2026.github.io/ (2026-08-09 取得)
+  #   IEEE/ACM CCGrid 2026 Workshops.
+  #   クラウド・並列分散計算の特化ワークショップ。
+  - key: ccgrid-workshops
+    title: CCGrid Workshops
+    full_name: IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing Workshops
+    link: https://ccgrid2026.github.io/
+    categories: [hpc, systems]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: ccgrid-ws26
+        link: https://ccgrid2026.github.io/
+        place: Co-located
+        date_text: May 11-14, 2026
+        event_start: '2026-05-11'
+        event_end: '2026-05-14'
+        deadlines: []
+
+  # 根拠: https://tnsm.ieee-comsoc.org/ (2026-08-09 取得)
+  #   IEEE Transactions on Network and Service Management (TNSM) Special Issues.
+  #   ネットワーク運用・計測管理の主要学会誌 Call for Papers.
+  - key: ieee-tnsm
+    title: IEEE TNSM
+    full_name: IEEE Transactions on Network and Service Management
+    link: https://tnsm.ieee-comsoc.org/
+    categories: [networking, systems]
+    tags: [niche, journal]
+    editions: []
+
+

@@ -1,0 +1,29 @@
+# Reduced copy of huggingface/ai-deadlines src/data/conferences/acl.yml (MIT).
+# Edge case: same conference key as ccfddl conference/AI/acl.yml -> exercises cross-source
+# merge (structured start/end here, only free-text `date` upstream in ccfddl).
+- title: ACL
+  year: 2026
+  id: acl26
+  full_name: Annual Meeting of the Association for Computational Linguistics
+  link: https://2026.aclweb.org/
+  date: July 2 - 7, 2026
+  start: '2026-07-02'
+  end: '2026-07-07'
+  deadlines:
+    - type: paper
+      label: Paper submission deadline
+      date: '2026-01-05 23:59:59'
+      timezone: AoE
+    - type: review_release
+      label: ARR reviews available
+      date: '2026-03-10 23:59:59'
+      timezone: AoE
+    - type: commitment_deadline
+      label: ARR commitment deadline
+      date: '2026-03-14 23:59:59'
+      timezone: AoE
+  city: San Diego
+  country: USA
+  era_rating: a
+  tags:
+  - natural-language-processing
