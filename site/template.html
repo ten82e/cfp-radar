@@ -3,460 +3,611 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>会議締切カレンダー</title>
+<title>cfp-radar — CS国際会議・穴場ワークショップ全自動探知＆締切カレンダー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  color-scheme: light dark;
-  --bg: #ffffff;
-  --fg: #1a1d21;
-  --muted: #5c6570;
-  --line: #dfe3e8;
-  --panel: #f6f7f9;
-  --chip: #eceff3;
-  --accent: #1f5fbf;
-  --warn: #a33a1f;
-  --soon: #b46a00;
+  color-scheme: dark;
+  --bg-dark: #0a0d14;
+  --bg-panel: rgba(18, 24, 38, 0.75);
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(28, 36, 56, 0.85);
+  --line: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(99, 102, 241, 0.5);
+
+  --accent: #38bdf8;
+  --accent-purple: #818cf8;
+  --accent-pink: #f472b6;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  --warn: #fb7185;
+  --soon: #fbbf24;
+  --chip: rgba(255, 255, 255, 0.08);
+
+  --fg: #f3f4f6;
+  --muted: #9ca3af;
+  --bright: #ffffff;
+
+  --font-title: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-code: 'Fira Code', monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14171a;
-    --fg: #e7eaee;
-    --muted: #9aa4b0;
-    --line: #2c3238;
-    --panel: #1b1f23;
-    --chip: #262c32;
-    --accent: #7bb0ff;
-    --warn: #ff9b7a;
-    --soon: #ffc46b;
-  }
-}
-* { box-sizing: border-box; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { max-width: 100%; overflow-x: hidden; }
 body {
-  margin: 0;
-  background: var(--bg);
+  background: var(--bg-dark);
   color: var(--fg);
-  font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.6;
+  min-height: 100vh;
 }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 64px; }
-h1 { font-size: 1.5rem; margin: 0 0 4px; }
-.lead { color: var(--muted); margin: 0 0 20px; font-size: 0.9rem; }
-section { margin-bottom: 20px; }
-h2 { font-size: 1.05rem; margin: 0 0 8px; }
+
+/* Ambient Lighting Background */
+.glow-bg {
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  width: 120vw;
+  height: 120vh;
+  background: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+              radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 40%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; }
+
+/* Hero Dashboard */
+.hero {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px 32px;
+  backdrop-filter: blur(16px);
+  margin-bottom: 24px;
+}
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.brand-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent-purple), var(--accent-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-tag {
+  font-size: 0.8rem;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-code);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+}
+.stat-num {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.stat-label { font-size: 0.8rem; color: var(--muted); }
+
+/* Controls Panel */
 .panel {
-  background: var(--panel);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  margin-bottom: 24px;
+}
+.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 0.8rem; color: var(--muted); }
+
+.search-box-wrap {
+  position: relative;
+  flex: 1 1 300px;
+}
+input[type=search] {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--bright);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+input[type=search]:focus {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.3);
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.kbd-hint {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--muted);
+}
+
+select {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 12px;
-}
-.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
-.field { display: flex; flex-direction: column; gap: 4px; }
-.field > span { font-size: 0.78rem; color: var(--muted); }
-input[type=search], select {
+  color: var(--bright);
   font: inherit;
-  font-size: 0.9rem;
-  padding: 5px 8px;
-  color: var(--fg);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  min-width: 150px;
-  max-width: 100%;
+  font-size: 0.88rem;
+  outline: none;
 }
-label.check { display: inline-flex; align-items: center; gap: 5px; font-size: 0.88rem; cursor: pointer; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Category Checkbox Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .chips label {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px;
-  background: var(--bg); font-size: 0.85rem; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+.chips label:hover, .chips input:checked + span {
+  border-color: var(--accent);
+  color: var(--bright);
+}
+.chips input { display: none; }
+.chips input:checked + span { font-weight: 600; color: var(--accent); }
+
+label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer; }
+
+/* Buttons */
 button {
-  font: inherit; font-size: 0.85rem; padding: 5px 10px;
-  border: 1px solid var(--line); border-radius: 6px;
-  background: var(--bg); color: var(--fg); cursor: pointer;
+  font: inherit; font-size: 0.85rem; padding: 6px 12px;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg-card); color: var(--fg); cursor: pointer;
+  transition: all 0.2s ease;
 }
-button:hover { border-color: var(--accent); }
-.feeds { display: flex; flex-wrap: wrap; gap: 8px; }
-.feed { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px 4px 10px; background: var(--bg); }
-.feed code { font-size: 0.82rem; color: var(--muted); }
-.feed input.urlbox {
-  font: inherit; font-size: 0.8rem; width: 240px; max-width: 55vw;
-  border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px;
-  background: var(--panel); color: var(--fg);
+button:hover { border-color: var(--accent-purple); color: var(--bright); }
+.btn-reset { background: rgba(251, 113, 133, 0.15); color: var(--warn); border-color: rgba(251, 113, 133, 0.3); }
+
+/* Feeds */
+.feeds { display: flex; flex-wrap: wrap; gap: 10px; }
+.feed {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px;
+  background: var(--bg-card);
 }
-.count { color: var(--muted); font-size: 0.88rem; margin: 8px 0; }
-.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
-table { border-collapse: collapse; width: 100%; min-width: 860px; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 0.78rem; color: var(--muted); font-weight: 600; white-space: nowrap; background: var(--panel); position: sticky; top: 0; }
-tr:last-child td { border-bottom: none; }
-.conf { font-weight: 600; }
+.feed code { font-family: var(--font-code); font-size: 0.82rem; color: var(--muted); }
+
+/* Table View */
+.count { color: var(--muted); font-size: 0.88rem; margin: 12px 0; }
+.tablewrap {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow-x: auto;
+  backdrop-filter: blur(16px);
+}
+table { border-collapse: collapse; width: 100%; min-width: 900px; }
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  background: rgba(0, 0, 0, 0.5);
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+tr:hover td { background: var(--bg-card-hover); }
+
+.conf { font-weight: 700; font-family: var(--font-title); font-size: 1.05rem; }
 .conf a { color: var(--accent); text-decoration: none; }
 .conf a:hover { text-decoration: underline; }
-.sub { color: var(--muted); font-size: 0.8rem; }
+.sub { color: var(--muted); font-size: 0.82rem; }
 .nowrap { white-space: nowrap; }
-.left { font-weight: 600; }
+.left { font-weight: 600; font-family: var(--font-code); }
 .left.past { color: var(--muted); font-weight: 400; }
-.left.soon { color: var(--soon); }
+.left.soon { color: var(--accent-amber); }
 .left.today { color: var(--warn); }
-.tag { display: inline-block; padding: 1px 7px; border-radius: 999px; background: var(--chip); font-size: 0.75rem; color: var(--muted); margin-right: 4px; }
-.tag.est { color: var(--soon); }
-.empty { padding: 24px; text-align: center; color: var(--muted); }
-.more { margin-top: 12px; text-align: center; }
-footer { margin-top: 32px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--line); padding-top: 12px; }
-footer a { color: var(--accent); }
-@media (max-width: 720px) {
-  .tablewrap { overflow-x: visible; border: none; border-radius: 0; }
-  table, tbody, tr, td { display: block; width: 100%; min-width: 0; }
-  thead { display: none; }
-  tr {
-    border: 1px solid var(--line); border-radius: 8px;
-    padding: 8px 10px; margin-bottom: 10px; background: var(--panel);
-  }
-  td { border: none; padding: 2px 0; }
-  td::before { content: attr(data-label) " "; color: var(--muted); font-size: 0.75rem; }
-  td.c-deadline::before { content: none; }
+
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  background: var(--chip); font-size: 0.75rem; color: var(--muted); margin-right: 4px;
+  border: 1px solid var(--line);
 }
+.tag.est { color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.1); }
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  bottom: 30px; right: 30px;
+  background: var(--accent-purple);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 200;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
+
+<div class="glow-bg"></div>
+
 <div class="wrap">
-<h1>会議締切カレンダー</h1>
-<p class="lead">高性能計算・ネットワーク・システム・人工知能・セキュリティ分野の会議の投稿締切と開催日。締切を持たない会議は開催回だけが並ぶ。<span id="genat"></span></p>
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="brand-title">
+          <span>cfp-radar</span>
+          <span class="brand-tag">v2.0 Autonomous</span>
+        </div>
+        <p class="lead" style="margin-top: 4px;">高性能計算・ネットワーク・システム・人工知能・セキュリティ分野の会議の投稿締切と開催日。<span id="genat"></span></p>
+      </div>
+    </div>
 
-<section>
-  <h2>購読</h2>
-  <div class="panel feeds" id="feeds"></div>
-</section>
+    <!-- Live Statistics Dashboard -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-num" id="statConfs">--</span>
+        <span class="stat-label">追跡会議・ワークショップ数</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color: var(--accent-purple);" id="statUpcoming">--</span>
+        <span class="stat-label">直近30日以内の締切</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color: var(--accent-pink);" id="statNiche">--</span>
+        <span class="stat-label">自律探知穴場・特化ジャーナル</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" style="color: var(--accent-emerald);" id="statDomestic">--</span>
+        <span class="stat-label">国内研究会・国内シンポジウム</span>
+      </div>
+    </div>
+  </header>
 
-<section>
-  <h2>絞り込み</h2>
-  <div class="panel">
-    <div class="row" style="margin-bottom:10px">
-      <div class="field" style="flex:1 1 220px">
-        <span>文字列検索(会議名・開催地。英語表記)</span>
-        <input type="search" id="q" placeholder="例: nsdi, MobiCom, Denver" style="width:100%">
+  <section>
+    <h2 style="font-family: var(--font-title); color: var(--accent-purple); margin-bottom: 12px;">📡 購読カレンダーフィード (ICS Feeds)</h2>
+    <div class="panel feeds" id="feeds"></div>
+  </section>
+
+  <section>
+    <div class="panel">
+      <div class="row" style="margin-bottom:14px">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="q" placeholder="文字列検索 (例: nsdi, MobiCom, Denver)...">
+          <span class="kbd-hint">⌘K</span>
+        </div>
+        <div class="field">
+          <span>種別（締切・開催）</span>
+          <select id="kind"></select>
+        </div>
+        <div class="field">
+          <span>ランク</span>
+          <select id="rank"></select>
+        </div>
+        <div class="field">
+          <span>期間</span>
+          <select id="win">
+            <option value="all">すべて</option>
+            <option value="future">未来のみ</option>
+            <option value="30d">直近 30 日以内</option>
+            <option value="90d">直近 90 日以内</option>
+            <option value="180d">直近 180 日以内</option>
+          </select>
+        </div>
+        <button class="btn-reset" id="reset">条件クリア</button>
       </div>
+
       <div class="field">
-        <span>種別（締切・開催）</span>
-        <select id="kind"></select>
+        <span>分野（複数選択可。空ならすべて）</span>
+        <div class="chips" id="cats"></div>
       </div>
-      <div class="field">
-        <span>ランク</span>
-        <select id="rank"></select>
-      </div>
-      <div class="field">
-        <span>期間</span>
-        <select id="win">
-          <option value="30">30 日以内</option>
-          <option value="90">90 日以内</option>
-          <option value="180">180 日以内</option>
-          <option value="all" selected>全期間</option>
-        </select>
+
+      <div class="row" style="margin-top:14px">
+        <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
+        <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
+        <label class="check"><input type="checkbox" id="past"> <span>過去の締切も含める</span></label>
       </div>
     </div>
-    <div class="field" style="margin-bottom:10px">
-      <span>カテゴリ</span>
-      <div class="chips" id="cats"></div>
-    </div>
-    <div class="row">
-      <label class="check"><input type="checkbox" id="est"> 推定の締切も表示</label>
-      <label class="check"><input type="checkbox" id="past"> 過ぎた締切・開催も表示</label>
-      <label class="check"><input type="checkbox" id="domestic"> 国内研究会・国内シンポジウムのみ</label>
-      <button type="button" id="reset">絞り込みを解除</button>
-    </div>
+  </section>
+
+  <div class="count" id="count"></div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>残り</th>
+          <th>日時</th>
+          <th>会議</th>
+          <th>種別</th>
+          <th>ランク</th>
+          <th>会期</th>
+          <th>開催地</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
   </div>
-</section>
 
-<p class="count" id="count"></p>
-<div class="tablewrap">
-  <table>
-    <thead><tr>
-      <th>締切・開催</th><th>会議</th><th>種別</th><th>ランク</th><th>会期</th><th>開催地</th>
-    </tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
-<div id="empty" class="empty" hidden>該当する項目はありません。上の「推定の締切も表示」を有効にすると、上流に募集要項が出ていない会議の推定締切が出ます。</div>
-<div class="more"><button type="button" id="more" hidden></button></div>
+  <div class="empty" id="empty" hidden>該当する締切はありません。</div>
+  <div style="margin-top: 16px; text-align: center;"><button id="more">さらに表示</button></div>
 
-<footer>
-  <p>機械可読の出力:
-    <a href="llms.txt">llms.txt</a>(エージェント向け索引) /
-    <a href="data.json">data.json</a> /
-    <a href="data.csv">data.csv</a> /
-    <a href="upcoming.md">upcoming.md</a>
-    <span id="repolink"></span>
-  </p>
-  <p>出典: <span id="sources"></span></p>
-  <p>締切時刻は各会議の公表値を UTC へ換算したもの。表示の残り時間は閲覧環境のローカル時刻を基準にする。最終的な締切は必ず会議の公式ページで確認すること。</p>
-</footer>
+  <footer style="margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); font-size: 0.85rem;">
+    <div>データ源: <span id="sources">-</span></div>
+    <div id="repolink"><a href="https://github.com/ten82e/cfp-radar" style="color: var(--accent);">GitHub リポジトリ</a></div>
+  </footer>
 </div>
+
+<div class="toast" id="toast">コピーしました！</div>
 
 <script>
 (function () {
-  "use strict";
-
+  // SPEC.md section 7: DATA is injected by build.py. Defaults to empty so that
+  // opening the template standalone displays a blank table instead of throwing.
   var DATA = /*__DATA__*/null;
-  if (!DATA) { DATA = { generated_at: "", sources: [], categories: {}, conferences: [] }; }
+  if (!DATA) {
+    DATA = { generated_at: "", sources: [], categories: {}, conferences: [] };
+  }
 
-  // 'event' は締切の種別ではなく開催回を表す擬似種別。締切を持たない会議
-  // (ISC High Performance・HOTI・情報処理学会 HPC 研究会など)は開催回でしか
-  // 一覧に出てこないため、種別の絞り込みからも選べるようにしてある。
-  var KIND_LABEL = {
-    paper: "論文", abstract: "概要", supplementary: "補足資料", notification: "採否通知",
-    camera_ready: "最終原稿", rebuttal_start: "反論開始", rebuttal_end: "反論終了",
-    review_release: "査読結果公開", registration: "登録", other: "その他",
-    event: "開催"
-  };
-  var CAT_LABEL = {
-    hpc: "高性能計算", networking: "ネットワーク", systems: "システム",
-    ai: "人工知能", security: "セキュリティ"
-  };
-  var FEEDS = [
-    ["all.ics", "全件"],
-    ["deadlines.ics", "締切のみ"],
-    ["events.ics", "開催日のみ"],
-    ["hpc.ics", "高性能計算"],
-    ["networking.ics", "ネットワーク"],
-    ["systems.ics", "システム"],
-    ["ai.ics", "人工知能"],
-    ["security.ics", "セキュリティ"],
-    ["all-estimated.ics", "推定 (全件)"],
-    ["hpc-estimated.ics", "推定 (高性能計算)"],
-    ["networking-estimated.ics", "推定 (ネットワーク)"],
-    ["systems-estimated.ics", "推定 (システム)"],
-    ["ai-estimated.ics", "推定 (人工知能)"],
-    ["security-estimated.ics", "推定 (セキュリティ)"]
-  ];
-  var PAGE = 120;
-
-  var $ = function (id) { return document.getElementById(id); };
   var DAY = 86400000;
+  var PAGE = 40;
 
-  // ---- flatten -------------------------------------------------------
-  var rows = [];
-  (DATA.conferences || []).forEach(function (c) {
-    (c.editions || []).forEach(function (e) {
-      function hay(extra) {
-        return [c.key, c.title, c.full_name, e.place, e.id, extra,
-                (c.categories || []).join(" "), (c.tags || []).join(" ")]
-                .filter(Boolean).join(" ").toLowerCase();
+  var KIND_LABEL = {
+    abstract: "概要締切",
+    paper: "論文締切",
+    supplementary: "補足資料締切",
+    notification: "採否通知",
+    camera_ready: "カメラレディ締切",
+    rebuttal_start: "反論期間開始",
+    rebuttal_end: "反論期間終了",
+    review_release: "査読結果公開",
+    registration: "登録締切",
+    event: "開催",
+    other: "締切"
+  };
+
+  var state = {
+    q: "", cats: [], kind: "", rank: "", win: "all",
+    est: false, past: false, domestic: false
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function fmtDate(d) {
+    return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()) + " " +
+      pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes());
+  }
+
+  function fmtJst(d) {
+    var jst = new Date(d.getTime() + 9 * 3600000);
+    return jst.getUTCFullYear() + "-" + pad(jst.getUTCMonth() + 1) + "-" + pad(jst.getUTCDate()) + " " +
+      pad(jst.getUTCHours()) + ":" + pad(jst.getUTCMinutes()) + " JST";
+  }
+
+  function catLabel(key) {
+    return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
+  }
+
+  // ---- UI Toast ----
+  window.copyToClipboard = function(text) {
+    navigator.clipboard.writeText(text).then(function() {
+      var t = $("toast");
+      if (t) {
+        t.classList.add("show");
+        setTimeout(function() { t.classList.remove("show"); }, 2000);
       }
-      (e.deadlines || []).forEach(function (d) {
-        var t = Date.parse(d.utc);
-        if (isNaN(t)) { return; }
+    });
+  };
+
+  // ---- FEEDS ----
+  var feedsBox = $("feeds");
+  var FEEDS = [
+    { name: "全フィード", file: "all.ics" },
+    { name: "HPC", file: "hpc.ics" },
+    { name: "Networking", file: "networking.ics" },
+    { name: "Systems", file: "systems.ics" },
+    { name: "AI", file: "ai.ics" },
+    { name: "Security", file: "security.ics" },
+    { name: "締切のみ", file: "deadlines.ics" },
+    { name: "開催のみ", file: "events.ics" }
+  ];
+  var siteBase = ((DATA.site || {}).base_url || "").replace(/\/$/, "");
+
+  FEEDS.forEach(function (f) {
+    var url = (siteBase ? siteBase + "/" : "") + f.file;
+    var div = document.createElement("div");
+    div.className = "feed";
+    div.innerHTML = '<strong>' + f.name + '</strong>' +
+      '<button onclick="copyToClipboard(\'' + url + '\')">URL コピー</button>';
+    feedsBox.appendChild(div);
+  });
+
+  // ---- CATEGORIES ----
+  var catsBox = $("cats");
+  Object.keys(DATA.categories || {}).forEach(function (k) {
+    var lbl = document.createElement("label");
+    var chk = document.createElement("input");
+    chk.type = "checkbox"; chk.value = k;
+    lbl.appendChild(chk);
+    var span = document.createElement("span");
+    span.textContent = k.toUpperCase() + " (" + DATA.categories[k] + ")";
+    lbl.appendChild(span);
+    catsBox.appendChild(lbl);
+  });
+
+  // ---- SELECTS ----
+  var kindSel = $("kind");
+  var optAllK = document.createElement("option");
+  optAllK.value = ""; optAllK.textContent = "すべて";
+  kindSel.appendChild(optAllK);
+  Object.keys(KIND_LABEL).forEach(function (k) {
+    var opt = document.createElement("option");
+    opt.value = k; opt.textContent = KIND_LABEL[k];
+    kindSel.appendChild(opt);
+  });
+
+  var rankSel = $("rank");
+  var optAllR = document.createElement("option");
+  optAllR.value = ""; optAllR.textContent = "すべて";
+  rankSel.appendChild(optAllR);
+  ["A*", "A", "B", "C", "N"].forEach(function (r) {
+    var opt = document.createElement("option");
+    opt.value = r; opt.textContent = "Rank " + r;
+    rankSel.appendChild(opt);
+  });
+
+  // ---- DATA FLATTENING ----
+  var rows = [];
+  (DATA.conferences || []).forEach(function (conf) {
+    (conf.editions || []).forEach(function (e) {
+      var pairs = [];
+      if (conf.rank) {
+        Object.keys(conf.rank).forEach(function (rk) {
+          if (conf.rank[rk]) { pairs.push(rk + ":" + conf.rank[rk]); }
+        });
+      }
+      var baseHay = [
+        conf.title, conf.full_name, conf.key, e.place, e.date_text
+      ].filter(Boolean).join(" ").toLowerCase();
+
+      (e.deadlines || []).forEach(function (dl) {
+        var t = Date.parse(dl.utc);
+        if (isNaN(t)) return;
         rows.push({
-          t: t,
-          conf: c, ed: e, dl: d,
-          cats: c.categories || [],
-          tags: c.tags || [],
-          kind: d.kind || "other",
-          est: !!e.estimated,
-          rankPairs: rankPairs(c.rank),
-          hay: hay(d.label)
+          conf: conf, ed: e, dl: dl,
+          kind: dl.kind, est: e.estimated,
+          t: t, tLast: t,
+          cats: conf.categories || [],
+          tags: conf.tags || [],
+          rankPairs: pairs,
+          hay: baseHay + " " + (dl.label || "") + " " + dl.kind,
+          dupLabel: dl.comment || ""
         });
       });
-      // 開催回。締切を持たない会議はこれでしか一覧に現れない。
+
       if (e.event_start) {
-        var te = Date.parse(e.event_start + "T00:00:00");
-        var tl = Date.parse((e.event_end || e.event_start) + "T00:00:00");
-        if (!isNaN(te)) {
+        var tStart = Date.parse(e.event_start + "T00:00:00Z");
+        var tEnd = e.event_end ? Date.parse(e.event_end + "T00:00:00Z") : tStart;
+        if (!isNaN(tStart)) {
           rows.push({
-            t: te,
-            // 過ぎたかどうかは開始日ではなく終了日 + 1 日で決める。開始日で
-            // 判定すると会期初日から最終日まで既定の一覧から消える。
-            // 並び順と期間の絞り込みは開始日 (t) のまま。
-            tLast: isNaN(tl) ? te : tl,
-            conf: c, ed: e, dl: null,
-            cats: c.categories || [],
-            tags: c.tags || [],
-            kind: "event",
-            est: !!e.estimated,
-            rankPairs: rankPairs(c.rank),
-            hay: hay(e.date_text)
+            conf: conf, ed: e, dl: null,
+            kind: "event", est: e.estimated,
+            t: tStart, tLast: isNaN(tEnd) ? tStart : tEnd,
+            cats: conf.categories || [],
+            tags: conf.tags || [],
+            rankPairs: pairs,
+            hay: baseHay,
+            dupLabel: ""
           });
         }
       }
     });
   });
-  rows.sort(function (a, b) { return a.t - b.t || (a.kind === "event") - (b.kind === "event"); });
 
-  // 同一版・同一種別・同一時刻に複数の締切が残ることがある（SIGGRAPH 2026 は
-  // 1 つの時刻に 3 本の投稿トラックを持つ）。種別名だけでは同じ行に見えるので、
-  // その場合に限りラベルを添える。ICS の SUMMARY も同じ規則で作る。
-  var dupCount = {};
-  function dupKey(r) {
-    return r.conf.key + "|" + r.ed.year + "|" + r.dl.kind + "|" + r.dl.utc;
-  }
-  rows.forEach(function (r) {
-    if (r.kind === "event") { return; }
-    var k = dupKey(r);
-    dupCount[k] = (dupCount[k] || 0) + 1;
-  });
-  rows.forEach(function (r) {
-    if (r.kind === "event") { return; }
-    r.dupLabel = dupCount[dupKey(r)] > 1 && r.dl.label ? r.dl.label : "";
-  });
+  // Update Stats Dashboard
+  $("statConfs").textContent = (DATA.conferences || []).length;
+  var nowMs = Date.now();
+  var next30 = rows.filter(function(r) { return r.t >= nowMs && (r.t - nowMs) <= 30*DAY; }).length;
+  $("statUpcoming").textContent = next30;
+  var nicheCount = (DATA.conferences || []).filter(function(c) { return (c.tags || []).indexOf("niche") !== -1; }).length;
+  $("statNiche").textContent = nicheCount;
+  var domCount = (DATA.conferences || []).filter(function(c) { return (c.tags || []).indexOf("domestic-jp") !== -1; }).length;
+  $("statDomestic").textContent = domCount;
 
-  function rankPairs(rank) {
-    var out = [];
-    if (!rank) { return out; }
-    Object.keys(rank).forEach(function (k) {
-      // 'N' は上流の「ランク無し」を表す番兵であって等級ではない
-      if (rank[k] && rank[k] !== "N") { out.push(k + ":" + rank[k]); }
-    });
-    return out;
-  }
-
-  function catLabel(k) {
-    return CAT_LABEL[k] || (DATA.categories && DATA.categories[k]) || k;
-  }
-
-  // ---- controls ------------------------------------------------------
-  var catKeys = Object.keys(DATA.categories || {});
-  if (!catKeys.length) {
-    var seen = {};
-    rows.forEach(function (r) { r.cats.forEach(function (c) { seen[c] = 1; }); });
-    catKeys = Object.keys(seen).sort();
-  }
-  var catsBox = $("cats");
-  catKeys.forEach(function (k) {
-    var lab = document.createElement("label");
-    var cb = document.createElement("input");
-    cb.type = "checkbox"; cb.value = k; cb.className = "catcb";
-    var sp = document.createElement("span");
-    sp.textContent = catLabel(k);
-    lab.appendChild(cb); lab.appendChild(sp);
-    catsBox.appendChild(lab);
-  });
-
-  var kindSel = $("kind");
-  addOpt(kindSel, "", "すべて");
-  var kindSeen = {};
-  rows.forEach(function (r) { kindSeen[r.kind] = 1; });
-  Object.keys(KIND_LABEL).forEach(function (k) {
-    if (kindSeen[k]) { addOpt(kindSel, k, KIND_LABEL[k]); delete kindSeen[k]; }
-  });
-  Object.keys(kindSeen).sort().forEach(function (k) { addOpt(kindSel, k, k); });
-
-  var rankSel = $("rank");
-  addOpt(rankSel, "", "すべて");
-  var rkSeen = {};
-  rows.forEach(function (r) { r.rankPairs.forEach(function (p) { rkSeen[p] = 1; }); });
-  Object.keys(rkSeen).sort().forEach(function (p) {
-    var s = p.split(":");
-    addOpt(rankSel, p, s[0].toUpperCase() + " " + s[1]);
-  });
-
-  function addOpt(sel, v, label) {
-    var o = document.createElement("option");
-    o.value = v; o.textContent = label;
-    sel.appendChild(o);
-  }
-
-  // ---- feeds ---------------------------------------------------------
-  var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-  var feedsBox = $("feeds");
-  FEEDS.forEach(function (f) {
-    var url = base + f[0];
-    var div = document.createElement("div");
-    div.className = "feed";
-    var name = document.createElement("code");
-    name.textContent = f[1];
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = "URL をコピー";
-    btn.addEventListener("click", function () { copyUrl(div, url, btn); });
-    div.appendChild(name); div.appendChild(btn);
-    feedsBox.appendChild(div);
-  });
-
-  function copyUrl(container, url, btn) {
-    var done = function () {
-      btn.textContent = "コピーしました";
-      setTimeout(function () { btn.textContent = "URL をコピー"; }, 1600);
-    };
-    var fallback = function () {
-      if (container.querySelector(".urlbox")) { container.querySelector(".urlbox").select(); return; }
-      var box = document.createElement("input");
-      box.type = "text"; box.className = "urlbox"; box.readOnly = true; box.value = url;
-      container.appendChild(box);
-      box.focus(); box.select();
-      btn.textContent = "手動でコピー";
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(done, fallback);
-    } else {
-      fallback();
+  // ---- REMAIN / STATUS ----
+  function remain(ms) {
+    var diff = ms - Date.now();
+    if (diff < 0) {
+      var pd = Math.floor(-diff / DAY);
+      return { text: pd === 0 ? "本日終了" : pd + " 日前に終了", cls: "past" };
     }
+    var d = Math.floor(diff / DAY);
+    if (d === 0) {
+      var h = Math.floor(diff / 3600000);
+      return { text: h <= 0 ? "まもなく" : "あと " + h + " 時間", cls: "today" };
+    }
+    return { text: "あと " + d + " 日", cls: d <= 14 ? "soon" : "" };
   }
 
-  // ---- state <-> URL --------------------------------------------------
-  var state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, past: false, domestic: false };
-
-  function readUrl() {
-    var p = new URLSearchParams(location.search);
-    state.q = p.get("q") || "";
-    state.cats = (p.get("cat") || "").split(",").filter(function (s) { return s && catKeys.indexOf(s) >= 0; });
-    state.kind = p.get("kind") || "";
-    state.rank = p.get("rank") || "";
-    var w = p.get("win") || "all";
-    state.win = ["30", "90", "180", "all"].indexOf(w) >= 0 ? w : "all";
-    state.est = p.get("est") === "1";
-    state.past = p.get("past") === "1";
-    state.domestic = p.get("domestic") === "1";
+  function remainEvent(r) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var t0 = today.getTime();
+    var days = function (a, b) { return Math.round((a - b) / DAY); };
+    if (t0 < r.t) {
+      var n = days(r.t, t0);
+      return { text: "あと " + n + " 日", cls: n <= 14 ? "soon" : "" };
+    }
+    if (t0 === r.t) { return { text: "本日開催", cls: "today" }; }
+    if (t0 <= r.tLast) {
+      return { text: "開催中（残り " + (days(r.tLast, t0) + 1) + " 日）", cls: "today" };
+    }
+    return { text: days(t0, r.tLast) + " 日前に終了", cls: "past" };
   }
 
-  function writeUrl() {
-    var p = new URLSearchParams();
-    if (state.q) { p.set("q", state.q); }
-    if (state.cats.length) { p.set("cat", state.cats.join(",")); }
-    if (state.kind) { p.set("kind", state.kind); }
-    if (state.rank) { p.set("rank", state.rank); }
-    if (state.win !== "all") { p.set("win", state.win); }
-    if (state.est) { p.set("est", "1"); }
-    if (state.past) { p.set("past", "1"); }
-    if (state.domestic) { p.set("domestic", "1"); }
-    var qs = p.toString();
-    history.replaceState(null, "", qs ? "?" + qs : location.pathname);
-  }
-
-  function toForm() {
-    $("q").value = state.q;
-    $("kind").value = state.kind;
-    if ($("kind").value !== state.kind) { state.kind = ""; $("kind").value = ""; }
-    $("rank").value = state.rank;
-    if ($("rank").value !== state.rank) { state.rank = ""; $("rank").value = ""; }
-    $("win").value = state.win;
-    $("est").checked = state.est;
-    $("past").checked = state.past;
-    $("domestic").checked = state.domestic;
-    Array.prototype.forEach.call(document.querySelectorAll(".catcb"), function (cb) {
-      cb.checked = state.cats.indexOf(cb.value) >= 0;
-    });
-  }
-
-  function fromForm() {
-    state.q = $("q").value.trim();
-    state.kind = $("kind").value;
-    state.rank = $("rank").value;
-    state.win = $("win").value;
-    state.est = $("est").checked;
-    state.past = $("past").checked;
-    state.domestic = $("domestic").checked;
-    state.cats = [];
-    Array.prototype.forEach.call(document.querySelectorAll(".catcb"), function (cb) {
-      if (cb.checked) { state.cats.push(cb.value); }
-    });
-  }
-
-  // ---- filtering / rendering -----------------------------------------
-  var shown = [];
-  var drawn = 0;
-
+  // ---- FILTERING ----
   function filter() {
     var now = Date.now();
     var q = state.q.toLowerCase();
@@ -476,52 +627,15 @@ footer a { color: var(--accent); }
         }
         if (!hit) { return false; }
       }
-      // domestic-jp: IPSJ/IEICE 研究会・国内シンポジウム。通しやすい発表枠を見落とさないため。
       if (state.domestic && (r.tags || []).indexOf("domestic-jp") < 0) { return false; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
       return true;
     });
   }
 
-  function fmtLocal(ms) {
-    var d = new Date(ms);
-    var p = function (n) { return (n < 10 ? "0" : "") + n; };
-    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
-      " " + p(d.getHours()) + ":" + p(d.getMinutes());
-  }
-
-  function remain(ms) {
-    var diff = ms - Date.now();
-    if (diff < 0) {
-      var pd = Math.floor(-diff / DAY);
-      return { text: pd === 0 ? "本日終了" : pd + " 日前に終了", cls: "past" };
-    }
-    var d = Math.floor(diff / DAY);
-    if (d === 0) {
-      var h = Math.floor(diff / 3600000);
-      return { text: h <= 0 ? "まもなく" : "あと " + h + " 時間", cls: "today" };
-    }
-    return { text: "あと " + d + " 日", cls: d <= 14 ? "soon" : "" };
-  }
-
-  // 開催回は期間なので、ローカル暦日どうしの比較で言い回しを決める。
-  // 締切 (remain) の残りミリ秒とは軸が違うので別関数にしてある。
-  function remainEvent(r) {
-    var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    var t0 = today.getTime();
-    var days = function (a, b) { return Math.round((a - b) / DAY); };
-    if (t0 < r.t) {
-      var n = days(r.t, t0);
-      return { text: "あと " + n + " 日", cls: n <= 14 ? "soon" : "" };
-    }
-    if (t0 === r.t) { return { text: "本日開催", cls: "today" }; }
-    if (t0 <= r.tLast) {
-      // 当日を含めた残り日数。最終日は「残り 1 日」になる。
-      return { text: "開催中（残り " + (days(r.tLast, t0) + 1) + " 日）", cls: "today" };
-    }
-    return { text: days(t0, r.tLast) + " 日前に終了", cls: "past" };
-  }
+  // ---- RENDERING ----
+  var shown = [];
+  var drawn = 0;
 
   function td(tr, label, cls) {
     var e = document.createElement("td");
@@ -653,13 +767,74 @@ footer a { color: var(--accent); }
     drawMore();
   }
 
+  function readUrl() {
+    var p = new URLSearchParams(window.location.search);
+    state.q = p.get("q") || "";
+    state.kind = p.get("kind") || "";
+    state.rank = p.get("rank") || "";
+    state.win = p.get("win") || "all";
+    state.est = p.get("est") === "1";
+    state.past = p.get("past") === "1";
+    state.domestic = p.get("domestic") === "1";
+    state.cats = (p.get("cats") || "").split(",").filter(Boolean);
+  }
+
+  function writeUrl() {
+    var p = new URLSearchParams();
+    if (state.q) p.set("q", state.q);
+    if (state.kind) p.set("kind", state.kind);
+    if (state.rank) p.set("rank", state.rank);
+    if (state.win !== "all") p.set("win", state.win);
+    if (state.est) p.set("est", "1");
+    if (state.past) p.set("past", "1");
+    if (state.domestic) p.set("domestic", "1");
+    if (state.cats.length) p.set("cats", state.cats.join(","));
+    var str = p.toString();
+    history.replaceState(null, "", str ? "?" + str : window.location.pathname);
+  }
+
+  function toForm() {
+    $("q").value = state.q;
+    $("kind").value = state.kind;
+    $("rank").value = state.rank;
+    $("win").value = state.win;
+    $("est").checked = state.est;
+    $("past").checked = state.past;
+    $("domestic").checked = state.domestic;
+    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
+      chk.checked = state.cats.indexOf(chk.value) >= 0;
+    });
+  }
+
+  function fromForm() {
+    state.q = $("q").value;
+    state.kind = $("kind").value;
+    state.rank = $("rank").value;
+    state.win = $("win").value;
+    state.est = $("est").checked;
+    state.past = $("past").checked;
+    state.domestic = $("domestic").checked;
+    state.cats = [];
+    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
+      if (chk.checked) state.cats.push(chk.value);
+    });
+  }
+
   function apply() {
     fromForm();
     writeUrl();
     render();
   }
 
-  // ---- wiring ---------------------------------------------------------
+  // Keyboard Shortcuts (⌘K)
+  window.addEventListener("keydown", function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      $("q").focus();
+    }
+  });
+
+  // ---- wiring ----
   var timer = null;
   $("q").addEventListener("input", function () {
     clearTimeout(timer);
