@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:11:32Z",
+  "generated_at": "2026-08-09T17:31:24Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -1987,6 +1987,25 @@
           ]
         }
       ]
+    },
+    {
+      "key": "acm-toit",
+      "title": "ACM TOIT",
+      "full_name": "ACM Transactions on Internet Technology",
+      "categories": [
+        "networking",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://dl.acm.org/journal/toit",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "acml",
@@ -5635,6 +5654,25 @@
       ]
     },
     {
+      "key": "ccpe",
+      "title": "CCPE",
+      "full_name": "Concurrency and Computation: Practice and Experience",
+      "categories": [
+        "hpc",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://onlinelibrary.wiley.com/journal/15320634",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
       "key": "ccs",
       "title": "CCS",
       "full_name": "ACM Conference on Computer and Communications Security",
@@ -8172,6 +8210,24 @@
           ]
         }
       ]
+    },
+    {
+      "key": "computer-networks",
+      "title": "Computer Networks",
+      "full_name": "Computer Networks (Elsevier)",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.sciencedirect.com/journal/computer-networks",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "comsys",
@@ -16028,6 +16084,25 @@
           ]
         }
       ]
+    },
+    {
+      "key": "fgcs",
+      "title": "FGCS",
+      "full_name": "Future Generation Computer Systems",
+      "categories": [
+        "hpc",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.sciencedirect.com/journal/future-generation-computer-systems",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "fit",
@@ -24553,6 +24628,25 @@
       ]
     },
     {
+      "key": "ieee-access",
+      "title": "IEEE Access",
+      "full_name": "IEEE Access",
+      "categories": [
+        "systems",
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://ieeeaccess.ieee.org/",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
       "key": "ieee-acm-cgo",
       "title": "IEEE/ACM CGO",
       "full_name": "IEEE/ACM International Symposium on Code Generation and Optimization",
@@ -24824,6 +24918,43 @@
           "deadlines": []
         }
       ]
+    },
+    {
+      "key": "ieee-micro",
+      "title": "IEEE Micro",
+      "full_name": "IEEE Micro Special Issues Call for Papers",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.computer.org/csdl/magazine/mu",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "ieee-tnsm",
+      "title": "IEEE TNSM",
+      "full_name": "IEEE Transactions on Network and Service Management",
+      "categories": [
+        "networking",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://tnsm.ieee-comsoc.org/",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "ieee-vis",
@@ -25482,6 +25613,25 @@
           "deadlines": []
         }
       ]
+    },
+    {
+      "key": "ieice-trans-inf",
+      "title": "IEICE Trans. Inf. & Syst.",
+      "full_name": "IEICE Transactions on Information and Systems",
+      "categories": [
+        "systems",
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng/transactions/",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "ifip-wg-11-9",
@@ -27056,6 +27206,25 @@
           ]
         }
       ]
+    },
+    {
+      "key": "internet-of-things",
+      "title": "Internet of Things",
+      "full_name": "Internet of Things (Elsevier)",
+      "categories": [
+        "networking",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.sciencedirect.com/journal/internet-of-things",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "internetware",
@@ -30081,6 +30250,44 @@
           ]
         }
       ]
+    },
+    {
+      "key": "jip",
+      "title": "JIP",
+      "full_name": "Journal of Information Processing (情報処理学会)",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/english/jip/",
+      "tags": [
+        "niche",
+        "journal",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "jpdc",
+      "title": "JPDC",
+      "full_name": "Journal of Parallel and Distributed Computing (Elsevier)",
+      "categories": [
+        "hpc",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.sciencedirect.com/journal/journal-of-parallel-and-distributed-computing",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "kr",
