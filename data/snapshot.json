@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T00:00:00Z",
+  "generated_at": "2026-08-09T12:47:12Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -17,7 +17,7 @@
       "name": "local",
       "repo": "data/extra.yaml",
       "license": "MIT",
-      "url": "https://github.com/ten82e/conf-deadlines"
+      "url": "https://github.com/ten82e/cfp-radar"
     }
   ],
   "categories": {
@@ -4115,6 +4115,38 @@
               "comment": "Estimated from the 2026 edition"
             }
           ]
+        }
+      ]
+    },
+    {
+      "key": "ccgrid-workshops",
+      "title": "CCGrid Workshops",
+      "full_name": "IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing Workshops",
+      "categories": [
+        "hpc",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://ccgrid2026.github.io/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ccgrid-ws26",
+          "link": "https://ccgrid2026.github.io/",
+          "place": "Co-located",
+          "date_text": "May 11-14, 2026",
+          "event_start": "2026-05-11",
+          "event_end": "2026-05-14",
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
         }
       ]
     },
@@ -9272,6 +9304,38 @@
       ]
     },
     {
+      "key": "edgesys",
+      "title": "EdgeSys",
+      "full_name": "ACM International Workshop on Edge Systems, Analytics and Networking",
+      "categories": [
+        "systems",
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.edgesys.org/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "edgesys26",
+          "link": "https://www.edgesys.org/",
+          "place": "Online / Co-located",
+          "date_text": "May 15, 2026",
+          "event_start": "2026-05-15",
+          "event_end": "2026-05-15",
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
+        }
+      ]
+    },
+    {
       "key": "emnlp",
       "title": "EMNLP",
       "full_name": "The annual Conference on Empirical Methods in Natural Language Processing",
@@ -10545,7 +10609,7 @@
         "core": "B",
         "thcpl": "B"
       },
-      "link": "https://www.eg.org/wp/eg-events/eurographics-annual-conference/",
+      "link": "https://eg2027.isti.cnr.it/",
       "tags": [
         "computer-graphics"
       ],
@@ -10713,9 +10777,9 @@
         {
           "year": 2027,
           "id": "eurographics27",
-          "link": "https://www.eg.org/wp/eg-events/eurographics-annual-conference/",
-          "place": "Pisa, Italy",
-          "date_text": "May 10-14, 2027",
+          "link": "https://eg2027.isti.cnr.it/",
+          "place": "Lucca, Italy",
+          "date_text": "May 10 - 14, 2027",
           "event_start": "2027-05-10",
           "event_end": "2027-05-14",
           "estimated": false,
@@ -10723,23 +10787,109 @@
           "deadlines": [
             {
               "kind": "abstract",
-              "label": "Abstract submission",
+              "label": "Abstract and submission form deadline",
               "utc": "2026-09-25T23:59:59Z",
               "aoe": "2026-09-25 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": "同時刻の別記載: Abstract submission"
+            },
+            {
+              "kind": "paper",
+              "label": "Full paper submission deadline",
+              "utc": "2026-10-01T23:59:59Z",
+              "aoe": "2026-10-01 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": "同時刻の別記載: Paper submission"
+            },
+            {
+              "kind": "review_release",
+              "label": "Reviews released",
+              "utc": "2026-11-23T23:59:59Z",
+              "aoe": "2026-11-23 11:59:59 AoE",
               "tz_raw": "UTC",
               "round": 1,
               "comment": null
             },
             {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-10-01T23:59:59Z",
-              "aoe": "2026-10-01 11:59:59 AoE",
+              "kind": "rebuttal_end",
+              "label": "Rebuttal due",
+              "utc": "2026-11-30T23:59:59Z",
+              "aoe": "2026-11-30 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "notification",
+              "label": "Conditional acceptance or rejection notification",
+              "utc": "2026-12-18T23:59:59Z",
+              "aoe": "2026-12-18 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "camera_ready",
+              "label": "Revised version deadline",
+              "utc": "2027-01-26T23:59:59Z",
+              "aoe": "2027-01-26 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "notification",
+              "label": "Final notification",
+              "utc": "2027-02-09T23:59:59Z",
+              "aoe": "2027-02-09 11:59:59 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "camera_ready",
+              "label": "Camera-ready version due",
+              "utc": "2027-02-23T23:59:59Z",
+              "aoe": "2027-02-23 11:59:59 AoE",
               "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
           ]
+        }
+      ]
+    },
+    {
+      "key": "eurosec",
+      "title": "EuroSec",
+      "full_name": "European Workshop on Systems Security",
+      "categories": [
+        "security",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.eurosec.org/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "eurosec26",
+          "link": "https://www.eurosec.org/",
+          "place": "Europe",
+          "date_text": "April 20, 2026",
+          "event_start": "2026-04-20",
+          "event_end": "2026-04-20",
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
         }
       ]
     },
@@ -25547,6 +25697,37 @@
       ]
     },
     {
+      "key": "nvmw",
+      "title": "NVMW",
+      "full_name": "Non-Volatile Memories Workshop",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://nvmw.ucsd.edu/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "nvmw26",
+          "link": "https://nvmw.ucsd.edu/",
+          "place": "UCSD, San Diego, CA, USA",
+          "date_text": "March 8-10, 2026",
+          "event_start": "2026-03-08",
+          "event_end": "2026-03-10",
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
+        }
+      ]
+    },
+    {
       "key": "ocp-global-summit",
       "title": "OCP Global Summit",
       "full_name": "Open Compute Project Global Summit",
@@ -26234,6 +26415,38 @@
               "comment": null
             }
           ]
+        }
+      ]
+    },
+    {
+      "key": "percom-workshops",
+      "title": "PerCom Workshops",
+      "full_name": "IEEE International Conference on Pervasive Computing and Communications Workshops",
+      "categories": [
+        "networking",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.percom.org/",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "percom-ws26",
+          "link": "https://www.percom.org/",
+          "place": "IEEE PerCom Co-located",
+          "date_text": "March 16-20, 2026",
+          "event_start": "2026-03-16",
+          "event_end": "2026-03-20",
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
         }
       ]
     },
@@ -32638,15 +32851,6 @@
           "source": "aideadlines",
           "deadlines": [
             {
-              "kind": "registration",
-              "label": "Round 1 Paper Registration",
-              "utc": "2026-06-19T11:59:59Z",
-              "aoe": "2026-06-18 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": null
-            },
-            {
               "kind": "abstract",
               "label": "Abstract submission",
               "utc": "2026-06-20T11:59:00Z",
@@ -32656,13 +32860,31 @@
               "comment": "First round"
             },
             {
-              "kind": "paper",
-              "label": "Round 1 Paper Submission",
-              "utc": "2026-06-26T11:59:59Z",
-              "aoe": "2026-06-25 23:59:59 AoE",
+              "kind": "registration",
+              "label": "Round 1 Paper Registration",
+              "utc": "2026-06-20T11:59:59Z",
+              "aoe": "2026-06-19 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "First round / 別記載: Paper submission"
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Round 1 Paper Submission",
+              "utc": "2026-06-27T11:59:59Z",
+              "aoe": "2026-06-26 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "First round / 同時刻の別記載: Paper submission"
+            },
+            {
+              "kind": "supplementary",
+              "label": "Round 1 Supplementary Material",
+              "utc": "2026-06-29T11:59:59Z",
+              "aoe": "2026-06-28 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             },
             {
               "kind": "review_release",
@@ -33172,7 +33394,7 @@
         "core": "A*",
         "thcpl": "B"
       },
-      "link": "https://wsdm-conference.org/2026/",
+      "link": "https://www.wsdm-conference.org/2027/",
       "tags": [
         "web-search",
         "data-mining"
@@ -33349,40 +33571,58 @@
         {
           "year": 2027,
           "id": "wsdm27",
-          "link": "https://wsdm-conference.org/2027/",
-          "place": "Cordis, Hong Kong SAR, China",
-          "date_text": "February 15 - 19, 2027",
+          "link": "https://www.wsdm-conference.org/2027/",
+          "place": "Hong Kong, Hong Kong",
+          "date_text": "February 15-19, 2027",
           "event_start": "2027-02-15",
           "event_end": "2027-02-19",
           "estimated": false,
-          "source": "ccfddl",
+          "source": "aideadlines",
           "deadlines": [
             {
               "kind": "abstract",
-              "label": "Abstract submission",
+              "label": "Abstract submission (full papers)",
               "utc": "2026-08-18T11:59:59Z",
               "aoe": "2026-08-17 23:59:59 AoE",
-              "tz_raw": "UTC-12",
+              "tz_raw": "AoE",
               "round": 1,
-              "comment": "Full Paper"
+              "comment": "Full Paper / 同時刻の別記載: Abstract submission"
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
+              "label": "Paper submission (full papers)",
               "utc": "2026-08-25T11:59:59Z",
               "aoe": "2026-08-24 23:59:59 AoE",
-              "tz_raw": "UTC-12",
+              "tz_raw": "AoE",
               "round": 1,
-              "comment": "Full Paper"
+              "comment": "Full Paper / 同時刻の別記載: Paper submission"
+            },
+            {
+              "kind": "notification",
+              "label": "Author notification (full papers)",
+              "utc": "2026-11-03T11:59:59Z",
+              "aoe": "2026-11-02 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "notification",
+              "label": "Author notification (short papers)",
+              "utc": "2026-12-19T11:59:59Z",
+              "aoe": "2026-12-18 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
+              "label": "Paper submission (short papers)",
               "utc": "2026-11-18T11:59:59Z",
               "aoe": "2026-11-17 23:59:59 AoE",
-              "tz_raw": "UTC-12",
+              "tz_raw": "AoE",
               "round": 2,
-              "comment": "Short Paper"
+              "comment": "Short Paper / 同時刻の別記載: Paper submission"
             }
           ]
         }
