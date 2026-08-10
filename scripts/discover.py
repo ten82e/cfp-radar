@@ -56,15 +56,21 @@ NICHE_KEYWORDS = [
 # wikiCFP は締切の一次情報ではない(ユーザー投稿)ため、候補発見のみに使い、
 # 収録の裏取り(公式サイト HTTP 確認)は人間のレビュー工程で行う。
 WIKICFP_CATEGORY_MAP: dict[str, list[str]] = {
-    "hpc": ["parallel", "high", "grid", "performance"],
-    "networking": ["networks", "networking", "communications", "internet", "wireless"],
-    "systems": ["systems", "architecture", "operating", "distributed", "embedded", "cloud", "edge"],
-    "ai": ["artificial", "machine", "deep", "neural", "intelligent"],
-    "security": ["security", "cybersecurity", "privacy", "cryptography"],
-    "db": ["database", "databases", "data", "big"],
-    "graphics": ["graphics", "multimedia", "visualization"],
-    "hci": ["human"],
-    "theory": ["theory", "algorithms", "theoretical", "complexity", "formal", "verification"],
+    "hpc": ["parallel", "high", "grid", "performance", "computational"],
+    "networking": ["networks", "networking", "communications", "internet", "wireless",
+                   "network", "telecommunications", "mobile", "ubiquitous", "pervasive", "sensor"],
+    "systems": ["systems", "architecture", "operating", "distributed", "embedded", "cloud", "edge",
+                "compilers", "programming", "software", "dependability", "reliability", "blockchain",
+                "cyber-physical", "safety"],
+    "ai": ["artificial", "machine", "deep", "neural", "intelligent",
+           "cognitive", "fuzzy", "evolutionary", "robotics", "agents", "multi-agent", "pattern"],
+    "security": ["security", "cybersecurity", "privacy", "cryptography", "cyber", "trust"],
+    "db": ["database", "databases", "data", "big", "knowledge", "semantic", "semantics",
+           "ontologies", "ontology"],
+    "graphics": ["graphics", "multimedia", "visualization", "image", "virtual"],
+    "hci": ["human", "human-computer"],
+    "theory": ["theory", "algorithms", "theoretical", "complexity", "formal", "verification",
+               "logic", "optimization", "graph"],
 }
 
 
@@ -211,12 +217,15 @@ def discover_from_wikicfp_urls(categories: list[str], min_year: int) -> list[dic
     ページは締切昇順なので、未来締切が現れなくなるまで最大 3 ページ見る。
     """
     import datetime as dt
+    import time
+
     entries: list[dict] = []
     today = dt.date.today()
     for cat in categories:
         for page in range(1, 4):
             url = f"http://www.wikicfp.com/cfp/call?conference={cat}&page={page}"
             try:
+                time.sleep(0.4)  # リクエスト過多での一時ブロック回避
                 req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
                 with urllib.request.urlopen(req, timeout=15) as resp:
                     html = resp.read().decode("utf-8", "replace")
@@ -386,13 +395,14 @@ class NicheDiscoverer:
         for q in or_queries:
             results.extend(self.discover_from_openreview(q))
 
-        # 3. wikiCFP: 各 cfp-radar カテゴリの代表カテゴリ 1 つずつ取得
-        # ponytail: 代表 1 カテゴリのみ。全カテゴリ(約40)を舐めると低品質の
-        # predatory 会議が大量に入る。候補が枯れたら増やす。
+        # 3. wikiCFP: 各 cfp-radar カテゴリの wikiCFP カテゴリ全部を取得。
+        # 2026-08-10 に代表 1 カテゴリ → 全カテゴリ(70)に拡大。締切昇順ページング
+        # で未来締切が途切れたら打ち切るため実 fetch 数は限られる。
+        # 低品質 (predatory) 候補の混入は人間レビュー工程で捨てる想定。
         for cat, wikicfp_cats in WIKICFP_CATEGORY_MAP.items():
             if categories and cat not in categories:
                 continue
-            for entry in discover_from_wikicfp_urls(wikicfp_cats[:1], min_year):
+            for entry in discover_from_wikicfp_urls(wikicfp_cats, min_year):
                 cand_key = entry["key"]
                 if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
                     continue
