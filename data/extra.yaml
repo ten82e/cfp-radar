@@ -2426,3 +2426,41 @@ conferences:
           - {kind: paper, label: 'Paper (Journal Track)', date: '2026-09-08 23:59:00', tz: AoE}
           - {kind: abstract, label: 'Abstract (Conference Track)', date: '2026-11-02 23:59:00', tz: AoE}
           - {kind: paper, label: 'Paper (Conference Track)', date: '2026-11-09 23:59:00', tz: AoE}
+
+  # ---------------- CVM 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: http://iccvm.org/2027/callPaper.htm (公開済み)
+  # Important Dates: Abstract 10/23, Full papers 10/26, 23:59 GMT
+  - key: cvm
+    title: Computational Visual Media Conference
+    full_name: Computational Visual Media Conference (CVM 2027)
+    link: http://iccvm.org/2027/
+    categories: [graphics]
+    editions:
+      - year: 2027
+        id: cvm27
+        link: http://iccvm.org/2027/
+        place: Singapore
+        date_text: 'April 9-11, 2027'
+        deadlines:
+          - {kind: abstract, label: 'Abstract submission', date: '2026-10-23 23:59:00', tz: GMT}
+          - {kind: paper, label: 'Full papers submission', date: '2026-10-26 23:59:00', tz: GMT}
+
+  # ---------------- PerCom 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://percom.org/call-for-papers/ (Wayback 2026-06-01 スナップショット。
+  #   本サイトは Cloudflare ブロックのためアーカイブで確認)
+  # 締切: Paper registration 9/4, Submission 9/11 (全て AoE)。
+  # 会期: Goa, India, March 2027 (CFP に正確な日付記載なし)
+  - key: percom
+    title: PerCom
+    full_name: IEEE International Conference on Pervasive Computing and Communications
+    link: https://percom.org/
+    categories: [networking, systems]
+    editions:
+      - year: 2027
+        id: percom27
+        link: https://percom.org/
+        place: Goa, India
+        date_text: 'March 2027'
+        deadlines:
+          - {kind: registration, label: 'Paper registration', date: '2026-09-04 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Paper submission', date: '2026-09-11 23:59:00', tz: AoE}
