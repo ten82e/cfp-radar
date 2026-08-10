@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T00:59:31Z",
+  "generated_at": "2026-08-10T03:00:05Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -31659,7 +31659,7 @@
               "aoe": "2025-12-09 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": null
+              "comment": "Round 1 / 別記載: Abstract submission"
             },
             {
               "kind": "paper",
@@ -31668,7 +31668,7 @@
               "aoe": "2025-12-12 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": null
+              "comment": "Round 1 / 別記載: Paper submission"
             },
             {
               "kind": "camera_ready",
@@ -31686,7 +31686,7 @@
               "aoe": "2026-05-29 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 2,
-              "comment": null
+              "comment": "Round 2 / 別記載: Abstract submission"
             },
             {
               "kind": "paper",
@@ -31695,7 +31695,7 @@
               "aoe": "2026-06-05 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 2,
-              "comment": null
+              "comment": "Round 2 / 別記載: Paper submission"
             },
             {
               "kind": "notification",
@@ -38075,7 +38075,7 @@
           "year": 2027,
           "id": "rtas2027",
           "link": "https://2027.rtas.org/",
-          "place": "",
+          "place": "Boulder, Colorado",
           "date_text": "May 17-20, 2027",
           "event_start": "2027-05-17",
           "event_end": "2027-05-20",
@@ -38089,7 +38089,7 @@
               "aoe": "2026-11-05 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": null
+              "comment": "Submission Deadline (Firm) / 別記載: Paper submission"
             },
             {
               "kind": "notification",
@@ -43830,7 +43830,7 @@
               "aoe": "2026-05-25 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": null
+              "comment": "Full and Short Papers Track / 別記載: Paper submission"
             },
             {
               "kind": "other",
