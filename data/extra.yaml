@@ -2153,7 +2153,7 @@ conferences:
 
   - key: isav-2026
     title: ISAV 2026
-    full_name: ISAV 2026: In Situ AI, Analysis and Visualization
+    full_name: "ISAV 2026: In Situ AI, Analysis and Visualization"
     link: https://isav-workshop.github.io/2026/
     categories: [hpc]
     tags: [workshop]
@@ -2184,7 +2184,7 @@ conferences:
 
   - key: scale-to-see-2026
     title: Scale to See 2026
-    full_name: Scale to See: Scalable AI for Scientific Imaging and Spatiotemporal Data
+    full_name: "Scale to See: Scalable AI for Scientific Imaging and Spatiotemporal Data"
     link: https://sites.google.com/view/scale-to-see-workshop/home
     categories: [hpc]
     tags: [workshop]
@@ -2230,7 +2230,7 @@ conferences:
 
   - key: whpc-2026
     title: WHPC at SC26
-    full_name: WHPC: Building Community, Building Careers (SC26)
+    full_name: "WHPC: Building Community, Building Careers (SC26)"
     link: https://womeninhpc.org/events/sc-2026-workshop
     categories: [hpc]
     tags: [workshop]
