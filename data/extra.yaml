@@ -2011,6 +2011,85 @@ conferences:
           - {kind: paper, label: Full/Short Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
           - {kind: other, label: Lightning Talk Submission, date: '2026-09-18 23:59:00', tz: AoE}
 
+  # ---------------- P3HPC 2026 (SC26 併設, 2026-08-10 裏取り) ----------------
+  # 根拠: https://p3hpc.org/workshop/2026/ Important Dates:
+  #   August 5 → August 12 — Paper Submission Deadline (延長)
+  #   September 4 — Author Notification / September 25 — Camera-Ready
+  #   November 15-20 — Workshop at SC26 (Chicago)。TZ 表記なし → COCOA 前例 (23:59 UTC)
+  - key: p3hpc-2026
+    title: P3HPC 2026
+    full_name: "P3HPC: International Workshop on Parallel Programming Models and Systems Software for High-End Computing (P3HPC 2026)"
+    link: https://p3hpc.org/workshop/2026/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: p3hpc-2026
+        link: https://p3hpc.org/workshop/2026/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
+
+  # ---------------- SC26 併設 WS 追補 (2026-08-10 裏取り) ----------------
+  # 根拠: 各 WS 公式サイト / CFP。8/14 締切の 4 件。
+  - key: resdis-2026
+    title: RESDIS 2026
+    full_name: 6th International Workshop on RESource DISaggregation in High Performance Computing (RESDIS 2026)
+    link: https://resdis.github.io/ws/2026/sc/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: resdis-2026
+        link: https://resdis.github.io/ws/2026/sc/
+        place: Chicago, IL, USA
+        date_text: 'November 15, 2026'
+        deadlines:
+          - {kind: paper, label: Paper Submission (Extended/Final), date: '2026-08-14 23:59:00', tz: AoE}
+
+  - key: canopie-2026
+    title: CANOPIE-HPC 2026
+    full_name: 8th International Workshop on Containers and New Orchestration Paradigms for Isolated Environments in HPC (CANOPIE-HPC 2026)
+    link: https://canopie-hpc.org/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: canopie-2026
+        link: https://canopie-hpc.org/
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        deadlines:
+          - {kind: paper, label: Paper Submission (hard deadline), date: '2026-08-14 23:59:00', tz: AoE}
+
+  - key: hpcsyspros-2026
+    title: HPCSYSPROS 2026
+    full_name: HPC Systems Professionals Workshop (HPCSYSPROS26)
+    link: https://sighpc-syspros.org/workshops/2026/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hpcsyspros-2026
+        link: https://sighpc-syspros.org/workshops/2026/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: hppss-2026
+    title: HPPSS 2026
+    full_name: "SC26 Workshop: High Performance Python for Science at Scale (HPPSS)"
+    link: https://hppss.github.io/SC26/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hppss-2026
+        link: https://hppss.github.io/SC26/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: abstract, label: Abstract Submission, date: '2026-08-14 23:59:00', tz: AoE}
+
   # ---------------- SC26 併設 WS 一括 (2026-08-10 裏取り) ----------------
   # 根拠: sc26.supercomputing.org 「50 accepted workshops」記事 (2026-04-03) のリンク先
   # 各 WS 公式サイトの Important Dates。TZ 明記なしは COCOA 前例どおり 23:59 UTC 解釈。
