@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T03:28:12Z",
+  "generated_at": "2026-08-10T04:56:55Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -7838,6 +7838,44 @@
               "label": "Paper submission",
               "utc": "2026-05-08T11:59:59Z",
               "aoe": "2026-05-07 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cna",
+      "title": "Complex Networks & Their Applications",
+      "full_name": "International Conference on Complex Networks and Their Applications",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://complexnetworks.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "cna2026",
+          "link": "https://complexnetworks.org/",
+          "place": "Granada, Spain",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-09-03T11:59:00Z",
+              "aoe": "2026-09-02 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -19317,6 +19355,44 @@
       ]
     },
     {
+      "key": "icact",
+      "title": "ICACT",
+      "full_name": "International Conference on Advanced Communications Technology",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.icact.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "icact2027",
+          "link": "https://www.icact.org/",
+          "place": "Pyeong Chang, Korea",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Full Paper Submission",
+              "utc": "2026-10-01T14:59:00Z",
+              "aoe": "2026-10-01 02:59:00 AoE",
+              "tz_raw": "UTC+9",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "icaif",
       "title": "ICAIF",
       "full_name": "International Conference on AI in Finance",
@@ -25743,6 +25819,53 @@
       "editions": []
     },
     {
+      "key": "ieee-msn",
+      "title": "IEEE MSN",
+      "full_name": "IEEE MSN 2026",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://ieee-msn.org/2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "msn2026",
+          "link": "https://ieee-msn.org/2026/",
+          "place": "Ningbo, China",
+          "date_text": "December 18-20, 2026",
+          "event_start": "2026-12-18",
+          "event_end": "2026-12-20",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Regular Paper Submission",
+              "utc": "2026-08-21T11:59:00Z",
+              "aoe": "2026-08-20 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Industry Paper and Poster Submission",
+              "utc": "2026-08-26T11:59:00Z",
+              "aoe": "2026-08-25 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "ieee-tnsm",
       "title": "IEEE TNSM",
       "full_name": "IEEE Transactions on Network and Service Management",
@@ -30681,6 +30804,53 @@
               "utc": "2026-04-25T15:59:59Z",
               "aoe": "2026-04-25 03:59:59 AoE",
               "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "itcs",
+      "title": "ITCS",
+      "full_name": "Innovations in Theoretical Computer Science",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://itcs-conf.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "itcs2027",
+          "link": "https://itcs-conf.org/",
+          "place": "UC Berkeley, USA",
+          "date_text": "January 12-15, 2027",
+          "event_start": "2027-01-12",
+          "event_end": "2027-01-15",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract Submission",
+              "utc": "2026-09-02T23:59:00Z",
+              "aoe": "2026-09-02 11:59:00 AoE",
+              "tz_raw": "PDT",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Full Paper Submission",
+              "utc": "2026-09-04T23:59:00Z",
+              "aoe": "2026-09-04 11:59:00 AoE",
+              "tz_raw": "PDT",
               "round": 1,
               "comment": null
             }
@@ -40806,6 +40976,44 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "secitc",
+      "title": "SECITC",
+      "full_name": "International Conference on Security for Information Technology and Communications",
+      "categories": [
+        "security"
+      ],
+      "rank": {},
+      "link": "https://www.secitc.eu/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "secitc2026",
+          "link": "https://www.secitc.eu/",
+          "place": "Bucharest, Romania",
+          "date_text": "November 12-13, 2026",
+          "event_start": "2026-11-12",
+          "event_end": "2026-11-13",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission Deadline",
+              "utc": "2026-09-07T20:59:00Z",
+              "aoe": "2026-09-07 08:59:00 AoE",
+              "tz_raw": "UTC+3",
+              "round": 1,
+              "comment": null
             }
           ]
         }
