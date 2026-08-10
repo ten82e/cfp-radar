@@ -2558,3 +2558,22 @@ conferences:
         date_text: 'November 12-15, 2026'
         deadlines:
           - {kind: paper, label: 'Workshop Paper Submission', date: '2026-08-20 23:59:00', tz: AoE}
+
+  # 根拠: https://geosim.org/2026/cfp/ (2026-08-10 取得)「Important Date Submission
+  #   deadline August 15, 2026 / Notification September 15, 2026 / Workshop date
+  #   November 3, 2026 / Submission site EasyChair」。公式 tz 表記なし → 23:59 UTC
+  #   (COCOA 前例踏襲)。
+  - key: geosim-2026
+    title: GeoSim 2026
+    full_name: The 9th ACM SIGSPATIAL International Workshop on Geospatial Simulation (GeoSim 2026)
+    link: https://geosim.org
+    categories: [systems]
+    tags: [niche, workshop]
+    editions:
+      - year: 2026
+        id: geosim2026
+        link: https://geosim.org
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
