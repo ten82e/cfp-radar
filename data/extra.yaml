@@ -1949,3 +1949,34 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
+
+  # ---------------- IEICE NOLTA 特集号 (2026-08-10 裏取り) ----------------
+  # 根拠: journals.php 2026-08-10 取得。「NOLTA | 2026-10-03 | Recent Advances in Nonlinear Problems | 2027-04」
+  - key: ieice-nolta-recent-advances-special
+    title: IEICE NOLTA 特集号（非線形問題の最近の進展）
+    full_name: Special Section on Recent Advances in Nonlinear Problems（IEICE NOLTA）
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    categories: [theory]
+    tags: [niche, special-issue, domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-nolta-advances-2027-04
+        link: https://www.ieice.org/eng_r/information/schedule/journals.php
+        date_text: '2026-10-03'
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-10-03 23:59:00', tz: UTC}
+
+  # 根拠: journals.php 2026-08-10 取得。「NOLTA | 2027-01-10 | Recent Progress in Nonlinear Theory | 2027-07」
+  - key: ieice-nolta-recent-progress-special
+    title: IEICE NOLTA 特集号（非線形理論とその応用の最近の進歩）
+    full_name: Special Section on Recent Progress in Nonlinear Theory and Its Applications（IEICE NOLTA）
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    categories: [theory]
+    tags: [niche, special-issue, domestic-jp]
+    editions:
+      - year: 2027
+        id: ieice-nolta-progress-2027-07
+        link: https://www.ieice.org/eng_r/information/schedule/journals.php
+        date_text: '2027-01-10'
+        deadlines:
+          - {kind: paper, label: Submission, date: '2027-01-10 23:59:00', tz: UTC}
