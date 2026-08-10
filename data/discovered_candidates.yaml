@@ -1127,3 +1127,712 @@ conferences:
   - niche
   - journal
   editions: []
+- key: ccat-ei-2026
+  title: CCAT--EI 2026
+  full_name: 2026 5th International Conference on Computer Applications Technology
+    (CCAT 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192686&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ccat-ei-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192686&copyownerid=13881
+    place: Fukuoka, Japan
+    date_text: Aug 10, 2026
+    deadlines: []
+- key: iscsic-2026
+  title: ISCSIC 2026
+  full_name: 2026 10th International Symposium on Computer Science and Intelligent
+    Control (ISCSIC 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=95893&copyownerid=93140
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iscsic-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=95893&copyownerid=93140
+    place: Nanjing, China
+    date_text: Aug 13, 2026
+    deadlines: []
+- key: mltec-2026
+  title: MLTEC  2026
+  full_name: 7th International Conference on Machine Learning Techniques
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189428&copyownerid=170233
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: mltec-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189428&copyownerid=170233
+    place: Sydney, Australia
+    date_text: Aug 14, 2026
+    deadlines: []
+- key: anfc-2026
+  title: ANFC 2026
+  full_name: The Second International Conference on Advanced Networking and Future
+    Communications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191627&copyownerid=83510
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: anfc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191627&copyownerid=83510
+    place: Lisbon, Portugal
+    date_text: Aug 21, 2026
+    deadlines: []
+- key: icait-ei-2026
+  title: ICAIT--EI 2026
+  full_name: 2026 18th International Conference on Advanced Infocomm Technology (ICAIT
+    2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191784&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icait-ei-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191784&copyownerid=13881
+    place: Auckland, New Zealand
+    date_text: Aug 30, 2026
+    deadlines: []
+- key: ieee-icncc-2026
+  title: IEEE ICNCC 2026
+  full_name: IEEE--2026 The 15th International Conference on Networks, Communication
+    and Computing (ICNCC 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192687&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-icncc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192687&copyownerid=13881
+    place: Kuala Lumpur, Malaysia
+    date_text: Aug 30, 2026
+    deadlines: []
+- key: complex-networks-2026
+  title: COMPLEX NETWORKS  2026
+  full_name: 15th International Conference on Complex Networks & Their Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194271&copyownerid=32890
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: complex-networks-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194271&copyownerid=32890
+    place: Granada
+    date_text: Sep 2, 2026
+    deadlines: []
+- key: iccns-ei-2026
+  title: ICCNS--EI 2026
+  full_name: 2026 The 16th International Conference on Communication and Network Security
+    (ICCNS 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194237&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iccns-ei-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194237&copyownerid=13881
+    place: Harbin, China
+    date_text: Sep 10, 2026
+    deadlines: []
+- key: icin-2027
+  title: ICIN 2027
+  full_name: 30th Conference on Innovation in Clouds, Internet and Networks
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201240&copyownerid=63697
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icin-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201240&copyownerid=63697
+    place: Pisa, Italy
+    date_text: Oct 30, 2026
+    deadlines: []
+- key: ieee-mlnlp-2026
+  title: IEEE-MLNLP 2026
+  full_name: 2026 IEEE 9th International Conference on Machine Learning and Natural
+    Language Processing (MLNLP 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=175829&copyownerid=163993
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-mlnlp-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=175829&copyownerid=163993
+    place: Xiamen, China
+    date_text: Nov 30, 2026
+    deadlines: []
+- key: m2ec-2026
+  title: M2EC 2026
+  full_name: 8th International Workshop on Recent Advances for Multi-Clouds and Mobile
+    Edge Computing
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189777&copyownerid=15660
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: m2ec-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189777&copyownerid=15660
+    place: Wellington, New Zealand
+    date_text: Dec 25, 2026
+    deadlines: []
+- key: ictc-sci-2027
+  title: ICTC--SCI 2027
+  full_name: 2027 8th Information Communication Technologies Conference (ICTC 2027)--SCI
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200169&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ictc-sci-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200169&copyownerid=13881
+    place: Nanjing, China
+    date_text: Dec 30, 2026
+    deadlines: []
+- key: icowc-2027
+  title: ICOWC 2027
+  full_name: IEEE--2027 15th International Conference on Optical Wireless Communications
+    (ICOWC 2027)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201708&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2027
+    id: icowc-202727
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201708&copyownerid=13881
+    place: Shenzhen, China
+    date_text: Jan 10, 2027
+    deadlines: []
+- key: icet-2027
+  title: ICET 2027
+  full_name: 2027 The 10th International Conference on Electronics Technology (ICET
+    2027)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200298&copyownerid=13881
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2027
+    id: icet-202727
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200298&copyownerid=13881
+    place: Chengdu, China
+    date_text: Jan 25, 2027
+    deadlines: []
+- key: aspic-2026
+  title: ASPIC 2026
+  full_name: 2026 International Conference on Algorithms, Signal Processing and Intelligent
+    Control
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192272&copyownerid=182680
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: aspic-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192272&copyownerid=182680
+    place: Guangzhou, China
+    date_text: Aug 14, 2026
+    deadlines: []
+- key: iarce-2026
+  title: IARCE 2026
+  full_name: 2026 6th International Conference on Industrial Automation, Robotics
+    and Control Engineering (IARCE 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=178946&copyownerid=139659
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iarce-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=178946&copyownerid=139659
+    place: Hangzhou, China
+    date_text: Aug 15, 2026 (Aug 1, 2026)
+    deadlines: []
+- key: icdsdi-2026
+  title: ICDSDI 2026
+  full_name: 2026 3rd International Conference on Digital Systems and Design Innovation
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191279&copyownerid=182680
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icdsdi-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191279&copyownerid=182680
+    place: Zhengzhou, China
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: icss-2026
+  title: ICSS 2026
+  full_name: 2026 International Conference on Intelligent Computing and System Simulation
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191844&copyownerid=182680
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icss-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191844&copyownerid=182680
+    place: Changchun, China
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: ainow-2026
+  title: AINOW 2026
+  full_name: The Second International Conference on Advances in AI-based Systems and
+    Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191625&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ainow-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191625&copyownerid=83510
+    place: Lisbon, Portugal
+    date_text: Aug 21, 2026
+    deadlines: []
+- key: iccss-2027
+  title: ICCSS 2027
+  full_name: 2027 The 10th International Conference on Circuits, Systems and Simulation
+    (ICCSS 2027)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201531&copyownerid=13881
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2027
+    id: iccss-202727
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201531&copyownerid=13881
+    place: Da Nang, Vietnam
+    date_text: Jan 15, 2027
+    deadlines: []
+- key: iwqps-2026
+  title: IWQPS 2026
+  full_name: The International Workshop on Quantum Computing, Privacy and Security
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200244&copyownerid=199303
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iwqps-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200244&copyownerid=199303
+    place: Bucharest, Romania
+    date_text: Aug 10, 2026
+    deadlines: []
+- key: ieee-icaici-2026
+  title: IEEE-ICAICI 2026
+  full_name: 2026 International Conference on Artificial Intelligence, Cyber-Physical
+    Systems and Intelligent Computing
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190816&copyownerid=182680
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-icaici-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190816&copyownerid=182680
+    place: Chengdu, China
+    date_text: Aug 14, 2026
+    deadlines: []
+- key: csea-2026
+  title: CSEA 2026
+  full_name: 12th International Conference on Computer Science, Engineering and Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192039&copyownerid=46167
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: csea-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192039&copyownerid=46167
+    place: Sydney, Australia
+    date_text: Aug 14, 2026
+    deadlines: []
+- key: pscare-2026
+  title: PSCare 2026
+  full_name: The 13th International Workshop on Privacy and Security in Healthcare
+    (PSCare 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201166&copyownerid=61987
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: pscare-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201166&copyownerid=61987
+    place: Almaty, Kazakhstan
+    date_text: Aug 14, 2026
+    deadlines: []
+- key: ieee-tps-2026
+  title: IEEE TPS 2026
+  full_name: IEEE International Conference on Trust, Privacy and Security in Intelligent
+    Systems, and Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194567&copyownerid=186441
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-tps-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194567&copyownerid=186441
+    place: San Jose, CA, USA
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ieee-risc-2026
+  title: IEEE RISC 2026
+  full_name: IEEE Conference on Resilience and Integrated Security for Space and Critical
+    Systems
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194574&copyownerid=186441
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-risc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194574&copyownerid=186441
+    place: San Jose, CA, USA
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ieee-aiicrta-2026
+  title: IEEE AIICRTA 2026
+  full_name: IEEE International Conference on AI Innovations, Cyber Resilience and
+    Transformative Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195463&copyownerid=198789
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ieee-aiicrta-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195463&copyownerid=198789
+    place: Tunisia
+    date_text: Aug 20, 2026 (Jul 20, 2026)
+    deadlines: []
+- key: msn-2026
+  title: MSN 2026
+  full_name: IEEE MSN 2026
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194895&copyownerid=198409
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: msn-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194895&copyownerid=198409
+    place: Ningbo, China
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: secitc-2026
+  title: SECITC 2026
+  full_name: International Conference on Security for Information Technology and Communications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201301&copyownerid=199515
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: secitc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201301&copyownerid=199515
+    place: Bucharest, Romania
+    date_text: Sep 7, 2026
+    deadlines: []
+- key: ssr-2026
+  title: SSR 2026
+  full_name: Security Standardisation Research (SSR) Conference 2026
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195094&copyownerid=198517
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ssr-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195094&copyownerid=198517
+    place: Baltimore, MD, USA
+    date_text: Sep 15, 2026
+    deadlines: []
+- key: biodevices-2027
+  title: BIODEVICES 2027
+  full_name: 20th International Conference on Biomedical Electronics and Devices
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200093&copyownerid=45217
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: biodevices-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200093&copyownerid=45217
+    place: Valletta, Malta
+    date_text: Sep 15, 2026
+    deadlines: []
+- key: icissp-2027
+  title: ICISSP 2027
+  full_name: 13th International Conference on Information Systems Security and Privacy
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200103&copyownerid=45217
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icissp-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200103&copyownerid=45217
+    place: Valletta, Malta
+    date_text: Sep 15, 2026
+    deadlines: []
+- key: cisse-2026-cybersecurity-education-con-2026
+  title: CISSE 2026 – Cybersecurity Education Con 2026
+  full_name: 30th Colloquium for Information Systems Security Education
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195062&copyownerid=198535
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: cisse-2026-cybersecurity-education-con-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195062&copyownerid=198535
+    place: Sheraton Indianapolis City Centre Hotel
+    date_text: Sep 15, 2026
+    deadlines: []
+- key: icact-2027
+  title: ICACT 2027
+  full_name: The 29th International Conference on Advanced Communications Technology
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199980&copyownerid=170537
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icact-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199980&copyownerid=170537
+    place: Phoenix Park Hotel, Pyeong Chang, Korea
+    date_text: Oct 1, 2026
+    deadlines: []
+- key: waiti-2026
+  title: WAITI 2026
+  full_name: 3rd Workshop on AI for Cyber Threat Intelligence @ ACSAC 2026
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201318&copyownerid=195018
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: waiti-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201318&copyownerid=195018
+    place: Los Angeles, California, USA
+    date_text: Oct 5, 2026
+    deadlines: []
+- key: edcc-2027
+  title: EDCC 2027
+  full_name: 22nd European Dependable Computing Conference
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200341&copyownerid=199135
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: edcc-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200341&copyownerid=199135
+    place: Trondheim, Norway
+    date_text: Oct 9, 2026 (Oct 2, 2026)
+    deadlines: []
+- key: eocon-2026
+  title: EOCON  2026
+  full_name: EyesOpen Cybersecurity Conference - 7th edition
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200227&copyownerid=199287
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: eocon-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200227&copyownerid=199287
+    place: Online
+    date_text: Oct 30, 2026
+    deadlines: []
+- key: iotbds-2027
+  title: IoTBDS 2027
+  full_name: 12th International Conference on Internet of Things, Big Data and Security
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201739&copyownerid=45217
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iotbds-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201739&copyownerid=45217
+    place: Rome, Italy
+    date_text: Nov 17, 2026
+    deadlines: []
+- key: aixdke-2027
+  title: AIxDKE 2027
+  full_name: International Conference on AI x Data & Knowledge Engineering
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199916&copyownerid=135733
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2027
+    id: aixdke-202727
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199916&copyownerid=135733
+    place: Laguna Hills, CA
+    date_text: Oct 10, 2027
+    deadlines: []
+- key: ei-scopus-cdssc-2026
+  title: Ei/Scopus-CDSSC 2026
+  full_name: 2026 International Conference on Communications, Data Science and Smart
+    Computing (CDSSC 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=185173&copyownerid=165700
+  categories:
+  - graphics
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ei-scopus-cdssc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=185173&copyownerid=165700
+    place: Guangzhou, China
+    date_text: Aug 30, 2026
+    deadlines: []
+- key: ei-scopus-cvgip-2026
+  title: Ei/Scopus-CVGIP 2026
+  full_name: 2026 3rd International Conference on Computer Vision, Graphics and Image
+    Processing (CVGIP 2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192875&copyownerid=165700
+  categories:
+  - graphics
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ei-scopus-cvgip-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192875&copyownerid=165700
+    place: Suzhou, China
+    date_text: Sep 30, 2026
+    deadlines: []
+- key: cocoa-2026
+  title: COCOA 2026
+  full_name: Conference on Combinatorial Optimization and Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201327&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: cocoa-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201327&copyownerid=35838
+    place: Beijing, China
+    date_text: Aug 23, 2026
+    deadlines: []
+- key: itcs-2027
+  title: ITCS 2027
+  full_name: Innovations in Theoretical Computer Science
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201328&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: itcs-202726
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201328&copyownerid=35838
+    place: UC Berkeley, USA
+    date_text: Sep 4, 2026 (Sep 2, 2026)
+    deadlines: []
