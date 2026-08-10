@@ -240,6 +240,81 @@ def discover_from_wikicfp_urls(categories: list[str], min_year: int) -> list[dic
     return entries
 
 
+def parse_dbworld_html(html: str) -> list[tuple[str, str]]:
+    """DBWorld アーカイブ (dbworld.sigmod.org/browse.html) のメッセージ一覧から
+    CFP 関連の (subject, アーカイブ URL) を返す。購読不要の public アーカイブ。"""
+    import html as h
+    import re
+
+    out: list[tuple[str, str]] = []
+    for row in re.findall(r"<TR VALIGN=TOP>.*?</TR>", html, re.S):
+        m = re.search(r"<A HREF=([^>]+)>([^<]+)</A>", row)
+        if not m:
+            continue
+        href = m.group(1).strip()
+        subject = h.unescape(m.group(2)).strip()
+        if re.search(r"call for (papers?|participation)|deadline|reminder|last call|special issue",
+                     subject, re.I):
+            out.append((subject, href))
+    return out
+
+
+def clean_dbworld_title(subject: str) -> tuple[str, str]:
+    """DBWorld subject から会議名を抽出し、(会議名, source_type) を返す。
+
+    例: "[DEADLINE EXTENDED] AI4DEMONS 2026@CIKM2026" -> ("AI4DEMONS 2026@CIKM2026", ...)
+        "PDP 2027  Call for Papers & Call for Special Sessions" -> ("PDP 2027", ...)
+        "iiWAS 2026 || Submission Deadline: 1 August 2026 (Final) || Bangkok" -> ("iiWAS 2026", ...)
+    """
+    import re
+
+    t = subject.strip()
+    t = re.sub(r"^(\[[^\]]*\]\s*)+", "", t)                    # [DEADLINE EXTENDED] 等 (複数)
+    t = re.sub(r"^(?:Last\s+)?(?:Call for Papers?|CfP|CFP)\s*:?\s*", "", t, flags=re.I)
+    t = re.sub(r"^(?:DEADLINE EXTENSION|Extended (?:Submission )?Deadline|Deadline\s+(?:Extended|Extension|Approaching))\s*:?\s*", "", t, flags=re.I)
+    t = re.sub(r"\s*(?:[|:]\s*)?(?:Final\s+|Last\s+)?Call for\b.*$", "", t, flags=re.I)
+    t = re.sub(r"\s*\|\|?.*$", "", t)                          # "|" 区切り以降
+    t = re.sub(r"\s*:\s*[^()]*\bDeadline\b.*$", "", t, flags=re.I)  # 括弧外 ": ... Deadline ..."
+    t = re.sub(r"\s*[-–]\s*(?:Deadline|Extended\s+deadline).*$", "", t, flags=re.I)
+    t = re.sub(r"\s+", " ", t).strip(" -:|–")
+    if len(t) < 4:
+        return "", "conference"
+    source_type = "journal" if re.search(r"special issue|transactions|journal", subject, re.I) else "conference"
+    return t, source_type
+
+
+def discover_from_dbworld(min_year: int) -> list[dict]:
+    """DBWorld メーリス public アーカイブから CFP 候補を抽出する。"""
+    import re
+
+    url = "https://dbworld.sigmod.org/browse.html"
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        html = resp.read().decode("utf-8", "replace")
+
+    entries: list[dict] = []
+    for subject, href in parse_dbworld_html(html):
+        cleaned, source_type = clean_dbworld_title(subject)
+        if not cleaned:
+            continue
+        m = re.search(r"(20\d\d)", cleaned)
+        year = int(m.group(1)) if m else min_year
+        if year < min_year:
+            continue
+        entries.append({
+            "key": slug(cleaned),
+            "title": cleaned,
+            "full_name": cleaned,
+            "link": href,
+            "categories": [],  # タイトルからの自動判定は誤爆が多い。レビュー時付与
+            "source_type": source_type,
+            "date_text": "",
+            "place": "",
+            "year": year,
+        })
+    return entries
+
+
 class NicheDiscoverer:
     """Discovers niche conferences and journals not yet included in conf-deadlines."""
 
@@ -288,10 +363,16 @@ class NicheDiscoverer:
 
     def is_already_tracked(self, key_or_title: str) -> bool:
         """Check if candidate key or title is already in our repository."""
+        import re
+
         s = slug(key_or_title)
         if s in self.known_keys:
             return True
         if key_or_title.lower() in self.known_titles:
+            return True
+        # 年付きタイトル (例: "CIDR 2027") は年を除いて比較
+        s_yearless = re.sub(r"\b20\d\d\b", "", s).strip("-")
+        if s_yearless and s_yearless in self.known_keys:
             return True
         return False
 
@@ -421,7 +502,31 @@ class NicheDiscoverer:
                 results.append(cand)
                 self.known_keys.add(cand_key)
 
-        # 4. Known niche candidate registry (fallback / curated candidates)
+        # 4. DBWorld: メーリス public アーカイブ (購読不要)。wikiCFP に無い
+        # 併設 WS・特集号・延長通知を拾う。DB 系中心だが S/N は高い。
+        try:
+            for entry in discover_from_dbworld(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "dbworld"],
+                    source_type=entry["source_type"],
+                    evidence_url="https://dbworld.sigmod.org/browse.html",
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # アーカイブ障害で全体を止めない
+
+        # 5. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

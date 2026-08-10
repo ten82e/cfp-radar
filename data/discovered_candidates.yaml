@@ -5607,3 +5607,943 @@ conferences:
     place: Kracow, Poland
     date_text: Jan 26, 2027 (Jan 19, 2027)
     deadlines: []
+- key: csity-2026
+  title: CSITY 2026
+  full_name: 12th International Conference on Computer Science, Engineering and Information
+    Technology
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192076&copyownerid=46167
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: csity-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192076&copyownerid=46167
+    place: Sydney, Australia
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: itccma-2026
+  title: ITCCMA  2026
+  full_name: 13th International Conference on Information Technology, Control, Chaos,
+    Modeling and Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191360&copyownerid=46167
+  categories:
+  - visualization
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: itccma-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191360&copyownerid=46167
+    place: Sydney, Australia
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: mlnlp-2026
+  title: MLNLP 2026
+  full_name: 7th International Conference on Machine Learning Techniques and NLP
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192324&copyownerid=46167
+  categories:
+  - algorithms
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: mlnlp-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192324&copyownerid=46167
+    place: Sydney, Australia
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: avc-2026
+  title: AVC 2026
+  full_name: 'Advances in Vision Computing: An International Journal'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195487&copyownerid=33993
+  categories:
+  - robotics
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: avc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195487&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: special-issue-on-formal-methods-and-intersymbolic-ai-acm-formal-aspects-of-computing
+  title: Special Issue on Formal Methods and Intersymbolic AI (ACM Formal Aspects
+    of Computing)
+  full_name: Special Issue on Formal Methods and Intersymbolic AI (ACM Formal Aspects
+    of Computing)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ff704000.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: variability-2026
+  title: VARIABILITY 2026
+  full_name: VARIABILITY 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;1e8cc740.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: pdp-2027
+  title: "PDP 2027 \x96"
+  full_name: "PDP 2027 \x96"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;b5f2fd3c.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: special-issue-on-lakehouse-systems-in-gi-datenbankspektrum
+  title: Special Issue on Lakehouse Systems in GI Datenbankspektrum
+  full_name: Special Issue on Lakehouse Systems in GI Datenbankspektrum
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;c7040a26.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ai4demons-2026-cikm2026
+  title: AI4DEMONS 2026@CIKM2026
+  full_name: AI4DEMONS 2026@CIKM2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;1acc0fdf.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: acm-sigspatial-2026-workshops-competitions
+  title: ACM SIGSPATIAL 2026 Workshops & Competitions
+  full_name: ACM SIGSPATIAL 2026 Workshops & Competitions
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;61dbc8a0.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: icdt-2027-second-round
+  title: ICDT 2027 - Second Round
+  full_name: ICDT 2027 - Second Round
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;208c44c.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: simbig-2026
+  title: SIMBig 2026
+  full_name: SIMBig 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;1a274a90.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: icaif-2026-acm-international-conference-on-ai-in-finance
+  title: "ICAIF 2026 \x96 ACM International Conference on AI in Finance"
+  full_name: "ICAIF 2026 \x96 ACM International Conference on AI in Finance"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;18b899e3.2608
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: dtssb-2026-workshop-bir-2026-august-16
+  title: "\x96 DTSSB 2026 Workshop @ BIR 2026 (August 16)"
+  full_name: "\x96 DTSSB 2026 Workshop @ BIR 2026 (August 16)"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;a15c6cd4.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: er-2026
+  title: ER 2026
+  full_name: ER 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;8eb4b04f.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: human-centric-computing-and-information-sciences-special-issues
+  title: Human-centric Computing and Information Sciences (special issues)
+  full_name: Human-centric Computing and Information Sciences (special issues)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;6f7b01a.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: acm-sigspatial-2026-phd-and-graduate-studies-workshop-student-research-competition-src
+  title: ACM SIGSPATIAL 2026 – PhD and Graduate Studies Workshop & Student Research
+    Competition (SRC)
+  full_name: ACM SIGSPATIAL 2026 – PhD and Graduate Studies Workshop & Student Research
+    Competition (SRC)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;bc7a6771.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iiwas-momm-2026
+  title: iiWAS/MoMM 2026
+  full_name: iiWAS/MoMM 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;de8559c2.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: thirteenth-international-workshop-on-cooperative-wireless-networks
+  title: Thirteenth International Workshop on Cooperative Wireless Networks
+  full_name: Thirteenth International Workshop on Cooperative Wireless Networks
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;683f33be.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: acm-tweb-special-issue-on-the-agentic-web-deadline-sept-30-2026
+  title: 'ACM TWEB Special Issue on the Agentic Web (Deadline: Sept. 30, 2026)'
+  full_name: 'ACM TWEB Special Issue on the Agentic Web (Deadline: Sept. 30, 2026)'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;163f632f.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: dtssb-2026-workshop-bir-2026-july-30-deadline
+  title: "\x96 DTSSB 2026 Workshop @ BIR 2026 (July 30 Deadline)"
+  full_name: "\x96 DTSSB 2026 Workshop @ BIR 2026 (July 30 Deadline)"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ceeb3a53.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: thirteenth-international-workshop-on-cooperative-wireless-networks-wim
+  title: Thirteenth International Workshop on Cooperative Wireless Networks - WiM
+  full_name: Thirteenth International Workshop on Cooperative Wireless Networks -
+    WiM
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;95b0f2ef.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iiwas-2026
+  title: iiWAS 2026
+  full_name: iiWAS 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;15593676.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: momm-2026
+  title: MoMM 2026
+  full_name: MoMM 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ff015d27.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: indis-2026
+  title: INDIS 2026
+  full_name: INDIS 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;f93665b1.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: last-deadline-reminder-nl4ai-aixia-2026-9th-workshop-on-natural-language-for-artificial-intelligence
+  title: Last Deadline Reminder - NL4AI @ AIxIA 2026 - 9th Workshop on Natural Language
+    for Artificial Intelligence
+  full_name: Last Deadline Reminder - NL4AI @ AIxIA 2026 - 9th Workshop on Natural
+    Language for Artificial Intelligence
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;c7727af4.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: crisis-2026-rabat-morocco
+  title: CRiSIS 2026 (Rabat, Morocco)
+  full_name: CRiSIS 2026 (Rabat, Morocco)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;598309c6.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: 15th-international-conference-on-model-and-data-engineering-medi-2026-new-deadlines
+  title: '15th International Conference on Model and Data Engineering (MEDI 2026):
+    NEW DEADLINES'
+  full_name: '15th International Conference on Model and Data Engineering (MEDI 2026):
+    NEW DEADLINES'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;5e4df387.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: to-august-5-3rd-ieee-acm-sc26-eesp-workshop-on-energy-efficiency-with-sustainable-performance-chicago-usa
+  title: to August 5 – 3rd IEEE/ACM SC26 EESP Workshop on Energy Efficiency with Sustainable
+    Performance (Chicago, USA)
+  full_name: to August 5 – 3rd IEEE/ACM SC26 EESP Workshop on Energy Efficiency with
+    Sustainable Performance (Chicago, USA)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e2a72b3c.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: deadlines-approaching-cfp-24th-australasian-data-science-and-machine-learning-conference-ausdm-26
+  title: 'Deadlines approaching: CFP: 24th Australasian Data Science and Machine Learning
+    Conference (AusDM''26'
+  full_name: 'Deadlines approaching: CFP: 24th Australasian Data Science and Machine
+    Learning Conference (AusDM''26'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;49de5ab8.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: second-international-workshop-on-ai-for-mobile-wireless-health-advancing-explainability-in-the-future-of-healthcare-2026
+  title: 'Second International Workshop on AI for Mobile & Wireless Health: Advancing
+    Explainability in the Future of Healthcare 2026'
+  full_name: 'Second International Workshop on AI for Mobile & Wireless Health: Advancing
+    Explainability in the Future of Healthcare 2026'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;9abf2fdb.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: international-conference-on-distributed-computing-and-networking-icdcn-2027
+  title: International Conference on Distributed Computing and Networking (ICDCN 2027)
+  full_name: International Conference on Distributed Computing and Networking (ICDCN
+    2027)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;38a48b5e.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: btw-2027
+  title: BTW 2027
+  full_name: BTW 2027
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;a9f788e1.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: sigir-ap-2026-deadline-extended-by-two-weeks
+  title: SIGIR-AP 2026 Deadline Extended by Two Weeks
+  full_name: SIGIR-AP 2026 Deadline Extended by Two Weeks
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;c2dbb942.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: the-18th-international-conference-on-management-of-digital-ecosystems-medes-2026
+  title: The 18th International Conference on Management of Digital EcoSystems (MEDES
+    2026)
+  full_name: The 18th International Conference on Management of Digital EcoSystems
+    (MEDES 2026)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;a2299cc7.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: extended-simbig-2026
+  title: 'Extended: SIMBig 2026'
+  full_name: 'Extended: SIMBig 2026'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;34c8e251.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: keir-cikm-2026
+  title: "\x97 KEIR @ CIKM 2026"
+  full_name: "\x97 KEIR @ CIKM 2026"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;c0c7be0.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: deadline-reminder-nl4ai-aixia-2026-9th-workshop-on-natural-language-for-artificial-intelligence
+  title: Deadline Reminder - NL4AI @ AIxIA 2026 - 9th Workshop on Natural Language
+    for Artificial Intelligence
+  full_name: Deadline Reminder - NL4AI @ AIxIA 2026 - 9th Workshop on Natural Language
+    for Artificial Intelligence
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;1716acb8.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: job-phd-postdoc-knowledge-graphs-ontological-engineering-fiz-karlsruhe-deadline-20-aug-2026
+  title: 'Job: PhD/PostDoc - Knowledge Graphs & Ontological Engineering - FIZ Karlsruhe
+    (deadline 20 Aug 2026)'
+  full_name: 'Job: PhD/PostDoc - Knowledge Graphs & Ontological Engineering - FIZ
+    Karlsruhe (deadline 20 Aug 2026)'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;7fe0d2bd.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: glow-iswc-26
+  title: GLOW @ ISWC'26
+  full_name: GLOW @ ISWC'26
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;7a73d5fc.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: for-icncc-2026
+  title: for ICNCC 2026
+  full_name: for ICNCC 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;5685e27a.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: to-july-31-adma-2026-rdi-special-session
+  title: 'to July 31: ADMA 2026 RDI Special Session'
+  full_name: 'to July 31: ADMA 2026 RDI Special Session'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;fda98855.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ccat-2026-the-5th-international-conference-on-computer-applications-technology
+  title: CCAT 2026 - The 5th International Conference on Computer Applications Technology
+  full_name: CCAT 2026 - The 5th International Conference on Computer Applications
+    Technology
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;8408993d.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iccfi-2026-international-conference-on-communications-and-future-internet
+  title: ICCFI 2026 - International Conference on Communications and Future Internet
+  full_name: ICCFI 2026 - International Conference on Communications and Future Internet
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e8e60247.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: 24th-international-conference-on-service-oriented-computing-icsoc-2026-lodz-po
+  title: 24th International Conference on Service-Oriented Computing, ICSOC 2026 Lodz,
+    Po
+  full_name: 24th International Conference on Service-Oriented Computing, ICSOC 2026
+    Lodz, Po
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e5c247fa.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: 37th-ieee-international-symposium-on-software-reliability-engineering-issre-2026
+  title: 37th IEEE International Symposium on Software Reliability Engineering (ISSRE
+    2026)
+  full_name: 37th IEEE International Symposium on Software Reliability Engineering
+    (ISSRE 2026)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;99b7fee0.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: firm-tranck-at-ip-mc-2026
+  title: FIRM Tranck at IP&MC 2026
+  full_name: FIRM Tranck at IP&MC 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;570122dc.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ip-mc-2026-track
+  title: IP&MC 2026 Track
+  full_name: IP&MC 2026 Track
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e48a7981.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-issre-2026
+  title: IEEE ISSRE 2026
+  full_name: IEEE ISSRE 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e8f48592.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: reminder-indis-2026-at-sc26-papers-due-july-25
+  title: 'Reminder: INDIS 2026 at SC26 — Papers Due July 25'
+  full_name: 'Reminder: INDIS 2026 at SC26 — Papers Due July 25'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e3c99ee9.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: the-22nd-ieee-international-conference-on-e-business-engineering
+  title: The 22nd IEEE International Conference on E-Business Engineering
+  full_name: The 22nd IEEE International Conference on E-Business Engineering
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;9070a584.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: final-deadline-extension-nl4ai-aixia-2026-9th-workshop-on-natural-language-for-artificial-intelligence
+  title: Final Deadline Extension - NL4AI @ AIxIA 2026 - 9th Workshop on Natural Language
+    for Artificial Intelligence
+  full_name: Final Deadline Extension - NL4AI @ AIxIA 2026 - 9th Workshop on Natural
+    Language for Artificial Intelligence
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;cb721cf1.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: tiw-2026-webist-deadline-is-approaching
+  title: TIW 2026 @WEBIST deadline is approaching!
+  full_name: TIW 2026 @WEBIST deadline is approaching!
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;5407acce.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: q-spatial-2026-workshop-at-acm-sigspatial-2026
+  title: Q-Spatial 2026 Workshop at ACM SIGSPATIAL 2026
+  full_name: Q-Spatial 2026 Workshop at ACM SIGSPATIAL 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;17d08dc5.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: cods-2026-14th-acm-ikdd-international-conference-on-data-science
+  title: CODS 2026 [14th ACM IKDD International Conference on Data Science]
+  full_name: CODS 2026 [14th ACM IKDD International Conference on Data Science]
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e1836099.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iedge-26-in-conjunction-with-ieee-agcs-26-paris-france
+  title: iEDGE'26 in conjunction with IEEE AGCS'26, Paris, France
+  full_name: iEDGE'26 in conjunction with IEEE AGCS'26, Paris, France
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;4d4b4f45.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: adma-26
+  title: ADMA'26
+  full_name: ADMA'26
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ff236a7f.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-tsc-special-issue-on-large-language-models-in-service-oriented-ecosystems-design
+  title: IEEE TSC - Special Issue on Large Language Models in Service-Oriented Ecosystems
+    Design
+  full_name: IEEE TSC - Special Issue on Large Language Models in Service-Oriented
+    Ecosystems Design
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;2cbd47df.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iceccs-2026-brisbane-australia-ddl-extended
+  title: "\x96 ICECCS 2026 (Brisbane, Australia, DDL Extended))"
+  full_name: "\x96 ICECCS 2026 (Brisbane, Australia, DDL Extended))"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;50f6eb34.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: special-issue-on-big-data-analytics-and-mining-for-information-retrieval
+  title: "\x96 Special Issue on \"Big Data Analytics and Mining for Information Retrieval\""
+  full_name: "\x96 Special Issue on \"Big Data Analytics and Mining for Information\
+    \ Retrieval\""
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;3e346d32.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: second-international-workshop-on-generative-and-explainable-artificial-intelligence-for-networking-2026-ieee-genxnet-2026-submission-deadline-july-15th
+  title: Second International Workshop on Generative and eXplainable Artificial Intelligence
+    for Networking 2026 IEEE GenXNet 2026 - Submission Deadline - July 15th
+  full_name: Second International Workshop on Generative and eXplainable Artificial
+    Intelligence for Networking 2026 IEEE GenXNet 2026 - Submission Deadline - July
+    15th
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;33c1e170.2607
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: glow-workshop-iswc-26
+  title: GLOW Workshop @ ISWC'26
+  full_name: GLOW Workshop @ ISWC'26
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;66e9d9c5.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: comma-2026
+  title: COMMA 2026
+  full_name: COMMA 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;20ee99e0.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: research-track-submission-deadline
+  title: Research Track Submission Deadline
+  full_name: Research Track Submission Deadline
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;a95d2002.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ecml-pkdd-nectar-track
+  title: ECML-PKDD Nectar track
+  full_name: ECML-PKDD Nectar track
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;22d3ca11.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: nlp4kgc-26-deadline-extension
+  title: "NLP4KGC\x9226 \x96 Deadline Extension"
+  full_name: "NLP4KGC\x9226 \x96 Deadline Extension"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;43cbadab.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: stacs-2027-first
+  title: STACS 2027 - First
+  full_name: STACS 2027 - First
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;1b72a41f.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: sigmetrics-2027-summer-submission-site-open-deadline-july-3-2026
+  title: SIGMETRICS 2027 summer submission site open, deadline July 3, 2026
+  full_name: SIGMETRICS 2027 summer submission site open, deadline July 3, 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;f72eb9e7.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: submission-deadline-extended-july-21st-2026
+  title: '(Submission Deadline Extended: July 21st, 2026)'
+  full_name: '(Submission Deadline Extended: July 21st, 2026)'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;cc2bdee5.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: for-information-retrieval-research-journal-irrj-volume-2-number-4-december-2026
+  title: for Information Retrieval Research Journal (IRRJ) Volume 2, Number 4, December
+    2026
+  full_name: for Information Retrieval Research Journal (IRRJ) Volume 2, Number 4,
+    December 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;b19235ff.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: advanced-fault-and-error-detection-techniques-using-machine-learning-and-artificial
+  title: Advanced Fault and Error Detection Techniques Using Machine Learning and
+    Artificial
+  full_name: Advanced Fault and Error Detection Techniques Using Machine Learning
+    and Artificial
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;2a27f94.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-satellite-2026
+  title: IEEE Satellite 2026
+  full_name: IEEE Satellite 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;3ce4e1aa.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: icdt-submission-round-2
+  title: ICDT Submission Round 2
+  full_name: ICDT Submission Round 2
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;f359e3e2.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-nca-2026-ortigia-syracuse-sicily-italy
+  title: IEEE NCA 2026 - Ortigia-Syracuse (Sicily), Italy
+  full_name: IEEE NCA 2026 - Ortigia-Syracuse (Sicily), Italy
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;7e04ab94.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: agcs
+  title: AGCS
+  full_name: AGCS
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;23d95cbe.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: flta26
+  title: FLTA26
+  full_name: FLTA26
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;57f7a993.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: 2nd-cfp-and-deadline-extension-9th-workshop-on-natural-language-for-artificial-intelligence-nl4ai
+  title: '2nd CfP and Deadline Extension: 9th Workshop on Natural Language for Artificial
+    Intelligence (NL4AI)'
+  full_name: '2nd CfP and Deadline Extension: 9th Workshop on Natural Language for
+    Artificial Intelligence (NL4AI)'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;19017ab7.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: second-cfp-and-deadline-extension-9th-workshop-on-natural-language-for-artificial-intelligence-nl4ai
+  title: 'Second CfP and Deadline Extension: 9th Workshop on Natural Language for
+    Artificial Intelligence (NL4AI)'
+  full_name: 'Second CfP and Deadline Extension: 9th Workshop on Natural Language
+    for Artificial Intelligence (NL4AI)'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ae36e3f5.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: wi-iat-26
+  title: WI-IAT' 26
+  full_name: WI-IAT' 26
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;cd684845.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iceccs-2026-brisbane-australia
+  title: "\x96 ICECCS 2026 (Brisbane, Australia)"
+  full_name: "\x96 ICECCS 2026 (Brisbane, Australia)"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;238c223b.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: aixia-2026-deadline-extension
+  title: AIxIA 2026, deadline extension
+  full_name: AIxIA 2026, deadline extension
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ff1aaed7.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ecml-pkdd-2026-nectar-track
+  title: ECML-PKDD 2026 Nectar track
+  full_name: ECML-PKDD 2026 Nectar track
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;535d03cc.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: dpm-2026-cfp-data-privacy-manamgement-co-located-with-esorics-2026
+  title: DPM 2026 - CFP - Data Privacy Manamgement, co-located with ESORICS 2026
+  full_name: DPM 2026 - CFP - Data Privacy Manamgement, co-located with ESORICS 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;88c42453.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-sime-2026-conference
+  title: IEEE SIME 2026 Conference
+  full_name: IEEE SIME 2026 Conference
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;77b6aa89.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: acm-sigir-ap-2026
+  title: "\x96 ACM SIGIR-AP 2026"
+  full_name: "\x96 ACM SIGIR-AP 2026"
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e41893c2.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: new-deadline-june-26-bp-meet-iot-workshop-co-located-with-cbi-edoc-2026
+  title: New deadline June 26 - BP-meet-IoT workshop (co-located with CBI/EDOC 2026)
+  full_name: New deadline June 26 - BP-meet-IoT workshop (co-located with CBI/EDOC
+    2026)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;e08b89ea.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ai-for-cybersecurity-minitrack
+  title: AI for Cybersecurity Minitrack
+  full_name: AI for Cybersecurity Minitrack
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;df3dc25a.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: ieee-cic-cogmi-risc-tps-2026
+  title: IEEE CIC/CogMI/RISC/TPS 2026
+  full_name: IEEE CIC/CogMI/RISC/TPS 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;b2a32b57.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: 15th-international-conference-on-model-and-data-engineering-medi-2026-new-special-issues
+  title: '15th International Conference on Model and Data Engineering (MEDI 2026):
+    New Special Issues'
+  full_name: '15th International Conference on Model and Data Engineering (MEDI 2026):
+    New Special Issues'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;804e7d58.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: cbt2026-submission-deadline-approaching
+  title: CBT2026 - Submission deadline approaching
+  full_name: CBT2026 - Submission deadline approaching
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;8ec6fc34.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: cfp-ecml-pkdd-2026-phd-forum-naples-7-11-september-2026
+  title: '[CfP] ECML PKDD 2026 - PhD Forum - Naples, 7-11 September 2026'
+  full_name: '[CfP] ECML PKDD 2026 - PhD Forum - Naples, 7-11 September 2026'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;2b57b393.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: clsr-special-issue-on-governing-general-purpose-ai-systems-elsevier
+  title: CLSR Special Issue on Governing General-Purpose AI Systems (Elsevier)
+  full_name: CLSR Special Issue on Governing General-Purpose AI Systems (Elsevier)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ccf311f9.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: midas-workshop-ecml-pkdd-2026
+  title: '] MIDAS Workshop @ECML-PKDD 2026'
+  full_name: '] MIDAS Workshop @ECML-PKDD 2026'
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;fdb78d50.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: acm-goodit-2026
+  title: ACM GOODIT 2026
+  full_name: ACM GOODIT 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;3dfb7032.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: the-17th-int-conference-on-scalable-uncertainty-management-sum2026
+  title: The 17th Int Conference on Scalable Uncertainty Management (SUM2026)
+  full_name: The 17th Int Conference on Scalable Uncertainty Management (SUM2026)
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;13c27943.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []
+- key: iciot-2026
+  title: ICIOT 2026
+  full_name: ICIOT 2026
+  link: https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;543bd37d.2606
+  categories: []
+  tags:
+  - niche
+  - dbworld
+  editions: []

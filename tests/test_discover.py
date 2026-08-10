@@ -57,6 +57,40 @@ def test_extract_deadlines_from_text():
     assert deadlines[1]["date"] == "2026-07-20 23:59:00"
 
 
+def test_parse_dbworld_html_and_clean():
+    from scripts.discover import parse_dbworld_html, clean_dbworld_title
+
+    html = """<TABLE><TBODY>
+<TR VALIGN=TOP><TD>Sun, 9 Aug 2026 18:22:00 +0000</TD><TD>X</TD>
+<TD><A HREF=https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;ff70>INDIS 2026: Paper Submission Deadline Extended to August 3</A></TD></TR>
+<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:00:00 +0000</TD><TD>Y</TD>
+<TD><A HREF=https://listserv.acm.org/x>PDP 2027  Call for Papers &amp; Call for Special Sessions</A></TD></TR>
+<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:10:00 +0000</TD><TD>Z</TD>
+<TD><A HREF=https://listserv.acm.org/y>Some random announcement</A></TD></TR>
+<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:20:00 +0000</TD><TD>W</TD>
+<TD><A HREF=https://listserv.acm.org/z>[DEADLINE EXTENDED] AI4DEMONS 2026@CIKM2026</A></TD></TR>
+</TBODY></TABLE>"""
+    items = parse_dbworld_html(html)
+    assert len(items) == 3  # CFP/DEADLINE 関連のみ
+    assert items[0][0] == "INDIS 2026: Paper Submission Deadline Extended to August 3"
+    assert items[1][0] == "PDP 2027  Call for Papers & Call for Special Sessions"
+
+    assert clean_dbworld_title("INDIS 2026: Paper Submission Deadline Extended to August 3")[0] == "INDIS 2026"
+    assert clean_dbworld_title("PDP 2027  Call for Papers & Call for Special Sessions")[0] == "PDP 2027"
+    assert clean_dbworld_title("[DEADLINE EXTENDED] AI4DEMONS 2026@CIKM2026")[0] == "AI4DEMONS 2026@CIKM2026"
+    assert clean_dbworld_title("iiWAS 2026 || Submission Deadline: 1 August 2026 (Final) || Bangkok")[0] == "iiWAS 2026"
+    assert clean_dbworld_title("Call for Papers: ACM SIGSPATIAL 2026 Workshops & Competitions")[0] == "ACM SIGSPATIAL 2026 Workshops & Competitions"
+    assert clean_dbworld_title("[Reminder] ACM TWEB Special Issue on the Agentic Web (Deadline: Sept. 30, 2026)")[1] == "journal"
+    # 残課題ケース (2026-08-10 実データから)
+    assert clean_dbworld_title("Last CFP: SIMBig 2026 | NAACL Awards | Deadline (Aug 7)")[0] == "SIMBig 2026"
+    assert clean_dbworld_title("Deadline extended: ER 2026 Call for Doctoral Symposium Papers")[0] == "ER 2026"
+    assert clean_dbworld_title("Extended Submission Deadline  DTSSB 2026 Workshop @ BIR 2026 (August 16)")[0].startswith("DTSSB 2026")
+    assert clean_dbworld_title("DEADLINE EXTENSION ICAIF 2026  ACM International Conference on AI in Finance")[0] == "ICAIF 2026 ACM International Conference on AI in Finance"
+    assert clean_dbworld_title("CfP Special Issue on Lakehouse Systems in GI Datenbankspektrum")[0].startswith("Special Issue")
+    assert clean_dbworld_title("– CRiSIS 2026 (Rabat, Morocco) – Extended deadline")[0] == "CRiSIS 2026 (Rabat, Morocco)"
+    assert clean_dbworld_title("[DEADLINE APPROACHING][CWN'26] Thirteenth International Workshop on Cooperative Wireless Networks")[0] == "Thirteenth International Workshop on Cooperative Wireless Networks"
+
+
 def test_run_discovery_integration():
     discoverer = NicheDiscoverer(ROOT)
     cands = discoverer.run_discovery(categories=["systems"])

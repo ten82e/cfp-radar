@@ -135,6 +135,8 @@ iOS と iPadOS の場合。
 | `aideadlines` | [huggingface/ai-deadlines](https://github.com/huggingface/ai-deadlines) | MIT |
 | `local` | 本リポジトリの `data/extra.yaml` | MIT（本リポジトリ） |
 
+発見ソース（候補生成）: `DBLP`・`OpenReview`・`wikiCFP`（70 カテゴリ）・`DBWorld` メーリス公開アーカイブ（[dbworld.sigmod.org](https://dbworld.sigmod.org/)）。DBWorld は購読不要の公開アーカイブで、wikiCFP に載らない併設ワークショップ・ジャーナル特集号・締切延長通知を拾う。候補は締切を公式サイトで裏取りした後、`data/extra.yaml` に昇格する。
+
 上流が扱わない会議は `data/extra.yaml` に自前で収録している。
 帰属表示は [NOTICE.md](NOTICE.md) にある。
 本リポジトリ自体のライセンスは MIT で、全文は [LICENSE](LICENSE) にある。
