@@ -2036,7 +2036,7 @@ conferences:
   #   Notification September 15 / Camera-ready October 15
   #   Conference December 18-20, 2026, Valparaíso, Chile
   #   TZ 表記なし → 23:59 UTC 解釈 (COCOA 前例)。推定締切 (rollforward) を real で置換。
-  - key: icvrv-2026
+  - key: icvrv
     title: ICVRV
     full_name: International Conference on Virtual Reality and Visualization (ICVRV 2026)
     link: http://www.icvrv.org/
@@ -2044,7 +2044,7 @@ conferences:
     tags: []
     editions:
       - year: 2026
-        id: icvrv-2026
+        id: icvrv26
         link: http://www.icvrv.org/
         place: Valparaíso, Chile
         date_text: 'December 18-20, 2026'
@@ -2380,3 +2380,24 @@ conferences:
         # Paper submission deadline: August 17, 2026
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
+
+  # ---------------- DASFAA 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://dasfaa2027.github.io/dates/list.htm (Important Dates, "Key Dates Updated"
+  #   2027-02-02 確認済み): Full Paper Submission = June 6, 2027, 11:59PM AOE。
+  #   Author Notification Aug 16 / Camera Ready Sep 9。ホームの「Nov 22, 2026」は更新前の残骸。
+  #   会期: ヘッダーに May 28-30, 2027 表記があるが、締切 6/6 が会期後になり矛盾するため
+  #   未確定扱い (dates ページに会期の記載なし)。会期は入れない。
+  #   推定締切 (9/22 abstract・9/29 paper, rollforward) は real で置換 (merge 実装)。
+  - key: dasfaa
+    title: DASFAA
+    full_name: The 32nd International Conference on Database Systems for Advanced Applications (DASFAA 2027)
+    link: https://dasfaa2027.github.io/
+    categories: [db]
+    tags: []
+    editions:
+      - year: 2027
+        id: dasfaa27
+        link: https://dasfaa2027.github.io/
+        place: Shenyang, China
+        deadlines:
+          - {kind: paper, label: Full Paper Submission, date: '2027-06-06 23:59:00', tz: AoE}

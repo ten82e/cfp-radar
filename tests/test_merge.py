@@ -83,6 +83,66 @@ def test_two_sources_for_the_same_conference_are_merged(make_conf):
     assert kinds == {"paper", "notification"}, "deadlines must be unioned"
 
 
+def test_real_edition_replaces_estimated_one(make_conf):
+    """A real edition for a year replaces the estimated one (SPEC.md 3.6).
+
+    The estimate's deadlines are a copy of the previous year's, so they must
+    not stand beside the real ones; the estimated flag has to go as well.
+    Regression: DASFAA 2027 kept 9/22+9/29 estimates next to the real 6/6.
+    """
+    from scripts.merge import merge_sources
+
+    ccf = make_conf.conference(
+        key="dasfaa",
+        title="DASFAA",
+        sources=["ccfddl"],
+        editions=[
+            make_conf.edition(
+                year=2026,
+                edition_id="dasfaa26",
+                source="ccfddl",
+                deadlines=[
+                    make_conf.deadline("paper", "Paper", utc(2025, 10, 28), "AoE")
+                ],
+            ),
+            make_conf.edition(
+                year=2027,
+                edition_id="dasfaa27-est",
+                estimated=True,
+                source="ccfddl",
+                deadlines=[
+                    make_conf.deadline("abstract", "Abstract", utc(2026, 9, 22), "AoE"),
+                    make_conf.deadline("paper", "Paper", utc(2026, 9, 29), "AoE"),
+                ],
+            ),
+        ],
+    )
+    local = make_conf.conference(
+        key="dasfaa",
+        title="DASFAA",
+        sources=["local"],
+        editions=[
+            make_conf.edition(
+                year=2027,
+                edition_id="dasfaa27",
+                source="local",
+                deadlines=[
+                    make_conf.deadline("paper", "Full Paper", utc(2027, 6, 7), "AoE")
+                ],
+            )
+        ],
+    )
+
+    for groups in ([[local], [ccf]], [[ccf], [local]]):
+        merged = merge_sources(groups, {"source_priority": ["local", "ccfddl"]})
+        assert len(merged) == 1
+        ed27 = edition_by_year(merged[0], 2027)
+        assert not ed27.estimated, "the real edition must clear the estimated flag"
+        assert [(d.kind, d.at_utc) for d in ed27.deadlines] == [
+            ("paper", utc(2027, 6, 7))
+        ], "estimated deadlines must not survive next to the real ones"
+
+
 def test_distinct_conferences_are_kept_apart(make_conf):
     from scripts.merge import merge_sources
 

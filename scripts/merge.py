@@ -185,8 +185,20 @@ def _merge_editions(
             tagged = [(edition.source, d) for d in edition.deadlines]
             if index is None:
                 bucket.append((replace(edition, deadlines=[]), tagged))
+                continue
+            held = bucket[index][0]
+            if held.estimated and not edition.estimated:
+                # SPEC.md 3.6: a real edition replaces an estimated one for the
+                # same year.  The estimate's deadlines are a copy of last
+                # year's, so they must not stand beside the real ones; the real
+                # edition takes the seat wholesale.
+                bucket[index] = (replace(edition, deadlines=[]), tagged)
+            elif edition.estimated and not held.estimated:
+                # An estimate joining a real edition contributes nothing: its
+                # deadlines are last year's copy and its metadata may be stale.
+                continue
             else:
-                _fill_edition(bucket[index][0], edition)
+                _fill_edition(held, edition)
                 bucket[index][1].extend(tagged)
     out: list[Edition] = []
     for year in sorted(by_year):
