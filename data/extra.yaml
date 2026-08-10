@@ -1542,3 +1542,22 @@ conferences:
         deadlines:
           - {kind: paper, label: Regular Paper Submission, date: '2026-09-15 23:59:00', tz: AoE}
           - {kind: paper, label: Position Paper Submission, date: '2026-10-22 23:59:00', tz: AoE}
+
+  # 根拠: https://easychair.org/cfp/cocoa2026 (2026-08-10)
+  #   「deadline August 23, 2026」「December 4-6, 2026 in Beijing, China, hosted
+  #   by Beijing Univ」— COCOA 公式サイトの「Submit via EasyChair」リンク先で
+  #   あり、wikiCFP (Aug 23) と一致。公式サイト本体には日付の記載なし。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  - key: cocoa
+    title: COCOA
+    full_name: International Conference on Combinatorial Optimization and Applications
+    link: https://www.cocoa2026.com/
+    categories: [theory]
+    editions:
+      - year: 2026
+        id: cocoa2026
+        link: https://www.cocoa2026.com/
+        place: Beijing, China
+        date_text: December 4-6, 2026
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-23 23:59:00', tz: UTC}
