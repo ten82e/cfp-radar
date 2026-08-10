@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T12:30:00Z",
+  "generated_at": "2026-08-10T14:24:46Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -58,11 +58,20 @@
           "source": "local",
           "deadlines": [
             {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-09-30T23:59:59Z",
+              "aoe": "2026-09-30 11:59:59 AoE",
+              "tz_raw": "",
+              "round": 1,
+              "comment": null
+            },
+            {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-09-30T23:59:00Z",
-              "aoe": "2026-09-30 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "label": "Paper submission",
+              "utc": "2026-09-30T23:59:59Z",
+              "aoe": "2026-09-30 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
               "comment": null
             }
@@ -2925,9 +2934,9 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper Submission",
-              "utc": "2026-08-15T11:59:00Z",
-              "aoe": "2026-08-14 23:59:00 AoE",
+              "label": "Paper submission",
+              "utc": "2026-08-15T11:59:59Z",
+              "aoe": "2026-08-14 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -18395,10 +18404,10 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-08-15T23:59:00Z",
-              "aoe": "2026-08-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "label": "Paper submission",
+              "utc": "2026-08-15T23:59:59Z",
+              "aoe": "2026-08-15 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
               "comment": null
             }
@@ -18433,9 +18442,9 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-08-29T11:59:00Z",
-              "aoe": "2026-08-28 23:59:00 AoE",
+              "label": "Paper submission",
+              "utc": "2026-08-29T11:59:59Z",
+              "aoe": "2026-08-28 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -19125,9 +19134,9 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper Submission",
-              "utc": "2026-08-18T11:59:00Z",
-              "aoe": "2026-08-17 23:59:00 AoE",
+              "label": "Paper submission",
+              "utc": "2026-08-18T11:59:59Z",
+              "aoe": "2026-08-17 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -20006,8 +20015,8 @@
             {
               "kind": "abstract",
               "label": "Abstract Submission",
-              "utc": "2026-08-15T11:59:00Z",
-              "aoe": "2026-08-14 23:59:00 AoE",
+              "utc": "2026-08-14T11:59:00Z",
+              "aoe": "2026-08-13 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -33586,9 +33595,9 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper Submission",
-              "utc": "2026-08-15T11:59:00Z",
-              "aoe": "2026-08-14 23:59:00 AoE",
+              "label": "Paper submission",
+              "utc": "2026-08-15T11:59:59Z",
+              "aoe": "2026-08-14 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -36281,11 +36290,20 @@
           "source": "local",
           "deadlines": [
             {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-09-15T23:59:59Z",
+              "aoe": "2026-09-15 11:59:59 AoE",
+              "tz_raw": "",
+              "round": 1,
+              "comment": null
+            },
+            {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-09-15T23:59:00Z",
-              "aoe": "2026-09-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "label": "Paper submission",
+              "utc": "2026-09-15T23:59:59Z",
+              "aoe": "2026-09-15 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
               "comment": null
             }
@@ -39551,10 +39569,10 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-08-15T23:59:00Z",
-              "aoe": "2026-08-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "label": "Paper submission",
+              "utc": "2026-08-15T23:59:59Z",
+              "aoe": "2026-08-15 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
               "comment": null
             }
@@ -42798,8 +42816,8 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-16T11:59:00Z",
-              "aoe": "2026-08-15 23:59:00 AoE",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -43759,32 +43777,45 @@
         },
         {
           "year": 2026,
-          "id": "setta26-est",
-          "link": "https://www.setta2025.uk",
+          "id": "override-2026",
+          "link": "https://www.setta2026.sg",
+          "place": "Singapore",
+          "date_text": "December 2-4, 2026",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "override",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-05-10T23:59:59Z",
+              "aoe": "2026-05-10 11:59:59 AoE",
+              "tz_raw": "",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "setta27-est",
+          "link": "https://www.setta2026.sg",
           "place": "",
           "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": true,
-          "source": "ccfddl",
+          "source": "override",
           "deadlines": [
             {
               "kind": "paper",
               "label": "Paper submission",
-              "utc": "2026-09-03T11:59:59Z",
-              "aoe": "2026-09-02 23:59:59 AoE",
-              "tz_raw": "AoE",
+              "utc": "2027-03-14T23:59:59Z",
+              "aoe": "2027-03-14 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
-              "comment": "Estimated from the 2025 edition"
-            },
-            {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-12-24T11:59:59Z",
-              "aoe": "2026-12-23 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 2,
-              "comment": "Estimated from the 2025 edition"
+              "comment": "Estimated from the 2026 edition"
             }
           ]
         }
@@ -50307,9 +50338,9 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-08-15T11:59:00Z",
-              "aoe": "2026-08-14 23:59:00 AoE",
+              "label": "Paper submission",
+              "utc": "2026-08-15T11:59:59Z",
+              "aoe": "2026-08-14 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -51149,10 +51180,10 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Submission",
-              "utc": "2026-08-15T23:59:00Z",
-              "aoe": "2026-08-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "label": "Paper submission",
+              "utc": "2026-08-15T23:59:59Z",
+              "aoe": "2026-08-15 11:59:59 AoE",
+              "tz_raw": "",
               "round": 1,
               "comment": null
             }
