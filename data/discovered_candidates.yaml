@@ -17494,3 +17494,36 @@ conferences:
     place: Tallin, Estonia
     date_text: Jan 15, 2026
     deadlines: []
+- key: ijngn-2026
+  title: IJNGN 2026
+  full_name: International Journal of Next - Generation Networks
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201562&copyownerid=33993
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijngn-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201562&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: ijmpict-2026
+  title: IJMPICT 2026
+  full_name: International Journal of Managing Public Sector Information and Communication
+    Technologies
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190066&copyownerid=33993
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijmpict-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190066&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
