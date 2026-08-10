@@ -2538,3 +2538,21 @@ conferences:
         date_text: 'July 13-16, 2027'
         deadlines:
           - {kind: paper, label: 'Full papers due', date: '2027-01-31 23:59:00', tz: AoE}
+
+  # ---------------- ICDM 2026 WS 締切 (2026-08-10 裏取り) ----------------
+  # 根拠: http://icdm2026.neu.edu.cn/dates/list.htm (公開済み、AoE 明記)
+  # Workshop Paper Submission: August 20, 2026 (11:59PM AOE)。
+  # 会期: November 12-15, 2026, Shenyang, China (トップ明記)
+  - key: icdm
+    title: ICDM
+    full_name: IEEE International Conference on Data Mining
+    link: http://icdm2026.neu.edu.cn/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: icdm26
+        link: http://icdm2026.neu.edu.cn/
+        place: Shenyang, China
+        date_text: 'November 12-15, 2026'
+        deadlines:
+          - {kind: paper, label: 'Workshop Paper Submission', date: '2026-08-20 23:59:00', tz: AoE}
