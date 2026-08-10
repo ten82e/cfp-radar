@@ -2010,3 +2010,251 @@ conferences:
         deadlines:
           - {kind: paper, label: Full/Short Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
           - {kind: other, label: Lightning Talk Submission, date: '2026-09-18 23:59:00', tz: AoE}
+
+  # ---------------- SC26 併設 WS 一括 (2026-08-10 裏取り) ----------------
+  # 根拠: sc26.supercomputing.org 「50 accepted workshops」記事 (2026-04-03) のリンク先
+  # 各 WS 公式サイトの Important Dates。TZ 明記なしは COCOA 前例どおり 23:59 UTC 解釈。
+  - key: scalah-2026
+    title: ScalAH 2026
+    full_name: 17th Workshop on Latest Advances in Scalable Algorithms for Large-Scale Heterogeneous Systems (ScalAH 2026)
+    link: https://www.csm.ornl.gov/srt/conferences/Scala/2026/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: scalah26
+        link: https://www.csm.ornl.gov/srt/conferences/Scala/2026/
+        place: Chicago, IL, USA
+        # Full paper submission: August 14, 2026 (firm, no extensions)
+        deadlines:
+          - {kind: paper, label: Full Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: protools-2026
+    title: ProTools 2026
+    full_name: 8th Workshop on Programming and Performance Visualization Tools (ProTools)
+    link: https://sc-protools-workshop.github.io/protools26
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: protools26
+        link: https://sc-protools-workshop.github.io/protools26
+        place: Chicago, IL, USA
+        # Paper submission deadline: August 5, 2026 (AoE) → August 10, 2026 (AoE) 延長
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-10 23:59:00', tz: AoE}
+
+  - key: agenticai4hpc-2026
+    title: AgenticAI4HPC 2026
+    full_name: The First International Workshop on Agentic AI for HPC (AgenticAI4HPC 2026)
+    link: https://ornl.github.io/events/agenticai4hpc2026/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: agenticai4hpc26
+        link: https://ornl.github.io/events/agenticai4hpc2026/
+        place: Chicago, IL, USA
+        # Submission: August 10, 2026 (AoE)
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: AoE}
+
+  - key: ai4s-2026
+    title: AI4S 2026
+    full_name: 8th Workshop on Artificial Intelligence and Machine Learning for Scientific Applications (AI4S)
+    link: https://ai4s.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: ai4s26
+        link: https://ai4s.github.io/
+        place: Chicago, IL, USA
+        # Paper submission deadline: August 14, 2026, 11:59 PM Anywhere on Earth
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+
+  - key: interactive-hpc-2026
+    title: Interactive HPC Workshop 2026
+    full_name: Eighth Workshop on Interactive and Urgent High-Performance Computing
+    link: https://www.interactivehpc.com/cfp
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: ihpc26
+        link: https://www.interactivehpc.com/cfp
+        place: Chicago, IL, USA
+        # Submission deadline: 15th August 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  - key: hpctests-2026
+    title: HPCTESTS 2026
+    full_name: Fourth International Workshop on HPC Testing and Evaluation of Systems, Tools, and Software (HPCTESTS 2026)
+    link: https://olcf.github.io/hpc-system-test-wg/hpctests/hpctests2026
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hpctests26
+        link: https://olcf.github.io/hpc-system-test-wg/hpctests/hpctests2026
+        place: Chicago, IL, USA
+        # Paper Submission Deadline: August 3, 2026 AoE → August 10, 2026 AoE 延長
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-10 23:59:00', tz: AoE}
+
+  - key: ftxs-2026
+    title: FTXS 2026
+    full_name: Workshop for Faults, Trustworthiness, and eXplainability for AI Systems at Scale (FTXS)
+    link: https://sites.google.com/view/ftxs2026
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: ftxs26
+        link: https://sites.google.com/view/ftxs2026
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        # Paper submission deadline: July 30, 2026 → extended to August 12, 2026
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
+
+  - key: hclh-sc-2026
+    title: HCLH 2026
+    full_name: High-Accuracy Computing on Low-Precision Hardware (HCLH)
+    link: https://hclh-sc.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hclh26
+        link: https://hclh-sc.github.io/
+        place: Chicago, IL, USA
+        # Paper submission deadline: 10 August 2026 → 14 August 2026 延長
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: hust-26-2026
+    title: HUST-26
+    full_name: 13th International Workshop on HPC User Support Tools (HUST-26)
+    link: https://hust-workshop.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hust26
+        link: https://hust-workshop.github.io/
+        place: Chicago, IL, USA
+        date_text: 'November 15, 2026'
+        # Submissions Deadline: August 7, 2026 → August 14, 2026 (final extension)
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: isav-2026
+    title: ISAV 2026
+    full_name: ISAV 2026: In Situ AI, Analysis and Visualization
+    link: https://isav-workshop.github.io/2026/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: isav26
+        link: https://isav-workshop.github.io/2026/
+        place: Chicago, IL, USA
+        # Extended submission deadline (all types): 14 Aug 2026 (deadline is FIRM)
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: llvm-hpc-2026
+    title: LLVM-HPC 2026
+    full_name: The Twelfth Workshop on the LLVM Compiler Infrastructure in HPC (LLVM-HPC 2026)
+    link: https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: llvm-hpc26
+        link: https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        # Paper submissions due: August 14, 2026 (AoE)
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+
+  - key: scale-to-see-2026
+    title: Scale to See 2026
+    full_name: Scale to See: Scalable AI for Scientific Imaging and Spatiotemporal Data
+    link: https://sites.google.com/view/scale-to-see-workshop/home
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: scale2see26
+        link: https://sites.google.com/view/scale-to-see-workshop/home
+        place: Chicago, IL, USA
+        # The deadline is postponed to August 22th, 2026, AOE
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-22 23:59:00', tz: AoE}
+
+  - key: h2rc-2026
+    title: H2RC 2026
+    full_name: Twelfth International Workshop on Heterogeneous High-performance Reconfigurable Computing (H2RC 2026)
+    link: https://h2rc.cse.sc.edu/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: h2rc26
+        link: https://h2rc.cse.sc.edu/
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        # Paper submission: August 5, 2026 → August 15, 2026 (extended)
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  - key: bphte-26-2026
+    title: BPHTE 26
+    full_name: Thirteenth SC Workshop on Best Practices for HPC Training and Education (BPHTE 26)
+    link: https://sighpceducation.acm.org/events/bphte26_cfp/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: bphte26
+        link: https://sighpceducation.acm.org/events/bphte26_cfp/
+        place: Chicago, IL, USA
+        # Stage 1 deadline: August 12, 2026 at 11:59 PM EDT
+        deadlines:
+          - {kind: paper, label: Stage 1 Submission, date: '2026-08-12 23:59:00', tz: edt}
+
+  - key: whpc-2026
+    title: WHPC at SC26
+    full_name: WHPC: Building Community, Building Careers (SC26)
+    link: https://womeninhpc.org/events/sc-2026-workshop
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: whpc26
+        link: https://womeninhpc.org/events/sc-2026-workshop
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        # Submission deadline: August 14, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+
+  - key: hmem-2026
+    title: HMEM 2026
+    full_name: 7th Workshop on Heterogeneity and Memory Systems (HMEM)
+    link: https://hmem-workshop.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hmem26
+        link: https://hmem-workshop.github.io/
+        place: Chicago, IL, USA
+        # Paper submission deadline: August 17, 2026
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
