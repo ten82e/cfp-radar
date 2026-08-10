@@ -2628,17 +2628,18 @@ conferences:
 
   # 根拠: SC26 提出ポータル「SC Workshop: High Performance Fabrics for AI and HPC —
   #   Closes: 11:59pm (PDT) Aug 15, 2026」(2026-08-10 確認)。SC26 新設 WS
-  #   (SC25 には存在せず)。公式サイト非公開のため link は SC26 WS 一覧ページ。
+  #   (SC25 には存在せず)。専用サイト sites.google.com/view/hpc-fabrics-for-ai は
+  #   存在確認済み (2026-08-10、bot 対策で中身は取得不能) のため link を更新。
   - key: hpc-fabrics-2026
     title: Fabrics for AI and HPC 2026
     full_name: "Workshop on High Performance Fabrics for AI and HPC (SC26)"
-    link: https://sc26.supercomputing.org/participate/workshops/
+    link: https://sites.google.com/view/hpc-fabrics-for-ai
     categories: [hpc, networks]
     tags: [workshop]
     editions:
       - year: 2026
         id: hpc-fabrics-2026
-        link: https://sc26.supercomputing.org/participate/workshops/
+        link: https://sites.google.com/view/hpc-fabrics-for-ai
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: PDT}
