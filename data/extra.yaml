@@ -2133,8 +2133,11 @@ conferences:
         id: hppss-2026
         link: https://hppss.github.io/SC26/
         place: Chicago, IL, USA
+        # SC26 ポータル一次 (2026-08-10): Closes: 12am (AoE) Aug 14 = 8/13 23:59 AoE 相当
+        # (Linklings は締切 1 分後の翌日 0:00 を表示。resdis の 12am Aug 15 = 8/14 AoE 前例と同則)
+        # 公式サイト (hppss.github.io/SC26/callfordemos.html) は "August 14, 2026" (tz 明記なし)
         deadlines:
-          - {kind: abstract, label: Abstract Submission, date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: abstract, label: Abstract Submission, date: '2026-08-13 23:59:00', tz: AoE}
 
   # ---------------- SC26 併設 WS 一括 (2026-08-10 裏取り) ----------------
   # 根拠: sc26.supercomputing.org 「50 accepted workshops」記事 (2026-04-03) のリンク先
@@ -2320,9 +2323,11 @@ conferences:
         id: scale2see26
         link: https://sites.google.com/view/scale-to-see-workshop/home
         place: Chicago, IL, USA
-        # The deadline is postponed to August 22th, 2026, AOE
+        # SC26 ポータル一次 (2026-08-10): Closes: 12am (AoE) Aug 15 = 8/14 23:59 AoE 相当
+        # (Linklings は締切 1 分後の翌日 0:00 を表示。resdis の 12am Aug 15 = 8/14 AoE 前例と同則)
+        # 公式サイトは "postponed to August 15th, 2026, AOE" — ポータル実設定が一次
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: h2rc-2026
     title: H2RC 2026
