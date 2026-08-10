@@ -1988,3 +1988,25 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Late Breaking and Short Paper, date: '2026-08-26 23:59:00', tz: AoE}
+
+  # ---------------- SC26 併設 WS 追加 3 (2026-08-10 裏取り) ----------------
+  # 根拠: https://hpc-oda.org/ Workshop ページ (JS レンダリングのため browser で確認)
+  #   Important Dates (全て 11:59 PM AoE):
+  #   July 31, 2026 → August 12, 2026 — Full / Short Paper Submission Deadline (延長)
+  #   September 18, 2026 — Lightning Talk Submission Deadline
+  #   2026-11-20 開催 (SC26 併設, Chicago)
+  - key: hpc-oda-2026
+    title: HPC-ODA 2026
+    full_name: The 1st International Workshop on HPC Operational Data Analytics (HPC-ODA 2026)
+    link: https://hpc-oda.org/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hpc-oda-2026
+        link: https://hpc-oda.org/
+        place: Chicago, IL, USA
+        date_text: 'November 20, 2026'
+        deadlines:
+          - {kind: paper, label: Full/Short Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
+          - {kind: other, label: Lightning Talk Submission, date: '2026-09-18 23:59:00', tz: AoE}
