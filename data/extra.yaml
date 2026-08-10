@@ -1561,3 +1561,81 @@ conferences:
         date_text: December 4-6, 2026
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-23 23:59:00', tz: UTC}
+
+  # ---------------- ワークショップ昇格 (2026-08-10 裏取り) ----------------
+  # 根拠: https://www.wsce.org/ (2026-08-10 取得)
+  #   「Submission Due August 10, 2026」「three-day conference ... in Okinawa,
+  #   Japan from September 17 to 19, 2026」— wikiCFP (Aug 10) と一致。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  - key: ieee-wsce-2026
+    title: WSCE
+    full_name: IEEE World Symposium on Communication Engineering
+    link: https://www.wsce.org/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: wsce2026
+        link: https://www.wsce.org/
+        place: Okinawa, Japan
+        date_text: September 17-19, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: UTC}
+
+  # 根拠: https://easychair.org/cfp/iros2026nocworkshop (2026-08-10)
+  #   「deadline August 15, 2026」— IROS 2026 併設 WS。開催日は EasyChair に記載なし。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  - key: iros2026-noc-workshop
+    title: NOC Workshop
+    full_name: Workshop on Nonverbal Cues for Human-Robot Cooperative Intelligence (IROS 2026)
+    link: https://easychair.org/cfp/iros2026nocworkshop
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: iros2026noc
+        link: https://easychair.org/cfp/iros2026nocworkshop
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: https://easychair.org/cfp/WSSE2026 (2026-08-10)
+  #   「Submission deadline August 15, 2026」— wikiCFP と一致。開催地は EasyChair に記載なし。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  - key: wsse-2026
+    title: WSSE
+    full_name: World Symposium on Software Engineering
+    link: https://easychair.org/cfp/WSSE2026
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: wsse2026
+        link: https://easychair.org/cfp/WSSE2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: https://easychair.org/cfp/flowchallenge2 (2026-08-10)
+  #   「Submission deadline September 15, 2026」— DIMACS 実装チャレンジ (ALENEX/SOSA 併設)。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  - key: network-flows-2-0
+    title: Network Flows 2.0
+    full_name: "DIMACS Implementation Challenge: Network Flows 2.0"
+    link: https://easychair.org/cfp/flowchallenge2
+    categories: [theory]
+    editions:
+      - year: 2026
+        id: networkflows20
+        link: https://easychair.org/cfp/flowchallenge2
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-09-15 23:59:00', tz: UTC}
+
+  # 根拠: https://easychair.org/cfp/jornadas-dl2 (2026-08-10)
+  #   「Submission deadline: 30th September 2026」— 公式に tz 表記なし → 23:59 UTC。
+  - key: 1st-dl2-international-workshop
+    title: DL2 Workshop
+    full_name: 1st DL2 International Workshop
+    link: https://easychair.org/cfp/jornadas-dl2
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: dl2ws2026
+        link: https://easychair.org/cfp/jornadas-dl2
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-09-30 23:59:00', tz: UTC}
