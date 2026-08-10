@@ -276,6 +276,17 @@ label.check input:checked + span { color: var(--fg); }
 }
 .btn-reset:hover { color: var(--fg); border-color: var(--muted); }
 
+.sample-btn {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.sample-btn:hover { color: var(--accent); border-color: var(--accent); border-style: solid; }
+
 /* Main Table */
 .count { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 .tablewrap {
@@ -468,7 +479,14 @@ footer a:hover { text-decoration: underline; }
       <div style="position: relative; margin-top: 4px;">
         <textarea id="paperText" rows="3" placeholder="1行1本: タイトル | キーワード | 掲載先(任意)&#10;例: High-Performance Key-Value Store using RDMA and NVMe | storage, rdma, nvme | USENIX FAST&#10;例: A Scalable LSM-Tree Storage Engine | lsm, storage | (掲載先は空でもOK)"></textarea>
       </div>
-      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">投稿予定の論文と、似た論文をまとめて貼ると、掲載先タグの傾向も加味して会議をランク付けします。分野チップが空なら自動判定。</div>
+      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">投稿予定の論文と、似た論文をまとめて貼ると、掲載先タグの傾向も加味して会議をランク付けします。分野チップが空なら自動判定。タイトルだけ・キーワードだけでも動きます。</div>
+      <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
+        <span style="font-size: 0.7rem; color: var(--muted); align-self: center;">ワンクリック入力:</span>
+        <button class="sample-btn" type="button" data-sample="Time-Sensitive Networking Scheduling for Deterministic Industrial Networks | tsn, real-time, scheduling, deterministic | IEEE RTSS">TSN スケジューリング</button>
+        <button class="sample-btn" type="button" data-sample="High-Performance Key-Value Store with RDMA and NVMe | storage, rdma, nvme | USENIX FAST">分散ストレージ</button>
+        <button class="sample-btn" type="button" data-sample="Kubernetes Service Mesh with eBPF-based Packet Processing | kubernetes, ebpf, network, packet">K8s ネットワーク</button>
+        <button class="sample-btn" type="button" data-sample="Confidential Computing with SGX Enclaves in Cloud | sgx, enclave, confidential computing">SGX セキュリティ</button>
+      </div>
     </div>
 
     <div class="field">
@@ -1192,6 +1210,13 @@ footer a:hover { text-decoration: underline; }
   $("paperText").addEventListener("input", function () {
     clearTimeout(timer);
     timer = setTimeout(function () { apply(); scheduleSemantic(); }, 200);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".sample-btn"), function (b) {
+    b.addEventListener("click", function () {
+      $("paperText").value = b.getAttribute("data-sample");
+      apply();
+      scheduleSemantic();
+    });
   });
   ["kind", "rank", "win", "est", "domestic"].forEach(function (id) {
     $(id).addEventListener("change", apply);
