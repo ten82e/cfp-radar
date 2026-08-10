@@ -7,6 +7,7 @@ and journal Call for Papers in HPC, Systems, Networking, AI, and Security.
 
 from __future__ import annotations
 
+import datetime
 import json
 import urllib.parse
 import urllib.request
@@ -143,21 +144,29 @@ def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[
 
     rows = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S)
     entries: list[dict] = []
-    i = 0
-    while i < len(rows) - 1:
-        cells1 = re.findall(r"<td[^>]*>(.*?)</td>", rows[i], re.S)
-        cells2 = re.findall(r"<td[^>]*>(.*?)</td>", rows[i + 1], re.S)
-        i += 2
-        if len(cells1) < 2 or len(cells2) < 3:
+    for i, row in enumerate(rows):
+        m = re.search(r'<a href="([^"]*event\.showcfp[^"]*)">([^<]+)</a>', row)
+        if not m:
             continue
-        clean1 = [re.sub(r"<[^>]+>", " ", c) for c in cells1]
-        title = re.sub(r"\s+", " ", clean1[0]).strip()
-        full_name = re.sub(r"\s+", " ", clean1[1]).strip()
-        hrefs = re.findall(r'href="([^"]+)"', cells1[0])
-        if not title or not full_name or not hrefs:
+        href, title = m.group(1), html_mod.unescape(m.group(2)).strip()
+        href = html_mod.unescape(href)
+        # full name = イベント行の 2 番目の td
+        tds = re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)
+        full_name = ""
+        for td in tds[1:]:
+            txt = re.sub(r"<[^>]+>", " ", td)
+            txt = re.sub(r"\s+", " ", txt).strip()
+            if txt and "checkbox" not in txt:
+                full_name = txt
+                break
+        if not full_name or i + 1 >= len(rows):
             continue
-        clean2 = [re.sub(r"<[^>]+>", " ", c) for c in cells2]
-        when, where, deadline = (re.sub(r"\s+", " ", c).strip() for c in clean2[:3])
+        # ディテール行: when / where / deadline
+        cells = [re.sub(r"<[^>]+>", " ", c) for c in re.findall(r"<td[^>]*>(.*?)</td>", rows[i + 1], re.S)]
+        cells = [re.sub(r"\s+", " ", c).strip() for c in cells if re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", c)).strip()]
+        if len(cells) < 3:
+            continue
+        when, where, deadline = cells[:3]
         if deadline in ("", "N/A"):
             continue
         year = min_year
@@ -174,7 +183,7 @@ def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[
             "key": slug(title),
             "title": title,
             "full_name": full_name,
-            "link": "https://www.wikicfp.com" + html_mod.unescape(hrefs[0]),
+            "link": "https://www.wikicfp.com" + href,
             "categories": list(categories),
             "date_text": deadline,
             "place": where if where not in ("", "N/A") else "",
@@ -183,19 +192,42 @@ def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[
     return entries
 
 
+def _deadline_is_future(date_text: str, today: datetime.date) -> bool:
+    """'Aug 15, 2026 (Aug 1, 2026)' 形式の締切が今日以降か判定する。"""
+    import re
+    months = {m: i + 1 for i, m in enumerate(
+        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])}
+    m = re.search(r"([A-Z][a-z]{2})\s+(\d{1,2}),?\s*(20\d\d)?", date_text)
+    if not m or m.group(1) not in months:
+        return False  # 形式不明は候補にしない(裏取り原則)
+    year = int(m.group(3)) if m.group(3) else today.year
+    d = datetime.date(year, months[m.group(1)], int(m.group(2)))
+    return d >= today
+
+
 def discover_from_wikicfp_urls(categories: list[str], min_year: int) -> list[dict]:
-    """wikiCFP カテゴリページを取得してパースする(ネットワーク層)。"""
+    """wikiCFP カテゴリページを取得してパースする(ネットワーク層)。
+
+    ページは締切昇順なので、未来締切が現れなくなるまで最大 3 ページ見る。
+    """
+    import datetime as dt
     entries: list[dict] = []
+    today = dt.date.today()
     for cat in categories:
-        url = f"http://www.wikicfp.com/cfp/call?conference={cat}"
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                html = resp.read().decode("utf-8", "replace")
-            entries.extend(parse_wikicfp_html(html, [cat], min_year))
-        except Exception:
-            # 1 カテゴリの失敗で全体を止めない
-            continue
+        for page in range(1, 4):
+            url = f"http://www.wikicfp.com/cfp/call?conference={cat}&page={page}"
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    html = resp.read().decode("utf-8", "replace")
+                page_entries = parse_wikicfp_html(html, [cat], min_year)
+            except Exception:
+                # 1 カテゴリ 1 ページの失敗で全体を止めない
+                break
+            future = [e for e in page_entries if _deadline_is_future(e["date_text"], today)]
+            entries.extend(future)
+            if not future:
+                break  # 締切昇順: ここから先はすべて過去締切
     return entries
 
 

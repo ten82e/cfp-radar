@@ -94,3 +94,16 @@ def test_parse_wikicfp_html():
     assert e["place"] == "Tokyo, Japan"
     assert e["year"] == 2026
 
+
+def test_deadline_is_future():
+    from datetime import date
+    from scripts.discover import _deadline_is_future
+
+    today = date(2026, 8, 10)
+    assert _deadline_is_future("Aug 14, 2026", today) is True
+    assert _deadline_is_future("Aug 9, 2026", today) is False
+    assert _deadline_is_future("Dec 1, 2026 (Nov 15, 2026)", today) is True
+    assert _deadline_is_future("Feb 1, 2026", today) is False
+    assert _deadline_is_future("TBA", today) is False  # 形式不明は候補にしない
+    assert _deadline_is_future("Mar 15, 2027", today) is True
+
