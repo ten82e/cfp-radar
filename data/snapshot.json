@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T04:56:55Z",
+  "generated_at": "2026-08-10T05:00:42Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -22208,6 +22208,44 @@
               "tz_raw": "AoE",
               "round": 2,
               "comment": "Second round"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "icin",
+      "title": "ICIN",
+      "full_name": "International Conference on Innovation in Clouds, Internet and Networks",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.icin-conference.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "icin2027",
+          "link": "https://www.icin-conference.org/",
+          "place": "",
+          "date_text": "March 15-18, 2027",
+          "event_start": "2027-03-15",
+          "event_end": "2027-03-18",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-10-30T23:59:00Z",
+              "aoe": "2026-10-30 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
