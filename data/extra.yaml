@@ -2401,3 +2401,28 @@ conferences:
         place: Shenyang, China
         deadlines:
           - {kind: paper, label: Full Paper Submission, date: '2027-06-06 23:59:00', tz: AoE}
+
+  # ---------------- PacificVis 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://pacificvis2027.github.io/ (公開済み: 会期 April 19-22, 2027 Busan)
+  #   CFP 締切は公式リポジトリ (pacificvis2027.github.io の app/contribute/*/page.jsx) の
+  #   Track-Specific Deadlines 確定値 (2026-08-10 時点でサイト上は未デプロイ 404 だが、
+  #   ホームに "CFPs are now available" の声明あり。2026 版公開値 (9/1・9/7, 11/1・11/8)
+  #   と 1 日ずれでパターン一致)。全て 11:59pm AoE。
+  #   推定締切 (8/17・8/23, 10/17・10/24, rollforward) は real で置換。
+  - key: pacificvis
+    title: PacificVis
+    full_name: IEEE Pacific Visualization Symposium (PacificVis 2027)
+    link: https://pacificvis2027.github.io/
+    categories: [graphics]
+    tags: []
+    editions:
+      - year: 2027
+        id: pacificvis27
+        link: https://pacificvis2027.github.io/
+        place: Busan, South Korea
+        date_text: 'April 19-22, 2027'
+        deadlines:
+          - {kind: abstract, label: 'Abstract (Journal Track)', date: '2026-09-01 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Paper (Journal Track)', date: '2026-09-08 23:59:00', tz: AoE}
+          - {kind: abstract, label: 'Abstract (Conference Track)', date: '2026-11-02 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Paper (Conference Track)', date: '2026-11-09 23:59:00', tz: AoE}
