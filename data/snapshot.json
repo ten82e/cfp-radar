@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T12:23:29Z",
+  "generated_at": "2026-08-10T12:30:00Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -2886,9 +2886,9 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-11T11:59:00Z",
-              "aoe": "2026-08-10 23:59:00 AoE",
-              "tz_raw": "AoE",
+              "utc": "2026-08-11T06:59:00Z",
+              "aoe": "2026-08-10 18:59:00 AoE",
+              "tz_raw": "PDT",
               "round": 1,
               "comment": null
             }
@@ -19440,7 +19440,7 @@
         "hpc"
       ],
       "rank": {},
-      "link": "https://sc26.supercomputing.org/participate/workshops/",
+      "link": "https://sites.google.com/view/hpc-fabrics-for-ai",
       "tags": [
         "workshop"
       ],
@@ -19451,7 +19451,7 @@
         {
           "year": 2026,
           "id": "hpc-fabrics-2026",
-          "link": "https://sc26.supercomputing.org/participate/workshops/",
+          "link": "https://sites.google.com/view/hpc-fabrics-for-ai",
           "place": "Chicago, IL, USA",
           "date_text": "",
           "event_start": null,
