@@ -1825,7 +1825,6 @@ conferences:
       - year: 2026
         id: ieice-fundamentals-discrete-math-2027-09
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
-        date_text: '2026-09-18'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-09-18 23:59:00', tz: UTC}
 
@@ -1840,7 +1839,6 @@ conferences:
       - year: 2026
         id: ieice-inf-syst-log-data-2027-12
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
-        date_text: '2026-11-12'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-11-12 23:59:00', tz: UTC}
 
@@ -1855,7 +1853,6 @@ conferences:
       - year: 2026
         id: ieice-electron-microwave-2027-11
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
-        date_text: '2026-11-16'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-11-16 23:59:00', tz: UTC}
 
@@ -1872,7 +1869,6 @@ conferences:
       - year: 2026
         id: ipsj-27-p26
         link: https://www.ipsj.or.jp/journal/cfp/27-P.html
-        date_text: '2026-12-04'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-12-04 23:59:00', tz: UTC}
 
@@ -1886,7 +1882,6 @@ conferences:
       - year: 2026
         id: ipsj-27-n26
         link: https://www.ipsj.or.jp/journal/cfp/27-N.html
-        date_text: '2026-08-21'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: UTC}
 
@@ -1900,7 +1895,6 @@ conferences:
       - year: 2026
         id: ipsj-27-r26
         link: https://www.ipsj.or.jp/journal/cfp/27-R.html
-        date_text: '2026-12-01'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-12-01 23:59:00', tz: UTC}
 
@@ -1914,7 +1908,6 @@ conferences:
       - year: 2026
         id: ipsj-27-m26
         link: https://www.ipsj.or.jp/journal/cfp/27-M.html
-        date_text: '2026-11-27'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-11-27 23:59:00', tz: UTC}
 
@@ -1928,7 +1921,6 @@ conferences:
       - year: 2026
         id: ipsj-27-l26
         link: https://www.ipsj.or.jp/journal/cfp/27-L.html
-        date_text: '2026-08-28'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: UTC}
 
@@ -1962,7 +1954,6 @@ conferences:
       - year: 2026
         id: ieice-nolta-advances-2027-04
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
-        date_text: '2026-10-03'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-10-03 23:59:00', tz: UTC}
 
@@ -1977,7 +1968,6 @@ conferences:
       - year: 2027
         id: ieice-nolta-progress-2027-07
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
-        date_text: '2027-01-10'
         deadlines:
           - {kind: paper, label: Submission, date: '2027-01-10 23:59:00', tz: UTC}
 

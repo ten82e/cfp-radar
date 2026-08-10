@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T08:00:00Z",
+  "generated_at": "2026-08-10T08:49:56Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -32,6 +32,44 @@
     "theory": "Theory and Algorithms"
   },
   "conferences": [
+    {
+      "key": "1st-dl2-international-workshop",
+      "title": "DL2 Workshop",
+      "full_name": "1st DL2 International Workshop",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://easychair.org/cfp/jornadas-dl2",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "dl2ws2026",
+          "link": "https://easychair.org/cfp/jornadas-dl2",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-09-30T23:59:00Z",
+              "aoe": "2026-09-30 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
     {
       "key": "3dv",
       "title": "3DV",
@@ -12805,6 +12843,46 @@
       ]
     },
     {
+      "key": "echo-workshop-2026",
+      "title": "ECHO Workshop 2026",
+      "full_name": "The 1st International Workshop on Edge-Cloud-HPC Operational Continuum (ECHO)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://echo-workshop.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "echo2026",
+          "link": "https://echo-workshop.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-16T11:59:00Z",
+              "aoe": "2026-08-15 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "ecir",
       "title": "ECIR",
       "full_name": "European Conference on Information Retrieval",
@@ -18012,6 +18090,196 @@
       ]
     },
     {
+      "key": "geoai-2026",
+      "title": "GeoAI 2026",
+      "full_name": "The 9th International Workshop on AI for Geographic Knowledge Discovery",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://events.ornl.gov/acmsigspatial-geoai2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geoai2026",
+          "link": "https://events.ornl.gov/acmsigspatial-geoai2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-21T23:59:00Z",
+              "aoe": "2026-08-21 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "geoanomalies-2026",
+      "title": "GeoAnomalies 2026",
+      "full_name": "The 3rd ACM SIGSPATIAL International Workshop on Geospatial Anomaly Detection",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://geoanomalies.github.io/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geoanomalies2026",
+          "link": "https://geoanomalies.github.io/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-16T23:59:00Z",
+              "aoe": "2026-08-16 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "geohealth-2026",
+      "title": "GeoHealth 2026",
+      "full_name": "The 2nd ACM SIGSPATIAL International Workshop on Geospatial Computing for Public Health",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://onspatial.github.io/geo-health-2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geohealth2026",
+          "link": "https://onspatial.github.io/geo-health-2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "geoindustry-2026",
+      "title": "GeoIndustry 2026",
+      "full_name": "The 5th ACM SIGSPATIAL International Workshop on Spatial Big Data and AI for Industry",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://geoindustry.github.io/geoindustryworkshop2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geoindustry2026",
+          "link": "https://geoindustry.github.io/geoindustryworkshop2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-29T11:59:00Z",
+              "aoe": "2026-08-28 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "geosearch-2026",
+      "title": "GeoSearch 2026",
+      "full_name": "The 5th ACM SIGSPATIAL International Workshop on Searching and Mining Large Collections of Geospatial Data",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://geosearch-workshop.github.io/geosearch2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geosearch2026",
+          "link": "https://geosearch-workshop.github.io/geosearch2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-28T23:59:00Z",
+              "aoe": "2026-08-28 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "globecom",
       "title": "GLOBECOM",
       "full_name": "IEEE Global Communications Conference",
@@ -19280,6 +19548,44 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "humob-2026",
+      "title": "HuMoB 2026",
+      "full_name": "The 4th ACM SIGSPATIAL International Workshop on Human Mobility Prediction Challenge",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://takayabe0505.github.io/humob-2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "humob2026",
+          "link": "https://takayabe0505.github.io/humob-2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-09-20T23:59:00Z",
+              "aoe": "2026-09-20 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -26341,6 +26647,44 @@
       ]
     },
     {
+      "key": "ieee-wsce-2026",
+      "title": "WSCE",
+      "full_name": "IEEE World Symposium on Communication Engineering",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://www.wsce.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "wsce2026",
+          "link": "https://www.wsce.org/",
+          "place": "Okinawa, Japan",
+          "date_text": "September 17-19, 2026",
+          "event_start": "2026-09-17",
+          "event_end": "2026-09-19",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-10T23:59:00Z",
+              "aoe": "2026-08-10 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "ieice-cq",
       "title": "電子情報通信学会 CQ 研究会",
       "full_name": "電子情報通信学会 コミュニケーションクオリティ研究会 (CQ)",
@@ -26395,6 +26739,90 @@
               "utc": "2026-09-03T14:59:00Z",
               "aoe": "2026-09-03 02:59:00 AoE",
               "tz_raw": "UTC+9",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ieice-electron-microwave-special",
+      "title": "IEICE Trans. Electron. 特集号（マイクロ波・ミリ波技術）",
+      "full_name": "Special Section on Microwave and Millimeter-Wave Technologies（IEICE Trans. Electron.）",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ieice-electron-microwave-2027-11",
+          "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+          "place": "",
+          "date_text": "2026-11-16",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-11-16T23:59:00Z",
+              "aoe": "2026-11-16 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ieice-fundamentals-discrete-math-special",
+      "title": "IEICE Trans. Fundamentals 特集号（離散数学とその応用）",
+      "full_name": "Special Section on Discrete Mathematics and Its Applications（IEICE Trans. Fundamentals）",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ieice-fundamentals-discrete-math-2027-09",
+          "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+          "place": "",
+          "date_text": "2026-09-18",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-09-18T23:59:00Z",
+              "aoe": "2026-09-18 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
@@ -26628,6 +27056,132 @@
           "estimated": false,
           "source": "local",
           "deadlines": []
+        }
+      ]
+    },
+    {
+      "key": "ieice-inf-syst-log-data-special",
+      "title": "IEICE Trans. Inf. & Syst. 特集号（ログデータ活用技術とオフィス情報システム）",
+      "full_name": "Special Section on Log Data Usage Technology and Office Information Systems（IEICE Trans. Inf. & Syst.）",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ieice-inf-syst-log-data-2027-12",
+          "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+          "place": "",
+          "date_text": "2026-11-12",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-11-12T23:59:00Z",
+              "aoe": "2026-11-12 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ieice-nolta-recent-advances-special",
+      "title": "IEICE NOLTA 特集号（非線形問題の最近の進展）",
+      "full_name": "Special Section on Recent Advances in Nonlinear Problems（IEICE NOLTA）",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ieice-nolta-advances-2027-04",
+          "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+          "place": "",
+          "date_text": "2026-10-03",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-10-03T23:59:00Z",
+              "aoe": "2026-10-03 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ieice-nolta-recent-progress-special",
+      "title": "IEICE NOLTA 特集号（非線形理論とその応用の最近の進歩）",
+      "full_name": "Special Section on Recent Progress in Nonlinear Theory and Its Applications（IEICE NOLTA）",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "ieice-nolta-progress-2027-07",
+          "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
+          "place": "",
+          "date_text": "2027-01-10",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2027-01-10T23:59:00Z",
+              "aoe": "2027-01-10 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
         }
       ]
     },
@@ -28961,6 +29515,216 @@
       ]
     },
     {
+      "key": "ipsj-27-l-superintelligence",
+      "title": "IPSJ 論文誌 特集号（超知能と新社会システム・高度交通システム）",
+      "full_name": "超知能と共に革新する新社会システムと高度交通システム（IPSJ 論文誌 特集号）",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/journal/cfp/27-L.html",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ipsj-27-l26",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-L.html",
+          "place": "",
+          "date_text": "2026-08-28",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-28T23:59:00Z",
+              "aoe": "2026-08-28 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ipsj-27-m-security",
+      "title": "IPSJ 論文誌 特集号（AI と社会基盤のコンピュータセキュリティ）",
+      "full_name": "AIによって変わる社会基盤を支えるコンピュータセキュリティ技術（IPSJ 論文誌 特集号）",
+      "categories": [
+        "security"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/journal/cfp/27-M.html",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ipsj-27-m26",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-M.html",
+          "place": "",
+          "date_text": "2026-11-27",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-11-27T23:59:00Z",
+              "aoe": "2026-11-27 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ipsj-27-n-info-systems",
+      "title": "IPSJ 論文誌 特集号（情報システム論文）",
+      "full_name": "情報システム論文（IPSJ 論文誌 特集号）",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/journal/cfp/27-N.html",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ipsj-27-n26",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-N.html",
+          "place": "",
+          "date_text": "2026-08-21",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-21T23:59:00Z",
+              "aoe": "2026-08-21 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ipsj-27-p-ubiquitous",
+      "title": "IPSJ 論文誌 特集号（ユビキタスコンピューティングシステム XIV）",
+      "full_name": "ユビキタスコンピューティングシステム（XIV）（IPSJ 論文誌 特集号）",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/journal/cfp/27-P.html",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ipsj-27-p26",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-P.html",
+          "place": "",
+          "date_text": "2026-12-04",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-12-04T23:59:00Z",
+              "aoe": "2026-12-04 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ipsj-27-r-compsac",
+      "title": "IPSJ 論文誌 特集号（Applications and the Internet）",
+      "full_name": "Applications and the Internet（IPSJ 論文誌 特集号、COMPSAC 2026 連携）",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.ipsj.or.jp/journal/cfp/27-R.html",
+      "tags": [
+        "niche",
+        "special-issue",
+        "domestic-jp"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ipsj-27-r26",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-R.html",
+          "place": "",
+          "date_text": "2026-12-01",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-12-01T23:59:00Z",
+              "aoe": "2026-12-01 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "ipsj-sigarc",
       "title": "情報処理学会 ARC 研究会",
       "full_name": "情報処理学会 システム・アーキテクチャ研究会 (SIGARC)",
@@ -29391,6 +30155,44 @@
               "utc": "2026-07-11T11:59:59Z",
               "aoe": "2026-07-10 23:59:59 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "iros2026-noc-workshop",
+      "title": "NOC Workshop",
+      "full_name": "Workshop on Nonverbal Cues for Human-Robot Cooperative Intelligence (IROS 2026)",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://easychair.org/cfp/iros2026nocworkshop",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "iros2026noc",
+          "link": "https://easychair.org/cfp/iros2026nocworkshop",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
@@ -34682,6 +35484,44 @@
       ]
     },
     {
+      "key": "network-flows-2-0",
+      "title": "Network Flows 2.0",
+      "full_name": "DIMACS Implementation Challenge: Network Flows 2.0",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://easychair.org/cfp/flowchallenge2",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "networkflows20",
+          "link": "https://easychair.org/cfp/flowchallenge2",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-09-15T23:59:00Z",
+              "aoe": "2026-09-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "networking",
       "title": "Networking",
       "full_name": "IFIP International Conference on Networking",
@@ -37575,6 +38415,46 @@
       ]
     },
     {
+      "key": "pmbs-2026",
+      "title": "PMBS 26",
+      "full_name": "The 16th International Workshop on Performance Modeling, Benchmarking and Simulation of High Performance Computer Systems (PMBS 26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://pmbs-workshop.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "pmbs26",
+          "link": "https://pmbs-workshop.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Late Breaking and Short Paper",
+              "utc": "2026-08-27T11:59:00Z",
+              "aoe": "2026-08-26 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "podc",
       "title": "PODC",
       "full_name": "ACM Symposium on Principles of Distributed Computing",
@@ -37782,6 +38662,44 @@
               "tz_raw": "UTC-7",
               "round": 2,
               "comment": "SECOND SUBMISSION CYCLE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "polds-2026",
+      "title": "PolDS 2026",
+      "full_name": "The 2nd ACM International Workshop on Polar Data Science",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://iharp.umbc.edu/polds26/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "polds2026",
+          "link": "https://iharp.umbc.edu/polds26/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -38418,6 +39336,44 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2025 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "qspatial-2026",
+      "title": "Q-Spatial",
+      "full_name": "The 2nd ACM SIGSPATIAL International Workshop on Quantum Computing and Quantum-Inspired Computing for Spatial Applications",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://qspatial.github.io/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "qspatial2026",
+          "link": "https://qspatial.github.io/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-13T06:59:00Z",
+              "aoe": "2026-08-12 18:59:00 AoE",
+              "tz_raw": "pt",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -45017,6 +45973,44 @@
       ]
     },
     {
+      "key": "spatialconnect-2026",
+      "title": "SpatialConnect 2026",
+      "full_name": "The 2nd ACM SIGSPATIAL International Workshop on Spatial Intelligence for Smart Connectivity",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://spatialconnect.github.io/2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "spatialconnect2026",
+          "link": "https://spatialconnect.github.io/2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-09-02T11:59:00Z",
+              "aoe": "2026-09-01 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "spm",
       "title": "SPM",
       "full_name": "Symposium on Solid and Physical Modeling",
@@ -46305,6 +47299,44 @@
               "utc": "2026-04-01T11:59:59Z",
               "aoe": "2026-03-31 23:59:59 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "urbanai-2026",
+      "title": "UrbanAI 2026",
+      "full_name": "The 4th ACM SIGSPATIAL International Workshop on Advances in Urban-AI",
+      "categories": [
+        "ai"
+      ],
+      "rank": {},
+      "link": "https://events.ornl.gov/urbanai2026/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "urbanai2026",
+          "link": "https://events.ornl.gov/urbanai2026/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-21T23:59:00Z",
+              "aoe": "2026-08-21 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
@@ -47663,6 +48695,44 @@
       ]
     },
     {
+      "key": "waccpd-2026",
+      "title": "WACCPD 2026",
+      "full_name": "13th Workshop on Accelerator Programming and Directives",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://waccpd.org/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "waccpd2026",
+          "link": "https://waccpd.org/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "wacv",
       "title": "WACV",
       "full_name": "IEEE/CVF Winter Conference on Applications of Computer Vision",
@@ -48948,6 +50018,44 @@
               "tz_raw": "AoE",
               "round": 2,
               "comment": "Short Paper / 同時刻の別記載: Paper submission"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "wsse-2026",
+      "title": "WSSE",
+      "full_name": "World Symposium on Software Engineering",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://easychair.org/cfp/WSSE2026",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "wsse2026",
+          "link": "https://easychair.org/cfp/WSSE2026",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
