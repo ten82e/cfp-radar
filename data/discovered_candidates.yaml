@@ -17959,3 +17959,231 @@ conferences:
     place: ''
     date_text: 15 August 2026
     deadlines: []
+- key: ijsptm-2026
+  title: IJSPTM 2026
+  full_name: International Journal of Security, Privacy and Trust Management
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195010&copyownerid=33993
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijsptm-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195010&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ijcnc-2026
+  title: IJCNC 2026
+  full_name: International Journal of Computer Networks & Communications - Scopus,
+    ERA Indexed, H Index - 42
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195389&copyownerid=33993
+  categories:
+  - networking
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijcnc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195389&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ijp2p-2026
+  title: IJP2P 2026
+  full_name: International Journal of Peer-to-Peer networks
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192618&copyownerid=33993
+  categories:
+  - networking
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijp2p-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192618&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: sipij-2026
+  title: SIPIJ 2026
+  full_name: 'Signal & Image Processing : An International Journal - H index - 33'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195150&copyownerid=33993
+  categories:
+  - communications
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: sipij-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195150&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ijitmc-2026
+  title: IJITMC 2026
+  full_name: The International Journal of Information Technology, Modeling and Computing
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195331&copyownerid=33993
+  categories:
+  - fuzzy
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijitmc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195331&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: mathsj-2026
+  title: MathSJ 2026
+  full_name: 'Applied Mathematics and Sciences: An International Journal'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192722&copyownerid=33993
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: mathsj-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192722&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: cseij-2026
+  title: CSEIJ 2026
+  full_name: 'Computer Science & Engineering: An International Journal'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195297&copyownerid=33993
+  categories:
+  - cryptography
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: cseij-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195297&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ecij-2026
+  title: ECIJ 2026
+  full_name: 'Electrical & Computer Engineering: An International Journal'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189740&copyownerid=33993
+  categories:
+  - networking
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ecij-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189740&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: civej-2026
+  title: CiVEJ 2026
+  full_name: 'Civil Engineering and Urban Planning: An International Journal'
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199836&copyownerid=33993
+  categories:
+  - communications
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: civej-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199836&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: special-section-on-discrete-mathematics-and-its-applications-ieice-trans-fundamentals
+  title: Special Section on Discrete Mathematics and Its Applications（IEICE Trans.
+    Fundamentals 特集号）
+  full_name: Special Section on Discrete Mathematics and Its Applications（IEICE Trans.
+    Fundamentals 特集号）
+  link: https://www.ieice.org/eng_r/information/schedule/journals.php
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: special-section-on-discrete-mathematics-and-its-applications-ieice-trans-fundamentals26
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    place: ''
+    date_text: '2026-09-18'
+    deadlines: []
+- key: special-section-on-recent-advances-in-nonlinear-problems-nolta
+  title: Special Section on Recent Advances in Nonlinear Problems（NOLTA 特集号）
+  full_name: Special Section on Recent Advances in Nonlinear Problems（NOLTA 特集号）
+  link: https://www.ieice.org/eng_r/information/schedule/journals.php
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: special-section-on-recent-advances-in-nonlinear-problems-nolta26
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    place: ''
+    date_text: '2026-10-03'
+    deadlines: []
+- key: special-section-on-log-data-usage-technology-and-office-information-systems-ieice-trans-inf-syst
+  title: Special Section on Log Data Usage Technology and Office Information Systems（IEICE
+    Trans. Inf. & Syst. 特集号）
+  full_name: Special Section on Log Data Usage Technology and Office Information Systems（IEICE
+    Trans. Inf. & Syst. 特集号）
+  link: https://www.ieice.org/eng_r/information/schedule/journals.php
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: special-section-on-log-data-usage-technology-and-office-information-systems-ieice-trans-inf-syst26
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    place: ''
+    date_text: '2026-11-12'
+    deadlines: []
+- key: special-section-on-microwave-and-millimeter-wave-technologies-ieice-trans-electron
+  title: Special Section on Microwave and Millimeter-Wave Technologies（IEICE Trans.
+    Electron. 特集号）
+  full_name: Special Section on Microwave and Millimeter-Wave Technologies（IEICE Trans.
+    Electron. 特集号）
+  link: https://www.ieice.org/eng_r/information/schedule/journals.php
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: special-section-on-microwave-and-millimeter-wave-technologies-ieice-trans-electron26
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    place: ''
+    date_text: '2026-11-16'
+    deadlines: []
+- key: special-section-on-recent-progress-in-nonlinear-theory-and-its-applications-nolta
+  title: Special Section on Recent Progress in Nonlinear Theory and Its Applications（NOLTA
+    特集号）
+  full_name: Special Section on Recent Progress in Nonlinear Theory and Its Applications（NOLTA
+    特集号）
+  link: https://www.ieice.org/eng_r/information/schedule/journals.php
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2027
+    id: special-section-on-recent-progress-in-nonlinear-theory-and-its-applications-nolta27
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    place: ''
+    date_text: '2027-01-10'
+    deadlines: []

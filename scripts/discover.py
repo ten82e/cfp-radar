@@ -206,6 +206,9 @@ def _parse_deadline(date_text: str) -> datetime.date | None:
     import re
     months = {m: i + 1 for i, m in enumerate(
         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])}
+    m0 = re.match(r"(\d{4})-(\d{1,2})-(\d{1,2})", date_text)
+    if m0:
+        return datetime.date(int(m0.group(1)), int(m0.group(2)), int(m0.group(3)))
     m2 = re.search(r"(\d{1,2})\s+([A-Z][a-z]{2})\w*\s+(20\d\d)", date_text)
     if m2 and m2.group(2) in months:
         return datetime.date(int(m2.group(3)), months[m2.group(2)], int(m2.group(1)))
@@ -478,6 +481,62 @@ def discover_from_comsoc_cfps(min_year: int) -> list[dict]:
             if dm and int(dm.group(1)) < min_year:
                 continue  # 過去締切
             entries.append(e)
+    return entries
+
+
+def parse_ieice_cfp_html(html: str, page_url: str) -> list[dict]:
+    """IEICE 特集号 CFP 一覧 (journals.php) から締切付き特集号を抽出する (純関数)。
+
+    「Journal name | Deadline | Special section/issue | Issue」表の行を拾う。
+    締切は YYYY-MM-DD 形式。特集号 PDF への個別リンクは追わない
+    (一覧 URL を evidence にする)。
+    """
+    import html as html_mod
+    import re
+
+    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S)
+    entries: list[dict] = []
+    for row in rows[1:]:  # ヘッダ行をスキップ
+        cells = [html_mod.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", c)).strip())
+                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S)]
+        if len(cells) < 3 or not cells[0] or not cells[2]:
+            continue
+        journal, deadline, section = cells[0], cells[1], cells[2]
+        if not re.match(r"\d{4}-\d{1,2}-\d{1,2}$", deadline):
+            continue
+        title = f"{section}（{journal} 特集号）"
+        entries.append({
+            "key": slug(title),
+            "title": title,
+            "full_name": title,
+            "link": page_url,
+            "categories": [],
+            "source_type": "special_issue",
+            "date_text": deadline,
+            "place": "",
+            "year": int(deadline[:4]),
+        })
+    return entries
+
+
+def discover_from_ieice_cfps(min_year: int) -> list[dict]:
+    """IEICE 論文誌の特集号 CFP 一覧を候補化する (ネットワーク層)。
+
+    journals.php は締切昇順に並ぶ。取得失敗時は空を返し全体を止めない。
+    """
+    url = "https://www.ieice.org/eng_r/information/schedule/journals.php"
+    entries: list[dict] = []
+    try:
+        # IEICE はカスタム UA を 403 で拒否するため Mozilla 系 UA を使う
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            html = resp.read().decode("utf-8", "replace")
+    except Exception:
+        return entries  # 取得失敗で全体を止めない
+    for e in parse_ieice_cfp_html(html, url):
+        if e["year"] < min_year:
+            continue  # 過去締切
+        entries.append(e)
     return entries
 
 
@@ -823,7 +882,30 @@ class NicheDiscoverer:
         except Exception:
             pass  # 特集号一覧取得失敗で全体を止めない
 
-        # 8. Known niche candidate registry (fallback / curated candidates)
+        # 8. IEICE 論文誌の特集号 CFP (構造化テーブル, journals.php)。
+        # 国内学会 (IEICE) の投稿先締切を追跡する (ユーザー質問対応)。
+        try:
+            for entry in discover_from_ieice_cfps(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "special-issue"],
+                    source_type=entry["source_type"],
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # 特集号一覧取得失敗で全体を止めない
+
+        # 9. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

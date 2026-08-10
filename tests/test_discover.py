@@ -140,6 +140,7 @@ def test_parse_deadline():
     assert _parse_deadline("Aug 21, 2026") == date(2026, 8, 21)
     assert _parse_deadline("Nov 16, 2026 (Oct 1, 2026)") == date(2026, 11, 16)
     assert _parse_deadline("31 December 2026") == date(2026, 12, 31)  # 特集号形式
+    assert _parse_deadline("2026-11-12") == date(2026, 11, 12)  # IEICE journals.php
     assert _parse_deadline("1 October 2026") == date(2026, 10, 1)
     assert _parse_deadline("November, 2026") is None  # 月のみはでっち上げない
     assert _parse_deadline("unknown") is None
@@ -163,6 +164,25 @@ def test_parse_comsoc_cfp_html():
     assert es[0]["date_text"] == "31 December 2026"
     assert es[0]["source_type"] == "special_issue"
     assert es[0]["link"] == "https://example.com/cfp"
+
+
+def test_parse_ieice_cfp_html():
+    from scripts.discover import parse_ieice_cfp_html
+
+    html = (
+        "<table><tr><th>Journal name</th><th>Deadline</th><th>Special section/issue</th><th>Issue</th></tr>"
+        "<tr><td>IEICE Trans. Inf. &amp; Syst.</td><td>2026-11-12</td>"
+        "<td>Special Section on Log Data Usage Technology</td><td>2027-12</td></tr>"
+        "<tr><td>NOLTA</td><td>2027-01-10</td><td>Special Section on Recent Progress</td><td>2027-07</td></tr>"
+        "<tr><td>IEICE Trans. Electron.</td><td>2024-03-01</td><td>Closed Section</td><td>2025-01</td></tr>"
+        "</table>"
+    )
+    es = parse_ieice_cfp_html(html, "https://www.ieice.org/eng_r/information/schedule/journals.php")
+    assert len(es) == 3
+    assert es[0]["title"] == "Special Section on Log Data Usage Technology（IEICE Trans. Inf. & Syst. 特集号）"
+    assert es[0]["date_text"] == "2026-11-12"
+    assert es[0]["year"] == 2026
+    assert es[2]["date_text"] == "2024-03-01"  # 過去締切も行としては拾う (フィルタは呼び出し側)
 
 
 def test_review_helpers():
