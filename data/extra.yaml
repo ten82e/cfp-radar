@@ -2464,3 +2464,77 @@ conferences:
         deadlines:
           - {kind: registration, label: 'Paper registration', date: '2026-09-04 23:59:00', tz: AoE}
           - {kind: paper, label: 'Paper submission', date: '2026-09-11 23:59:00', tz: AoE}
+
+  # ---------------- SecureComm 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://securecomm.eai-conferences.org/2027/ (公開済み)
+  # Full Paper Submission deadline 1st March 2027 / Notification 1st May 2027 /
+  # Camera-ready 15th July 2027 / Conference 15-18 October 2027 Hefei, China (Hybrid)
+  # tz 記載なし → UTC
+  - key: securecomm
+    title: SecureComm
+    full_name: EAI International Conference on Security and Privacy in Communication Networks
+    link: https://securecomm.eai-conferences.org/2027/
+    categories: [security]
+    editions:
+      - year: 2027
+        id: securecomm27
+        link: https://securecomm.eai-conferences.org/2027/
+        place: Hefei, China
+        date_text: 'October 15-18, 2027'
+        deadlines:
+          - {kind: paper, label: 'Full Paper Submission', date: '2027-03-01 23:59:00', tz: UTC}
+
+  # ---------------- LREC 2027 開催なし (2026-08-10 裏取り) ----------------
+  # LREC は隔年開催 (2016/2018/2020/2022/2024/2026、全て偶数年)。
+  # 2027 版は存在しない (次回は 2028)。rollforward が 2027 推定を作らないよう
+  # 空 edition を置く (推定締切 10/24 は誤り)。
+  # 根拠: https://lrec2026.info/ (LREC 2026 公式) と過去開催履歴
+  - key: lrec
+    title: LREC
+    full_name: International Conference on Language Resources and Evaluation
+    link: https://lrec2026.info/
+    categories: [ai]
+    editions:
+      - year: 2027
+        id: lrec27
+        link: https://lrec2026.info/
+        deadlines: []
+
+  # ---------------- ICST 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://conf.researchr.org/home/icst-2027 (公開済み)
+  # Research Papers Submission: Tue 22 Dec 2026, AoE (UTC-12h) 明記。
+  # Initial Notification 1/31, Major Revision 2/20, Final Notification 3/7。
+  # 会期: May 17-21, 2027, San Sebastian, Spain
+  - key: icst
+    title: ICST
+    full_name: IEEE International Conference on Software Testing, Verification and Validation
+    link: https://conf.researchr.org/home/icst-2027
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: icst27
+        link: https://conf.researchr.org/home/icst-2027
+        place: San Sebastian, Spain
+        date_text: 'May 17-21, 2027'
+        deadlines:
+          - {kind: paper, label: 'Research Papers Submission', date: '2026-12-22 23:59:00', tz: AoE}
+
+  # ---------------- COMPSAC 2027 (2026-08-10 裏取り) ----------------
+  # 根拠: https://ieeecompsac.computer.org/2027/call-for-papers/ (公開済み)
+  # Full papers due January 31, 2027 / Paper notification April 7, 2027 /
+  # Workshop papers due April 15, 2027 / Camera-ready June 1, 2027。
+  # 会期: July 13-16, 2027, Tokyo, Japan (CFP 明記)。
+  # tz は CFP に明記なし → 前年 (ccfddl compsac26) 踏襲で AoE。
+  - key: compsac
+    title: COMPSAC
+    full_name: IEEE International Conference on Computers, Software, and Applications
+    link: https://ieeecompsac.computer.org/2027/
+    categories: [systems]
+    editions:
+      - year: 2027
+        id: compsac27
+        link: https://ieeecompsac.computer.org/2027/
+        place: Tokyo, Japan
+        date_text: 'July 13-16, 2027'
+        deadlines:
+          - {kind: paper, label: 'Full papers due', date: '2027-01-31 23:59:00', tz: AoE}
