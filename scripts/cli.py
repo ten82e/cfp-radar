@@ -111,6 +111,9 @@ def cmd_build(args: argparse.Namespace) -> int:
     config_path = Path(args.config)
     config = _load_yaml(config_path if config_path.is_absolute() else ROOT / config_path)
     overrides = _load_yaml(ROOT / "data" / "overrides.yaml")
+    # 一次ソースからの自動抽出結果 (scripts/fetch_primary.py 生成) は
+    # 手書き overrides の後に適用する: 公式ページの実測が最優先。
+    primary = _load_yaml(ROOT / "data" / "primary_overrides.yaml")
     offline = bool(args.offline)
 
     snapshot = ROOT / "data" / "snapshot.json"
@@ -121,6 +124,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     confs = merge_sources(groups, config, merge_stats)
     confs = classify(confs, config)
     confs = apply_overrides(confs, overrides)
+    confs = apply_overrides(confs, primary)
     confs = sanitize_editions(confs)
     confs = rollforward(confs, now.date(), config)
     # SPEC.md 3.6: roll-forward copies a real edition's deadlines into the

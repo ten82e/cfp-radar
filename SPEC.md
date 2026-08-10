@@ -682,6 +682,34 @@ conferences:
           - {kind: paper, label: Research Paper submission, date: '2025-10-27 23:59:59', tz: AoE}
 ```
 
+### `data/primary.yaml`（一次ソースからの自動抽出）
+
+手書きの `overrides.yaml` に頼らず、公式ページから締切を**一発どり**する仕組み。
+
+- `data/primary.yaml` に会議ごとの一次ソース URL と edition 年を登録する
+  （URL の発見だけが人間の仕事。データの訂正は以後自動）。
+- `scripts/fetch_primary.py` が各 URL を取得し、「deadline キーワード行の近傍
+  （前後 1 行）の日付」だけを保守的に抽出して `data/primary_overrides.yaml`
+  （自動生成・手編集禁止）を書く。
+- build (`scripts/cli.py`) は `overrides.yaml` → `primary_overrides.yaml` の順に
+  適用し、**一次ソースの実測を最優先**にする。
+- 抽出した edition が上流に存在しない場合、`_patch_editions` が新規 edition として
+  追加する（`source: override`・`estimated: false`）。rollforward はその実測を基準に
+  次 edition を推定する。
+- 安全ルール:
+  - 「deadline」を含まない行の裸の日付は抽出しない（会議開催日等の誤検出防止）。
+  - 抽出日付の年は「edition 年・前年」のみ。ページ `<title>` の年がレジストリの
+    edition 年と一致する場合のみ title の年を採用する（過去版の残骸を拾わない）。
+  - 取得失敗・抽出 0 件の会議は**前回値を維持**する（一時的なサイト障害で
+    データが消えない）。警告は stderr に出るので、レジストリの URL が古くなると
+    気づける。
+- CI (`update.yml`) は build の前に `python -m scripts.fetch_primary --apply` を
+  実行し、毎日自動で一次ソースを巡回する。
+- 向き不向き: EasyChair CFP (`easychair.org/cfp/...`) と静的 HTML の CFP /
+  Important Dates ページは抽出しやすい。JS レンダリングサイト（wacv.thecvf.com /
+  vldb.org / bigdataieee.org 等）は静的 HTML に締切が無く現行抽出では 0 件になる
+  ため登録しない。必要になったら個別の抽出ルールを `fetch_primary.py` に足す。
+
 ---
 
 ## 6. GitHub Actions（担当E）
@@ -694,6 +722,7 @@ conferences:
   concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
   デプロイと直列化して不利益になる）
 - 手順: checkout → setup-python 3.12 → `pip install -r requirements.txt` →
+  `python -m scripts.fetch_primary --apply`（一次ソース自動抽出）→
   `python -m scripts.cli build --out public` →
   `data/snapshot.json` に差分があればコミット → `actions/upload-pages-artifact@v3` →
   `actions/deploy-pages@v4`

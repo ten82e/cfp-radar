@@ -450,6 +450,62 @@ def test_override_replaces_deadlines(make_conf):
     assert edition.deadlines[0].label == "Regular paper submission (extended)"
 
 
+def test_override_adds_missing_edition(make_conf):
+    """上流に無い edition の patch は新規 edition として追加される (SETTA 2026 経路)。
+
+    primary_overrides が上流の未収録 edition を一次ソースの実測で埋めるための経路。
+    追加された edition は real (estimated=False) なので rollforward はそれを基準に
+    次 edition を推定する。
+    """
+    from scripts.merge import apply_overrides
+
+    confs = [
+        make_conf.conference(
+            key="setta",
+            title="SETTA",
+            editions=[
+                make_conf.edition(
+                    year=2025,
+                    edition_id="setta25",
+                    deadlines=[
+                        make_conf.deadline("paper", "Paper", utc(2025, 8, 20), "AoE")
+                    ],
+                )
+            ],
+        )
+    ]
+    overrides = {
+        "conferences": {
+            "setta": {
+                "editions": {
+                    2026: {
+                        "link": "https://www.setta2026.sg",
+                        "place": "Singapore",
+                        "date_text": "December 2-4, 2026",
+                        "deadlines": [
+                            {
+                                "kind": "paper",
+                                "label": "Paper submission",
+                                "date": "2026-05-10",
+                            }
+                        ],
+                    }
+                }
+            }
+        }
+    }
+    out = apply_overrides(confs, overrides)
+    editions = {e.year: e for e in out[0].editions}
+    assert 2026 in editions
+    added = editions[2026]
+    assert added.estimated is False
+    assert added.link == "https://www.setta2026.sg"
+    assert added.place == "Singapore"
+    assert added.deadlines[0].at_utc == utc(2026, 5, 10, 23, 59, 59)
+    # 既存 edition は置き換えられない
+    assert editions[2025].deadlines[0].at_utc == utc(2025, 8, 20)
+
+
 # --- rollforward -----------------------------------------------------------
 
 

@@ -1,0 +1,29 @@
+# 一次ソースレジストリ。scripts/fetch_primary.py が巡回して data/primary_overrides.yaml
+# を自動生成する (build は overrides.yaml の後に primary_overrides.yaml を適用)。
+#
+# 登録方法: 会議の公式ページ (CFP / Important Dates / EasyChair CFP) の URL と edition
+# 年を書くだけ。以後その会議の締切はこの URL から自動抽出・自動訂正される。
+# link / place / date_text は登録時に確定した公式メタ情報 (URL の発見だけが人間の仕事)。
+#
+# 抽出の向き不向き:
+#   - EasyChair CFP (easychair.org/cfp/...) は「Submission deadline May 10, 2026」形式で
+#     最も抽出しやすい。主催者が公式締切を登録するため、公式サイトが placeholder でも
+#     一次情報として使える (SETTA 2026 が実例)。
+#   - 静的 HTML の CFP / Important Dates ページも抽出できる。
+#   - JS レンダリングサイト (wacv.thecvf.com / vldb.org / bigdataieee.org 等) は静的
+#     HTML に締切が無く現行抽出では 0 件になる。登録しないこと (毎回警告が出るだけ)。
+#     必要になったら個別の抽出ルールを fetch_primary.py に足す。
+#
+# 収録の契約: ここに登録しても収録はされない (taxonomy.*.venues が収録を決める)。
+# あくまで「既に収録されている会議」の締切を一次ソースで検証・訂正する仕組み。
+
+conferences:
+  # SETTA 2026: 公式サイト (setta2026.sg) は締切未記載のため、主催者が登録する
+  # EasyChair CFP を一次ソースにする。2026-08-10 確認: 締切 5/10 は既に終了。
+  # 上流 (ccfddl) は 2025 からの rollforward 推定 (9/3) のままで誤っていた。
+  setta:
+    url: https://easychair.org/cfp/SETTA2026
+    year: 2026
+    link: https://www.setta2026.sg
+    place: Singapore
+    date_text: December 2-4, 2026

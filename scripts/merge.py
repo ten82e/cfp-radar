@@ -466,11 +466,13 @@ def _sanitize_edition(edition: Edition) -> Edition:
 
 def _patch_editions(editions: list[Edition], patches: dict) -> list[Edition]:
     kept = []
+    patched_years = set()
     for edition in editions:
         patch = patches.get(edition.year)
         if patch is None:
             kept.append(edition)
             continue
+        patched_years.add(edition.year)
         if patch.get("drop"):
             continue
         edition = replace(edition, deadlines=list(edition.deadlines))
@@ -486,6 +488,32 @@ def _patch_editions(editions: list[Edition], patches: dict) -> list[Edition]:
             edition = replace(
                 edition, deadlines=_deadlines_of({"deadlines": patch["deadlines"]})
             )
+        kept.append(edition)
+    # 既存 edition に無い year の patch は新規 edition として追加する。
+    # (primary_overrides が上流の未収録 edition を一次ソースの実測で埋める経路)
+    for year, patch in patches.items():
+        if not isinstance(year, int) or year in patched_years:
+            continue
+        if not isinstance(patch, dict) or patch.get("drop"):
+            continue
+        edition = Edition(
+            year=year,
+            edition_id=f"override-{year}",
+            link="",
+            place="",
+            date_text="",
+            event_start=None,
+            event_end=None,
+            deadlines=_deadlines_of({"deadlines": patch.get("deadlines") or []}),
+            estimated=False,
+            source="override",
+        )
+        for field in ("link", "place", "date_text"):
+            if field in patch:
+                setattr(edition, field, patch[field])
+        for field in ("event_start", "event_end"):
+            if field in patch:
+                setattr(edition, field, _as_date(patch[field]))
         kept.append(edition)
     return kept
 

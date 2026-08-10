@@ -1,0 +1,13 @@
+'#': 自動生成。scripts/fetch_primary.py が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。
+conferences:
+  setta:
+    editions:
+      2026:
+        deadlines:
+        - kind: paper
+          label: Paper submission
+          date: '2026-05-10'
+        link: https://www.setta2026.sg
+        place: Singapore
+        date_text: December 2-4, 2026
+    _comment: 一次ソース (https://easychair.org/cfp/SETTA2026) から自動抽出 (2026-08-10)

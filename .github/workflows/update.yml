@@ -34,6 +34,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # 一次ソースの自動抽出 (data/primary.yaml → data/primary_overrides.yaml)。
+      # 抽出失敗の会議は前回値を維持するので、サイトが一時的に落ちていても安全。
+      - name: Fetch primary sources
+        run: python -m scripts.fetch_primary --apply
+
       # 上流取得に失敗しても、コミット済み data/snapshot.json から生成を続ける
       # (SPEC.md 3.5)。退避にも失敗したときは cli が非ゼロで終了し、後続の
       # Upload / Deploy がスキップされて前回の公開内容がそのまま残る。
