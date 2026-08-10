@@ -50,6 +50,18 @@ conferences:
           - {kind: paper, label: 'Regular/special paper submission (extended)', date: '2026-08-30 23:59:00', tz: AoE}
           - {kind: other, label: 'Demo paper submission', date: '2026-09-07 23:59:00', tz: AoE}
 
+  # 根拠: https://www.mmasia2026.org/ (2026-08-10 取得) — 公式「Submission
+  #   Deadline: August 14, 2026 (AoE)」(Regular Paper。8/3 → 8/14 に延長済み)。
+  #   上流 ccfddl は Regular Paper / Special Session を 8/14 1 本にまとめているが、
+  #   公式は Special Session Paper 8/21 AoE・Demo / Industry 9/1 AoE を別途明記。
+  mmasia:
+    editions:
+      2026:
+        deadlines:
+          - {kind: paper, label: 'Regular paper submission', date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Special session paper submission', date: '2026-08-21 23:59:00', tz: AoE}
+          - {kind: other, label: 'Demo / industry submission', date: '2026-09-01 23:59:00', tz: AoE}
+
   # 根拠: https://conferences.sigcomm.org/imc/2026/ (2026-08-09 取得)
   #   「ACM IMC 2026 conference will be held from October 12-16, 2026 in Karlsruhe, Germany」
   #   上流 ccfddl NW/imc.yml は date: November 03-06, 2026 のまま（会期更新が未反映）。
