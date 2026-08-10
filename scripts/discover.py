@@ -400,6 +400,67 @@ def discover_from_easychair(min_year: int) -> list[dict]:
     return entries
 
 
+def discover_from_imap(min_year: int) -> list[dict]:
+    """購読メーリス (IMAP) の受信トレイから CFP メールを抽出する。
+
+    環境変数 CFP_IMAP_HOST / CFP_IMAP_USER / CFP_IMAP_PASS が無ければ空を返す
+    (GitHub Actions では Secrets 未設定なら自動スキップ)。Subject は DBWorld と
+    同じメーリス形式なので clean_dbworld_title を再利用する。
+    """
+    import os
+    import re
+
+    host = os.environ.get("CFP_IMAP_HOST")
+    user = os.environ.get("CFP_IMAP_USER")
+    pw = os.environ.get("CFP_IMAP_PASS")
+    if not (host and user and pw):
+        return []
+
+    import email
+    import email.header
+    import imaplib
+
+    entries: list[dict] = []
+    with imaplib.IMAP4_SSL(host) as m:
+        m.login(user, pw)
+        m.select("INBOX")
+        typ, data = m.search(None, "ALL")
+        if typ != "OK" or not data or not data[0]:
+            return []
+        ids = data[0].split()[-50:]  # 最近 50 通のみ
+        for i in ids:
+            typ, msg = m.fetch(i, "(RFC822.HEADER)")
+            if typ != "OK" or not msg or not msg[0]:
+                continue
+            part = msg[0]
+            if not isinstance(part, tuple):
+                continue
+            raw = part[1].decode("utf-8", "replace") if isinstance(part[1], bytes) else ""
+            subject = email.message_from_string(raw)["Subject"] or ""
+            subject = str(email.header.make_header(email.header.decode_header(subject)))
+            if not re.search(r"call for (papers?|participation)|cfp|deadline|reminder|last call", subject, re.I):
+                continue
+            cleaned, source_type = clean_dbworld_title(subject)
+            if not cleaned:
+                continue
+            m2 = re.search(r"(20\d\d)", cleaned)
+            year = int(m2.group(1)) if m2 else min_year
+            if year < min_year:
+                continue
+            entries.append({
+                "key": slug(cleaned),
+                "title": cleaned,
+                "full_name": cleaned,
+                "link": "",  # 本文は持たない。レビュー時に公式サイトで裏取り
+                "categories": [],
+                "source_type": source_type,
+                "date_text": "",
+                "place": "",
+                "year": year,
+            })
+    return entries
+
+
 class NicheDiscoverer:
     """Discovers niche conferences and journals not yet included in conf-deadlines."""
 
@@ -635,7 +696,30 @@ class NicheDiscoverer:
         except Exception:
             pass  # 一覧取得失敗で全体を止めない
 
-        # 6. Known niche candidate registry (fallback / curated candidates)
+        # 6. IMAP 購読メーリス (任意): CFP_IMAP_HOST/USER/PASS が
+        # 設定された環境でのみ動作する (GitHub Secrets 未設定なら空)。
+        try:
+            for entry in discover_from_imap(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "imap"],
+                    source_type=entry["source_type"],
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # 認証失敗等で全体を止めない
+
+        # 7. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

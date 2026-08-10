@@ -127,6 +127,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Discover candidates
+        env:
+          # 任意: 購読メーリス (IMAP) を処理する場合は GitHub Secrets に設定する。
+          # 未設定なら discover は IMAP をスキップする。
+          CFP_IMAP_HOST: ${{ secrets.CFP_IMAP_HOST }}
+          CFP_IMAP_USER: ${{ secrets.CFP_IMAP_USER }}
+          CFP_IMAP_PASS: ${{ secrets.CFP_IMAP_PASS }}
         run: |
           python -m scripts.cli discover \
             --min-year 2026 \

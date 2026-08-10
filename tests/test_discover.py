@@ -119,6 +119,20 @@ def test_in_domain():
     assert not _in_domain("SOCTHADICKconf'26 Ibadan")        # 不明会議は対象外
 
 
+def test_imap_no_credentials_skips():
+    """IMAP は認証情報 (env) が無い環境では必ず空を返す (CI で Secrets 未設定時)。"""
+    import os
+    from scripts.discover import discover_from_imap
+
+    saved = {k: os.environ.pop(k, None) for k in ("CFP_IMAP_HOST", "CFP_IMAP_USER", "CFP_IMAP_PASS")}
+    try:
+        assert discover_from_imap(2026) == []
+    finally:
+        for k, v in saved.items():
+            if v is not None:
+                os.environ[k] = v
+
+
 def test_run_discovery_integration():
     discoverer = NicheDiscoverer(ROOT)
     cands = discoverer.run_discovery(categories=["systems"])
