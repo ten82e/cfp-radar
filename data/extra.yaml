@@ -2239,8 +2239,9 @@ conferences:
         place: Chicago, IL, USA
         date_text: 'November 16, 2026'
         # Paper submission deadline: July 30, 2026 → extended to August 12, 2026
+        # 公式: "All deadlines are Anywhere-on-earth (AoE)" 明記 (2026-08-10 確認)
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
 
   - key: hclh-sc-2026
     title: HCLH 2026
@@ -2378,8 +2379,9 @@ conferences:
         link: https://hmem-workshop.github.io/
         place: Chicago, IL, USA
         # Paper submission deadline: August 17, 2026
+        # 公式: "Time Zone: AOE (Anywhere One Earth)" 明記 (2026-08-10 確認)
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: AoE}
 
   # ---------------- DASFAA 2027 (2026-08-10 裏取り) ----------------
   # 根拠: https://dasfaa2027.github.io/dates/list.htm (Important Dates, "Key Dates Updated"
