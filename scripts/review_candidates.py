@@ -5,6 +5,7 @@
 出力はレビュー時の判断材料で、収録 (extra.yaml 昇格) は公式サイト裏取り後に人間が行う。
 """
 import argparse
+import json
 import re
 from collections import defaultdict
 from datetime import date
@@ -36,6 +37,30 @@ def norm_title(title: str) -> str:
     return " ".join(t.split())
 
 
+def load_tracked_titles() -> set[str]:
+    """収録済み (snapshot.json + data/extra.yaml) の正規化タイトル集合。
+
+    候補のうち収録済みと一致するものはレビュー不要 (既にサイトに載っている)。
+    """
+    tracked: set[str] = set()
+    sp = ROOT / "data/snapshot.json"
+    if sp.exists():
+        try:
+            snap = json.loads(sp.read_text(encoding="utf-8"))
+            for c in snap.get("conferences", []):
+                if isinstance(c, dict):
+                    tracked.add(norm_title(str(c.get("title") or "")))
+        except (OSError, ValueError):
+            pass  # snapshot が無い/壊れている場合も extra.yaml 側で拾う
+    ep = ROOT / "data/extra.yaml"
+    if ep.exists():
+        extra = yaml.safe_load(ep.read_text(encoding="utf-8")) or {}
+        for c in extra.get("conferences", []):
+            if isinstance(c, dict):
+                tracked.add(norm_title(str(c.get("title") or "")))
+    return tracked
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--candidates", default=str(ROOT / "data/discovered_candidates.yaml"))
@@ -46,6 +71,7 @@ def main() -> None:
     cands = data.get("conferences", [])
 
     today = date.today()
+    tracked = load_tracked_titles()
     enriched = []
     for c in cands:
         ed = (c.get("editions") or [{}])[0]
@@ -55,11 +81,13 @@ def main() -> None:
             "dl": _parse_deadline(date_text),
             "date_text": date_text,
             "pred": is_predatory((c.get("title") or "") + " " + (c.get("full_name") or "")),
+            "tracked": norm_title(str(c.get("title") or "")) in tracked,
         })
 
-    future = sorted((e for e in enriched if e["dl"] and e["dl"] >= today), key=lambda x: x["dl"])
-    past = [e for e in enriched if e["dl"] and e["dl"] < today]
-    unknown = [e for e in enriched if not e["dl"]]
+    future = sorted((e for e in enriched if e["dl"] and e["dl"] >= today and not e["tracked"]), key=lambda x: x["dl"])
+    past = [e for e in enriched if e["dl"] and e["dl"] < today and not e["tracked"]]
+    unknown = [e for e in enriched if not e["dl"] and not e["tracked"]]
+    already = [e for e in enriched if e["tracked"]]
 
     print(f"=== レビュー推奨: 締切昇順 (未来 {len(future)} 件中 上位 {args.limit} 件) ===")
     for e in future[: args.limit]:
@@ -80,6 +108,10 @@ def main() -> None:
     print(f"\n=== predatory 疑い ({len(preds)} / {len(cands)} 件) ===")
     for e in preds[:20]:
         print(f"- {e['c']['title'][:50]}")
+
+    print(f"\n=== 収録済みと重複 ({len(already)} 件・レビュー不要) ===")
+    for e in already[:15]:
+        print(f"- {e['c']['title'][:50]}  ({(e['c'].get('tags') or ['?'])[-1]})")
 
     print(f"\n=== 過去締切のみ ({len(past)} 件・レビュー不要/削除候補) ===")
     print(f"=== 締切不明 ({len(unknown)} 件・公式サイト確認が必要) ===")
