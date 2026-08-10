@@ -96,6 +96,7 @@ taxonomy:
       - asplos
       - ats           # IEEE Asian Test Symposium
       - cf            # Computing Frontiers (HPC 隣接だが迷うので systems)
+      - cloud         # IEEE International Conference on Cloud Computing (上流 MX)
       - codes-isss    # Hardware/Software Co-design and System Synthesis
       - dac
       - date
@@ -143,16 +144,27 @@ taxonomy:
     sources: [aideadlines]
     venues:
       - mlsys         # 機械学習とシステムの両分野にまたがるので systems と併記
+      - cogsci        # Cognitive Science Society (上流 MX)
+      - icaif         # International Conference on AI in Finance (上流 MX)
+      - icic          # International Conference on Intelligent Computing (上流 MX)
+      - smc           # IEEE SMC (上流 MX)
 
   # ---- Security -----------------------------------------------------------
   security:
     ccfddl_subs: [SC]
+    venues:
+      - aft            # Advances in Financial Technologies (上流 MX)
 
   # ---- Database / Data Mining ---------------------------------------------
   db:
     ccfddl_subs: [DB]
     venues:
       - bigdata        # IEEE International Conference on Big Data (上流 MX)
+      - apbc           # Asia Pacific Bioinformatics Conference (上流 MX)
+      - bibm           # IEEE BIBM (上流 MX)
+      - isbra          # International Symposium on Bioinformatics (上流 MX)
+      - recomb         # International Conference on Computational Biology (上流 MX)
+      - sigspatial     # ACM SIGSPATIAL (上流 MX)
 
   # ---- Graphics / Multimedia ----------------------------------------------
   graphics:
@@ -161,10 +173,14 @@ taxonomy:
   # ---- Human-Computer Interaction -----------------------------------------
   hci:
     ccfddl_subs: [HI]
+    venues:
+      - sigcse         # Technical Symposium on Computer Science Education (上流 MX)
 
   # ---- Theory / Algorithms ------------------------------------------------
   theory:
     ccfddl_subs: [CT]
+    venues:
+      - wine           # Conference on Web and Internet Economics (上流 MX)
 
 # 収録しない会議。SE を丸ごと取り込む代償として、プログラミング言語・形式手法寄りの
 # 会議がまとめて入ってくるのでここで落とす。OS/システム寄り(osdi, sosp, hotos,
