@@ -1581,18 +1581,21 @@ conferences:
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: UTC}
 
-  # 根拠: https://easychair.org/cfp/iros2026nocworkshop (2026-08-10)
-  #   「deadline August 15, 2026」— IROS 2026 併設 WS。開催日は EasyChair に記載なし。
-  #   公式に tz 表記なし → 23:59 UTC として解釈。
+  # 根拠: https://2026.ieee-iros.org/program/workshops-tutorials/ (2026-08-10)
+  #   「Nonverbal Cues for Human-Robot Cooperative Intelligence, Thursday, 1 October,
+  #   8:00 AM-12:30 PM Half Day」。締切は EasyChair CFP (iros2026nocworkshop) の
+  #   「deadline August 15, 2026」に拠る (2026-08-10 取得、後に CFP ページ 404 化)。
+  #   公式に tz 表記なし → 23:59 UTC として解釈。iros2026.org はドメイン失効寸前
+  #   (パーキングページ化) — 正ドメインは 2026.ieee-iros.org。
   - key: iros2026-noc-workshop
     title: NOC Workshop
     full_name: Workshop on Nonverbal Cues for Human-Robot Cooperative Intelligence (IROS 2026)
-    link: https://easychair.org/cfp/iros2026nocworkshop
+    link: https://2026.ieee-iros.org/program/workshops-tutorials/
     categories: [ai]
     editions:
       - year: 2026
         id: iros2026noc
-        link: https://easychair.org/cfp/iros2026nocworkshop
+        link: https://2026.ieee-iros.org/program/workshops-tutorials/
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
 
