@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T08:49:56Z",
+  "generated_at": "2026-08-10T11:53:20Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -2857,6 +2857,86 @@
       ]
     },
     {
+      "key": "agenticai4hpc-2026",
+      "title": "AgenticAI4HPC 2026",
+      "full_name": "The First International Workshop on Agentic AI for HPC (AgenticAI4HPC 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://ornl.github.io/events/agenticai4hpc2026/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "agenticai4hpc26",
+          "link": "https://ornl.github.io/events/agenticai4hpc2026/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-11T11:59:00Z",
+              "aoe": "2026-08-10 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ai4s-2026",
+      "title": "AI4S 2026",
+      "full_name": "8th Workshop on Artificial Intelligence and Machine Learning for Scientific Applications (AI4S)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://ai4s.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ai4s26",
+          "link": "https://ai4s.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "aistats",
       "title": "AISTATS",
       "full_name": "International Conference on Artificial Intelligence and Statistics",
@@ -5555,6 +5635,46 @@
       ]
     },
     {
+      "key": "bphte-26-2026",
+      "title": "BPHTE 26",
+      "full_name": "Thirteenth SC Workshop on Best Practices for HPC Training and Education (BPHTE 26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sighpceducation.acm.org/events/bphte26_cfp/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "bphte26",
+          "link": "https://sighpceducation.acm.org/events/bphte26_cfp/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Stage 1 Submission",
+              "utc": "2026-08-13T03:59:00Z",
+              "aoe": "2026-08-12 15:59:00 AoE",
+              "tz_raw": "edt",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "cade",
       "title": "CADE",
       "full_name": "The Conference on Automated Deduction",
@@ -5631,6 +5751,46 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2025 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cafcw-2026",
+      "title": "CAFCW 2026",
+      "full_name": "The 12th Computational Approaches for Cancer Workshop (CAFCW26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://www.cafcw.org/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "cafcw-2026",
+          "link": "https://www.cafcw.org/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission (SC26 Proceedings)",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -5775,6 +5935,46 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "canopie-2026",
+      "title": "CANOPIE-HPC 2026",
+      "full_name": "8th International Workshop on Containers and New Orchestration Paradigms for Isolated Environments in HPC (CANOPIE-HPC 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://canopie-hpc.org/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "canopie-2026",
+          "link": "https://canopie-hpc.org/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission (hard deadline)",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -8897,7 +9097,7 @@
     {
       "key": "compsac",
       "title": "COMPSAC",
-      "full_name": "International Computer Software and Applications Conference",
+      "full_name": "IEEE International Conference on Computers, Software, and Applications",
       "categories": [
         "systems"
       ],
@@ -8906,9 +9106,10 @@
         "core": "B",
         "thcpl": "N"
       },
-      "link": "https://ieeecompsac.computer.org/2026/",
+      "link": "https://ieeecompsac.computer.org/2027/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -8958,23 +9159,23 @@
         },
         {
           "year": 2027,
-          "id": "compsac27-est",
-          "link": "https://ieeecompsac.computer.org/2026/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "compsac27",
+          "link": "https://ieeecompsac.computer.org/2027/",
+          "place": "Tokyo, Japan",
+          "date_text": "July 13-16, 2027",
+          "event_start": "2027-07-13",
+          "event_end": "2027-07-16",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-12-27T11:59:59Z",
-              "aoe": "2026-12-26 23:59:59 AoE",
+              "label": "Full papers due",
+              "utc": "2027-02-01T11:59:00Z",
+              "aoe": "2027-01-31 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -10491,8 +10692,8 @@
     },
     {
       "key": "cvm",
-      "title": "CVM",
-      "full_name": "The international conference on Computational Visual Media",
+      "title": "Computational Visual Media Conference",
+      "full_name": "Computational Visual Media Conference (CVM 2027)",
       "categories": [
         "graphics"
       ],
@@ -10501,9 +10702,10 @@
         "core": "N",
         "thcpl": "N"
       },
-      "link": "http://iccvm.org/2026/",
+      "link": "http://iccvm.org/2027/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -10571,32 +10773,32 @@
         },
         {
           "year": 2027,
-          "id": "cvm27-est",
-          "link": "http://iccvm.org/2026/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "cvm27",
+          "link": "http://iccvm.org/2027/",
+          "place": "Singapore",
+          "date_text": "April 9-11, 2027",
+          "event_start": "2027-04-09",
+          "event_end": "2027-04-11",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "abstract",
               "label": "Abstract submission",
-              "utc": "2026-10-09T23:59:59Z",
-              "aoe": "2026-10-09 11:59:59 AoE",
-              "tz_raw": "UTC+0",
+              "utc": "2026-10-23T23:59:00Z",
+              "aoe": "2026-10-23 11:59:00 AoE",
+              "tz_raw": "GMT",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-10-12T23:59:59Z",
-              "aoe": "2026-10-12 11:59:59 AoE",
-              "tz_raw": "UTC+0",
+              "label": "Full papers submission",
+              "utc": "2026-10-26T23:59:00Z",
+              "aoe": "2026-10-26 11:59:00 AoE",
+              "tz_raw": "GMT",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -11096,7 +11298,7 @@
     {
       "key": "dasfaa",
       "title": "DASFAA",
-      "full_name": "Database Systems for Advanced Applications",
+      "full_name": "The 32nd International Conference on Database Systems for Advanced Applications (DASFAA 2027)",
       "categories": [
         "db"
       ],
@@ -11105,9 +11307,10 @@
         "core": "B",
         "thcpl": "B"
       },
-      "link": "https://dasfaa2026.github.io/",
+      "link": "https://dasfaa2027.github.io/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -11281,32 +11484,23 @@
         },
         {
           "year": 2027,
-          "id": "dasfaa27-est",
-          "link": "https://dasfaa2026.github.io/",
-          "place": "",
+          "id": "dasfaa27",
+          "link": "https://dasfaa2027.github.io/",
+          "place": "Shenyang, China",
           "date_text": "",
           "event_start": null,
           "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
-              "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2026-09-22T11:59:59Z",
-              "aoe": "2026-09-21 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": "Estimated from the 2026 edition"
-            },
-            {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-09-29T11:59:59Z",
-              "aoe": "2026-09-28 23:59:59 AoE",
+              "label": "Full Paper Submission",
+              "utc": "2027-06-07T11:59:00Z",
+              "aoe": "2027-06-06 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -15858,40 +16052,9 @@
           ]
         },
         {
-          "year": 2026,
-          "id": "eurovis2026",
-          "link": "https://www.eurovis.org.uk/",
-          "place": "Nottingham, United Kingdom",
-          "date_text": "June 8-12, 2026",
-          "event_start": "2026-06-08",
-          "event_end": "2026-06-12",
-          "estimated": false,
-          "source": "ccfddl",
-          "deadlines": [
-            {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2024-12-04T11:59:59Z",
-              "aoe": "2024-12-03 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": null
-            },
-            {
-              "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2025-11-27T11:59:59Z",
-              "aoe": "2025-11-26 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": null
-            }
-          ]
-        },
-        {
-          "year": 2028,
-          "id": "eurovis28-est",
-          "link": "https://www.eurovis.org.uk/",
+          "year": 2027,
+          "id": "eurovis27-est",
+          "link": "https://www.eurovis2025.lu/",
           "place": "",
           "date_text": "",
           "event_start": null,
@@ -15900,22 +16063,22 @@
           "source": "ccfddl",
           "deadlines": [
             {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-12-02T11:59:59Z",
-              "aoe": "2026-12-01 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": "Estimated from the 2026 edition"
-            },
-            {
               "kind": "abstract",
               "label": "Abstract submission",
-              "utc": "2027-11-25T11:59:59Z",
-              "aoe": "2027-11-24 23:59:59 AoE",
+              "utc": "2026-11-26T11:59:59Z",
+              "aoe": "2026-11-25 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": "Estimated from the 2025 edition"
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-12-03T11:59:59Z",
+              "aoe": "2026-12-02 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2025 edition"
             }
           ]
         }
@@ -17977,6 +18140,46 @@
       ]
     },
     {
+      "key": "ftxs-2026",
+      "title": "FTXS 2026",
+      "full_name": "Workshop for Faults, Trustworthiness, and eXplainability for AI Systems at Scale (FTXS)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sites.google.com/view/ftxs2026",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ftxs26",
+          "link": "https://sites.google.com/view/ftxs2026",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-13T11:59:00Z",
+              "aoe": "2026-08-12 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "gecco",
       "title": "GECCO",
       "full_name": "Genetic and Evolutionary Computation Conference",
@@ -18271,6 +18474,47 @@
               "label": "Submission",
               "utc": "2026-08-28T23:59:00Z",
               "aoe": "2026-08-28 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "geosim-2026",
+      "title": "GeoSim 2026",
+      "full_name": "The 9th ACM SIGSPATIAL International Workshop on Geospatial Simulation (GeoSim 2026)",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://geosim.org",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "geosim2026",
+          "link": "https://geosim.org",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-03",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
               "tz_raw": "UTC",
               "round": 1,
               "comment": null
@@ -18687,6 +18931,86 @@
       ]
     },
     {
+      "key": "h2rc-2026",
+      "title": "H2RC 2026",
+      "full_name": "Twelfth International Workshop on Heterogeneous High-performance Reconfigurable Computing (H2RC 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://h2rc.cse.sc.edu/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "h2rc26",
+          "link": "https://h2rc.cse.sc.edu/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hclh-sc-2026",
+      "title": "HCLH 2026",
+      "full_name": "High-Accuracy Computing on Low-Precision Hardware (HCLH)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://hclh-sc.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hclh26",
+          "link": "https://hclh-sc.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "hicss",
       "title": "HICSS",
       "full_name": "Hawaii International Conference on System Sciences",
@@ -18764,6 +19088,46 @@
               "label": "Paper submission",
               "utc": "2026-06-02T11:59:59Z",
               "aoe": "2026-06-01 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hmem-2026",
+      "title": "HMEM 2026",
+      "full_name": "7th Workshop on Heterogeneity and Memory Systems (HMEM)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://hmem-workshop.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hmem26",
+          "link": "https://hmem-workshop.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-18T11:59:00Z",
+              "aoe": "2026-08-17 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -19069,6 +19433,55 @@
       ]
     },
     {
+      "key": "hpc-oda-2026",
+      "title": "HPC-ODA 2026",
+      "full_name": "The 1st International Workshop on HPC Operational Data Analytics (HPC-ODA 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://hpc-oda.org/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hpc-oda-2026",
+          "link": "https://hpc-oda.org/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 20, 2026",
+          "event_start": "2026-11-20",
+          "event_end": "2026-11-20",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Full/Short Paper Submission",
+              "utc": "2026-08-13T11:59:00Z",
+              "aoe": "2026-08-12 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "other",
+              "label": "Lightning Talk Submission",
+              "utc": "2026-09-19T11:59:00Z",
+              "aoe": "2026-09-18 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "hpca",
       "title": "HPCA",
       "full_name": "IEEE International Symposium on High-Performance Computer Architecture",
@@ -19340,6 +19753,86 @@
       ]
     },
     {
+      "key": "hpcsyspros-2026",
+      "title": "HPCSYSPROS 2026",
+      "full_name": "HPC Systems Professionals Workshop (HPCSYSPROS26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sighpc-syspros.org/workshops/2026/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hpcsyspros-2026",
+          "link": "https://sighpc-syspros.org/workshops/2026/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hpctests-2026",
+      "title": "HPCTESTS 2026",
+      "full_name": "Fourth International Workshop on HPC Testing and Evaluation of Systems, Tools, and Software (HPCTESTS 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://olcf.github.io/hpc-system-test-wg/hpctests/hpctests2026",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hpctests26",
+          "link": "https://olcf.github.io/hpc-system-test-wg/hpctests/hpctests2026",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-11T11:59:00Z",
+              "aoe": "2026-08-10 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "hpdc",
       "title": "HPDC",
       "full_name": "ACM Symposium on High-Performance Parallel and Distributed Computing",
@@ -19438,6 +19931,46 @@
               "tz_raw": "AoE",
               "round": 2,
               "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hppss-2026",
+      "title": "HPPSS 2026",
+      "full_name": "SC26 Workshop: High Performance Python for Science at Scale (HPPSS)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://hppss.github.io/SC26/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hppss-2026",
+          "link": "https://hppss.github.io/SC26/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -19583,6 +20116,46 @@
               "label": "Submission",
               "utc": "2026-09-20T23:59:00Z",
               "aoe": "2026-09-20 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hust-26-2026",
+      "title": "HUST-26",
+      "full_name": "13th International Workshop on HPC User Support Tools (HUST-26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://hust-workshop.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hust26",
+          "link": "https://hust-workshop.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 15, 2026",
+          "event_start": "2026-11-15",
+          "event_end": "2026-11-15",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
               "tz_raw": "UTC",
               "round": 1,
               "comment": null
@@ -21823,7 +22396,7 @@
     {
       "key": "icdm",
       "title": "ICDM",
-      "full_name": "International Conference on Data Mining",
+      "full_name": "IEEE International Conference on Data Mining",
       "categories": [
         "ai",
         "db"
@@ -21838,6 +22411,7 @@
         "data-mining"
       ],
       "sources": [
+        "local",
         "aideadlines",
         "ccfddl"
       ],
@@ -21975,11 +22549,11 @@
           "id": "icdm26",
           "link": "http://icdm2026.neu.edu.cn/",
           "place": "Shenyang, China",
-          "date_text": "November 12 - 15, 2026",
+          "date_text": "November 12-15, 2026",
           "event_start": "2026-11-12",
           "event_end": "2026-11-15",
           "estimated": false,
-          "source": "aideadlines",
+          "source": "local",
           "deadlines": [
             {
               "kind": "abstract",
@@ -22004,6 +22578,15 @@
               "label": "Author Notification",
               "utc": "2026-08-17T11:59:59Z",
               "aoe": "2026-08-16 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Workshop Paper Submission",
+              "utc": "2026-08-21T11:59:00Z",
+              "aoe": "2026-08-20 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -25460,9 +26043,10 @@
         "core": "A",
         "thcpl": "B"
       },
-      "link": "https://conf.researchr.org/home/icst-2026",
+      "link": "https://conf.researchr.org/home/icst-2027",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -25490,23 +26074,23 @@
         },
         {
           "year": 2027,
-          "id": "icst27-est",
-          "link": "https://conf.researchr.org/home/icst-2026",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "icst27",
+          "link": "https://conf.researchr.org/home/icst-2027",
+          "place": "San Sebastian, Spain",
+          "date_text": "May 17-21, 2027",
+          "event_start": "2027-05-17",
+          "event_end": "2027-05-21",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-12-22T11:59:59Z",
-              "aoe": "2026-12-21 23:59:59 AoE",
+              "label": "Research Papers Submission",
+              "utc": "2026-12-23T11:59:00Z",
+              "aoe": "2026-12-22 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -25579,7 +26163,7 @@
     {
       "key": "icvrv",
       "title": "ICVRV",
-      "full_name": "International Conference on Virtual Reality and Visualization",
+      "full_name": "International Conference on Virtual Reality and Visualization (ICVRV 2026)",
       "categories": [
         "graphics"
       ],
@@ -25588,9 +26172,10 @@
         "core": "N",
         "thcpl": "N"
       },
-      "link": "https://icvrv2025.aconf.org/",
+      "link": "http://www.icvrv.org/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -25627,32 +26212,32 @@
         },
         {
           "year": 2026,
-          "id": "icvrv26-est",
-          "link": "https://icvrv2025.aconf.org/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "icvrv26",
+          "link": "http://www.icvrv.org/",
+          "place": "Valparaíso, Chile",
+          "date_text": "December 18-20, 2026",
+          "event_start": "2026-12-18",
+          "event_end": "2026-12-20",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2026-08-15T11:59:59Z",
-              "aoe": "2026-08-14 23:59:59 AoE",
-              "tz_raw": "AoE",
+              "label": "Abstracts Due",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
-              "comment": "Estimated from the 2025 edition"
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-08-22T11:59:59Z",
-              "aoe": "2026-08-21 23:59:59 AoE",
-              "tz_raw": "AoE",
+              "label": "Paper Due",
+              "utc": "2026-08-22T23:59:00Z",
+              "aoe": "2026-08-22 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
-              "comment": "Estimated from the 2025 edition"
+              "comment": null
             }
           ]
         }
@@ -26769,7 +27354,7 @@
           "id": "ieice-electron-microwave-2027-11",
           "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
           "place": "",
-          "date_text": "2026-11-16",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -26811,7 +27396,7 @@
           "id": "ieice-fundamentals-discrete-math-2027-09",
           "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
           "place": "",
-          "date_text": "2026-09-18",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -27082,7 +27667,7 @@
           "id": "ieice-inf-syst-log-data-2027-12",
           "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
           "place": "",
-          "date_text": "2026-11-12",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -27124,7 +27709,7 @@
           "id": "ieice-nolta-advances-2027-04",
           "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
           "place": "",
-          "date_text": "2026-10-03",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -27166,7 +27751,7 @@
           "id": "ieice-nolta-progress-2027-07",
           "link": "https://www.ieice.org/eng_r/information/schedule/journals.php",
           "place": "",
-          "date_text": "2027-01-10",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -28889,6 +29474,46 @@
       ]
     },
     {
+      "key": "interactive-hpc-2026",
+      "title": "Interactive HPC Workshop 2026",
+      "full_name": "Eighth Workshop on Interactive and Urgent High-Performance Computing",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://www.interactivehpc.com/cfp",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "ihpc26",
+          "link": "https://www.interactivehpc.com/cfp",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-15T23:59:00Z",
+              "aoe": "2026-08-15 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "internet-of-things",
       "title": "Internet of Things",
       "full_name": "Internet of Things (Elsevier)",
@@ -29537,7 +30162,7 @@
           "id": "ipsj-27-l26",
           "link": "https://www.ipsj.or.jp/journal/cfp/27-L.html",
           "place": "",
-          "date_text": "2026-08-28",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -29579,7 +30204,7 @@
           "id": "ipsj-27-m26",
           "link": "https://www.ipsj.or.jp/journal/cfp/27-M.html",
           "place": "",
-          "date_text": "2026-11-27",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -29621,7 +30246,7 @@
           "id": "ipsj-27-n26",
           "link": "https://www.ipsj.or.jp/journal/cfp/27-N.html",
           "place": "",
-          "date_text": "2026-08-21",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -29663,7 +30288,7 @@
           "id": "ipsj-27-p26",
           "link": "https://www.ipsj.or.jp/journal/cfp/27-P.html",
           "place": "",
-          "date_text": "2026-12-04",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -29705,7 +30330,7 @@
           "id": "ipsj-27-r26",
           "link": "https://www.ipsj.or.jp/journal/cfp/27-R.html",
           "place": "",
-          "date_text": "2026-12-01",
+          "date_text": "",
           "event_start": null,
           "event_end": null,
           "estimated": false,
@@ -30235,6 +30860,46 @@
               "utc": "2026-06-27T11:59:59Z",
               "aoe": "2026-06-26 23:59:59 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isav-2026",
+      "title": "ISAV 2026",
+      "full_name": "ISAV 2026: In Situ AI, Analysis and Visualization",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://isav-workshop.github.io/2026/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "isav26",
+          "link": "https://isav-workshop.github.io/2026/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
@@ -32844,6 +33509,46 @@
       ]
     },
     {
+      "key": "llvm-hpc-2026",
+      "title": "LLVM-HPC 2026",
+      "full_name": "The Twelfth Workshop on the LLVM Compiler Infrastructure in HPC (LLVM-HPC 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "llvm-hpc26",
+          "link": "https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "log",
       "title": "LOG",
       "full_name": "Learning on Graphs Conference",
@@ -32975,7 +33680,7 @@
     {
       "key": "lrec",
       "title": "LREC",
-      "full_name": "Language Resources and Evaluation Conference",
+      "full_name": "International Conference on Language Resources and Evaluation",
       "categories": [
         "ai"
       ],
@@ -32985,6 +33690,7 @@
         "natural-language-processing"
       ],
       "sources": [
+        "local",
         "aideadlines"
       ],
       "editions": [
@@ -33030,25 +33736,15 @@
         },
         {
           "year": 2027,
-          "id": "lrec27-est",
+          "id": "lrec27",
           "link": "https://lrec2026.info/",
           "place": "",
           "date_text": "",
           "event_start": null,
           "event_end": null,
-          "estimated": true,
-          "source": "aideadlines",
-          "deadlines": [
-            {
-              "kind": "paper",
-              "label": "Paper Submission",
-              "utc": "2026-10-24T11:59:59Z",
-              "aoe": "2026-10-23 23:59:59 AoE",
-              "tz_raw": "AoE",
-              "round": 1,
-              "comment": "Estimated from the 2026 edition"
-            }
-          ]
+          "estimated": false,
+          "source": "local",
+          "deadlines": []
         }
       ]
     },
@@ -34041,12 +34737,30 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-08-15T11:59:59Z",
-              "aoe": "2026-08-14 23:59:59 AoE",
+              "label": "Regular paper submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Regular Paper / Special Session Submission"
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Special session paper submission",
+              "utc": "2026-08-22T11:59:00Z",
+              "aoe": "2026-08-21 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "other",
+              "label": "Demo / industry submission",
+              "utc": "2026-09-02T11:59:00Z",
+              "aoe": "2026-09-01 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -34127,9 +34841,18 @@
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-08-17T11:59:59Z",
-              "aoe": "2026-08-16 23:59:59 AoE",
+              "label": "Regular/special paper submission (extended)",
+              "utc": "2026-08-31T11:59:00Z",
+              "aoe": "2026-08-30 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "other",
+              "label": "Demo paper submission",
+              "utc": "2026-09-08T11:59:00Z",
+              "aoe": "2026-09-07 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -36932,6 +37655,46 @@
       ]
     },
     {
+      "key": "p3hpc-2026",
+      "title": "P3HPC 2026",
+      "full_name": "P3HPC: International Workshop on Parallel Programming Models and Systems Software for High-End Computing (P3HPC 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://p3hpc.org/workshop/2026/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "p3hpc-2026",
+          "link": "https://p3hpc.org/workshop/2026/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-12T23:59:00Z",
+              "aoe": "2026-08-12 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "p4-workshop",
       "title": "P4 Workshop",
       "full_name": "P4 Workshop (P4 Language Consortium)",
@@ -36962,7 +37725,7 @@
     {
       "key": "pacificvis",
       "title": "PacificVis",
-      "full_name": "IEEE Pacific Visualization Symposium",
+      "full_name": "IEEE Pacific Visualization Symposium (PacificVis 2027)",
       "categories": [
         "graphics"
       ],
@@ -36971,9 +37734,10 @@
         "core": "B",
         "thcpl": "B"
       },
-      "link": "https://pacificvis2026.github.io/",
+      "link": "https://pacificvis2027.github.io/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -37077,50 +37841,50 @@
         },
         {
           "year": 2027,
-          "id": "pacificvis27-est",
-          "link": "https://pacificvis2026.github.io/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "pacificvis27",
+          "link": "https://pacificvis2027.github.io/",
+          "place": "Busan, South Korea",
+          "date_text": "April 19-22, 2027",
+          "event_start": "2027-04-19",
+          "event_end": "2027-04-22",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2026-08-18T11:59:00Z",
-              "aoe": "2026-08-17 23:59:00 AoE",
+              "label": "Abstract (Journal Track)",
+              "utc": "2026-09-02T11:59:00Z",
+              "aoe": "2026-09-01 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-08-24T11:59:00Z",
-              "aoe": "2026-08-23 23:59:00 AoE",
+              "label": "Paper (Journal Track)",
+              "utc": "2026-09-09T11:59:00Z",
+              "aoe": "2026-09-08 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2026-10-18T11:59:00Z",
-              "aoe": "2026-10-17 23:59:00 AoE",
+              "label": "Abstract (Conference Track)",
+              "utc": "2026-11-03T11:59:00Z",
+              "aoe": "2026-11-02 23:59:00 AoE",
               "tz_raw": "AoE",
-              "round": 2,
-              "comment": "Estimated from the 2026 edition"
+              "round": 1,
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-10-25T11:59:00Z",
-              "aoe": "2026-10-24 23:59:00 AoE",
+              "label": "Paper (Conference Track)",
+              "utc": "2026-11-10T11:59:00Z",
+              "aoe": "2026-11-09 23:59:00 AoE",
               "tz_raw": "AoE",
-              "round": 2,
-              "comment": "Estimated from the 2026 edition"
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -37686,6 +38450,8 @@
       "title": "PerCom",
       "full_name": "IEEE International Conference on Pervasive Computing and Communications",
       "categories": [
+        "networking",
+        "systems",
         "hci"
       ],
       "rank": {
@@ -37696,6 +38462,7 @@
       "link": "https://percom.org/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -37763,32 +38530,32 @@
         },
         {
           "year": 2027,
-          "id": "percom27-est",
+          "id": "percom27",
           "link": "https://percom.org/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "place": "Goa, India",
+          "date_text": "March 2027",
+          "event_start": "2027-03-01",
+          "event_end": "2027-03-31",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
-              "kind": "abstract",
-              "label": "Abstract submission",
-              "utc": "2026-10-03T11:59:00Z",
-              "aoe": "2026-10-02 23:59:00 AoE",
+              "kind": "registration",
+              "label": "Paper registration",
+              "utc": "2026-09-05T11:59:00Z",
+              "aoe": "2026-09-04 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "paper",
               "label": "Paper submission",
-              "utc": "2026-10-03T11:59:00Z",
-              "aoe": "2026-10-02 23:59:00 AoE",
+              "utc": "2026-09-12T11:59:00Z",
+              "aoe": "2026-09-11 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -39229,6 +39996,46 @@
       ]
     },
     {
+      "key": "protools-2026",
+      "title": "ProTools 2026",
+      "full_name": "8th Workshop on Programming and Performance Visualization Tools (ProTools)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sc-protools-workshop.github.io/protools26",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "protools26",
+          "link": "https://sc-protools-workshop.github.io/protools26",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-11T11:59:00Z",
+              "aoe": "2026-08-10 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "qrs",
       "title": "QRS",
       "full_name": "IEEE International Conference on Software Quality, Reliability and Security",
@@ -39993,6 +40800,46 @@
               "label": "Paper submission",
               "utc": "2026-11-13T11:59:59Z",
               "aoe": "2026-11-12 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "resdis-2026",
+      "title": "RESDIS 2026",
+      "full_name": "6th International Workshop on RESource DISaggregation in High Performance Computing (RESDIS 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://resdis.github.io/ws/2026/sc/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "resdis-2026",
+          "link": "https://resdis.github.io/ws/2026/sc/",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 15, 2026",
+          "event_start": "2026-11-15",
+          "event_end": "2026-11-15",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission (Extended/Final)",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -41792,6 +42639,86 @@
       ]
     },
     {
+      "key": "scalah-2026",
+      "title": "ScalAH 2026",
+      "full_name": "17th Workshop on Latest Advances in Scalable Algorithms for Large-Scale Heterogeneous Systems (ScalAH 2026)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://www.csm.ornl.gov/srt/conferences/Scala/2026/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "scalah26",
+          "link": "https://www.csm.ornl.gov/srt/conferences/Scala/2026/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Full Paper Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "scale-to-see-2026",
+      "title": "Scale to See 2026",
+      "full_name": "Scale to See: Scalable AI for Scientific Imaging and Spatiotemporal Data",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sites.google.com/view/scale-to-see-workshop/home",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "scale2see26",
+          "link": "https://sites.google.com/view/scale-to-see-workshop/home",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-23T11:59:00Z",
+              "aoe": "2026-08-22 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "scam",
       "title": "SCAM",
       "full_name": "IEEE International Working Conference on Source Code Analysis and Manipulation",
@@ -42250,7 +43177,7 @@
     {
       "key": "securecomm",
       "title": "SecureComm",
-      "full_name": "International Conference on Security and Privacy in Communication Networks",
+      "full_name": "EAI International Conference on Security and Privacy in Communication Networks",
       "categories": [
         "security"
       ],
@@ -42259,9 +43186,10 @@
         "core": "C",
         "thcpl": "N"
       },
-      "link": "https://securecomm.eai-conferences.org/2026/",
+      "link": "https://securecomm.eai-conferences.org/2027/",
       "tags": [],
       "sources": [
+        "local",
         "ccfddl"
       ],
       "editions": [
@@ -42386,23 +43314,23 @@
         },
         {
           "year": 2027,
-          "id": "securecomm27-est",
-          "link": "https://securecomm.eai-conferences.org/2026/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "securecomm27",
+          "link": "https://securecomm.eai-conferences.org/2027/",
+          "place": "Hefei, China",
+          "date_text": "October 15-18, 2027",
+          "event_start": "2027-10-15",
+          "event_end": "2027-10-18",
+          "estimated": false,
+          "source": "local",
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-10-06T11:59:59Z",
-              "aoe": "2026-10-05 23:59:59 AoE",
-              "tz_raw": "AoE",
+              "label": "Full Paper Submission",
+              "utc": "2027-03-01T23:59:00Z",
+              "aoe": "2027-03-01 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -49212,6 +50140,46 @@
               "utc": "2026-09-16T11:59:59Z",
               "aoe": "2026-09-15 23:59:59 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "whpc-2026",
+      "title": "WHPC at SC26",
+      "full_name": "WHPC: Building Community, Building Careers (SC26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://womeninhpc.org/events/sc-2026-workshop",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "whpc26",
+          "link": "https://womeninhpc.org/events/sc-2026-workshop",
+          "place": "Chicago, IL, USA",
+          "date_text": "November 16, 2026",
+          "event_start": "2026-11-16",
+          "event_end": "2026-11-16",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Submission",
+              "utc": "2026-08-14T23:59:00Z",
+              "aoe": "2026-08-14 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
