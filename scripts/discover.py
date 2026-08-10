@@ -315,6 +315,91 @@ def discover_from_dbworld(min_year: int) -> list[dict]:
     return entries
 
 
+def parse_easychair_cfp_html(html: str) -> list[dict]:
+    """EasyChair Smart CFP 一覧 (easychair.org/cfp/) のテーブル行をパースする。
+
+    列: Acronym | Name | Location | Submission Deadline | Start Date | Topics
+    """
+    import html as h
+    import re
+
+    out: list[dict] = []
+    for tbody in re.findall(r"<tbody>(.*?)</tbody>", html, re.S):
+        for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", tbody, re.S):
+            cells = re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)
+            if len(cells) < 5:
+                continue
+            m = re.search(r'href="(/cfp/[^"]+)"[^>]*>([^<]+)<', cells[0])
+            if not m:
+                continue
+            text = lambda c: h.unescape(re.sub(r"<[^>]+>", "", c)).strip()
+            topics = [h.unescape(t).strip() for t in re.findall(r'<span class="tag[^"]*">([^<]+)</span>', cells[5])] if len(cells) > 5 else []
+            out.append({
+                "title": h.unescape(m.group(2)).strip(),
+                "full_name": text(cells[1]) or h.unescape(m.group(2)).strip(),
+                "place": text(cells[2]),
+                "date_text": text(cells[3]),
+                "start": text(cells[4]),
+                "topics": topics,
+                "url": "https://easychair.org" + m.group(1),
+            })
+    return out
+
+
+def _in_domain(text: str) -> bool:
+    """EasyChair 候補がユーザー分野 (hpc/networking/systems/ai/security/db) に
+    属するか簡易判定する。単語ベースで誤検知は許容 (レビューで捨てる)。"""
+    t = " " + text.lower() + " "
+    return any(k in t for k in (
+        "network", "wireless", "communication", "telecom", "internet", "mobile", "iot",
+        "system", "distributed", "cloud", "edge", "embedded", "operating", "architecture",
+        "storage", "virtualization", "compiler", "hpc", "supercomputing", "parallel",
+        "cluster", "grid", "computational", "performance", "security", "cyber", "privacy",
+        "cryptograph", "cryptolog", "trust", "database", "data ", "knowledge", "semantic",
+        "ontolog", "intelligent", "artificial intelligence", "machine learning",
+        "deep learning", "llm", "nlp", "vision", " ai ", "robotics", "automation",
+    ))
+
+
+def discover_from_easychair(min_year: int) -> list[dict]:
+    """EasyChair Smart CFP 一覧から締切登録済みの候補を抽出する。
+
+    EasyChair は全分野の CFP が混在するため、ユーザー分野 (hpc/networking/
+    systems/ai/security/db) にマッチするものだけ返す。
+    """
+    import re
+
+    url = "https://easychair.org/cfp/"
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
+    with urllib.request.urlopen(req, timeout=25) as resp:
+        html = resp.read().decode("utf-8", "replace")
+    entries = []
+    for e in parse_easychair_cfp_html(html):
+        if not e["date_text"]:
+            continue  # 締切未登録は候補にしない
+        dm = re.search(r"(20\d\d)", e["date_text"])
+        if dm and int(dm.group(1)) < min_year:
+            continue  # 過去締切
+        m = re.search(r"20\d\d", e["title"] + " " + e["full_name"])
+        year = int(m.group()) if m else min_year
+        if year < min_year:
+            continue
+        if not _in_domain(e["title"] + " " + e["full_name"] + " " + " ".join(e["topics"])):
+            continue
+        entries.append({
+            "key": slug(e["title"]),
+            "title": e["title"],
+            "full_name": e["full_name"],
+            "link": e["url"],
+            "categories": [],  # レビュー時付与
+            "source_type": "conference",
+            "date_text": e["date_text"],
+            "place": e["place"],
+            "year": year,
+        })
+    return entries
+
+
 class NicheDiscoverer:
     """Discovers niche conferences and journals not yet included in conf-deadlines."""
 
@@ -526,7 +611,31 @@ class NicheDiscoverer:
         except Exception:
             pass  # アーカイブ障害で全体を止めない
 
-        # 5. Known niche candidate registry (fallback / curated candidates)
+        # 5. EasyChair Smart CFP: 運営者が登録した構造化 CFP (締切・場所・トピック)。
+        # wikiCFP と同系統だが独立の登録母集団なので重複率は低い。
+        try:
+            for entry in discover_from_easychair(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "easychair"],
+                    source_type=entry["source_type"],
+                    evidence_url="https://easychair.org/cfp/",
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # 一覧取得失敗で全体を止めない
+
+        # 6. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

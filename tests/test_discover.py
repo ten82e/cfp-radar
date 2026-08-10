@@ -91,6 +91,34 @@ def test_parse_dbworld_html_and_clean():
     assert clean_dbworld_title("[DEADLINE APPROACHING][CWN'26] Thirteenth International Workshop on Cooperative Wireless Networks")[0] == "Thirteenth International Workshop on Cooperative Wireless Networks"
 
 
+def test_parse_easychair_cfp_html():
+    from scripts.discover import parse_easychair_cfp_html
+
+    html = """<tbody>
+<tr class="green"><td><a href="/cfp/medchiconnect2026" onclick="return EC.linkClick(event)">MedCHI_Connect 2026</a></td><td>Connecting Mediterranean Research and Communities</td><td>Fisciano (SA), Italy</td><td>Oct 12, 2026</td><td></td><td><span class="tag fg_bluelight bg_seagreenlight">network</span></td></tr>
+<tr><td><a href="/cfp/irret2027">IRRET-2027</a></td><td>7th Int. Conf. on Renewable Energy Technologies</td><td>Malda, India</td><td>Dec 10, 2026</td><td>Feb 21, 2027</td><td></td></tr>
+</tbody>"""
+    items = parse_easychair_cfp_html(html)
+    assert len(items) == 2
+    assert items[0]["title"] == "MedCHI_Connect 2026"
+    assert items[0]["date_text"] == "Oct 12, 2026"
+    assert items[0]["place"] == "Fisciano (SA), Italy"
+    assert items[0]["topics"] == ["network"]
+    assert items[0]["url"] == "https://easychair.org/cfp/medchiconnect2026"
+    assert items[1]["start"] == "Feb 21, 2027"
+
+
+def test_in_domain():
+    from scripts.discover import _in_domain
+
+    assert _in_domain("IEEE AIoT 2026")                      # iot
+    assert _in_domain("PARMA-DITAM 2027 Workshop on Parallel Programming")  # parallel
+    assert _in_domain("Cyber Science 2027 London")           # cyber
+    assert _in_domain("ML4CPS 2027 Machine Learning for Cyber-Physical Systems")  # machine learning
+    assert not _in_domain("ICBBS 2026 Bioinformatics")       # バイオ系は対象外
+    assert not _in_domain("SOCTHADICKconf'26 Ibadan")        # 不明会議は対象外
+
+
 def test_run_discovery_integration():
     discoverer = NicheDiscoverer(ROOT)
     cands = discoverer.run_discovery(categories=["systems"])
