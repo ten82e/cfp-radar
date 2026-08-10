@@ -1794,3 +1794,19 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-09-20 23:59:00', tz: UTC}
+
+  # ---------------- SC26 併設 WS (2026-08-10 裏取り) ----------------
+  # 根拠: https://waccpd.org/ 「EXTENDED! AUGUST 14th, 2026, MIDNIGHT, AOE」
+  #   (SC26 併設 13th Workshop on Accelerator Programming and Directives、2026-08-10 取得)
+  - key: waccpd-2026
+    title: WACCPD 2026
+    full_name: 13th Workshop on Accelerator Programming and Directives
+    link: https://waccpd.org/
+    categories: [hpc]
+    editions:
+      - year: 2026
+        id: waccpd2026
+        link: https://waccpd.org/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
