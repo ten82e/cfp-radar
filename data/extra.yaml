@@ -2031,7 +2031,7 @@ conferences:
         link: https://p3hpc.org/workshop/2026/
         place: Chicago, IL, USA
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
+        - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
 
   # ---------------- ICVRV 2026 (2026-08-10 裏取り) ----------------
   # 根拠: http://www.icvrv.org/ Important Dates:
@@ -2074,7 +2074,7 @@ conferences:
         place: Chicago, IL, USA
         date_text: 'November 16, 2026'
         deadlines:
-          - {kind: paper, label: Paper Submission (SC26 Proceedings), date: '2026-08-15 23:59:00', tz: UTC}
+        - {kind: paper, label: Paper Submission (SC26 Proceedings), date: '2026-08-15 23:59:00', tz: AoE}
 
   # ---------------- SC26 併設 WS 追補 (2026-08-10 裏取り) ----------------
   # 根拠: 各 WS 公式サイト / CFP。8/14 締切の 4 件。
@@ -2120,7 +2120,7 @@ conferences:
         link: https://sighpc-syspros.org/workshops/2026/
         place: Chicago, IL, USA
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: hppss-2026
     title: HPPSS 2026
@@ -2152,7 +2152,7 @@ conferences:
         place: Chicago, IL, USA
         # Full paper submission: August 14, 2026 (firm, no extensions)
         deadlines:
-          - {kind: paper, label: Full Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Full Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: protools-2026
     title: ProTools 2026
@@ -2259,7 +2259,7 @@ conferences:
         place: Chicago, IL, USA
         # Paper submission deadline: 10 August 2026 → 14 August 2026 延長
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: hust-26-2026
     title: HUST-26
@@ -2275,7 +2275,7 @@ conferences:
         date_text: 'November 15, 2026'
         # Submissions Deadline: August 7, 2026 → August 14, 2026 (final extension)
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: isav-2026
     title: ISAV 2026
@@ -2290,7 +2290,7 @@ conferences:
         place: Chicago, IL, USA
         # Extended submission deadline (all types): 14 Aug 2026 (deadline is FIRM)
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: llvm-hpc-2026
     title: LLVM-HPC 2026
@@ -2321,7 +2321,7 @@ conferences:
         place: Chicago, IL, USA
         # The deadline is postponed to August 22th, 2026, AOE
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-22 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
 
   - key: h2rc-2026
     title: H2RC 2026
@@ -2337,7 +2337,7 @@ conferences:
         date_text: 'November 16, 2026'
         # Paper submission: August 5, 2026 → August 15, 2026 (extended)
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: UTC}
+        - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: AoE}
 
   - key: bphte-26-2026
     title: BPHTE 26
@@ -2368,7 +2368,7 @@ conferences:
         date_text: 'November 16, 2026'
         # Submission deadline: August 14, 2026
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: UTC}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: hmem-2026
     title: HMEM 2026
@@ -2586,3 +2586,39 @@ conferences:
   #   16 Aug → 30 Aug 2026」「All deadlines refer to 23:59 on the specified day in
   #   the Anywhere on Inhabited Earth (AOE) time zone」。会期 January 05-08, 2027
   #   Siem Reap, Cambodia。Demo paper 9/7 AoE。
+
+  # ---------------- SC26 併設 WS 追加 4 (2026-08-10 SC26 提出ポータル裏取り) ----------------
+  # 根拠: https://submissions.supercomputing.org Submission Forms (2026-08-10 確認):
+  #   「SC Workshop: XLOOP — Closes: 11:59pm (AoE) Aug 14, 2026」。
+  #   公式サイト wordpress.cels.anl.gov/xloop-2026 は Cloudflare 403 のため
+  #   フォームが正 (SC26 公式提出システム)。SC26 併設 (11/15-20 Chicago)。
+  - key: xloop-2026
+    title: XLOOP 2026
+    full_name: "XLOOP 2026: The 8th Annual Workshop on Extreme-Scale Experiment-in-the-Loop Computing"
+    link: https://wordpress.cels.anl.gov/xloop-2026
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: xloop-2026
+        link: https://wordpress.cels.anl.gov/xloop-2026
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+
+  # 根拠: SC26 提出ポータル「SC Workshop: SFWM — Closes: 11:58pm (AoE) Aug 14, 2026」。
+  #   正式名は公式サイト https://sfwqhe.github.io/sfwm-sc26 (SC26 SFWM Workshop)。
+  #   サイト本体の日付欄は未記入 (2026-08-10 確認) → ポータルが正。
+  - key: sfwm-2026
+    title: SFWM 2026
+    full_name: "SFWM 2026: The 2nd International Workshop on Software Frameworks and Workload Management for Quantum and HPC Ecosystems"
+    link: https://sfwqhe.github.io/sfwm-sc26
+    categories: [hpc]
+    tags: [workshop, quantum]
+    editions:
+      - year: 2026
+        id: sfwm-2026
+        link: https://sfwqhe.github.io/sfwm-sc26
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
