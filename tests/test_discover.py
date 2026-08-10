@@ -67,3 +67,30 @@ def test_run_discovery_integration():
         assert c.title
         assert c.link
 
+
+WIKICFP_SAMPLE = """<html><body>
+<table>
+<tr><td><a href="/cfp/servlet/event.showcfp?eventid=1&amp;copyownerid=2">FAKECONF 2026</a></td><td>International Conference on Fake Systems</td></tr>
+<tr><td>Mar 1, 2026 - Mar 3, 2026</td><td>Tokyo, Japan</td><td>Feb 1, 2026</td></tr>
+<tr><td><a href="/cfp/servlet/event.showcfp?eventid=3">NOBODY 2027</a></td><td>Workshop on Nothing</td></tr>
+<tr><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+<tr><td><a href="/cfp/servlet/event.showcfp?eventid=4">OLD 2024</a></td><td>Past Conference</td></tr>
+<tr><td>N/A</td><td>N/A</td><td>Dec 1, 2024</td></tr>
+</table></body></html>"""
+
+
+def test_parse_wikicfp_html():
+    from scripts.discover import parse_wikicfp_html
+
+    entries = parse_wikicfp_html(WIKICFP_SAMPLE, ["systems"], min_year=2026)
+    assert len(entries) == 1, entries  # NOBODY(N/A) と OLD(2024) は除外される
+    e = entries[0]
+    assert e["key"] == "fakeconf-2026"
+    assert e["title"] == "FAKECONF 2026"
+    assert e["full_name"] == "International Conference on Fake Systems"
+    assert e["link"] == "https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=1&copyownerid=2"
+    assert e["categories"] == ["systems"]
+    assert e["date_text"] == "Feb 1, 2026"
+    assert e["place"] == "Tokyo, Japan"
+    assert e["year"] == 2026
+

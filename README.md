@@ -153,7 +153,16 @@ env -u PYTHONPATH .venv/bin/python -m scripts.cli discover --dry-run
 env -u PYTHONPATH .venv/bin/python -m scripts.cli discover --out data/discovered_candidates.yaml
 ```
 
-また、`.github/workflows/discover.yml` により週次で自動探索がバックグラウンド実行される。
+`--append` を付けると既存の候補を保持したまま key 重複なしで追記する。
+`.github/workflows/update.yml` の `discover-candidates` ジョブが毎日これを実行し、
+`data/discovered_candidates.yaml` に候補を溜めていく。
+
+**候補の昇格手順**（収録の裏取り原則: 締切は公式サイトで HTTP 確認できたもののみ）:
+
+1. `data/discovered_candidates.yaml` から気になる候補を選ぶ
+2. 候補の公式サイトで締切・開催日を確認する（wikiCFP 等の転載情報は裏取りに使わない）
+3. 確認できたら `data/extra.yaml` に書き、`data/discovered_candidates.yaml` から該当行を消す
+4. ビルドして収録されることを確認する
 
 ## 更新の仕組み
 

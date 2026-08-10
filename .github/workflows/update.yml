@@ -106,3 +106,49 @@ jobs:
         id: deployment
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         uses: actions/deploy-pages@v4
+
+  # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、
+  # data/discovered_candidates.yaml に追記する。収録(snapshot/サイト)には
+  # 影響しない。候補を extra.yaml に昇格するときは公式サイトで締切を裏取り
+  # する(SPEC.md 3.7 の原則)。
+  discover-candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Discover candidates
+        run: |
+          python -m scripts.cli discover \
+            --min-year 2026 \
+            --out data/discovered_candidates.yaml \
+            --append || echo 'discovery failed; keeping previous candidates'
+
+      - name: Commit candidates
+        run: |
+          set -euo pipefail
+          if ! git diff --quiet -- data/discovered_candidates.yaml; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/discovered_candidates.yaml
+            git commit -m 'chore: refresh discovered candidates [skip ci]'
+            for attempt in 1 2 3; do
+              if git push; then
+                exit 0
+              fi
+              echo "push rejected (attempt ${attempt}); rebasing onto origin/${GITHUB_REF_NAME}"
+              git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+            done
+            echo 'could not push the candidates' >&2
+            exit 1
+          fi
+          echo 'no new candidates; nothing to commit'

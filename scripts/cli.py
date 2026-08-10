@@ -196,7 +196,24 @@ def cmd_discover(args: argparse.Namespace) -> int:
 
     yaml_text = format_discovered_yaml(candidates)
 
-    if args.dry_run:
+    if args.append and args.out and candidates:
+        # 既存 YAML の conferences に、key が被らない候補だけ追記する。
+        # 毎日 Actions で回しても discovered_candidates.yaml が肥大化しない。
+        out_path = Path(args.out)
+        existing = {}
+        if out_path.is_file():
+            existing = yaml.safe_load(out_path.read_text(encoding="utf-8")) or {}
+        new_confs = yaml.safe_load(yaml_text)["conferences"]
+        seen = {c.get("key") for c in existing.get("conferences") or []}
+        existing["conferences"] = (existing.get("conferences") or []) + [
+            c for c in new_confs if c.get("key") not in seen
+        ]
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(
+            yaml.dump(existing, allow_unicode=True, sort_keys=False), encoding="utf-8"
+        )
+        print(f"\nAppended {len(existing['conferences']) - len(seen)} candidates to {out_path}")
+    elif args.dry_run:
         print("\n--- Dry Run Output (extra.yaml format) ---")
         print(yaml_text[:1000] + ("..." if len(yaml_text) > 1000 else ""))
     elif args.out:
@@ -229,6 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     discover.add_argument("--categories", default=None, help="カンマ区切りの対象カテゴリ（例: hpc,systems）")
     discover.add_argument("--min-year", type=int, default=2026, help="対象の最小年")
     discover.add_argument("--dry-run", action="store_true", help="ファイル出力せず結果をプレビュー表示")
+    discover.add_argument("--append", action="store_true", help="--out の既存 YAML に key 重複なしで追記")
     discover.set_defaults(func=cmd_discover)
 
     args = parser.parse_args(argv)

@@ -51,6 +51,21 @@ NICHE_KEYWORDS = [
     "regional", "open call", "forum", "work-in-progress", "short papers",
 ]
 
+# wikiCFP のカテゴリページ (?conference=<cat>) と cfp-radar カテゴリの対応。
+# wikiCFP は締切の一次情報ではない(ユーザー投稿)ため、候補発見のみに使い、
+# 収録の裏取り(公式サイト HTTP 確認)は人間のレビュー工程で行う。
+WIKICFP_CATEGORY_MAP: dict[str, list[str]] = {
+    "hpc": ["parallel", "high", "grid", "performance"],
+    "networking": ["networks", "networking", "communications", "internet", "wireless"],
+    "systems": ["systems", "architecture", "operating", "distributed", "embedded", "cloud", "edge"],
+    "ai": ["artificial", "machine", "deep", "neural", "intelligent"],
+    "security": ["security", "cybersecurity", "privacy", "cryptography"],
+    "db": ["database", "databases", "data", "big"],
+    "graphics": ["graphics", "multimedia", "visualization"],
+    "hci": ["human"],
+    "theory": ["theory", "algorithms", "theoretical", "complexity", "formal", "verification"],
+}
+
 
 @dataclass
 class DiscoveredCandidate:
@@ -79,9 +94,12 @@ class DiscoveredCandidate:
             entry["tags"] = self.tags
         editions = []
         if self.date_text or self.place or self.deadlines:
+            import re
+            m = re.search(r"(20\d\d)", self.date_text)
+            year = int(m.group(1)) if m else 2026
             ed_dict: dict[str, Any] = {
-                "year": 2026,
-                "id": f"{self.key}26",
+                "year": year,
+                "id": f"{self.key}{year % 100}",
                 "link": self.link,
                 "place": self.place or "",
                 "date_text": self.date_text or "",
@@ -112,6 +130,73 @@ def extract_deadlines_from_text(text: str) -> list[dict[str, Any]]:
                 "tz": "AoE",
             })
     return deadlines
+
+
+def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[dict]:
+    """wikiCFP カテゴリページをパースしてエントリ dict のリストを返す。
+
+    ページは 2 行組で 1 エントリ: (event 行 = title + full name) /
+    (detail 行 = when, where, deadline)。締切の裏取りはしない(候補発見のみ)。
+    """
+    import html as html_mod
+    import re
+
+    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S)
+    entries: list[dict] = []
+    i = 0
+    while i < len(rows) - 1:
+        cells1 = re.findall(r"<td[^>]*>(.*?)</td>", rows[i], re.S)
+        cells2 = re.findall(r"<td[^>]*>(.*?)</td>", rows[i + 1], re.S)
+        i += 2
+        if len(cells1) < 2 or len(cells2) < 3:
+            continue
+        clean1 = [re.sub(r"<[^>]+>", " ", c) for c in cells1]
+        title = re.sub(r"\s+", " ", clean1[0]).strip()
+        full_name = re.sub(r"\s+", " ", clean1[1]).strip()
+        hrefs = re.findall(r'href="([^"]+)"', cells1[0])
+        if not title or not full_name or not hrefs:
+            continue
+        clean2 = [re.sub(r"<[^>]+>", " ", c) for c in cells2]
+        when, where, deadline = (re.sub(r"\s+", " ", c).strip() for c in clean2[:3])
+        if deadline in ("", "N/A"):
+            continue
+        year = min_year
+        m = re.search(r"(20\d\d)", title)
+        if m:
+            year = int(m.group(1))
+        else:
+            m = re.search(r"(20\d\d)", deadline)
+            if m:
+                year = int(m.group(1))
+        if year < min_year:
+            continue
+        entries.append({
+            "key": slug(title),
+            "title": title,
+            "full_name": full_name,
+            "link": "https://www.wikicfp.com" + html_mod.unescape(hrefs[0]),
+            "categories": list(categories),
+            "date_text": deadline,
+            "place": where if where not in ("", "N/A") else "",
+            "year": year,
+        })
+    return entries
+
+
+def discover_from_wikicfp_urls(categories: list[str], min_year: int) -> list[dict]:
+    """wikiCFP カテゴリページを取得してパースする(ネットワーク層)。"""
+    entries: list[dict] = []
+    for cat in categories:
+        url = f"http://www.wikicfp.com/cfp/call?conference={cat}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                html = resp.read().decode("utf-8", "replace")
+            entries.extend(parse_wikicfp_html(html, [cat], min_year))
+        except Exception:
+            # 1 カテゴリの失敗で全体を止めない
+            continue
+    return entries
 
 
 class NicheDiscoverer:
@@ -269,7 +354,32 @@ class NicheDiscoverer:
         for q in or_queries:
             results.extend(self.discover_from_openreview(q))
 
-        # 3. Known niche candidate registry (fallback / curated candidates)
+        # 3. wikiCFP: 各 cfp-radar カテゴリの代表カテゴリ 1 つずつ取得
+        # ponytail: 代表 1 カテゴリのみ。全カテゴリ(約40)を舐めると低品質の
+        # predatory 会議が大量に入る。候補が枯れたら増やす。
+        for cat, wikicfp_cats in WIKICFP_CATEGORY_MAP.items():
+            if categories and cat not in categories:
+                continue
+            for entry in discover_from_wikicfp_urls(wikicfp_cats[:1], min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "wikicfp"],
+                    source_type="journal" if any(w in entry["full_name"].lower() for w in ("journal", "transactions", "letters")) else "conference",
+                    evidence_url="https://www.wikicfp.com",
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+
+        # 4. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",
