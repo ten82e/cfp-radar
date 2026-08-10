@@ -1639,3 +1639,158 @@ conferences:
         link: https://easychair.org/cfp/jornadas-dl2
         deadlines:
           - {kind: paper, label: Submission, date: '2026-09-30 23:59:00', tz: UTC}
+
+  # ---------------- SIGSPATIAL 2026 併設 WS (2026-08-10 裏取り) ----------------
+  # 根拠: https://sigspatial2026.sigspatial.org/workshops.html の accepted WS 一覧
+  #   (2026-08-10 取得)。WS 開催日は全て 2026-11-03 (Riverside, CA) 公式明記。
+  #   tz 表記なしのものは COCOA 前例どおり 23:59 UTC として解釈。
+  - key: qspatial-2026
+    title: Q-Spatial
+    full_name: The 2nd ACM SIGSPATIAL International Workshop on Quantum Computing and Quantum-Inspired Computing for Spatial Applications
+    link: https://qspatial.github.io/
+    categories: [theory]
+    editions:
+      - year: 2026
+        id: qspatial2026
+        link: https://qspatial.github.io/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-12 23:59:00', tz: pt}
+
+  # 根拠: https://onspatial.github.io/geo-health-2026/ 「Submission deadline August 15, 2026」
+  - key: geohealth-2026
+    title: GeoHealth 2026
+    full_name: The 2nd ACM SIGSPATIAL International Workshop on Geospatial Computing for Public Health
+    link: https://onspatial.github.io/geo-health-2026/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: geohealth2026
+        link: https://onspatial.github.io/geo-health-2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: https://iharp.umbc.edu/polds26/ 「All PolDS submissions are due by August 15, 2026」
+  - key: polds-2026
+    title: PolDS 2026
+    full_name: The 2nd ACM International Workshop on Polar Data Science
+    link: https://iharp.umbc.edu/polds26/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: polds2026
+        link: https://iharp.umbc.edu/polds26/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: https://geoanomalies.github.io/ 「August 9, 2026 --> August 16, 2026」= 延長後
+  - key: geoanomalies-2026
+    title: GeoAnomalies 2026
+    full_name: The 3rd ACM SIGSPATIAL International Workshop on Geospatial Anomaly Detection
+    link: https://geoanomalies.github.io/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: geoanomalies2026
+        link: https://geoanomalies.github.io/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-16 23:59:00', tz: UTC}
+
+  # 根拠: https://events.ornl.gov/acmsigspatial-geoai2026/ 「Paper submission: 21st August, 2026」
+  - key: geoai-2026
+    title: GeoAI 2026
+    full_name: The 9th International Workshop on AI for Geographic Knowledge Discovery
+    link: https://events.ornl.gov/acmsigspatial-geoai2026/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: geoai2026
+        link: https://events.ornl.gov/acmsigspatial-geoai2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: UTC}
+
+  # 根拠: https://events.ornl.gov/urbanai2026/ 「Submission Deadline: August 21, 2026」
+  - key: urbanai-2026
+    title: UrbanAI 2026
+    full_name: The 4th ACM SIGSPATIAL International Workshop on Advances in Urban-AI
+    link: https://events.ornl.gov/urbanai2026/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: urbanai2026
+        link: https://events.ornl.gov/urbanai2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: UTC}
+
+  # 根拠: https://geosearch-workshop.github.io/geosearch2026/ 「May 26th --> Friday, August 28, 2026」= 延長後
+  - key: geosearch-2026
+    title: GeoSearch 2026
+    full_name: The 5th ACM SIGSPATIAL International Workshop on Searching and Mining Large Collections of Geospatial Data
+    link: https://geosearch-workshop.github.io/geosearch2026/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: geosearch2026
+        link: https://geosearch-workshop.github.io/geosearch2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: UTC}
+
+  # 根拠: https://geoindustry.github.io/geoindustryworkshop2026/
+  #   「Submission deadline August 28, 2026, 11:59 PM AoE」— AoE 明記
+  - key: geoindustry-2026
+    title: GeoIndustry 2026
+    full_name: The 5th ACM SIGSPATIAL International Workshop on Spatial Big Data and AI for Industry
+    link: https://geoindustry.github.io/geoindustryworkshop2026/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: geoindustry2026
+        link: https://geoindustry.github.io/geoindustryworkshop2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: AoE}
+
+  # 根拠: https://spatialconnect.github.io/2026/
+  #   「Submission: September 1, 2026 (11:59PM (AOE))」— AOE 明記
+  - key: spatialconnect-2026
+    title: SpatialConnect 2026
+    full_name: The 2nd ACM SIGSPATIAL International Workshop on Spatial Intelligence for Smart Connectivity
+    link: https://spatialconnect.github.io/2026/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: spatialconnect2026
+        link: https://spatialconnect.github.io/2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-09-01 23:59:00', tz: AoE}
+
+  # 根拠: https://takayabe0505.github.io/humob-2026/ 「Submission deadline September 20, 2026」
+  - key: humob-2026
+    title: HuMoB 2026
+    full_name: The 4th ACM SIGSPATIAL International Workshop on Human Mobility Prediction Challenge
+    link: https://takayabe0505.github.io/humob-2026/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: humob2026
+        link: https://takayabe0505.github.io/humob-2026/
+        place: Riverside, CA, USA
+        date_text: November 3, 2026
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-09-20 23:59:00', tz: UTC}
