@@ -2180,9 +2180,10 @@ conferences:
         id: agenticai4hpc26
         link: https://ornl.github.io/events/agenticai4hpc2026/
         place: Chicago, IL, USA
-        # Submission: August 10, 2026 (AoE)
+        # Submission: August 10, 2026 11:59pm (PDT) — submissions.supercomputing.org
+        # 一次ソース: SC26 ポータル Submission Forms (2026-08-10 取得)。公式サイトは日付なし。
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: AoE}
+          - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: PDT}
 
   - key: ai4s-2026
     title: AI4S 2026
