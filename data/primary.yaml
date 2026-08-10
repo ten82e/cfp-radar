@@ -14,8 +14,19 @@
 #     HTML に締切が無く現行抽出では 0 件になる。登録しないこと (毎回警告が出るだけ)。
 #     必要になったら個別の抽出ルールを fetch_primary.py に足す。
 #
+# tz フィールド (任意): 公式が tz を明記しているが、日付行に tz 表記が無いページで
+# 抽出を補うヒント。裏が取れたものだけ書くこと (推測は禁止)。
+#
 # 収録の契約: ここに登録しても収録はされない (taxonomy.*.venues が収録を決める)。
 # あくまで「既に収録されている会議」の締切を一次ソースで検証・訂正する仕組み。
+#
+# 登録除外の判断 (2026-08-10 実測):
+#   - 公式サイトが延長前の旧締切のまま (echo/protools/hpctests/waccpd/ftxs/hust/bphte)
+#   - ページに過去 round / 会期 / 別 deadline が混在して誤抽出する
+#     (ieee-tps / ieee-risc: round 1 過去締切、qspatial: 会期 11/3、ssr: 10/15)
+#   - 上流が tz 明記なしを UTC-12 (AoE) 解釈しており、抽出の UTC 解釈と衝突する
+#     (satml / icmlc 等。公式に tz 明記が無い限り登録しない)
+#   - 接続不能 (secitc.eu は Connection refused 継続)
 
 conferences:
   # SETTA 2026: 公式サイト (setta2026.sg) は締切未記載のため、主催者が登録する
@@ -27,3 +38,46 @@ conferences:
     link: https://www.setta2026.sg
     place: Singapore
     date_text: December 2-4, 2026
+
+  # ---- 2026-08-10 追加: 収録値との一致を dry-run で確認した 11 件 ----
+  # 登録基準: 静的 HTML の一次ソースから抽出した paper/abstract 締切が
+  # 収録値 (extra.yaml の UTC 解釈 or 上流の UTC-12 解釈) と一致するもののみ。
+  wsse-2026:
+    url: https://easychair.org/cfp/WSSE2026
+    year: 2026
+  network-flows-2-0:
+    url: https://easychair.org/cfp/flowchallenge2
+    year: 2026
+  1st-dl2-international-workshop:
+    url: https://easychair.org/cfp/jornadas-dl2
+    year: 2026
+  ai4s-2026:
+    url: https://ai4s.github.io/
+    year: 2026
+    # SC26 ポータル (submissions.supercomputing.org) が AoE 明記 (一次)
+    tz: AoE
+  llvm-hpc-2026:
+    url: https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/
+    year: 2026
+  whpc-2026:
+    url: https://womeninhpc.org/events/sc-2026-workshop
+    year: 2026
+    # SC26 ポータルが AoE 明記 (一次)
+    tz: AoE
+  hmem-2026:
+    url: https://hmem-workshop.github.io/
+    year: 2026
+    # 公式サイトに "Time Zone: AOE" 明記 (2026-08-10 確認済み)
+    tz: AoE
+  geohealth-2026:
+    url: https://onspatial.github.io/geo-health-2026/
+    year: 2026
+  geoindustry-2026:
+    url: https://geoindustry.github.io/geoindustryworkshop2026/
+    year: 2026
+  cna-2026:
+    url: https://complexnetworks.org/
+    year: 2026
+  polds-2026:
+    url: https://iharp.umbc.edu/polds26/
+    year: 2026

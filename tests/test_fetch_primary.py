@@ -68,6 +68,20 @@ def test_extract_deadlines_window():
     ]
     got = extract_deadlines(lines, year=2026)
     kinds = {g["kind"] for g in got}
-    assert kinds == {"paper", "notification"}
+    # deadline を含まない行 (Notification) は抽出しない。kind は行自体の
+    # キーワードで決まる (隣接行の notification に化けない)。
+    assert kinds == {"paper"}
     paper = next(g for g in got if g["kind"] == "paper")
     assert paper["tz"] == "AoE"  # 前の行の AoE をウィンドウで拾う
+
+
+def test_kind_hint_wins_over_adjacent_notification():
+    """deadline 行の次行に Notification があっても paper のまま (hmem 実例)。"""
+    lines = [
+        "Submission deadline: August 17, 2026",
+        "Notification: September 4, 2026",
+    ]
+    got = extract_deadlines(lines, year=2026)
+    assert len(got) == 1
+    assert got[0]["kind"] == "paper"
+    assert got[0]["date"] == "2026-08-17"

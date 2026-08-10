@@ -99,10 +99,12 @@ def _kind_of(window: str) -> str:
     return "paper"
 
 
-def extract_deadline(window: str, year: int) -> dict | None:
+def extract_deadline(window: str, year: int, kind_hint: str = "") -> dict | None:
     """キーワード行ウィンドウから締切 1 件を抽出する。根拠が無ければ None。
 
     window は「deadline を含む行 + 前後 1 行」を連結したテキスト。
+    kind_hint は deadline を含む行自体 (notification 等が隣接行に居ると
+    kind が化けるため、行自体のキーワードを優先する)。
     保守的に: deadline キーワードが無い window は None。
     """
     low = window.lower()
@@ -120,7 +122,7 @@ def extract_deadline(window: str, year: int) -> dict | None:
         dt = datetime(extracted_year, month, day)
     except ValueError:
         return None
-    kind = _kind_of(window)
+    kind = _kind_of(kind_hint) if kind_hint else _kind_of(window)
     round_m = _ROUND_RE.search(window)
     round_no = int(round_m.group(1)) if round_m else 1
     label = _LABELS[kind]
@@ -174,7 +176,7 @@ def extract_deadlines(lines: list[str], year: int) -> list[dict]:
         lo = max(0, i - 1)
         hi = min(len(lines), i + 2)
         window = " ".join(lines[lo:hi])
-        entry = extract_deadline(window, year)
+        entry = extract_deadline(window, year, kind_hint=ln)
         if entry and entry not in out:
             out.append(entry)
     return out
@@ -217,8 +219,16 @@ def main(argv: list[str] | None = None) -> int:
                       f"registry の year 更新を検討", file=sys.stderr)
             lines = to_lines(page)
             deadlines = extract_deadlines(lines, page_yr)
-            # 出力は最小限に: tz 不明・round 1 のキーは落とす (既定値は merge 側が補う)
+            # 出力は最小限に: 収録の「締切」を正すのが目的なので、提出締切
+            # (paper/abstract) だけを書く。notification/camera_ready/registration は
+            # 収録の締切と置き換わると表示が壊れる (誤抽出リスク) ため落とす。
+            deadlines = [d for d in deadlines if d["kind"] in ("paper", "abstract")]
+            # tz ヒント: 公式が tz を明記しているがページの日付行に無い場合に
+            # レジストリの tz フィールドで補う (推測は禁止 — 裏が取れたものだけ)。
+            hint = conf.get("tz")
             for d in deadlines:
+                if d["tz"] is None and hint:
+                    d["tz"] = hint
                 if d["tz"] is None:
                     del d["tz"]
                 if d["round"] == 1:
