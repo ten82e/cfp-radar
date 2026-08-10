@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T05:11:36Z",
+  "generated_at": "2026-08-10T05:14:27Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -7877,6 +7877,44 @@
               "utc": "2026-09-03T11:59:00Z",
               "aoe": "2026-09-02 23:59:00 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cocoa",
+      "title": "COCOA",
+      "full_name": "International Conference on Combinatorial Optimization and Applications",
+      "categories": [
+        "theory"
+      ],
+      "rank": {},
+      "link": "https://www.cocoa2026.com/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "cocoa2026",
+          "link": "https://www.cocoa2026.com/",
+          "place": "Beijing, China",
+          "date_text": "December 4-6, 2026",
+          "event_start": "2026-12-04",
+          "event_end": "2026-12-06",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-23T23:59:00Z",
+              "aoe": "2026-08-23 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
