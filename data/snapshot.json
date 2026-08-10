@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T03:00:05Z",
+  "generated_at": "2026-08-10T03:28:12Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -2605,6 +2605,220 @@
       ]
     },
     {
+      "key": "aft",
+      "title": "AFT",
+      "full_name": "Advances in Financial Technologies",
+      "categories": [
+        "security"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "B",
+        "thcpl": "N"
+      },
+      "link": "https://aft.ifca.ai/aft26/index.html",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2019,
+          "id": "aft19",
+          "link": "https://aft.ifca.ai/aft19/index.html",
+          "place": "Zurich, Switzerland",
+          "date_text": "October 21-23, 2019",
+          "event_start": "2019-10-21",
+          "event_end": "2019-10-23",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2019-05-25T11:59:59Z",
+              "aoe": "2019-05-24 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2020,
+          "id": "aft20",
+          "link": "https://aft.ifca.ai/aft20/index.html",
+          "place": "Online",
+          "date_text": "October 21-23, 2020",
+          "event_start": "2020-10-21",
+          "event_end": "2020-10-23",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2020-06-12T11:59:59Z",
+              "aoe": "2020-06-11 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2021,
+          "id": "aft21",
+          "link": "https://aft.ifca.ai/aft21/index.html",
+          "place": "Online",
+          "date_text": "September 26-28, 2021",
+          "event_start": "2021-09-26",
+          "event_end": "2021-09-28",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2021-05-28T11:59:59Z",
+              "aoe": "2021-05-27 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "id": "aft22",
+          "link": "https://aft.ifca.ai/aft22/index.html",
+          "place": "Cambridge, MA, USA",
+          "date_text": "September 19-21, 2022",
+          "event_start": "2022-09-19",
+          "event_end": "2022-09-21",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2022-05-14T11:59:59Z",
+              "aoe": "2022-05-13 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2023,
+          "id": "aft23",
+          "link": "https://aft.ifca.ai/aft23/index.html",
+          "place": "Princeton, NJ, USA",
+          "date_text": "October 23-25, 2023",
+          "event_start": "2023-10-23",
+          "event_end": "2023-10-25",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-06-16T11:59:59Z",
+              "aoe": "2023-06-15 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2024,
+          "id": "aft24",
+          "link": "https://aft.ifca.ai/aft24/index.html",
+          "place": "Vienna, Austria",
+          "date_text": "September 23-25, 2024",
+          "event_start": "2024-09-23",
+          "event_end": "2024-09-25",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2024-05-16T11:59:59Z",
+              "aoe": "2024-05-15 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-05-23T11:59:59Z",
+              "aoe": "2024-05-22 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "aft25",
+          "link": "https://aft.ifca.ai/aft25/index.html",
+          "place": "Pittsburgh, PA, USA",
+          "date_text": "October 7-10, 2025",
+          "event_start": "2025-10-07",
+          "event_end": "2025-10-10",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-05-29T11:59:59Z",
+              "aoe": "2025-05-28 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "aft26",
+          "link": "https://aft.ifca.ai/aft26/index.html",
+          "place": "London, UK",
+          "date_text": "October 6-9, 2026",
+          "event_start": "2026-10-06",
+          "event_end": "2026-10-09",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-05-21T11:59:59Z",
+              "aoe": "2026-05-20 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-05-28T11:59:59Z",
+              "aoe": "2026-05-27 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "aistats",
       "title": "AISTATS",
       "full_name": "International Conference on Artificial Intelligence and Statistics",
@@ -3021,6 +3235,70 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "apbc",
+      "title": "APBC",
+      "full_name": "Asia Pacific Bioinformatics Conference",
+      "categories": [
+        "db"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "B",
+        "thcpl": "N"
+      },
+      "link": "https://www.apbc2026.com/home",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2025,
+          "id": "apbc25",
+          "link": "https://bioinfo.nuaa.edu.cn/apbc2025/main.psp",
+          "place": "Nanjing， China",
+          "date_text": "September 19-22, 2025",
+          "event_start": "2025-09-19",
+          "event_end": "2025-09-22",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-06-15T23:59:59Z",
+              "aoe": "2025-06-15 11:59:59 AoE",
+              "tz_raw": "UTC+0",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "apbc26",
+          "link": "https://www.apbc2026.com/home",
+          "place": "Hsinchu, Taiwan， China",
+          "date_text": "October 21-24, 2026",
+          "event_start": "2026-10-21",
+          "event_end": "2026-10-24",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-06-15T23:59:59Z",
+              "aoe": "2026-06-15 11:59:59 AoE",
+              "tz_raw": "UTC+0",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -4673,6 +4951,167 @@
               "utc": "2026-06-06T15:59:59Z",
               "aoe": "2026-06-06 03:59:59 AoE",
               "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bibm",
+      "title": "BIBM",
+      "full_name": "IEEE International Conference on Bioinformatics and Biomedicine",
+      "categories": [
+        "db"
+      ],
+      "rank": {
+        "ccf": "B",
+        "core": "N",
+        "thcpl": "N"
+      },
+      "link": "https://ieeebibm.org/BIBM2026/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2021,
+          "id": "bibm21",
+          "link": "https://ieeebibm.org/BIBM2021/",
+          "place": "Online",
+          "date_text": "Dec 9-12, 2021",
+          "event_start": "2021-12-09",
+          "event_end": "2021-12-12",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2021-08-28T22:00:00Z",
+              "aoe": "2021-08-28 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 1,
+              "comment": "Electronic submission of full papers"
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "id": "bibm22",
+          "link": "http://ieeebibm.org/BIBM2022/",
+          "place": "Las Vegas, NV, USA",
+          "date_text": "Dec 6-9, 2022",
+          "event_start": "2022-12-06",
+          "event_end": "2022-12-09",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2022-08-21T22:00:00Z",
+              "aoe": "2022-08-21 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 1,
+              "comment": "Electronic submission of full papers"
+            }
+          ]
+        },
+        {
+          "year": 2023,
+          "id": "bibm23",
+          "link": "https://bidma.cpsc.ucalgary.ca/IEEE-BIBM-2023/",
+          "place": "Istanbul, Turkey",
+          "date_text": "Dec 5-8, 2023",
+          "event_start": "2023-12-05",
+          "event_end": "2023-12-08",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-08-15T22:00:00Z",
+              "aoe": "2023-08-15 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 1,
+              "comment": "Electronic submission of full papers"
+            }
+          ]
+        },
+        {
+          "year": 2024,
+          "id": "bibm24",
+          "link": "https://ieeebibm.org/BIBM2024/",
+          "place": "Lisbon, Portugal",
+          "date_text": "Dec 3-6, 2024",
+          "event_start": "2024-12-03",
+          "event_end": "2024-12-06",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-06-20T22:00:00Z",
+              "aoe": "2024-06-20 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 1,
+              "comment": "First Round, papers submitted by the June 20 deadline will be reviewed and notified by Aug 15"
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-08-16T22:00:00Z",
+              "aoe": "2024-08-16 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 2,
+              "comment": "Second Round, papers submitted by the Aug 16, 2024 deadline, will be reviewed and notified by the Oct 16, 2024"
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "bibm25",
+          "link": "https://ieeebibm.org/BIBM2025/",
+          "place": "Wuhan, China",
+          "date_text": "Dec 15-18, 2025",
+          "event_start": "2025-12-15",
+          "event_end": "2025-12-18",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-08-03T22:00:00Z",
+              "aoe": "2025-08-03 10:00:00 AoE",
+              "tz_raw": "UTC-5",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "bibm26",
+          "link": "https://ieeebibm.org/BIBM2026/",
+          "place": "Dallas, USA",
+          "date_text": "Dec 1-4, 2026",
+          "event_start": "2026-12-01",
+          "event_end": "2026-12-04",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-07-05T22:00:00Z",
+              "aoe": "2026-07-05 10:00:00 AoE",
+              "tz_raw": "UTC-5",
               "round": 1,
               "comment": null
             }
@@ -7183,6 +7622,92 @@
       ]
     },
     {
+      "key": "cloud",
+      "title": "Cloud",
+      "full_name": "IEEE International Conference on Cloud Computing",
+      "categories": [
+        "systems"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "B",
+        "thcpl": "B"
+      },
+      "link": "https://services.conferences.computer.org/2026/cloud/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2025,
+          "id": "cloud25",
+          "link": "https://services.conferences.computer.org/2025/cloud/",
+          "place": "Helsinki, Finland",
+          "date_text": "July 7-12, 2025",
+          "event_start": "2025-07-07",
+          "event_end": "2025-07-12",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-03-11T11:00:00Z",
+              "aoe": "2025-03-10 23:00:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "cloud26",
+          "link": "https://services.conferences.computer.org/2026/cloud/",
+          "place": "Sydney, Australia",
+          "date_text": "July 13-18, 2026",
+          "event_start": "2026-07-13",
+          "event_end": "2026-07-18",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-03-23T11:00:00Z",
+              "aoe": "2026-03-22 23:00:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "cloud27-est",
+          "link": "https://services.conferences.computer.org/2026/cloud/",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2027-04-05T11:00:00Z",
+              "aoe": "2027-04-04 23:00:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "cluster",
       "title": "CLUSTER",
       "full_name": "IEEE International Conference on Cluster Computing",
@@ -7515,6 +8040,136 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cogsci",
+      "title": "CogSci",
+      "full_name": "Annual Meeting of the Cognitive Science Society",
+      "categories": [
+        "ai"
+      ],
+      "rank": {
+        "ccf": "B",
+        "core": "B",
+        "thcpl": "N"
+      },
+      "link": "https://cognitivesciencesociety.org/cogsci-2026/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2023,
+          "id": "cogsci23",
+          "link": "https://cognitivesciencesociety.org/cogsci-2023/",
+          "place": "Sydney, Australia",
+          "date_text": "July 26-29, 2023",
+          "event_start": "2023-07-26",
+          "event_end": "2023-07-29",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-02-01T15:59:59Z",
+              "aoe": "2023-02-01 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2024,
+          "id": "cogsci24",
+          "link": "https://cognitivesciencesociety.org/cogsci-2024/",
+          "place": "Rotterdam, Netherlands",
+          "date_text": "July 24-27, 2024",
+          "event_start": "2024-07-24",
+          "event_end": "2024-07-27",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-02-01T15:59:59Z",
+              "aoe": "2024-02-01 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "cogsci25",
+          "link": "https://cognitivesciencesociety.org/cogsci-2025/",
+          "place": "Marriott Marquis, San Francisco",
+          "date_text": "July 30-August 2, 2025",
+          "event_start": "2025-07-30",
+          "event_end": "2025-08-02",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-02-01T15:59:59Z",
+              "aoe": "2025-02-01 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "cogsci26",
+          "link": "https://cognitivesciencesociety.org/cogsci-2026/",
+          "place": "Rio de Janeiro, Brazil",
+          "date_text": "July 22-25, 2026",
+          "event_start": "2026-07-22",
+          "event_end": "2026-07-25",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-02-03T11:59:59Z",
+              "aoe": "2026-02-02 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "cogsci27-est",
+          "link": "https://cognitivesciencesociety.org/cogsci-2026/",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2027-02-02T11:59:59Z",
+              "aoe": "2027-02-01 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
             }
           ]
         }
@@ -18662,6 +19317,48 @@
       ]
     },
     {
+      "key": "icaif",
+      "title": "ICAIF",
+      "full_name": "International Conference on AI in Finance",
+      "categories": [
+        "ai"
+      ],
+      "rank": {
+        "ccf": "N",
+        "core": "N",
+        "thcpl": "N"
+      },
+      "link": "https://icaif2026.org/index.html",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "icaif2026",
+          "link": "https://icaif2026.org/index.html",
+          "place": "Milan, Italy",
+          "date_text": "November 14-17, 2026",
+          "event_start": "2026-11-14",
+          "event_end": "2026-11-17",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-08-03T11:59:59Z",
+              "aoe": "2026-08-02 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "icalp",
       "title": "ICALP",
       "full_name": "EATCS International Colloquium on Automata, Languages, and Programming",
@@ -21170,6 +21867,114 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Abstract and full paper submission"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "icic",
+      "title": "ICIC",
+      "full_name": "International Conference on Intelligent Computing",
+      "categories": [
+        "ai"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "N",
+        "thcpl": "N"
+      },
+      "link": "http://www.ic-icc.cn/2026/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2024,
+          "id": "icic24",
+          "link": "http://www.ic-icc.cn/2024/index.htm",
+          "place": "Tianjin, China",
+          "date_text": "August 5-8, 2024",
+          "event_start": "2024-08-05",
+          "event_end": "2024-08-08",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-04-11T04:00:00Z",
+              "aoe": "2024-04-10 16:00:00 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "icic25",
+          "link": "http://www.ic-icc.cn/2025/index.php",
+          "place": "Ningbo, China",
+          "date_text": "July 26-29, 2025",
+          "event_start": "2025-07-26",
+          "event_end": "2025-07-29",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-04-10T03:59:59Z",
+              "aoe": "2025-04-09 15:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "icic26",
+          "link": "http://www.ic-icc.cn/2026/",
+          "place": "Toronto, Canada",
+          "date_text": "July 22-26, 2026",
+          "event_start": "2026-07-22",
+          "event_end": "2026-07-26",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-04-04T03:59:59Z",
+              "aoe": "2026-04-03 15:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "icic27-est",
+          "link": "http://www.ic-icc.cn/2026/",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2027-04-03T03:59:59Z",
+              "aoe": "2027-04-02 15:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
             }
           ]
         }
@@ -28308,6 +29113,70 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isbra",
+      "title": "ISBRA",
+      "full_name": "International Symposium on Bioinformatics Research and Applications",
+      "categories": [
+        "db"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "N",
+        "thcpl": "N"
+      },
+      "link": "https://www.helsinki.fi/en/conferences/isbra2025",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2025,
+          "id": "isbra25",
+          "link": "https://www.helsinki.fi/en/conferences/isbra2025",
+          "place": "Helsinki, Finland",
+          "date_text": "August 3-5, 2025",
+          "event_start": "2025-08-03",
+          "event_end": "2025-08-05",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-04-02T11:59:59Z",
+              "aoe": "2025-04-01 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "isbra27-est",
+          "link": "https://www.helsinki.fi/en/conferences/isbra2025",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2027-03-31T11:59:59Z",
+              "aoe": "2027-03-30 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2025 edition"
             }
           ]
         }
@@ -37438,6 +38307,119 @@
       ]
     },
     {
+      "key": "recomb",
+      "title": "RECOMB",
+      "full_name": "International Conference on Research inComputational Molecular Biology",
+      "categories": [
+        "db"
+      ],
+      "rank": {
+        "ccf": "B",
+        "core": "B",
+        "thcpl": "A"
+      },
+      "link": "https://recomb.org/recomb2026/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2025,
+          "id": "recomb25",
+          "link": "https://recomb.org/recomb2025/index.html",
+          "place": "Seoul, Korea",
+          "date_text": "April 26-29, 2025",
+          "event_start": "2025-04-26",
+          "event_end": "2025-04-29",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2024-10-17T11:59:59Z",
+              "aoe": "2024-10-16 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-10-26T11:59:59Z",
+              "aoe": "2024-10-25 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "recomb26",
+          "link": "https://recomb.org/recomb2026/",
+          "place": "Thessaloniki, Greece",
+          "date_text": "May 26 - 29, 2026",
+          "event_start": "2026-05-26",
+          "event_end": "2026-05-29",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2025-11-08T11:59:59Z",
+              "aoe": "2025-11-07 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-11-15T11:59:59Z",
+              "aoe": "2025-11-14 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "recomb27-est",
+          "link": "https://recomb.org/recomb2026/",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-11-28T11:59:59Z",
+              "aoe": "2026-11-27 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-12-05T11:59:59Z",
+              "aoe": "2026-12-04 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "recsys",
       "title": "RecSys",
       "full_name": "ACM Conference on Recommender Systems",
@@ -40993,6 +41975,119 @@
       ]
     },
     {
+      "key": "sigcse",
+      "title": "SIGCSE",
+      "full_name": "Technical Symposium on Computer Science Education Conference",
+      "categories": [
+        "hci"
+      ],
+      "rank": {
+        "ccf": "N",
+        "core": "A",
+        "thcpl": "N"
+      },
+      "link": "https://2027.sigcse-ts.acm.org/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2025,
+          "id": "sigcse25",
+          "link": "https://sigcse2025.sigcse.org/",
+          "place": "Pittsburgh, Pennsylvania, USA",
+          "date_text": "February 26 - March 1, 2025",
+          "event_start": "2025-02-26",
+          "event_end": "2025-03-01",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2024-07-15T11:59:59Z",
+              "aoe": "2024-07-14 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-07-22T11:59:59Z",
+              "aoe": "2024-07-21 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "sigcse26",
+          "link": "https://sigcse2026.sigcse.org/",
+          "place": "St. Louis, Missouri, USA",
+          "date_text": "February 18-21, 2026",
+          "event_start": "2026-02-18",
+          "event_end": "2026-02-21",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2025-06-27T11:59:59Z",
+              "aoe": "2025-06-26 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-07-04T11:59:59Z",
+              "aoe": "2025-07-03 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "sigcse27",
+          "link": "https://2027.sigcse-ts.acm.org/",
+          "place": "Sacramento, California, USA",
+          "date_text": "February 17-20, 2027",
+          "event_start": "2027-02-17",
+          "event_end": "2027-02-20",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-06-27T11:59:59Z",
+              "aoe": "2026-06-26 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-07-04T11:59:59Z",
+              "aoe": "2026-07-03 23:59:59 AoE",
+              "tz_raw": "UTC-12",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "sigir",
       "title": "SIGIR",
       "full_name": "International ACM SIGIR Conference on Research and Development in Information Retrieval",
@@ -42395,6 +43490,119 @@
       ]
     },
     {
+      "key": "sigspatial",
+      "title": "SIGSPATIAL",
+      "full_name": "ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems",
+      "categories": [
+        "db"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "A",
+        "thcpl": "N"
+      },
+      "link": "https://sigspatial2026.sigspatial.org/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2023,
+          "id": "sigspatial23",
+          "link": "http://sigspatial2023.sigspatial.org/",
+          "place": "Hamburg, Germany",
+          "date_text": "November 13-16, 2023",
+          "event_start": "2023-11-13",
+          "event_end": "2023-11-16",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2023-06-10T06:59:59Z",
+              "aoe": "2023-06-09 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-06-17T06:59:59Z",
+              "aoe": "2023-06-16 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "sigspatial25",
+          "link": "https://sigspatial2025.sigspatial.org/",
+          "place": "Minneapolis, MN, USA",
+          "date_text": "November 3-6, 2025",
+          "event_start": "2025-11-03",
+          "event_end": "2025-11-06",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2025-05-24T06:59:59Z",
+              "aoe": "2025-05-23 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-05-31T06:59:59Z",
+              "aoe": "2025-05-30 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "sigspatial26",
+          "link": "https://sigspatial2026.sigspatial.org/",
+          "place": "Riverside, CA, USA",
+          "date_text": "November 3-6, 2026",
+          "event_start": "2026-11-03",
+          "event_end": "2026-11-06",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2026-05-23T06:59:59Z",
+              "aoe": "2026-05-22 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-05-30T06:59:59Z",
+              "aoe": "2026-05-29 18:59:59 AoE",
+              "tz_raw": "UTC-7",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "slt",
       "title": "SLT",
       "full_name": "IEEE Spoken Language Technology (SLT) Workshop",
@@ -42429,6 +43637,114 @@
               "utc": "2026-06-18T11:59:59Z",
               "aoe": "2026-06-17 23:59:59 AoE",
               "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "smc",
+      "title": "SMC",
+      "full_name": "IEEE International Conference on Systems, Man, and Cybernetics",
+      "categories": [
+        "ai"
+      ],
+      "rank": {
+        "ccf": "C",
+        "core": "B",
+        "thcpl": "N"
+      },
+      "link": "https://www.ieeesmc2026.org/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2023,
+          "id": "smc23",
+          "link": "https://ieeesmc2023.org/",
+          "place": "HYATT MAUI, HAWAII, USA",
+          "date_text": "October 1-4, 2023",
+          "event_start": "2023-10-01",
+          "event_end": "2023-10-04",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-03-31T07:59:59Z",
+              "aoe": "2023-03-30 19:59:59 AoE",
+              "tz_raw": "UTC-8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2024,
+          "id": "smc24",
+          "link": "https://www.ieeesmc2024.org/",
+          "place": "Borneo Convention Centre Kuching, Sarawak, Malaysia",
+          "date_text": "October 7-10, 2024",
+          "event_start": "2024-10-07",
+          "event_end": "2024-10-10",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-04-08T15:59:59Z",
+              "aoe": "2024-04-08 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "smc25",
+          "link": "https://www.ieeesmc2025.org/",
+          "place": "Vienna, Austria",
+          "date_text": "October 5-8, 2025",
+          "event_start": "2025-10-05",
+          "event_end": "2025-10-08",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-05-04T15:59:59Z",
+              "aoe": "2025-05-04 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "smc26",
+          "link": "https://www.ieeesmc2026.org/",
+          "place": "Bellevue, WA, USA",
+          "date_text": "October 4-7, 2026",
+          "event_start": "2026-10-04",
+          "event_end": "2026-10-07",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-05-04T06:59:59Z",
+              "aoe": "2026-05-03 18:59:59 AoE",
+              "tz_raw": "UTC-7",
               "round": 1,
               "comment": null
             }
@@ -46445,6 +47761,114 @@
               "utc": "2026-06-01T20:59:59Z",
               "aoe": "2026-06-01 08:59:59 AoE",
               "tz_raw": "UTC+3",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "wine",
+      "title": "WINE",
+      "full_name": "Conference on Web and Internet Economics",
+      "categories": [
+        "theory"
+      ],
+      "rank": {
+        "ccf": "B",
+        "core": "N",
+        "thcpl": "N"
+      },
+      "link": "https://wine2026conf.github.io/",
+      "tags": [],
+      "sources": [
+        "ccfddl"
+      ],
+      "editions": [
+        {
+          "year": 2023,
+          "id": "wine2023",
+          "link": "https://wine2023.shanghaitech.edu.cn/",
+          "place": "Shanghai, China",
+          "date_text": "Dec 04-08, 2023",
+          "event_start": "2023-12-04",
+          "event_end": "2023-12-08",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2023-07-08T11:59:59Z",
+              "aoe": "2023-07-07 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2024,
+          "id": "wine2024",
+          "link": "https://wine2024.org/",
+          "place": "Edinburgh, United Kingdom",
+          "date_text": "December 2-5, 2024",
+          "event_start": "2024-12-02",
+          "event_end": "2024-12-05",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2024-07-16T11:59:59Z",
+              "aoe": "2024-07-15 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2025,
+          "id": "wine2025",
+          "link": "https://wine2025.cs.rutgers.edu/",
+          "place": "New Brunswick, USA",
+          "date_text": "December 8-11, 2025",
+          "event_start": "2025-12-08",
+          "event_end": "2025-12-11",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2025-07-04T11:59:59Z",
+              "aoe": "2025-07-03 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2026,
+          "id": "wine2026",
+          "link": "https://wine2026conf.github.io/",
+          "place": "Hong Kong, China",
+          "date_text": "December 1-4, 2026",
+          "event_start": "2026-12-01",
+          "event_end": "2026-12-04",
+          "estimated": false,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2026-07-03T11:59:59Z",
+              "aoe": "2026-07-02 23:59:59 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
