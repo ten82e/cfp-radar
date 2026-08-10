@@ -69,3 +69,13 @@ conferences:
     editions:
       2027:
         link: https://asiaccs2027.cityu.edu.mo/index.html
+
+  # 根拠: EuroVis 2026 の公式 important dates (eurovis.org.uk/important-dates, Wayback 2025-11-11)。
+  #   abstract 2025-11-27 が正しい一方、上流 ccfddl の paper 2024-12-04 は 2025 版の
+  #   締切が混入した誤り (2026 版の paper 締切は 2025 年 12 月初旬の公算だが未裏取り)。
+  #   誤データを含む 2026 edition を落とすと rollforward は eurovis27-est を正しく
+  #   2026 年 12 月に作る (2024-12 起点だと 2 年飛ばして eurovis28-est を作っていた)。
+  eurovis:
+    editions:
+      2026:
+        drop: true
