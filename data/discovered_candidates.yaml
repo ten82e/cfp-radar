@@ -1,1 +1,1129 @@
-conferences: []
+conferences:
+- key: vecos
+  title: VECoS
+  full_name: ' International Conference on Verification and Evaluation of Computer
+    and Communication Systems (VECoS)'
+  link: https://dblp.org/db/conf/vecos/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: isvc
+  title: ISVC
+  full_name: ' International Symposium on Advances in Visual Computing (ISVC)'
+  link: https://dblp.org/db/conf/isvc/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: icbinb
+  title: ICBINB
+  full_name: '&quot;I Can&apos;t Believe It&apos;s Not Better!&quot; Workshop Series
+    (ICBINB)'
+  link: https://dblp.org/db/conf/icbinb/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 3dpvt
+  title: 3DPVT
+  full_name: 3D Data Processing Visualization and Transmission (3DPVT)
+  link: https://dblp.org/db/conf/3dpvt/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 3dia
+  title: 3DIA
+  full_name: 3D Imaging and Applications (3DIA)
+  link: https://dblp.org/db/conf/3dica/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 3dph
+  title: 3DPH
+  full_name: 3D Physiological Human Workshop (3DPH)
+  link: https://dblp.org/db/conf/3dph/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: smile
+  title: SMILE
+  full_name: 3D Structure from Multiple Images of Large-Scale Environments (SMILE)
+  link: https://dblp.org/db/conf/smile/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 3dtv
+  title: 3DTV
+  full_name: 3DTV-Conference (3DTV)
+  link: https://dblp.org/db/conf/3dtv/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: ai-50
+  title: AI@50
+  full_name: 50 Years of Artificial Intelligence (AI@50)
+  link: https://dblp.org/db/conf/ai50/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 5gwf
+  title: 5GWF
+  full_name: 5G World Forum (5GWF)
+  link: https://dblp.org/db/conf/5gwf/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 6g-summit
+  title: 6G SUMMIT
+  full_name: 6G Wireless Summit (6G SUMMIT)
+  link: https://dblp.org/db/conf/6gsummit/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: evolve
+  title: EVOLVE
+  full_name: A Bridge between Probability, Set Oriented Numerics and Evolutionary
+    Computation (EVOLVE)
+  link: https://dblp.org/db/conf/evolve/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: aiide
+  title: AIIDE
+  full_name: AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment
+    Conference (AIIDE)
+  link: https://dblp.org/db/conf/aiide/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: hcomp
+  title: HCOMP
+  full_name: AAAI Conference on Human Computation and Crowdsourcing (HCOMP)
+  link: https://dblp.org/db/conf/hcomp/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: aaai-fall-symposium-series
+  title: AAAI Fall Symposium Series
+  full_name: AAAI Fall Symposium Series
+  link: https://dblp.org/db/conf/aaaifs/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: aaai-mobile-robot-competition
+  title: AAAI Mobile Robot Competition
+  full_name: AAAI Mobile Robot Competition
+  link: https://dblp.org/db/conf/mrc/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: aaai-spring-symposium-series
+  title: AAAI Spring Symposium Series
+  full_name: AAAI Spring Symposium Series
+  link: https://dblp.org/db/conf/aaaiss/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: aaai-summer-symposium-series
+  title: AAAI Summer Symposium Series
+  full_name: AAAI Summer Symposium Series
+  link: https://dblp.org/db/conf/aaaisus/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: spaca
+  title: SPACA
+  full_name: AAAI Symposium on Survival Prediction - Algorithms, Challenges and Applications
+    (SPACA)
+  link: https://dblp.org/db/conf/spaca/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: ubicomp
+  title: UbiComp
+  full_name: ACM International Joint Conference on Pervasive and Ubiquitous Computing
+    (UbiComp)
+  link: https://dblp.org/db/conf/huc/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: divanet
+  title: DIVANet
+  full_name: ACM International Symposium on Development and Analysis of Intelligent
+    Vehicular Networks and Applications (DIVANet)
+  link: https://dblp.org/db/conf/divanet/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: mobiwac
+  title: MobiWac
+  full_name: ACM International Symposium on Mobility Management and Wireless Access
+    (MobiWac)
+  link: https://dblp.org/db/conf/mobiwac/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: ispd
+  title: ISPD
+  full_name: ACM International Symposium on Physical Design (ISPD)
+  link: https://dblp.org/db/conf/ispd/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: q2swinet
+  title: Q2SWinet
+  full_name: ACM International Symposium on QoS and Security for Wireless and Mobile
+    Networks (Q2SWinet)
+  link: https://dblp.org/db/conf/q2swinet/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: compass
+  title: COMPASS
+  full_name: ACM SIGCAS Conference on Computing and Sustainable Societies (COMPASS)
+  link: https://dblp.org/db/conf/dev/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: chi-play
+  title: CHI PLAY
+  full_name: ACM SIGCHI Annual Symposium on Computer-Human Interaction in Play (CHI
+    PLAY)
+  link: https://dblp.org/db/conf/chiplay/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: enchires
+  title: EnCHIReS
+  full_name: ACM SIGCHI Symposium on Engineering Interactive Computing System
+  link: https://dblp.org/db/conf/eics/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: sosr
+  title: SOSR
+  full_name: ACM SIGCOMM Symposium on Software Defined Networking Research (SOSR)
+  link: https://dblp.org/db/conf/sosr/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigme-symposium
+  title: ACM SIGME Symposium
+  full_name: ACM SIGME Symposium
+  link: https://dblp.org/db/conf/sigme/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigmod-digital-symposium-collection
+  title: ACM SIGMOD Digital Symposium Collection
+  full_name: ACM SIGMOD Digital Symposium Collection
+  link: https://dblp.org/db/journals/disc/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: splash
+  title: SPLASH
+  full_name: 'ACM SIGPLAN International Conference on Systems, Programming, Languages
+    and Applications: Software for Humanity (SPLASH)'
+  link: https://dblp.org/db/conf/splash/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: haskell
+  title: Haskell
+  full_name: ACM SIGPLAN International Symposium on Haskell (Haskell)
+  link: https://dblp.org/db/conf/haskell/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: maps
+  title: MAPS
+  full_name: ACM SIGPLAN International Symposium on Machine Programming (MAPS)
+  link: https://dblp.org/db/conf/maps/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: 4or-quarterly-journal-of-operations-research
+  title: '4OR: Quarterly Journal of Operations Research'
+  full_name: '4OR: Quarterly Journal of Operations Research'
+  link: https://dblp.org/db/journals/4or/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: login
+  title: ';login:'
+  full_name: ';login:'
+  link: https://dblp.org/db/journals/usenix-login/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acis-international-journal-of-computer-amp-information-science
+  title: ACIS International Journal of Computer &amp; Information Science
+  full_name: ACIS International Journal of Computer &amp; Information Science
+  link: https://dblp.org/db/journals/acisj/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: acm-communications-in-computer-algebra
+  title: ACM Communications in Computer Algebra
+  full_name: ACM Communications in Computer Algebra
+  link: https://dblp.org/db/journals/cca/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-computing-surveys
+  title: ACM Computing Surveys
+  full_name: ACM Computing Surveys
+  link: https://dblp.org/db/journals/csur/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-inroads
+  title: ACM Inroads
+  full_name: ACM Inroads
+  link: https://dblp.org/db/journals/inroads/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: jcd
+  title: JCD
+  full_name: ACM Journal of Computer Documentation (JCD)
+  link: https://dblp.org/db/journals/jcd/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: jea
+  title: JEA
+  full_name: ACM Journal of Experimental Algorithmics (JEA)
+  link: https://dblp.org/db/journals/jea/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: acm-journal-on-computing-and-cultural-heritage
+  title: ACM Journal on Computing and Cultural Heritage
+  full_name: ACM Journal on Computing and Cultural Heritage
+  link: https://dblp.org/db/journals/jocch/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: jcss
+  title: JCSS
+  full_name: ACM Journal on Computing and Sustainable Societies (JCSS)
+  link: https://dblp.org/db/journals/acmjcss/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: acm-journal-on-emerging-technologies-in-computing-systems
+  title: ACM Journal on Emerging Technologies in Computing Systems
+  full_name: ACM Journal on Emerging Technologies in Computing Systems
+  link: https://dblp.org/db/journals/jetc/
+  categories:
+  - systems
+  tags:
+  - niche
+  - journal
+  editions: []
+- key: loplas
+  title: LOPLAS
+  full_name: ACM Letters on Programming Languages and Systems (LOPLAS)
+  link: https://dblp.org/db/journals/loplas/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-queue
+  title: ACM Queue
+  full_name: ACM Queue
+  link: https://dblp.org/db/journals/queue/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigaccess-accessibility-and-computing
+  title: ACM SIGACCESS Accessibility and Computing
+  full_name: ACM SIGACCESS Accessibility and Computing
+  link: https://dblp.org/db/journals/sigaccess/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigapl-apl-quote-quad
+  title: ACM SIGAPL APL Quote Quad
+  full_name: ACM SIGAPL APL Quote Quad
+  link: https://dblp.org/db/journals/sigapl/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigchi-bulletin
+  title: ACM SIGCHI Bulletin
+  full_name: ACM SIGCHI Bulletin
+  link: https://dblp.org/db/journals/sigchi/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigcse-bulletin
+  title: ACM SIGCSE Bulletin
+  full_name: ACM SIGCSE Bulletin
+  link: https://dblp.org/db/journals/sigcse/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-siglog-news
+  title: ACM SIGLOG News
+  full_name: ACM SIGLOG News
+  link: https://dblp.org/db/journals/siglog/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigmis-database
+  title: ACM SIGMIS Database
+  full_name: ACM SIGMIS Database
+  link: https://dblp.org/db/journals/db/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: acm-sigmod-digital-review
+  title: ACM SIGMOD Digital Review
+  full_name: ACM SIGMOD Digital Review
+  link: https://dblp.org/db/journals/dr/
+  categories:
+  - systems
+  tags:
+  - niche
+  - conference
+  editions: []
+- key: iccsd-2026
+  title: ICCSD 2026
+  full_name: 2026 6th International Conference on Circuits, Systems and Devices (ICCSD
+    2026)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194632&copyownerid=13881
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iccsd-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194632&copyownerid=13881
+    place: Ningbo, China
+    date_text: Jul 10, 2026
+    deadlines: []
+- key: ubicomm-2026
+  title: UBICOMM 2026
+  full_name: The Twentieth International Conference on Mobile Ubiquitous Computing,
+    Systems, Services and Technologies
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190211&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ubicomm-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190211&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: icsnc-2026
+  title: ICSNC 2026
+  full_name: The Twenty-First International Conference on Systems and Networks Communications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190220&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icsnc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190220&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: valid-2026
+  title: VALID 2026
+  full_name: The Eighteenth International Conference on Advances in System Testing
+    and Validation Lifecycle
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190221&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: valid-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190221&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: aisys-2026
+  title: AISyS 2026
+  full_name: The Third International Conference on AI-based Systems and Services
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190225&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: aisys-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190225&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: explainability-2026
+  title: EXPLAINABILITY 2026
+  full_name: The Third International Conference on Systems Explainability
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190226&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: explainability-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190226&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: icaiem-2026
+  title: ICAIEM 2026
+  full_name: 2026 2nd International Conference on Artificial Intelligence and Engineering
+    Management
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194213&copyownerid=182680
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icaiem-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194213&copyownerid=182680
+    place: Guangzhou,China&Online
+    date_text: Jun 19, 2026
+    deadlines: []
+- key: ai-ml-sys-2026
+  title: AI-ML sys 2026
+  full_name: 6th International Conference on AI–ML Systems
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194791&copyownerid=198343
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ai-ml-sys-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194791&copyownerid=198343
+    place: Lecco, Italy
+    date_text: Jun 15, 2026 (Jun 8, 2026)
+    deadlines: []
+- key: eilm-2026
+  title: EILM 2026
+  full_name: 2026 2nd International Conference on Embodied Intelligence and Large
+    Models
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190872&copyownerid=182680
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: eilm-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190872&copyownerid=182680
+    place: Chengdu, China
+    date_text: Jun 12, 2026
+    deadlines: []
+- key: dimes-2026
+  title: DIMES 2026
+  full_name: Fourth Workshop on Disruptive Memory Systems
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194251&copyownerid=188022
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: dimes-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194251&copyownerid=188022
+    place: Co-located with SOSP'26, Prague, Czechia
+    date_text: Jun 5, 2026
+    deadlines: []
+- key: iaria-congress-2026
+  title: IARIA Congress 2026
+  full_name: The 2026 IARIA Annual Congress on Frontiers in Science, Technology, Services,
+    and Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190206&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iaria-congress-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190206&copyownerid=83510
+    place: Nice, France
+    date_text: Mar 31, 2026
+    deadlines: []
+- key: iotai-2026
+  title: IoTAI 2026
+  full_name: The Third International Conference on IoT-AI
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190208&copyownerid=83510
+  categories:
+  - systems
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: iotai-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190208&copyownerid=83510
+    place: Nice, France
+    date_text: Mar 31, 2026
+    deadlines: []
+- key: ssdbm-poster-2026
+  title: SSDBM-poster 2026
+  full_name: Call for Poster - International Conference on Scalable Scientific Data
+    Management
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200031&copyownerid=199183
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ssdbm-poster-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200031&copyownerid=199183
+    place: San Diego
+    date_text: Jul 1, 2026
+    deadlines: []
+- key: scalability-2026
+  title: SCALABILITY 2026
+  full_name: The Third International Conference on Systems Scalability and Expandability
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199657&copyownerid=83510
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: scalability-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199657&copyownerid=83510
+    place: Barcelona, Spain
+    date_text: Jun 23, 2026
+    deadlines: []
+- key: dbsec-2026
+  title: DBSec 2026
+  full_name: 40th Annual IFIP WG 11.3 Conference on Data and Applications Security
+    and Privacy
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190362&copyownerid=195659
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: dbsec-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190362&copyownerid=195659
+    place: Arlington, Virginia, USA
+    date_text: Mar 27, 2026
+    deadlines: []
+- key: vldb-2026
+  title: VLDB 2026
+  full_name: 52nd International Conference on Very Large Data Bases
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191833&copyownerid=692
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: vldb-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191833&copyownerid=692
+    place: Boston, MA, USA
+    date_text: Mar 1, 2026
+    deadlines: []
+- key: dbml-2026
+  title: DBML 2026
+  full_name: 5th International Workshop on Databases and Machine Learning
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192282&copyownerid=197187
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: dbml-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192282&copyownerid=197187
+    place: Montréal, Canada
+    date_text: Feb 14, 2026
+    deadlines: []
+- key: dasfaa-2026
+  title: DASFAA 2026
+  full_name: The 31st International Conference on Database Systems for Advanced Application
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=188595&copyownerid=193873
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2025
+    id: dasfaa-202625
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=188595&copyownerid=193873
+    place: Jeju, South Korea
+    date_text: Oct 27, 2025 (Oct 20, 2025)
+    deadlines: []
+- key: aixdke-2026
+  title: AIxDKE 2026
+  full_name: International Conference on AI x Data and Knowledge Engineering
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=188224&copyownerid=135733
+  categories:
+  - database
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2025
+    id: aixdke-202625
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=188224&copyownerid=135733
+    place: Laguna Hills, CA
+    date_text: Oct 10, 2025
+    deadlines: []
+- key: arvr4exergame-2026
+  title: ARVR4Exergame 2026
+  full_name: 3rd Workshop on AI and AR/VR for Exergaming (AIVR4Exergame) - colocated
+    with IEEE AIxVR (Osaka, Japan)
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190428&copyownerid=195733
+  categories:
+  - graphics
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2025
+    id: arvr4exergame-202625
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190428&copyownerid=195733
+    place: Osaka, Japan
+    date_text: Nov 16, 2025
+    deadlines: []
+- key: aivr-2026
+  title: AIVR 2026
+  full_name: The Third International Conference on Artificial Intelligence and Immersive
+    Virtual Reality
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190187&copyownerid=83510
+  categories:
+  - human
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: aivr-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190187&copyownerid=83510
+    place: Lisbon, Portugal
+    date_text: Jan 24, 2026
+    deadlines: []
+- key: isaac-2026
+  title: ISAAC 2026
+  full_name: International Symposium on Algorithms and Computation
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195309&copyownerid=186342
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: isaac-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195309&copyownerid=186342
+    place: Hangzhou, China
+    date_text: Jun 26, 2026
+    deadlines: []
+- key: cccg-2026
+  title: CCCG 2026
+  full_name: Canadian Conference on Computational Geometry
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192235&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: cccg-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192235&copyownerid=35838
+    place: Orillia, Ontario, Canada
+    date_text: May 12, 2026
+    deadlines: []
+- key: mfcs-2026
+  title: MFCS 2026
+  full_name: Mathematical Foundations of Computer Science
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194871&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: mfcs-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194871&copyownerid=35838
+    place: Paris, France
+    date_text: Apr 24, 2026
+    deadlines: []
+- key: esa-2026
+  title: ESA 2026
+  full_name: European Symposium on Algorithms
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192236&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: esa-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192236&copyownerid=35838
+    place: L’Aquila, Italy
+    date_text: Apr 23, 2026 (Apr 21, 2026)
+    deadlines: []
+- key: dna-2026
+  title: DNA 2026
+  full_name: Internation Conference on DNA Computing and Molecular Programming
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195197&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: dna-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195197&copyownerid=35838
+    place: Fayetteville, AR, USA
+    date_text: Apr 3, 2026
+    deadlines: []
+- key: ucnc-2026
+  title: UCNC 2026
+  full_name: The 23rd International Conference on Unconventional Computation and Natural
+    Computation
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192234&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ucnc-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192234&copyownerid=35838
+    place: Trieste, Italy
+    date_text: Mar 27, 2026
+    deadlines: []
+- key: aaim-2026
+  title: AAIM 2026
+  full_name: The 20th International Conference on Algorithmic Aspects in Information
+    and Management
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192925&copyownerid=186797
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: aaim-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192925&copyownerid=186797
+    place: Online(No Registration Fee)
+    date_text: Mar 26, 2026
+    deadlines: []
+- key: swat-2026
+  title: SWAT 2026
+  full_name: Scandinavian Workshop on Algorithm Theory
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191909&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: swat-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191909&copyownerid=35838
+    place: Copenhagen, Denmark
+    date_text: Feb 20, 2026 (Feb 16, 2026)
+    deadlines: []
+- key: icalp-2026
+  title: ICALP 2026
+  full_name: International Colloquium on Automata, Languages and Programming
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190911&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: icalp-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190911&copyownerid=35838
+    place: London, England, UK
+    date_text: Feb 6, 2026 (Feb 3, 2026)
+    deadlines: []
+- key: fun-2026
+  title: FUN 2026
+  full_name: Fun with Algorithms
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192237&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: fun-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192237&copyownerid=35838
+    place: Porquerolles, France
+    date_text: Jan 13, 2026 (Jan 7, 2026)
+    deadlines: []
+- key: stacs-2026
+  title: STACS 2026
+  full_name: Symposium on Theoretical Aspects of Computer Science
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189330&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2025
+    id: stacs-202625
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189330&copyownerid=35838
+    place: Grenoble, France
+    date_text: Sep 25, 2025
+    deadlines: []
+- key: itcs-2026
+  title: ITCS 2026
+  full_name: Innovations in Theoretical Computer Science
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189301&copyownerid=35838
+  categories:
+  - theory
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2025
+    id: itcs-202625
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189301&copyownerid=35838
+    place: Bocconi University, Milan, Italy
+    date_text: Sep 6, 2025 (Sep 4, 2025)
+    deadlines: []
+- key: resound
+  title: RESOUND
+  full_name: International Workshop on Resilient Systems and Dependable Operating
+    Systems
+  link: https://www.resound-workshop.org/
+  categories:
+  - systems
+  - security
+  tags:
+  - niche
+  - workshop
+  editions:
+  - year: 2026
+    id: resound26
+    link: https://www.resound-workshop.org/
+    place: Europe
+    date_text: September 14, 2026
+    deadlines: []
+- key: netpl
+  title: NetPL
+  full_name: Workshop on Networking and Programming Languages
+  link: https://netpl.github.io/
+  categories:
+  - networking
+  - systems
+  tags:
+  - niche
+  - workshop
+  editions:
+  - year: 2026
+    id: netpl26
+    link: https://netpl.github.io/
+    place: Virtual
+    date_text: October 10, 2026
+    deadlines: []
+- key: taco-special
+  title: ACM TACO Special Issues
+  full_name: ACM Transactions on Architecture and Code Optimization Special Call for
+    Papers
+  link: https://dl.acm.org/journal/taco
+  categories:
+  - systems
+  - hpc
+  tags:
+  - niche
+  - journal
+  editions: []
