@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:38:36Z",
+  "generated_at": "2026-08-10T00:59:31Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -46498,6 +46498,37 @@
               "tz_raw": "UTC+8",
               "round": 1,
               "comment": null
+            }
+          ]
+        },
+        {
+          "year": 2027,
+          "id": "wisa27-est",
+          "link": "https://conf.ccf.org.cn/WISA2026",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": true,
+          "source": "ccfddl",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Abstract submission",
+              "utc": "2027-04-20T15:59:59Z",
+              "aoe": "2027-04-20 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
+            },
+            {
+              "kind": "paper",
+              "label": "Paper submission",
+              "utc": "2027-04-27T15:59:59Z",
+              "aoe": "2027-04-27 03:59:59 AoE",
+              "tz_raw": "UTC+8",
+              "round": 1,
+              "comment": "Estimated from the 2026 edition"
             }
           ]
         }
