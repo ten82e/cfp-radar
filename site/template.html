@@ -454,7 +454,6 @@ footer a:hover { text-decoration: underline; }
         <span>期間</span>
         <select id="win">
           <option value="all">すべて</option>
-          <option value="future">未来のみ</option>
           <option value="30d">直近 30 日以内</option>
           <option value="90d">直近 90 日以内</option>
           <option value="180d">直近 180 日以内</option>
@@ -480,7 +479,6 @@ footer a:hover { text-decoration: underline; }
     <div class="row" style="margin-top: 14px;">
       <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
       <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
-      <label class="check"><input type="checkbox" id="past"> <span>過去の締切も含める</span></label>
     </div>
   </div>
 
@@ -578,7 +576,7 @@ footer a:hover { text-decoration: underline; }
 
   var state = {
     q: "", cats: [], kind: "", rank: "", win: "all",
-    est: false, past: false, domestic: false
+    est: false, domestic: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -613,7 +611,7 @@ footer a:hover { text-decoration: underline; }
 
   // Quick Presets
   window.applyPreset = function(type) {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, past: false, domestic: false };
+    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
     if (type === '7d') state.win = "30d";
     if (type === 'a_star') state.rank = "A*";
     if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
@@ -771,7 +769,7 @@ footer a:hover { text-decoration: underline; }
   // ---- SELECTS ----
   var kindSel = $("kind");
   var optAllK = document.createElement("option");
-  optAllK.value = ""; optAllK.textContent = "すべて";
+  optAllK.value = ""; optAllK.textContent = "投稿締切（概要・論文）";
   kindSel.appendChild(optAllK);
   Object.keys(KIND_LABEL).forEach(function (k) {
     var opt = document.createElement("option");
@@ -937,12 +935,14 @@ footer a:hover { text-decoration: underline; }
   function filter() {
     var now = Date.now();
     var q = state.q.toLowerCase();
-    var limit = state.win === "all" ? Infinity : now + parseInt(state.win, 10) * DAY;
+    var isWinFuture = state.win === "future";
+    var limit = (state.win === "all" || isWinFuture) ? Infinity : now + parseInt(state.win, 10) * DAY;
     var pElem = (typeof document !== 'undefined') ? document.getElementById("paperText") : null;
     var pText = pElem ? pElem.value.trim() : "";
     // 単体抽出テスト（node probe）でも動くよう、filter 内では window 経由で解決する
     var Rec = (typeof window !== "undefined" && window.Recommender) || null;
     var pLines = Rec ? Rec.parsePaperLines(pText) : (pText ? [{ title: pText, keywords: "", venue: "" }] : []);
+
     // 分野: 手動チップがあればそれで絞る。論文モードでチップが空なら絞らない
     // （スコア順ソートで自然に候補が上位に来る。自動判定は表示用に留める）。
     var cats = state.cats;
@@ -951,9 +951,13 @@ footer a:hover { text-decoration: underline; }
     var venueCats = (pLines.length && Rec) ? Rec.venueCategories(pLines, rows) : [];
 
     var out = rows.filter(function (r) {
-      // 論文モード（候補探索）では推定・過去の行も候補として出す（会議単位へ後段で集約）
       if (!state.est && r.est && !pLines.length) { return false; }
-      if (!state.past && (r.kind === "event" ? now >= r.tLast + DAY : r.t < now) && !pLines.length) {
+      if (r.kind === "event" ? now >= r.tLast + DAY : r.t < now) {
+        return false;
+      }
+      // デフォルト（kind 未選択）= 投稿締切（概要・論文）のみ。
+      // 開催・通知・カメラレディ等は kind セレクトで明示的に選んだときだけ表示。
+      if (!state.kind && r.kind !== "abstract" && r.kind !== "paper") {
         return false;
       }
       if (r.t > limit) { return false; }
@@ -1187,7 +1191,6 @@ footer a:hover { text-decoration: underline; }
     state.rank = p.get("rank") || "";
     state.win = p.get("win") || "all";
     state.est = p.get("est") === "1";
-    state.past = p.get("past") === "1";
     state.domestic = p.get("domestic") === "1";
     state.cats = (p.get("cats") || "").split(",").filter(Boolean);
   }
@@ -1199,7 +1202,6 @@ footer a:hover { text-decoration: underline; }
     if (state.rank) p.set("rank", state.rank);
     if (state.win !== "all") p.set("win", state.win);
     if (state.est) p.set("est", "1");
-    if (state.past) p.set("past", "1");
     if (state.domestic) p.set("domestic", "1");
     if (state.cats.length) p.set("cats", state.cats.join(","));
     var str = p.toString();
@@ -1212,7 +1214,6 @@ footer a:hover { text-decoration: underline; }
     $("rank").value = state.rank;
     $("win").value = state.win;
     $("est").checked = state.est;
-    $("past").checked = state.past;
     $("domestic").checked = state.domestic;
     Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
       chk.checked = state.cats.indexOf(chk.value) >= 0;
@@ -1225,7 +1226,6 @@ footer a:hover { text-decoration: underline; }
     state.rank = $("rank").value;
     state.win = $("win").value;
     state.est = $("est").checked;
-    state.past = $("past").checked;
     state.domestic = $("domestic").checked;
     state.cats = [];
     Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
@@ -1249,13 +1249,13 @@ footer a:hover { text-decoration: underline; }
     clearTimeout(timer);
     timer = setTimeout(function () { apply(); scheduleSemantic(); }, 200);
   });
-  ["kind", "rank", "win", "est", "past", "domestic"].forEach(function (id) {
+  ["kind", "rank", "win", "est", "domestic"].forEach(function (id) {
     $(id).addEventListener("change", apply);
   });
   catsBox.addEventListener("change", apply);
   $("more").addEventListener("click", drawMore);
   $("reset").addEventListener("click", function () {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, past: false, domestic: false };
+    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
     $("paperText").value = "";
     toForm();
     writeUrl();

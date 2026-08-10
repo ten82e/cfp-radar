@@ -604,7 +604,7 @@ const row = {
   t: Date.parse("2026-08-19T00:00:00"),
   tLast: Date.parse("2026-08-21T00:00:00")
 };
-const state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, past: false };
+const state = { q: "", cats: [], kind: "event", rank: "", win: "all", est: false };
 const out = [];
 for (const iso of ["2026-08-18T10:00:00", "2026-08-19T10:00:00", "2026-08-20T10:00:00",
                    "2026-08-21T10:00:00", "2026-08-22T10:00:00"]) {
@@ -634,6 +634,40 @@ console.log(JSON.stringify(out));
         (True, "開催中（残り 1 日）"),
         (False, "1 日前に終了"),
     ]
+
+
+def test_default_filter_shows_only_submission_deadlines(site, tmp_path):
+    """デフォルト（kind 未選択）は投稿締切（abstract/paper）のみ表示。開催・通知等は kind 明示時のみ。"""
+    import json as _json
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    html = (site / "index.html").read_text(encoding="utf-8")
+    script = tmp_path / "probe_default.js"
+    script.write_text(
+        "const DAY = 86400000;\n"
+        "const FILTER = %s;\n" % _json.dumps(_js_function(html, "filter"))
+        + """
+const now = Date.parse("2026-08-10T00:00:00Z");
+function row(kind) {
+  return {
+    kind: kind, est: false, cats: ["hpc"], rankPairs: [], hay: "x",
+    t: now + 86400000, tLast: now + 2 * 86400000, ed: { deadlines: [] }
+  };
+}
+const rows = ["paper", "abstract", "event", "notification", "camera_ready"].map(row);
+const state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false };
+const filter = new Function("Date", "DAY", "rows", "state", "sortAsc", "sortKey",
+                            "return (" + FILTER + ")")(Date, DAY, rows, state, false, "time");
+console.log(JSON.stringify(filter().map(r => r.kind)));
+"""
+    )
+    proc = subprocess.run([node, str(script)], capture_output=True, text=True, timeout=60)
+    assert proc.returncode == 0, proc.stderr
+    assert _json.loads(proc.stdout) == ["paper", "abstract"]
 
 
 def test_meeting_past_rule_is_wired_to_the_end_date(site):
