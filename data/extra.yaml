@@ -1980,3 +1980,21 @@ conferences:
         date_text: '2027-01-10'
         deadlines:
           - {kind: paper, label: Submission, date: '2027-01-10 23:59:00', tz: UTC}
+
+  # ---------------- SC26 併設 WS 追加 2 (2026-08-10 裏取り) ----------------
+  # 根拠: https://pmbs-workshop.github.io/ Important Dates
+  #   Full Paper は 2026-08-09 (23:59 AoE) extended firm deadline で締切済み。
+  #   Late Breaking and Short Paper: August 26 2026 (23:59 AoE) のみ未来 → これだけ収録。
+  - key: pmbs-2026
+    title: PMBS 26
+    full_name: The 16th International Workshop on Performance Modeling, Benchmarking and Simulation of High Performance Computer Systems (PMBS 26)
+    link: https://pmbs-workshop.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: pmbs26
+        link: https://pmbs-workshop.github.io/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Late Breaking and Short Paper, date: '2026-08-26 23:59:00', tz: AoE}
