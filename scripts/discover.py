@@ -199,15 +199,21 @@ def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[
 
 
 def _parse_deadline(date_text: str) -> datetime.date | None:
-    """'Aug 15, 2026 (Aug 1, 2026)' 形式の締切を date に変換。不明なら None。"""
+    """'Aug 15, 2026 (Aug 1, 2026)' または '31 December 2026' 形式の締切を date に変換。
+
+    不明・月のみ・TBD は None (日付をでっち上げない)。
+    """
     import re
     months = {m: i + 1 for i, m in enumerate(
         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])}
-    m = re.search(r"([A-Z][a-z]{2})\s+(\d{1,2}),?\s*(20\d\d)?", date_text)
-    if not m or m.group(1) not in months:
-        return None
-    year = int(m.group(3)) if m.group(3) else datetime.date.today().year
-    return datetime.date(year, months[m.group(1)], int(m.group(2)))
+    m2 = re.search(r"(\d{1,2})\s+([A-Z][a-z]{2})\w*\s+(20\d\d)", date_text)
+    if m2 and m2.group(2) in months:
+        return datetime.date(int(m2.group(3)), months[m2.group(2)], int(m2.group(1)))
+    m = re.search(r"([A-Z][a-z]{2})\w*\s+(\d{1,2}),?\s*(20\d\d)?", date_text)
+    if m and m.group(1) in months:
+        year = int(m.group(3)) if m.group(3) else datetime.date.today().year
+        return datetime.date(year, months[m.group(1)], int(m.group(2)))
+    return None
 
 
 def _deadline_is_future(date_text: str, today: datetime.date) -> bool:
@@ -402,6 +408,76 @@ def discover_from_easychair(min_year: int) -> list[dict]:
             "place": e["place"],
             "year": year,
         })
+    return entries
+
+
+def parse_comsoc_cfp_html(html: str, journal_name: str, page_url: str) -> list[dict]:
+    """IEEE ComSoc CFP ページのテーブルからオープン特集号を抽出する (純関数)。
+
+    「Paper Topic | Publication Date | Manuscript Submission Deadline」表の
+    Closed でない行を拾う。締切は '31 December 2026' 形式。
+    """
+    import re
+
+    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S)
+    entries: list[dict] = []
+    for row in rows[1:]:  # ヘッダ行をスキップ
+        cells = [re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", c)).strip()
+                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, re.S)]
+        if len(cells) < 3 or not cells[0] or not cells[2]:
+            continue
+        topic, _, deadline = cells[0], cells[1], cells[2]
+        if "closed" in deadline.lower():
+            continue
+        if topic.lower().startswith("paper topic") or "deadline" in deadline.lower():
+            continue  # ヘッダ行 (一部ページは表内に繰り返す)
+        title = f"{topic}（{journal_name} 特集号）"
+        dm = re.search(r"(20\d\d)", deadline)
+        entries.append({
+            "key": slug(title),
+            "title": title,
+            "full_name": title,
+            "link": page_url,
+            "categories": [],
+            "source_type": "special_issue",
+            "date_text": deadline,
+            "place": "",
+            "year": int(dm.group(1)) if dm else 0,
+        })
+    return entries
+
+
+def discover_from_comsoc_cfps(min_year: int) -> list[dict]:
+    """IEEE ComSoc 誌のオープン特集号 CFP を候補化する (ネットワーク層)。
+
+    ジャーナル/マガジン別の構造化 CFP ページを巡回し、締切未公開 (Closed) でない
+    特集号を拾う。1 誌の取得失敗で全体は止めない。
+    """
+    import re
+    import time
+
+    pages = [
+        ("journals/ieee-tnsm", "IEEE TNSM"),
+        ("journals/ieee-tccn", "IEEE TCCN"),
+        ("magazines/ieee-network", "IEEE Network"),
+        ("magazines/ieee-communications-magazine", "IEEE Communications Magazine"),
+        ("magazines/ieee-wireless-communications", "IEEE Wireless Communications"),
+    ]
+    entries: list[dict] = []
+    for path, jname in pages:
+        url = f"https://www.comsoc.org/publications/{path}/cfp"
+        try:
+            time.sleep(0.5)
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (cfp-radar-discoverer)"})
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                html = resp.read().decode("utf-8", "replace")
+        except Exception:
+            continue  # 1 誌の失敗で全体を止めない
+        for e in parse_comsoc_cfp_html(html, jname, url):
+            dm = re.search(r"(20\d\d)", e["date_text"])
+            if dm and int(dm.group(1)) < min_year:
+                continue  # 過去締切
+            entries.append(e)
     return entries
 
 
@@ -724,7 +800,30 @@ class NicheDiscoverer:
         except Exception:
             pass  # 認証失敗等で全体を止めない
 
-        # 7. Known niche candidate registry (fallback / curated candidates)
+        # 7. IEEE ComSoc 誌のオープン特集号 CFP (構造化テーブル)。
+        # ジャーナル投稿先の締切を追跡する (ノート問い 5 対応)。
+        try:
+            for entry in discover_from_comsoc_cfps(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "special-issue"],
+                    source_type=entry["source_type"],
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # 特集号一覧取得失敗で全体を止めない
+
+        # 8. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

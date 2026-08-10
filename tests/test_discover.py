@@ -139,7 +139,30 @@ def test_parse_deadline():
 
     assert _parse_deadline("Aug 21, 2026") == date(2026, 8, 21)
     assert _parse_deadline("Nov 16, 2026 (Oct 1, 2026)") == date(2026, 11, 16)
+    assert _parse_deadline("31 December 2026") == date(2026, 12, 31)  # 特集号形式
+    assert _parse_deadline("1 October 2026") == date(2026, 10, 1)
+    assert _parse_deadline("November, 2026") is None  # 月のみはでっち上げない
     assert _parse_deadline("unknown") is None
+
+
+def test_parse_comsoc_cfp_html():
+    from scripts.discover import parse_comsoc_cfp_html
+
+    html = (
+        "<table><tr><th>Paper Topic</th><th>Publication Date</th>"
+        "<th>Manuscript Submission Deadline</th></tr>"
+        "<tr><td>AI Networks</td><td>September 2027</td><td>31 December 2026</td></tr>"
+        "<tr><td>Paper Topic</td><td>Publication Date</td><td>Manuscript Submission Deadline</td></tr>"
+        "<tr><td>Old Topic</td><td>2024</td><td>Closed</td></tr>"
+        "</table>"
+    )
+    es = parse_comsoc_cfp_html(html, "IEEE Network", "https://example.com/cfp")
+    assert len(es) == 1
+    assert "AI Networks" in es[0]["title"]
+    assert "IEEE Network" in es[0]["title"]
+    assert es[0]["date_text"] == "31 December 2026"
+    assert es[0]["source_type"] == "special_issue"
+    assert es[0]["link"] == "https://example.com/cfp"
 
 
 def test_review_helpers():
