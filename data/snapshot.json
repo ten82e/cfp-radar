@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T12:00:00Z",
+  "generated_at": "2026-08-10T12:23:29Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -22618,6 +22618,15 @@
               "label": "Author Notification",
               "utc": "2026-08-17T11:59:59Z",
               "aoe": "2026-08-16 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "other",
+              "label": "Demo Submission",
+              "utc": "2026-08-21T11:59:00Z",
+              "aoe": "2026-08-20 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
