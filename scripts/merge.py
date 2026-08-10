@@ -12,6 +12,7 @@ from statistics import median
 from typing import NamedTuple
 
 from .model import Conference, Deadline, Edition
+from .sources.local import _deadlines_of
 
 DEFAULT_SOURCE_PRIORITY = ["local", "aideadlines", "ccfddl"]
 # SPEC.md 3.6.  Two deadlines of the same kind in the same edition that come
@@ -479,6 +480,12 @@ def _patch_editions(editions: list[Edition], patches: dict) -> list[Edition]:
         for field in ("event_start", "event_end"):
             if field in patch:
                 setattr(edition, field, _as_date(patch[field]))
+        if "deadlines" in patch:
+            # 置換 (延長・訂正): 上流の古い締切を残さず差し替える。extra.yaml と
+            # 同じ形式 (kind/label/date/tz) で書く (SPEC.md 3.5)。
+            edition = replace(
+                edition, deadlines=_deadlines_of({"deadlines": patch["deadlines"]})
+            )
         kept.append(edition)
     return kept
 

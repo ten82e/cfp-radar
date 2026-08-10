@@ -16,6 +16,9 @@
 #           drop: true                      その版を落とす
 #           link / place / date_text: 上書き
 #           event_start / event_end: 'YYYY-MM-DD' もしくは null
+#           deadlines: [...]                その版の締切を置換 (extra.yaml と同形式。
+#                                            延長・訂正用。drop と違い rollforward の
+#                                            推定再生成を誘発しない)
 #
 # 上流の日付が誤っていた場合は、必ず公式サイトで裏を取ってから書く。
 # 推測値をここに入れない(SPEC.md 9. 非目標)。
@@ -32,6 +35,21 @@ aliases:
 drop: []
 
 conferences:
+  # 根拠: https://www.mmm2027.net/ (2026-08-10 取得)「Paper Submission Deadline
+  #   Extended: 16 Aug → 30 Aug 2026」「All deadlines refer to 23:59 on the specified
+  #   day in the Anywhere on Inhabited Earth (AOE) time zone」。上流 ccfddl は延長前の
+  #   8/16 AoE のまま → deadlines 置換で延長後を正とする (drop は rollforward が
+  #   推定を再生成するため不可)。会期 January 5-8, 2027 Siem Reap, Cambodia。
+  mmm:
+    editions:
+      2027:
+        link: https://www.mmm2027.net/
+        place: Siem Reap, Cambodia
+        date_text: 'January 5-8, 2027'
+        deadlines:
+          - {kind: paper, label: 'Regular/special paper submission (extended)', date: '2026-08-30 23:59:00', tz: AoE}
+          - {kind: other, label: 'Demo paper submission', date: '2026-09-07 23:59:00', tz: AoE}
+
   # 根拠: https://conferences.sigcomm.org/imc/2026/ (2026-08-09 取得)
   #   「ACM IMC 2026 conference will be held from October 12-16, 2026 in Karlsruhe, Germany」
   #   上流 ccfddl NW/imc.yml は date: November 03-06, 2026 のまま（会期更新が未反映）。

@@ -2577,3 +2577,9 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: https://www.mmm2027.net/ (2026-08-10 取得)。上流 ccfddl の 8/16 AoE は
+  #   overrides で drop 済み (延長前)。公式「Paper Submission Deadline Extended:
+  #   16 Aug → 30 Aug 2026」「All deadlines refer to 23:59 on the specified day in
+  #   the Anywhere on Inhabited Earth (AOE) time zone」。会期 January 05-08, 2027
+  #   Siem Reap, Cambodia。Demo paper 9/7 AoE。

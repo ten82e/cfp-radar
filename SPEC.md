@@ -388,6 +388,9 @@ def merge_sources(groups: list[list[Conference]], config: dict,
 
 def classify(confs: list[Conference], config: dict) -> list[Conference]: ...
 def apply_overrides(confs: list[Conference], overrides: dict) -> list[Conference]: ...
+    # editions.<year>.deadlines が指定されたらその版の締切を**置換**する
+    # （延長・訂正用。drop と違い、rollforward が推定版を再生成しない）。
+    # 形式は extra.yaml と同じ kind/label/date/tz。根拠 URL をコメントで残す。
 def rollforward(confs: list[Conference], today: date, config: dict) -> list[Conference]: ...
     # 最新版の paper 締切が過去で、未来の版が無い会議に推定版を 1 つ足す
     # 推定間隔は直近 2 版の実間隔の中央値、取れなければ 364 日。曜日を保つ

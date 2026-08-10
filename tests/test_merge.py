@@ -400,6 +400,56 @@ def test_repo_overrides_file_applies_without_error(make_conf):
     assert all(hasattr(c, "key") for c in out)
 
 
+def test_override_replaces_deadlines(make_conf):
+    """overrides editions.<year>.deadlines replaces the edition's deadlines.
+
+    Used for extensions and corrections: upstream keeps the pre-extension date,
+    the override swaps it without leaving the stale deadline behind (MMM 2027
+    pattern).  The replaced edition must stay real so rollforward does not
+    re-invent the estimate.
+    """
+    from scripts.merge import apply_overrides
+
+    confs = [
+        make_conf.conference(
+            key="mmm",
+            title="MMM",
+            editions=[
+                make_conf.edition(
+                    year=2027,
+                    edition_id="mmm27",
+                    deadlines=[
+                        make_conf.deadline("paper", "Paper", utc(2026, 8, 17), "AoE")
+                    ],
+                )
+            ],
+        )
+    ]
+    overrides = {
+        "conferences": {
+            "mmm": {
+                "editions": {
+                    2027: {
+                        "deadlines": [
+                            {
+                                "kind": "paper",
+                                "label": "Regular paper submission (extended)",
+                                "date": "2026-08-30 23:59:00",
+                                "tz": "AoE",
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+    out = apply_overrides(confs, overrides)
+    edition = out[0].editions[0]
+    assert len(edition.deadlines) == 1
+    assert edition.deadlines[0].at_utc == utc(2026, 8, 31, 11, 59, 0)
+    assert edition.deadlines[0].label == "Regular paper submission (extended)"
+
+
 # --- rollforward -----------------------------------------------------------
 
 
