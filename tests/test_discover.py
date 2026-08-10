@@ -1,5 +1,6 @@
 """Tests for scripts/discover.py."""
 
+from datetime import date
 from pathlib import Path
 from scripts.discover import DiscoveredCandidate, NicheDiscoverer, format_discovered_yaml
 
@@ -131,6 +132,23 @@ def test_imap_no_credentials_skips():
         for k, v in saved.items():
             if v is not None:
                 os.environ[k] = v
+
+
+def test_parse_deadline():
+    from scripts.discover import _parse_deadline
+
+    assert _parse_deadline("Aug 21, 2026") == date(2026, 8, 21)
+    assert _parse_deadline("Nov 16, 2026 (Oct 1, 2026)") == date(2026, 11, 16)
+    assert _parse_deadline("unknown") is None
+
+
+def test_review_helpers():
+    from scripts.review_candidates import is_predatory, norm_title
+
+    assert is_predatory("ICDIACS 2026, Ei Compendex and Scopus indexed")
+    assert not is_predatory("PARMA-DITAM 2027 Glasgow")
+    assert norm_title("SIGSPATIAL 2026") == norm_title("SIGSPATIAL 2027")
+    assert norm_title("GeoAI'26") == norm_title("GeoAI 2026")
 
 
 def test_run_discovery_integration():

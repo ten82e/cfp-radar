@@ -198,17 +198,22 @@ def parse_wikicfp_html(html: str, categories: list[str], min_year: int) -> list[
     return entries
 
 
-def _deadline_is_future(date_text: str, today: datetime.date) -> bool:
-    """'Aug 15, 2026 (Aug 1, 2026)' 形式の締切が今日以降か判定する。"""
+def _parse_deadline(date_text: str) -> datetime.date | None:
+    """'Aug 15, 2026 (Aug 1, 2026)' 形式の締切を date に変換。不明なら None。"""
     import re
     months = {m: i + 1 for i, m in enumerate(
         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])}
     m = re.search(r"([A-Z][a-z]{2})\s+(\d{1,2}),?\s*(20\d\d)?", date_text)
     if not m or m.group(1) not in months:
-        return False  # 形式不明は候補にしない(裏取り原則)
-    year = int(m.group(3)) if m.group(3) else today.year
-    d = datetime.date(year, months[m.group(1)], int(m.group(2)))
-    return d >= today
+        return None
+    year = int(m.group(3)) if m.group(3) else datetime.date.today().year
+    return datetime.date(year, months[m.group(1)], int(m.group(2)))
+
+
+def _deadline_is_future(date_text: str, today: datetime.date) -> bool:
+    """'Aug 15, 2026 (Aug 1, 2026)' 形式の締切が今日以降か判定する。"""
+    d = _parse_deadline(date_text)
+    return d is not None and d >= today
 
 
 def discover_from_wikicfp_urls(categories: list[str], min_year: int) -> list[dict]:
