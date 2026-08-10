@@ -1453,3 +1453,20 @@ conferences:
         place: Pyeong Chang, Korea
         deadlines:
           - {kind: paper, label: Full Paper Submission, date: '2026-10-01 23:59:00', tz: UTC+9}
+
+  # 根拠: https://www.icin-conference.org/ (2026-08-10 取得)
+  #   Important dates「Paper Submission Due October 30, 2026」
+  #   「Notification of Acceptance December 13, 2026」「Conference Date March 15-18, 2027」
+  #   公式に tz 表記なし → UTC 扱い。開催地は公式サイトで未確認 → place 省略。
+  - key: icin
+    title: ICIN
+    full_name: International Conference on Innovation in Clouds, Internet and Networks
+    link: https://www.icin-conference.org/
+    categories: [networking]
+    editions:
+      - year: 2027
+        id: icin2027
+        link: https://www.icin-conference.org/
+        date_text: March 15-18, 2027
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-10-30 23:59:00', tz: UTC}
