@@ -1360,3 +1360,96 @@ conferences:
             date: '2026-11-15T23:59:59Z'
             tz: AoE
             comment: Camera-ready Submission
+
+  # ------------------------------------------------------------------ discover 昇格（2026-08-10）--
+  # wikiCFP 候補から公式裏取りできた 5 件。
+  # いずれも上流 ccfddl / aideadlines に無い会議（網羅性ギャップの解消）。
+
+  # 根拠: https://ieee-msn.org/2026/cf-papers.php (2026-08-10 取得)
+  #   「Regular Paper Submission Deadline Aug. 20, 2026」(AoE 表記あり)
+  #   「Industry Paper and Poster Submission Deadline Aug. 25, 2026」
+  #   開催: https://ieee-msn.org/2026/ 「December 18-20, 2026」Ningbo, China
+  - key: ieee-msn
+    title: IEEE MSN
+    full_name: IEEE MSN 2026
+    link: https://ieee-msn.org/2026/
+    categories: [networking]
+    editions:
+      - year: 2026
+        id: msn2026
+        link: https://ieee-msn.org/2026/
+        place: Ningbo, China
+        date_text: December 18-20, 2026
+        deadlines:
+          - {kind: paper, label: Regular Paper Submission, date: '2026-08-20 23:59:00', tz: AoE}
+          - {kind: paper, label: Industry Paper and Poster Submission, date: '2026-08-25 23:59:00', tz: AoE}
+
+  # 根拠: https://itcs-conf.org/ (2026-08-10 取得)
+  #   「Abstract submission: September 2, 2026 (04:59pm PDT)」
+  #   「Full paper submission: September 4, 2026 (04:59pm PDT)」
+  #   「January 12-15, 2027」開催地は UC Berkeley (wikiCFP 表記、公式は venue 未明記)
+  - key: itcs
+    title: ITCS
+    full_name: Innovations in Theoretical Computer Science
+    link: https://itcs-conf.org/
+    categories: [theory]
+    editions:
+      - year: 2027
+        id: itcs2027
+        link: https://itcs-conf.org/
+        place: UC Berkeley, USA
+        date_text: January 12-15, 2027
+        deadlines:
+          - {kind: abstract, label: Abstract Submission, date: '2026-09-02 16:59:00', tz: PDT}
+          - {kind: paper, label: Full Paper Submission, date: '2026-09-04 16:59:00', tz: PDT}
+
+  # 根拠: https://www.secitc.eu/ (2026-08-10 取得)
+  #   「Submission deadline: September 7th, 2026 at 23:59」
+  #   公式に tz 表記なし。開催地 Bucharest (ルーマニア夏時間 = UTC+3) として解釈。
+  #   開催: 「Conference: November 12-13, 2026」
+  - key: secitc
+    title: SECITC
+    full_name: International Conference on Security for Information Technology and Communications
+    link: https://www.secitc.eu/
+    categories: [security]
+    editions:
+      - year: 2026
+        id: secitc2026
+        link: https://www.secitc.eu/
+        place: Bucharest, Romania
+        date_text: November 12-13, 2026
+        deadlines:
+          - {kind: paper, label: Submission Deadline, date: '2026-09-07 23:59:00', tz: UTC+3}
+
+  # 根拠: https://complexnetworks.org/ (2026-08-10 取得)
+  #   Important Dates に「Paper Submission: September 02, 2026 (23:59 AoE)」
+  #   開催日は公式サイトで未確認（過去開催は 11 月）→ date_text なし
+  - key: cna
+    title: Complex Networks & Their Applications
+    full_name: International Conference on Complex Networks and Their Applications
+    link: https://complexnetworks.org/
+    categories: [theory]
+    editions:
+      - year: 2026
+        id: cna2026
+        link: https://complexnetworks.org/
+        place: Granada, Spain
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-09-02 23:59:00', tz: AoE}
+
+  # 根拠: https://www.icact.org/ (2026-08-10 取得)
+  #   「Full Paper Submission : Oct 01, 2026」「Acceptance Notification : Oct 15, 2026」
+  #   Venue: Phoenix Park Hotel, Pyeong Chang, Korea。開催日は公式で未確認
+  #   （ICACT は毎年 2 月開催）→ date_text なし。公式に tz 表記なし → KST (UTC+9) として解釈。
+  - key: icact
+    title: ICACT
+    full_name: International Conference on Advanced Communications Technology
+    link: https://www.icact.org/
+    categories: [networking]
+    editions:
+      - year: 2027
+        id: icact2027
+        link: https://www.icact.org/
+        place: Pyeong Chang, Korea
+        deadlines:
+          - {kind: paper, label: Full Paper Submission, date: '2026-10-01 23:59:00', tz: UTC+9}
