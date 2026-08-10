@@ -1470,3 +1470,21 @@ conferences:
         date_text: March 15-18, 2027
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-10-30 23:59:00', tz: UTC}
+
+  # 根拠: https://ssresearch26.umbc.edu/ (2026-08-10 取得)
+  #   「Submit Paper」「Conference Dates December 13–15, 2026」「Baltimore, Maryland, USA」
+  #   締切はトップのメニューに「September 15, 2026」（wikiCFP も Sep 15 で一致）。
+  #   公式に時刻・tz 表記なし → 日付のみ裏取り、23:59 UTC として解釈。
+  - key: ssr
+    title: SSR
+    full_name: Security Standardisation Research Conference
+    link: https://ssresearch26.umbc.edu/
+    categories: [security]
+    editions:
+      - year: 2026
+        id: ssr2026
+        link: https://ssresearch26.umbc.edu/
+        place: Baltimore, MD, USA
+        date_text: December 13-15, 2026
+        deadlines:
+          - {kind: paper, label: Submission Deadline, date: '2026-09-15 23:59:00', tz: UTC}
