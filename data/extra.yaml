@@ -2622,3 +2622,37 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+
+  # 根拠: SC26 提出ポータル「SC Workshop: High Performance Fabrics for AI and HPC —
+  #   Closes: 11:59pm (PDT) Aug 15, 2026」(2026-08-10 確認)。SC26 新設 WS
+  #   (SC25 には存在せず)。公式サイト非公開のため link は SC26 WS 一覧ページ。
+  - key: hpc-fabrics-2026
+    title: Fabrics for AI and HPC 2026
+    full_name: "Workshop on High Performance Fabrics for AI and HPC (SC26)"
+    link: https://sc26.supercomputing.org/participate/workshops/
+    categories: [hpc, networks]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: hpc-fabrics-2026
+        link: https://sc26.supercomputing.org/participate/workshops/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: PDT}
+
+  # 根拠: SC26 提出ポータル「PDSW—Work in Progress Papers: Closes: 11:59pm (AoE)
+  #   Sep 11, 2026」。Regular Papers は 7/31 AoE で締切済み (wayback 2026-07-10
+  #   スナップショットで確認)。pdsw.org は DNS 消失中 (2026-08-10) だが正ドメイン。
+  - key: pdsw-2026
+    title: PDSW'26
+    full_name: "PDSW'26: The 11th International Parallel Data Systems Workshop"
+    link: https://www.pdsw.org/
+    categories: [hpc]
+    tags: [workshop, storage]
+    editions:
+      - year: 2026
+        id: pdsw-2026
+        link: https://www.pdsw.org/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Work in Progress (WIP) Submission, date: '2026-09-11 23:59:00', tz: AoE}
