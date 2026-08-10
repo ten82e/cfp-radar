@@ -2030,6 +2030,28 @@ conferences:
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
 
+  # ---------------- ICVRV 2026 (2026-08-10 裏取り) ----------------
+  # 根拠: http://www.icvrv.org/ Important Dates:
+  #   Abstracts Due August 15, 2026 / Paper Due August 22, 2026
+  #   Notification September 15 / Camera-ready October 15
+  #   Conference December 18-20, 2026, Valparaíso, Chile
+  #   TZ 表記なし → 23:59 UTC 解釈 (COCOA 前例)。推定締切 (rollforward) を real で置換。
+  - key: icvrv-2026
+    title: ICVRV
+    full_name: International Conference on Virtual Reality and Visualization (ICVRV 2026)
+    link: http://www.icvrv.org/
+    categories: [graphics]
+    tags: []
+    editions:
+      - year: 2026
+        id: icvrv-2026
+        link: http://www.icvrv.org/
+        place: Valparaíso, Chile
+        date_text: 'December 18-20, 2026'
+        deadlines:
+          - {kind: abstract, label: Abstracts Due, date: '2026-08-15 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Due, date: '2026-08-22 23:59:00', tz: UTC}
+
   # ---------------- CAFCW 2026 (SC26 併設, 2026-08-10 裏取り) ----------------
   # 根拠: https://www.cafcw.org/services/ Key Dates:
   #   August 15, 2026 — Submission Deadline for Papers for SC26 Proceedings
