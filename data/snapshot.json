@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T11:53:20Z",
+  "generated_at": "2026-08-10T12:00:00Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -5786,9 +5786,9 @@
             {
               "kind": "paper",
               "label": "Paper Submission (SC26 Proceedings)",
-              "utc": "2026-08-15T23:59:00Z",
-              "aoe": "2026-08-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-16T11:59:00Z",
+              "aoe": "2026-08-15 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -18960,9 +18960,9 @@
             {
               "kind": "paper",
               "label": "Paper Submission",
-              "utc": "2026-08-15T23:59:00Z",
-              "aoe": "2026-08-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-16T11:59:00Z",
+              "aoe": "2026-08-15 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -19000,9 +19000,9 @@
             {
               "kind": "paper",
               "label": "Paper Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -19433,6 +19433,46 @@
       ]
     },
     {
+      "key": "hpc-fabrics-2026",
+      "title": "Fabrics for AI and HPC 2026",
+      "full_name": "Workshop on High Performance Fabrics for AI and HPC (SC26)",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sc26.supercomputing.org/participate/workshops/",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "hpc-fabrics-2026",
+          "link": "https://sc26.supercomputing.org/participate/workshops/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-16T06:59:00Z",
+              "aoe": "2026-08-15 18:59:00 AoE",
+              "tz_raw": "PDT",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
       "key": "hpc-oda-2026",
       "title": "HPC-ODA 2026",
       "full_name": "The 1st International Workshop on HPC Operational Data Analytics (HPC-ODA 2026)",
@@ -19782,9 +19822,9 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -20154,9 +20194,9 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -30795,7 +30835,7 @@
         "ai"
       ],
       "rank": {},
-      "link": "https://easychair.org/cfp/iros2026nocworkshop",
+      "link": "https://2026.ieee-iros.org/program/workshops-tutorials/",
       "tags": [],
       "sources": [
         "local"
@@ -30804,7 +30844,7 @@
         {
           "year": 2026,
           "id": "iros2026noc",
-          "link": "https://easychair.org/cfp/iros2026nocworkshop",
+          "link": "https://2026.ieee-iros.org/program/workshops-tutorials/",
           "place": "",
           "date_text": "",
           "event_start": null,
@@ -30897,9 +30937,9 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -37684,9 +37724,9 @@
             {
               "kind": "paper",
               "label": "Paper Submission",
-              "utc": "2026-08-12T23:59:00Z",
-              "aoe": "2026-08-12 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-13T11:59:00Z",
+              "aoe": "2026-08-12 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -38406,6 +38446,47 @@
               "label": "Camera-Ready Submission Deadline",
               "utc": "2026-11-01T11:59:00Z",
               "aoe": "2026-10-31 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pdsw-2026",
+      "title": "PDSW'26",
+      "full_name": "PDSW'26: The 11th International Parallel Data Systems Workshop",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://www.pdsw.org/",
+      "tags": [
+        "workshop",
+        "storage"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "pdsw-2026",
+          "link": "https://www.pdsw.org/",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Work in Progress (WIP) Submission",
+              "utc": "2026-09-12T11:59:00Z",
+              "aoe": "2026-09-11 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -42668,9 +42749,9 @@
             {
               "kind": "paper",
               "label": "Full Paper Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -42708,8 +42789,8 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-23T11:59:00Z",
-              "aoe": "2026-08-22 23:59:00 AoE",
+              "utc": "2026-08-16T11:59:00Z",
+              "aoe": "2026-08-15 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -43695,6 +43776,47 @@
               "tz_raw": "AoE",
               "round": 2,
               "comment": "Estimated from the 2025 edition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sfwm-2026",
+      "title": "SFWM 2026",
+      "full_name": "SFWM 2026: The 2nd International Workshop on Software Frameworks and Workload Management for Quantum and HPC Ecosystems",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://sfwqhe.github.io/sfwm-sc26",
+      "tags": [
+        "workshop",
+        "quantum"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "sfwm-2026",
+          "link": "https://sfwqhe.github.io/sfwm-sc26",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -50177,9 +50299,9 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -51302,6 +51424,46 @@
               "label": "Paper submission",
               "utc": "2026-10-19T11:59:59Z",
               "aoe": "2026-10-18 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "xloop-2026",
+      "title": "XLOOP 2026",
+      "full_name": "XLOOP 2026: The 8th Annual Workshop on Extreme-Scale Experiment-in-the-Loop Computing",
+      "categories": [
+        "hpc"
+      ],
+      "rank": {},
+      "link": "https://wordpress.cels.anl.gov/xloop-2026",
+      "tags": [
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2026,
+          "id": "xloop-2026",
+          "link": "https://wordpress.cels.anl.gov/xloop-2026",
+          "place": "Chicago, IL, USA",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Paper Submission",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
