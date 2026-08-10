@@ -35,7 +35,6 @@ PUBLIC_FILES = [
     "ai.ics",
     "security.ics",
     "deadlines.ics",
-    "events.ics",
     "all-estimated.ics",
     "hpc-estimated.ics",
     "networking-estimated.ics",

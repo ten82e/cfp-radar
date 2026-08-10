@@ -229,7 +229,7 @@ def test_method_is_not_emitted(built):
     """SPEC.md 4.1: METHOD would make DTSTAMP the freshness signal (RFC 5546
     2.1.5) and would require an ORGANIZER (RFC 5546 3.2); this feed has a fixed
     DTSTAMP and no organizer."""
-    for name in ("all.ics", "deadlines.ics", "events.ics", "all-estimated.ics"):
+    for name in ("all.ics", "deadlines.ics", "all-estimated.ics"):
         lines = unfold_ics(text_of(built, name))
         assert not [ln for ln in lines if ln.startswith("METHOD")], name
         assert not [ln for ln in lines if ln.startswith("SEQUENCE")], name
@@ -271,7 +271,7 @@ def test_deadline_event_shape(built):
 def test_all_day_event_dtend_is_end_plus_one_day(built):
     from icalendar import Calendar
 
-    cal = Calendar.from_ical(text_of(built, "events.ics"))
+    cal = Calendar.from_ical(text_of(built, "all.ics"))
     events = cal.walk("VEVENT")
     assert events
 
@@ -289,10 +289,12 @@ def test_all_day_event_dtend_is_end_plus_one_day(built):
 
 
 def test_all_day_events_use_value_date(built):
-    lines = unfold_ics(text_of(built, "events.ics"))
+    lines = unfold_ics(text_of(built, "all.ics"))
+    # 開催日（-event 行）の DTSTART のみ VALUE=DATE。締切行はタイムスタンプ。
     starts = [ln for ln in lines if ln.startswith("DTSTART")]
-    assert starts
-    for ln in starts:
+    event_starts = [ln for ln in starts if "VALUE=DATE" in ln]
+    assert event_starts, "開催日イベントの DTSTART が見つからない"
+    for ln in event_starts:
         assert "VALUE=DATE" in ln
         assert re.search(r":\d{8}$", ln), ln
 
@@ -317,13 +319,13 @@ def _uids(outdir, name):
 def test_estimated_editions_are_only_in_the_estimated_feed(built):
     estimated = _uids(built, "all-estimated.ics")
     assert any(u.startswith("sigcomm-2027-") for u in estimated)
-    for name in ("all.ics", "deadlines.ics", "events.ics", "networking.ics"):
+    for name in ("all.ics", "deadlines.ics", "networking.ics"):
         assert not any(u.startswith("sigcomm-2027-") for u in _uids(built, name)), name
 
 
 def test_category_feeds_are_subsets_of_all(built):
     everything = _uids(built, "all.ics")
-    for name in ("networking.ics", "hpc.ics", "deadlines.ics", "events.ics"):
+    for name in ("networking.ics", "hpc.ics", "deadlines.ics"):
         assert _uids(built, name) <= everything, name
 
 
@@ -333,8 +335,8 @@ def test_category_feeds_are_disjoint(built):
     assert any(u.startswith("sc-2026-") for u in _uids(built, "hpc.ics"))
 
 
-def test_deadline_and_event_feeds_are_disjoint(built):
-    assert not (_uids(built, "deadlines.ics") & _uids(built, "events.ics"))
+def test_deadline_feed_has_no_event_rows(built):
+    assert not any("-event@" in u for u in _uids(built, "deadlines.ics"))
 
 
 def test_uids_are_stable_and_unique(built):
@@ -501,13 +503,10 @@ def test_vevent_count_matches_the_input(built):
     from icalendar import Calendar
 
     deadlines = Calendar.from_ical(text_of(built, "deadlines.ics")).walk("VEVENT")
-    events = Calendar.from_ical(text_of(built, "events.ics")).walk("VEVENT")
     estimated = Calendar.from_ical(text_of(built, "all-estimated.ics")).walk("VEVENT")
 
     # 2 SIGCOMM 2026 deadlines + 1 SC 2026 deadline, none of them estimated.
     assert len(deadlines) == 3
-    # SIGCOMM 2026 and SC 2026 both have event dates; the estimated edition has none.
-    assert len(events) == 2
     # One estimated paper deadline.
     assert len(estimated) == 1
 

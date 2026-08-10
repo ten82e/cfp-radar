@@ -406,7 +406,7 @@ footer a:hover { text-decoration: underline; }
       <div>
         <h1 class="brand-name">
           <span>cfp-radar</span>
-          <span class="brand-badge">会議締切・開催</span>
+          <span class="brand-badge">投稿締切</span>
         </h1>
         <p class="lead">HPC・ネットワーク・システム・AI・セキュリティ・DB・グラフィックス・HCI・理論の会議・ジャーナル締切探知</p>
       </div>
@@ -443,7 +443,7 @@ footer a:hover { text-decoration: underline; }
         <input type="search" id="q" placeholder="会議名・フルネーム・開催地を検索 (例: NSDI, NVMW)...">
       </div>
       <div class="field">
-        <span>種別（締切・開催）</span>
+        <span>種別</span>
         <select id="kind"></select>
       </div>
       <div class="field">
@@ -548,16 +548,7 @@ footer a:hover { text-decoration: underline; }
 
   var KIND_LABEL = {
     abstract: "概要締切",
-    paper: "論文締切",
-    supplementary: "補足資料締切",
-    notification: "採否通知",
-    camera_ready: "カメラレディ締切",
-    rebuttal_start: "反論期間開始",
-    rebuttal_end: "反論期間終了",
-    review_release: "査読結果公開",
-    registration: "登録締切",
-    event: "開催",
-    other: "締切"
+    paper: "論文締切"
   };
 
   // recommender.js から供給（テスト可能な単一正典）。無ければこの場で縮退定義。
@@ -739,8 +730,7 @@ footer a:hover { text-decoration: underline; }
     { name: "Graphics", file: "graphics.ics" },
     { name: "HCI", file: "hci.ics" },
     { name: "Theory", file: "theory.ics" },
-    { name: "締切のみ", file: "deadlines.ics" },
-    { name: "開催のみ", file: "events.ics" }
+    { name: "締切のみ", file: "deadlines.ics" }
   ];
   var siteBase = ((DATA.site || {}).base_url || "").replace(/\/$/, "");
 
@@ -815,23 +805,6 @@ footer a:hover { text-decoration: underline; }
           dupLabel: dl.comment || ""
         });
       });
-
-      if (e.event_start) {
-        var tStart = Date.parse(e.event_start + "T00:00:00Z");
-        var tEnd = e.event_end ? Date.parse(e.event_end + "T00:00:00Z") : tStart;
-        if (!isNaN(tStart)) {
-          rows.push({
-            conf: conf, ed: e, dl: null,
-            kind: "event", est: e.estimated,
-            t: tStart, tLast: isNaN(tEnd) ? tStart : tEnd,
-            cats: conf.categories || [],
-            tags: conf.tags || [],
-            rankPairs: pairs,
-            hay: baseHay,
-            dupLabel: ""
-          });
-        }
-      }
     });
   });
 
@@ -858,22 +831,6 @@ footer a:hover { text-decoration: underline; }
       return { text: h <= 0 ? "まもなく" : "あと " + h + " 時間", cls: "today" };
     }
     return { text: "あと " + d + " 日", cls: d <= 14 ? "soon" : "" };
-  }
-
-  function remainEvent(r) {
-    var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    var t0 = today.getTime();
-    var days = function (a, b) { return Math.round((a - b) / DAY); };
-    if (t0 < r.t) {
-      var n = days(r.t, t0);
-      return { text: "あと " + n + " 日", cls: n <= 14 ? "soon" : "" };
-    }
-    if (t0 === r.t) { return { text: "本日開催", cls: "today" }; }
-    if (t0 <= r.tLast) {
-      return { text: "開催中（残り " + (days(r.tLast, t0) + 1) + " 日）", cls: "today" };
-    }
-    return { text: days(t0, r.tLast) + " 日前に終了", cls: "past" };
   }
 
   // Paper Text Matching Score — ロジックは recommender.js (Recommender.breakdown) に移管
@@ -952,14 +909,10 @@ footer a:hover { text-decoration: underline; }
 
     var out = rows.filter(function (r) {
       if (!state.est && r.est && !pLines.length) { return false; }
-      if (r.kind === "event" ? now >= r.tLast + DAY : r.t < now) {
-        return false;
-      }
-      // デフォルト（kind 未選択）= 投稿締切（概要・論文）のみ。
-      // 開催・通知・カメラレディ等は kind セレクトで明示的に選んだときだけ表示。
-      if (!state.kind && r.kind !== "abstract" && r.kind !== "paper") {
-        return false;
-      }
+      if (r.t < now) { return false; }
+      // このサイトは「これから投稿できるところ」を探すもの。
+      // 投稿締切（概要・論文）以外の種別（開催・採否通知等）は表示しない。
+      if (r.kind !== "abstract" && r.kind !== "paper") { return false; }
       if (r.t > limit) { return false; }
       if (state.kind && r.kind !== state.kind) { return false; }
       if (state.rank && r.rankPairs.indexOf(state.rank) < 0) { return false; }
@@ -1039,20 +992,15 @@ footer a:hover { text-decoration: underline; }
     tr.onclick = function(e) {
       if (e.target.tagName !== "A") { openDrawer(r); }
     };
-    var isEvent = r.kind === "event";
-    var rem = isEvent ? remainEvent(r) : remain(r.t);
+    var rem = remain(r.t);
 
     var c0 = td(tr, "", "c-deadline");
     line(c0, rem.text, "left " + rem.cls);
 
     var c1 = td(tr, "日時");
-    if (isEvent) {
-      line(c1, r.ed.event_start || "-", "nowrap");
-    } else {
-      var d = new Date(r.t);
-      line(c1, fmtDate(d) + " UTC", "nowrap");
-      line(c1, fmtJst(d), "sub nowrap");
-    }
+    var d = new Date(r.t);
+    line(c1, fmtDate(d) + " UTC", "nowrap");
+    line(c1, fmtJst(d), "sub nowrap");
 
     var c2 = td(tr, "会議");
     var head = document.createElement("div");
@@ -1113,12 +1061,8 @@ footer a:hover { text-decoration: underline; }
     var c3 = td(tr, "種別");
     line(c3, (KIND_LABEL[r.kind] || r.kind) + (r.dupLabel ? ": " + r.dupLabel : ""));
     var detail = [];
-    if (isEvent) {
-      if (r.ed.date_text) { detail.push(r.ed.date_text); }
-    } else {
-      if (r.dl.round && r.dl.round > 1) { detail.push("第 " + r.dl.round + " ラウンド"); }
-      if (r.dl.label) { detail.push(r.dl.label); }
-    }
+    if (r.dl.round && r.dl.round > 1) { detail.push("第 " + r.dl.round + " ラウンド"); }
+    if (r.dl.label) { detail.push(r.dl.label); }
     if (detail.length) { line(c3, detail.join(" / "), "sub"); }
 
     var c4 = td(tr, "ランク");
@@ -1187,7 +1131,7 @@ footer a:hover { text-decoration: underline; }
   function readUrl() {
     var p = new URLSearchParams(window.location.search);
     state.q = p.get("q") || "";
-    state.kind = p.get("kind") || "";
+    state.kind = KIND_LABEL[p.get("kind")] ? p.get("kind") : "";
     state.rank = p.get("rank") || "";
     state.win = p.get("win") || "all";
     state.est = p.get("est") === "1";

@@ -661,12 +661,6 @@ def build_all(
             "投稿・通知などの締切のみ。開催日は含まない。",
             entries(lambda r: live(r) and r["type"] == "deadline"),
         ),
-        (
-            "events.ics",
-            "会議開催日のみ",
-            "開催期間の終日イベントのみ。締切は含まない。",
-            entries(lambda r: live(r) and r["type"] == "event"),
-        ),
     ]
     # SPEC.md 4: the estimated deadlines are split by category as well.  A single
     # estimated.ics forces an HPC reader to take the AI estimates too, and the

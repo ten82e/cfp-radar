@@ -243,7 +243,6 @@ def test_vevent_counts_match_data_json(site, data):
                 expected_events += 1
 
     assert len(_events(site, "deadlines.ics")) == expected_deadlines
-    assert len(_events(site, "events.ics")) == expected_events
     assert len(_events(site, "all-estimated.ics")) == expected_estimated
     assert len(_events(site, "all.ics")) == expected_deadlines + expected_events
 
@@ -417,17 +416,13 @@ def test_conferences_without_deadlines_keep_their_meeting_dates(data):
         )
 
 
-def test_index_html_renders_meeting_rows(site):
-    """The table is built from deadlines *and* editions carrying event_start.
-
-    Without this the meeting-only conferences above are invisible on the site:
-    they own no deadline row.
-    """
+def test_index_html_has_no_meeting_rows(site):
+    """開催イベント行は生成しない。このサイトは投稿締切（概要・論文）のみを扱う。"""
     html = (site / "index.html").read_text(encoding="utf-8")
-    assert 'event: "開催"' in html, "the 開催 pseudo-kind is missing from the filter"
+    assert 'event: "開催"' not in html, "開催 pseudo-kind は排除済みのはず"
     assert "KIND_LABEL[r.kind]" in html
-    assert re.search(r'if \(e\.event_start\) \{', html), (
-        "no row is produced from Edition.event_start"
+    assert re.search(r'r\.kind !== "abstract" && r\.kind !== "paper"', html), (
+        "投稿締切以外の行は filter で常に除外されるべき"
     )
     for title in ("ISC High Performance", "HOTI", "情報処理学会 HPC 研究会"):
         assert title in html, f"{title} is not in the embedded data"
@@ -578,64 +573,6 @@ def _js_function(html: str, name: str) -> str:
         i += 1
 
 
-def test_meeting_row_is_past_only_after_its_last_day(site, tmp_path):
-    """HOTI 2026 runs 8/19-8/21.  Judging 'past' on the start date hides it from
-    the default view for the whole meeting, and calls 8/18 '本日開催'.
-
-    The two closures are lifted out of the generated page and driven directly,
-    so this fails if the rule regresses rather than if the wording moves.
-    """
-    import json as _json
-    import shutil
-    import subprocess
-
-    node = shutil.which("node")
-    if node is None:
-        pytest.skip("node is not installed")
-    html = (site / "index.html").read_text(encoding="utf-8")
-    script = tmp_path / "probe.js"
-    script.write_text(
-        "const DAY = 86400000;\n"
-        "const REMAIN = %s;\n" % _json.dumps(_js_function(html, "remainEvent"))
-        + "const FILTER = %s;\n" % _json.dumps(_js_function(html, "filter"))
-        + """
-const row = {
-  kind: "event", est: false, cats: ["hpc"], rankPairs: [], hay: "hoti",
-  t: Date.parse("2026-08-19T00:00:00"),
-  tLast: Date.parse("2026-08-21T00:00:00")
-};
-const state = { q: "", cats: [], kind: "event", rank: "", win: "all", est: false };
-const out = [];
-for (const iso of ["2026-08-18T10:00:00", "2026-08-19T10:00:00", "2026-08-20T10:00:00",
-                   "2026-08-21T10:00:00", "2026-08-22T10:00:00"]) {
-  const Real = Date;
-  const fake = Real.parse(iso);
-  class F extends Real {
-    constructor(...a) { if (a.length === 0) { super(fake); } else { super(...a); } }
-    static now() { return fake; }
-    static parse(s) { return Real.parse(s); }
-    static UTC(...a) { return Real.UTC(...a); }
-  }
-  const remainEvent = new Function("Date", "DAY", "return (" + REMAIN + ")")(F, DAY);
-  const filter = new Function("Date", "DAY", "rows", "state",
-                              "return (" + FILTER + ")")(F, DAY, [row], state);
-  out.push({ now: iso, shown: filter().length === 1, text: remainEvent(row).text });
-}
-console.log(JSON.stringify(out));
-"""
-    )
-    proc = subprocess.run([node, str(script)], capture_output=True, text=True, timeout=60)
-    assert proc.returncode == 0, proc.stderr
-    got = _json.loads(proc.stdout)
-    assert [(r["shown"], r["text"]) for r in got] == [
-        (True, "あと 1 日"),
-        (True, "本日開催"),
-        (True, "開催中（残り 2 日）"),
-        (True, "開催中（残り 1 日）"),
-        (False, "1 日前に終了"),
-    ]
-
-
 def test_default_filter_shows_only_submission_deadlines(site, tmp_path):
     """デフォルト（kind 未選択）は投稿締切（abstract/paper）のみ表示。開催・通知等は kind 明示時のみ。"""
     import json as _json
@@ -671,19 +608,18 @@ console.log(JSON.stringify(filter().map(r => r.kind)));
 
 
 def test_meeting_past_rule_is_wired_to_the_end_date(site):
-    """A cheap structural guard for the same rule, so the check still bites on a
-    machine without node."""
+    """開催行は生成されない（投稿締切のみのサイト）。tLast 由来の event 行が
+    復活しないことを構造的にガードする。"""
     html = (site / "index.html").read_text(encoding="utf-8")
-    assert "tLast" in html, "the meeting end date never reaches the row"
-    assert re.search(r'r\.kind === "event" \? now >= r\.tLast \+ DAY', html), (
-        "the default filter still judges a meeting by its start date"
-    )
+    assert "kind: \"event\"" not in html, "event 行の生成コードが復活している"
+    assert 'event: "開催"' not in html, "開催 pseudo-kind が復活している"
 
 
 def test_two_meetings_in_one_year_get_distinct_event_uids(site):
     """SPEC.md 4.1: the IPSJ DPS SIG meets twice in 2026.  Ordinal 1 carries no
-    suffix, so a once-a-year conference keeps the UID it always had."""
-    uids = {str(e["UID"]) for e in _events(site, "events.ics")}
+    suffix, so a once-a-year conference keeps the UID it always had.
+    (開催日は events.ics を廃止したため all.ics で検証する)"""
+    uids = {str(e["UID"]) for e in _events(site, "all.ics")}
     assert "ipsj-sigdps-2026-event@conf-deadlines.github.io" in uids
     assert "ipsj-sigdps-2026-event-2@conf-deadlines.github.io" in uids
     assert "sigcomm-2026-event@conf-deadlines.github.io" in uids
