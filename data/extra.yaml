@@ -2030,6 +2030,27 @@ conferences:
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: UTC}
 
+  # ---------------- CAFCW 2026 (SC26 併設, 2026-08-10 裏取り) ----------------
+  # 根拠: https://www.cafcw.org/services/ Key Dates:
+  #   August 15, 2026 — Submission Deadline for Papers for SC26 Proceedings
+  #   September 4 — Notification / September 25 — Camera Ready
+  #   November 16, 2026 — CAFCW26 Workshop (2pm-5:30pm)
+  #   TZ 明記なし → 23:59 UTC 解釈 (COCOA 前例)。
+  - key: cafcw-2026
+    title: CAFCW 2026
+    full_name: The 12th Computational Approaches for Cancer Workshop (CAFCW26)
+    link: https://www.cafcw.org/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: cafcw-2026
+        link: https://www.cafcw.org/
+        place: Chicago, IL, USA
+        date_text: 'November 16, 2026'
+        deadlines:
+          - {kind: paper, label: Paper Submission (SC26 Proceedings), date: '2026-08-15 23:59:00', tz: UTC}
+
   # ---------------- SC26 併設 WS 追補 (2026-08-10 裏取り) ----------------
   # 根拠: 各 WS 公式サイト / CFP。8/14 締切の 4 件。
   - key: resdis-2026
