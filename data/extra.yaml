@@ -1931,3 +1931,21 @@ conferences:
         date_text: '2026-08-28'
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: UTC}
+
+  # ---------------- SC26 併設 WS 追加 (2026-08-10 裏取り) ----------------
+  # 根拠: https://echo-workshop.github.io/ Important Dates
+  #   「Paper submission deadline: August 15, 2026 (AoE)」（August 20, 2026 は打ち消し線=旧締切）
+  #   SC26 併設 1st International Workshop on Edge-Cloud-HPC Operational Continuum
+  - key: echo-workshop-2026
+    title: ECHO Workshop 2026
+    full_name: The 1st International Workshop on Edge-Cloud-HPC Operational Continuum (ECHO)
+    link: https://echo-workshop.github.io/
+    categories: [hpc]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: echo2026
+        link: https://echo-workshop.github.io/
+        place: Chicago, IL, USA
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
