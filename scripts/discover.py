@@ -209,6 +209,9 @@ def _parse_deadline(date_text: str) -> datetime.date | None:
     m0 = re.match(r"(\d{4})-(\d{1,2})-(\d{1,2})", date_text)
     if m0:
         return datetime.date(int(m0.group(1)), int(m0.group(2)), int(m0.group(3)))
+    mj = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", date_text)
+    if mj:
+        return datetime.date(int(mj.group(1)), int(mj.group(2)), int(mj.group(3)))
     m2 = re.search(r"(\d{1,2})\s+([A-Z][a-z]{2})\w*\s+(20\d\d)", date_text)
     if m2 and m2.group(2) in months:
         return datetime.date(int(m2.group(3)), months[m2.group(2)], int(m2.group(1)))
@@ -535,7 +538,62 @@ def discover_from_ieice_cfps(min_year: int) -> list[dict]:
         return entries  # 取得失敗で全体を止めない
     for e in parse_ieice_cfp_html(html, url):
         if e["year"] < min_year:
-            continue  # 過去締切
+            continue
+        entries.append(e)
+    return entries
+
+
+def parse_ipsj_cfp_html(html: str, page_url: str) -> list[dict]:
+    """IPSJ 論文誌ジャーナルの特集論文募集リンクから締切付き特集号を抽出する (純関数)。
+
+    リンクテキスト例: 論文誌「ユビキタスコンピューティングシステム（XIV）」特集 論文募集
+    投稿締切：2026年12月4日（金）。「論文募集は終了しました」はスキップする。
+    """
+    import re
+
+    entries: list[dict] = []
+    for m in re.finditer(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', html, re.S):
+        url, inner = m.group(1), m.group(2)
+        sm = re.search(r"論文誌「([^」]+)」特集", inner)
+        if not sm:
+            continue
+        dm = re.search(r"投稿締切[:：]\s*(\d{4})年(\d{1,2})月(\d{1,2})日", inner)
+        if not dm:
+            continue
+        deadline = f"{int(dm.group(1)):04d}-{int(dm.group(2)):02d}-{int(dm.group(3)):02d}"
+        title = f"{sm.group(1)}（IPSJ 論文誌 特集号）"
+        # key は CFP ファイル名由来 (ipsj-27-p) で一意化。slug(title) は日本語タイトルを
+        # 潰して衝突する (例: 情報システム論文 と 超知能… が共に 'ipsj')。
+        fname = url.rsplit("/", 1)[-1].split(".")[0].lower()
+        entries.append({
+            "key": f"ipsj-{fname}",
+            "title": title,
+            "full_name": title,
+            "link": url if url.startswith("http") else page_url.rsplit("/", 1)[0] + "/" + url.lstrip("/"),
+            "categories": [],
+            "source_type": "special_issue",
+            "date_text": deadline,
+            "place": "",
+            "year": int(dm.group(1)),
+        })
+    return entries
+
+
+def discover_from_ipsj_cfps(min_year: int) -> list[dict]:
+    """IPSJ 論文誌ジャーナルの特集論文募集を候補化する (ネットワーク層)。"""
+    import re
+
+    url = "https://www.ipsj.or.jp/journal/index.html"
+    entries: list[dict] = []
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            html = resp.read().decode("utf-8", "replace")
+    except Exception:
+        return entries  # 取得失敗で全体を止めない
+    for e in parse_ipsj_cfp_html(html, url):
+        if e["year"] < min_year:
+            continue
         entries.append(e)
     return entries
 
@@ -905,7 +963,29 @@ class NicheDiscoverer:
         except Exception:
             pass  # 特集号一覧取得失敗で全体を止めない
 
-        # 9. Known niche candidate registry (fallback / curated candidates)
+        # 9. IPSJ 論文誌ジャーナルの特集論文募集 (締切付きリンク, journal/index.html)。
+        try:
+            for entry in discover_from_ipsj_cfps(min_year):
+                cand_key = entry["key"]
+                if self.is_already_tracked(cand_key) or self.is_already_tracked(entry["full_name"]):
+                    continue
+                cand = DiscoveredCandidate(
+                    key=cand_key,
+                    title=entry["title"],
+                    full_name=entry["full_name"],
+                    link=entry["link"],
+                    categories=entry["categories"],
+                    tags=["niche", "special-issue"],
+                    source_type=entry["source_type"],
+                    date_text=entry["date_text"],
+                    place=entry["place"],
+                )
+                results.append(cand)
+                self.known_keys.add(cand_key)
+        except Exception:
+            pass  # 特集号一覧取得失敗で全体を止めない
+
+        # 10. Known niche candidate registry (fallback / curated candidates)
         curated_candidates = [
             DiscoveredCandidate(
                 key="resound",

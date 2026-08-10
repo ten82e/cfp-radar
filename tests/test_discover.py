@@ -141,6 +141,7 @@ def test_parse_deadline():
     assert _parse_deadline("Nov 16, 2026 (Oct 1, 2026)") == date(2026, 11, 16)
     assert _parse_deadline("31 December 2026") == date(2026, 12, 31)  # 特集号形式
     assert _parse_deadline("2026-11-12") == date(2026, 11, 12)  # IEICE journals.php
+    assert _parse_deadline("2026年12月4日（金）") == date(2026, 12, 4)  # IPSJ 特集論文募集
     assert _parse_deadline("1 October 2026") == date(2026, 10, 1)
     assert _parse_deadline("November, 2026") is None  # 月のみはでっち上げない
     assert _parse_deadline("unknown") is None
@@ -183,6 +184,26 @@ def test_parse_ieice_cfp_html():
     assert es[0]["date_text"] == "2026-11-12"
     assert es[0]["year"] == 2026
     assert es[2]["date_text"] == "2024-03-01"  # 過去締切も行としては拾う (フィルタは呼び出し側)
+
+
+def test_parse_ipsj_cfp_html():
+    from scripts.discover import parse_ipsj_cfp_html
+
+    html = (
+        '<a href="cfp/27-P.html">'
+        "<article><h3>論文誌「ユビキタスコンピューティングシステム（XIV）」特集 論文募集</h3>"
+        "<p>投稿締切：2026年12月4日（金）</p></article></a>"
+        '<a href="cfp/27-K.html">'
+        "<article><h3>論文誌「未知の世界に挑むインターネットと運用管理技術」特集 論文募集</h3>"
+        "<p>論文募集は終了しました。</p></article></a>"
+    )
+    es = parse_ipsj_cfp_html(html, "https://www.ipsj.or.jp/journal/index.html")
+    assert len(es) == 1  # 終了分はスキップ
+    assert es[0]["key"] == "ipsj-27-p"  # 日本語タイトルでも key は一意 (slug 衝突回避)
+    assert es[0]["title"] == "ユビキタスコンピューティングシステム（XIV）（IPSJ 論文誌 特集号）"
+    assert es[0]["date_text"] == "2026-12-04"
+    assert es[0]["year"] == 2026
+    assert es[0]["link"] == "https://www.ipsj.or.jp/journal/cfp/27-P.html"
 
 
 def test_review_helpers():

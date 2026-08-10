@@ -18187,3 +18187,128 @@ conferences:
     place: ''
     date_text: '2027-01-10'
     deadlines: []
+- key: ijassn-2026
+  title: IJASSN 2026
+  full_name: International Journal of Advanced Smart Sensor Network Systems
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201367&copyownerid=33993
+  categories:
+  - wireless
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijassn-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201367&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: ijcis-2026
+  title: IJCIS 2026
+  full_name: International Journal on Cryptography and Information Security
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200236&copyownerid=33993
+  categories:
+  - security
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijcis-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=200236&copyownerid=33993
+    place: ''
+    date_text: Aug 20, 2026
+    deadlines: []
+- key: ijcsa-2026
+  title: IJCSA 2026
+  full_name: International Journal on Computational Science & Applications
+  link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195488&copyownerid=33993
+  categories:
+  - networks
+  tags:
+  - niche
+  - wikicfp
+  editions:
+  - year: 2026
+    id: ijcsa-202626
+    link: https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195488&copyownerid=33993
+    place: ''
+    date_text: Aug 15, 2026
+    deadlines: []
+- key: ipsj-27-p
+  title: ユビキタスコンピューティングシステム（XIV）（IPSJ 論文誌 特集号）
+  full_name: ユビキタスコンピューティングシステム（XIV）（IPSJ 論文誌 特集号）
+  link: https://www.ipsj.or.jp/journal/cfp/27-P.html
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: ipsj-27-p26
+    link: https://www.ipsj.or.jp/journal/cfp/27-P.html
+    place: ''
+    date_text: '2026-12-04'
+    deadlines: []
+- key: ipsj-27-n
+  title: 情報システム論文（IPSJ 論文誌 特集号）
+  full_name: 情報システム論文（IPSJ 論文誌 特集号）
+  link: https://www.ipsj.or.jp/journal/cfp/27-N.html
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: ipsj-27-n26
+    link: https://www.ipsj.or.jp/journal/cfp/27-N.html
+    place: ''
+    date_text: '2026-08-21'
+    deadlines: []
+- key: ipsj-27-r
+  title: “Applications and the internet” in conjunction with the main topics of COMPSAC
+    2026（IPSJ 論文誌 特集号）
+  full_name: “Applications and the internet” in conjunction with the main topics of
+    COMPSAC 2026（IPSJ 論文誌 特集号）
+  link: https://www.ipsj.or.jp/journal/cfp/27-R.html
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: ipsj-27-r26
+    link: https://www.ipsj.or.jp/journal/cfp/27-R.html
+    place: ''
+    date_text: '2026-12-01'
+    deadlines: []
+- key: ipsj-27-m
+  title: AIによって変わる社会基盤を支えるコンピュータセキュリティ技術（IPSJ 論文誌 特集号）
+  full_name: AIによって変わる社会基盤を支えるコンピュータセキュリティ技術（IPSJ 論文誌 特集号）
+  link: https://www.ipsj.or.jp/journal/cfp/27-M.html
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: ipsj-27-m26
+    link: https://www.ipsj.or.jp/journal/cfp/27-M.html
+    place: ''
+    date_text: '2026-11-27'
+    deadlines: []
+- key: ipsj-27-l
+  title: 超知能と共に革新する新社会システムと高度交通システム（IPSJ 論文誌 特集号）
+  full_name: 超知能と共に革新する新社会システムと高度交通システム（IPSJ 論文誌 特集号）
+  link: https://www.ipsj.or.jp/journal/cfp/27-L.html
+  categories: []
+  tags:
+  - niche
+  - special-issue
+  editions:
+  - year: 2026
+    id: ipsj-27-l26
+    link: https://www.ipsj.or.jp/journal/cfp/27-L.html
+    place: ''
+    date_text: '2026-08-28'
+    deadlines: []
