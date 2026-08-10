@@ -475,19 +475,24 @@ footer a:hover { text-decoration: underline; }
 
     <!-- Paper Title / Abstract / Keyword Smart Recommender -->
     <div style="margin-top: 14px;">
-      <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">投稿予定・似た論文ペースト（投稿先マッチング）</span>
-      <div style="position: relative; margin-top: 4px;">
-        <textarea id="paperText" rows="3" placeholder="1行1本: タイトル | キーワード | 掲載先(任意)&#10;例: High-Performance Key-Value Store using RDMA and NVMe | storage, rdma, nvme | USENIX FAST&#10;例: A Scalable LSM-Tree Storage Engine | lsm, storage | (掲載先は空でもOK)"></textarea>
+      <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">投稿先レコメンド</span>
+      <div style="margin-top: 4px;">
+        <label style="display: inline-block; cursor: pointer; padding: 8px 14px; border: 1px dashed var(--border); border-radius: 8px; font-size: 0.85rem; color: var(--accent);">
+          📄 読んだ論文・投稿予定の論文を選ぶ（PDF / TXT・複数可）
+          <input type="file" id="paperFiles" accept=".pdf,.txt" multiple style="display: none;">
+        </label>
+        <span id="paperFileLabel" style="font-size: 0.72rem; color: var(--muted); margin-left: 8px;">未選択</span>
       </div>
-      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">投稿予定の論文と、似た論文をまとめて貼ると、掲載先タグの傾向も加味して会議をランク付けします。分野チップが空なら自動判定。タイトルだけ・キーワードだけでも動きます。</div>
+      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">PDF はタイトルとアブストラクトを自動で読み取って会議をランク付けします（TXT も可）。CDN 未接続時は PDF が読めないため TXT のみ対応。</div>
       <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
-        <span style="font-size: 0.7rem; color: var(--muted); align-self: center;">ワンクリック入力:</span>
+        <span style="font-size: 0.7rem; color: var(--muted); align-self: center;">動作確認用サンプル:</span>
         <button class="sample-btn" type="button" data-sample="Time-Sensitive Networking Scheduling for Deterministic Industrial Networks | tsn, real-time, scheduling, deterministic | IEEE RTSS">TSN スケジューリング</button>
         <button class="sample-btn" type="button" data-sample="High-Performance Key-Value Store with RDMA and NVMe | storage, rdma, nvme | USENIX FAST">分散ストレージ</button>
         <button class="sample-btn" type="button" data-sample="Kubernetes Service Mesh with eBPF-based Packet Processing | kubernetes, ebpf, network, packet">K8s ネットワーク</button>
         <button class="sample-btn" type="button" data-sample="Confidential Computing with SGX Enclaves in Cloud | sgx, enclave, confidential computing">SGX セキュリティ</button>
       </div>
     </div>
+    <textarea id="paperText" hidden></textarea>
 
     <div class="field">
       <span>分野（複数選択可。空ならすべて）</span>
@@ -1201,6 +1206,64 @@ footer a:hover { text-decoration: underline; }
     render();
   }
 
+  // ---- paper file upload（PDF/TXT → 1行「タイトル | 本文」へ整形し既存パイプラインに流す） ----
+  function loadPdfJs(cb) {
+    if (window.pdfjsLib) { cb(true); return; }
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload = function () {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      cb(true);
+    };
+    s.onerror = function () { cb(false); };
+    document.head.appendChild(s);
+  }
+  function fileToLine(name, text) {
+    var ls = String(text).split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var title = ls[0] || name.replace(/\.[^.]+$/, "");
+    var body = ls.slice(1).join(" ").replace(/\s+/g, " ").slice(0, 1500);
+    return title + " | " + body;
+  }
+  function readPdf(buf) {
+    return window.pdfjsLib.getDocument({ data: buf }).promise.then(function (doc) {
+      var pages = [];
+      for (var i = 1; i <= doc.numPages; i++) {
+        pages.push(doc.getPage(i).then(function (pg) {
+          return pg.getTextContent().then(function (tc) {
+            return tc.items.map(function (it) { return it.str; }).join(" ");
+          });
+        }));
+      }
+      return Promise.all(pages).then(function (arr) { return arr.join("\n"); });
+    });
+  }
+  var paperFiles = document.getElementById("paperFiles");
+  paperFiles.addEventListener("change", function () {
+    var files = Array.prototype.slice.call(this.files);
+    if (!files.length) return;
+    var label = document.getElementById("paperFileLabel");
+    label.textContent = "読み込み中…";
+    var jobs = files.map(function (f) {
+      if (/\.txt$/i.test(f.name)) {
+        return f.text().then(function (t) { return fileToLine(f.name, t); });
+      }
+      return new Promise(function (res, rej) {
+        loadPdfJs(function (ok) { ok ? res() : rej(new Error("pdfjs unavailable")); });
+      }).then(function () {
+        return f.arrayBuffer().then(readPdf).then(function (t) { return fileToLine(f.name, t); });
+      });
+    });
+    Promise.all(jobs).then(function (lines) {
+      document.getElementById("paperText").value = lines.filter(Boolean).join("\n");
+      label.textContent = files.map(function (f) { return f.name; }).join(", ");
+      apply();
+      scheduleSemantic();
+    }).catch(function () {
+      label.textContent = "PDF 読込に失敗しました（CDN 未接続時は TXT のみ対応）";
+    });
+    this.value = "";
+  });
+
   // ---- wiring ----
   var timer = null;
   $("q").addEventListener("input", function () {
@@ -1226,6 +1289,8 @@ footer a:hover { text-decoration: underline; }
   $("reset").addEventListener("click", function () {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
     $("paperText").value = "";
+    paperFiles.value = "";
+    document.getElementById("paperFileLabel").textContent = "未選択";
     toForm();
     writeUrl();
     render();
