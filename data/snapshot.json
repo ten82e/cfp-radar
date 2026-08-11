@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T08:42:27Z",
+  "generated_at": "2026-08-11T09:09:25Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -33205,6 +33205,24 @@
       "editions": []
     },
     {
+      "key": "jss",
+      "title": "JSS",
+      "full_name": "Journal of Systems and Software (Elsevier)",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.sciencedirect.com/journal/journal-of-systems-and-software",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
       "key": "kr",
       "title": "KR",
       "full_name": "International Conference on Principles of Knowledge Representation and Reasoning",
@@ -47946,6 +47964,24 @@
       ]
     },
     {
+      "key": "tc",
+      "title": "IEEE TC",
+      "full_name": "IEEE Transactions on Computers",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.computer.org/csdl/journal/tc",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
       "key": "tcc",
       "title": "TCC",
       "full_name": "Theory of Cryptography Conference",
@@ -48074,6 +48110,99 @@
           ]
         }
       ]
+    },
+    {
+      "key": "tdsc",
+      "title": "IEEE TDSC",
+      "full_name": "IEEE Transactions on Dependable and Secure Computing",
+      "categories": [
+        "security",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.computer.org/csdl/journal/tq",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "tmc",
+      "title": "IEEE TMC",
+      "full_name": "IEEE Transactions on Mobile Computing",
+      "categories": [
+        "networking",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.computer.org/csdl/journal/tm",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "ton",
+      "title": "IEEE/ACM ToN",
+      "full_name": "IEEE/ACM Transactions on Networking",
+      "categories": [
+        "networking"
+      ],
+      "rank": {},
+      "link": "https://dl.acm.org/journal/ton",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "tos",
+      "title": "ACM TOS",
+      "full_name": "ACM Transactions on Storage",
+      "categories": [
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://dl.acm.org/journal/tos",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
+    },
+    {
+      "key": "tpds",
+      "title": "IEEE TPDS",
+      "full_name": "IEEE Transactions on Parallel and Distributed Systems",
+      "categories": [
+        "hpc",
+        "systems"
+      ],
+      "rank": {},
+      "link": "https://www.computer.org/csdl/journal/td",
+      "tags": [
+        "niche",
+        "journal"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": []
     },
     {
       "key": "trustcom",
