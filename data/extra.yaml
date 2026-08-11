@@ -2665,3 +2665,139 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Work in Progress (WIP) Submission, date: '2026-09-11 23:59:00', tz: AoE}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/icdcn2027 (2026-08-11 確認)
+  #   「Submission deadline August 13, 2026」「January 4-7, 2027 Mangalore, India」。
+  #   公式 http://icdcn.org。ACM ICPS 出版 (ACM DL)。上流 ccfddl に 2026/2027 版なし。
+  #   公式 tz 表記なし → 23:59 UTC (COCOA 前例)。
+  - key: icdcn
+    title: ICDCN
+    full_name: International Conference on Distributed Computing and Networking
+    link: http://icdcn.org/
+    categories: [systems, networking]
+    editions:
+      - year: 2027
+        id: icdcn27
+        link: http://icdcn.org/
+        place: Mangalore, India
+        date_text: January 4-7, 2027
+        event_start: '2027-01-04'
+        event_end: '2027-01-07'
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-13 23:59:00', tz: UTC}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/UCC2026 (2026-08-11 確認)
+  #   19th IEEE/ACM UCC「Paper Submission Deadline: August 19, 2026 / Acceptance
+  #   Notification: September 30 / Camera-Ready: October 15 / December 1-4, 2026
+  #   Florianópolis, Brazil」。公式 https://ucc-conference.org/。IEEE Xplore 出版。
+  #   上流 ccfddl に 2026 版なし。公式 tz 表記なし → 23:59 UTC。
+  - key: ucc
+    title: UCC
+    full_name: IEEE/ACM International Conference on Utility and Cloud Computing
+    link: https://ucc-conference.org/
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: ucc26
+        link: https://ucc-conference.org/
+        place: Florianópolis, Brazil
+        date_text: December 1-4, 2026
+        event_start: '2026-12-01'
+        event_end: '2026-12-04'
+        deadlines:
+          - {kind: abstract, label: Abstract Registration, date: '2026-08-19 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-19 23:59:00', tz: UTC}
+          - {kind: notification, label: Acceptance Notification, date: '2026-09-30 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: Camera-Ready Papers Due, date: '2026-10-15 23:59:00', tz: UTC}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/BDCAT2026 (2026-08-11 確認)
+  #   13th IEEE/ACM BDCAT「Paper Submission Deadline: August 19, 2026 / Acceptance
+  #   Notification: September 30 / Camera-Ready: October 15 / December 1-4, 2026
+  #   Florianópolis, Brazil (UCC 2026 併設)」。公式 https://bdcat-conference.org/。
+  #   IEEE Xplore 出版。上流 ccfddl に 2026 版なし。公式 tz 表記なし → 23:59 UTC。
+  - key: bdcat
+    title: BDCAT
+    full_name: IEEE/ACM International Conference on Big Data Computing, Applications and Technologies
+    link: https://bdcat-conference.org/
+    categories: [systems, ai]
+    editions:
+      - year: 2026
+        id: bdcat26
+        link: https://bdcat-conference.org/
+        place: Florianópolis, Brazil
+        date_text: December 1-4, 2026
+        event_start: '2026-12-01'
+        event_end: '2026-12-04'
+        deadlines:
+          - {kind: abstract, label: Abstract Registration, date: '2026-08-19 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-19 23:59:00', tz: UTC}
+          - {kind: notification, label: Acceptance Notification, date: '2026-09-30 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: Camera-Ready Papers Due, date: '2026-10-15 23:59:00', tz: UTC}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/mig2026 (2026-08-11 確認)
+  #   19th ACM SIGGRAPH MIG「Paper Submission Deadline: 14 August 2026 /
+  #   Acceptance Notification: 30 September / Camera-Ready: 15 October /
+  #   December 11-13, 2026 Charleston, SC」。公式 https://mig.siggraph.org/2026/。
+  #   上流 ccfddl に 2026 版なし。公式 tz 表記なし → 23:59 UTC。
+  - key: mig
+    title: MIG
+    full_name: ACM SIGGRAPH Conference on Motion, Interaction and Games
+    link: https://mig.siggraph.org/
+    categories: [graphics]
+    editions:
+      - year: 2026
+        id: mig26
+        link: https://mig.siggraph.org/2026/
+        place: Charleston, SC, USA
+        date_text: December 11-13, 2026
+        event_start: '2026-12-11'
+        event_end: '2026-12-13'
+        deadlines:
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+          - {kind: notification, label: Acceptance Notification, date: '2026-09-30 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: Camera-Ready Deadline, date: '2026-10-15 23:59:00', tz: UTC}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/cloudcom2026 (2026-08-11 確認)
+  #   17th IEEE CloudCom「Abstract registration deadline August 15, 2026 /
+  #   Submission deadline August 15, 2026 / October 27-29, 2026 Paris」。
+  #   公式 http://cloudcom2026.org。前回 (2026-08-09) は旧ドメイン消失で見送りだったが、
+  #   新ドメイン + EasyChair 公開 CFP が生きているため昇格。IEEE 出版。
+  #   上流 ccfddl に 2026 版なし。公式 tz 表記なし → 23:59 UTC。
+  - key: cloudcom
+    title: CloudCom
+    full_name: IEEE International Conference on Cloud Computing Technology and Science
+    link: http://cloudcom2026.org
+    categories: [systems]
+    editions:
+      - year: 2026
+        id: cloudcom26
+        link: http://cloudcom2026.org
+        place: Paris, France
+        date_text: October 27-29, 2026
+        event_start: '2026-10-27'
+        event_end: '2026-10-29'
+        deadlines:
+          - {kind: abstract, label: Abstract Registration, date: '2026-08-15 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: UTC}
+
+  # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/nordsec26 (2026-08-11 確認)
+  #   31st NordSec「Abstract registration deadline August 17, 2026 / Submission
+  #   deadline August 17, 2026 / November 11-12, 2026 Aarhus, Denmark」。
+  #   公式 http://nordsec2026.dk/。Springer LNCS 出版。上流 ccfddl に 2026 版なし。
+  #   公式 tz 表記なし → 23:59 UTC。
+  - key: nordsec
+    title: NordSec
+    full_name: Nordic Conference on Secure IT Systems
+    link: http://nordsec2026.dk/
+    categories: [security]
+    editions:
+      - year: 2026
+        id: nordsec26
+        link: http://nordsec2026.dk/
+        place: Aarhus, Denmark
+        date_text: November 11-12, 2026
+        event_start: '2026-11-11'
+        event_end: '2026-11-12'
+        deadlines:
+          - {kind: abstract, label: Abstract Registration, date: '2026-08-17 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
