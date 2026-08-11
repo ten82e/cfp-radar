@@ -80,6 +80,28 @@ describe("autoDetectCats", () => {
   });
 });
 
+describe("name matching stopwords", () => {
+  it("generic words like processing do not match conference names", () => {
+    // Signal Processing 等の会議名に含まれる一般語が内容語として加点されない
+    const rows = [
+      {
+        conf: {
+          key: "icassp",
+          title: "ICASSP",
+          full_name: "IEEE International Conference on Acoustics, Speech, and Signal Processing",
+        },
+        cats: [],
+      },
+    ];
+    const lines = R.parsePaperLines(
+      "Kubernetes Service Mesh with eBPF-based Packet Processing | kubernetes, ebpf, network, packet",
+    );
+    const b = R.breakdown(rows[0], lines);
+    expect(b.agg.name).toBe(0);
+    expect(b.score).toBe(0); // 分野なし・会議名一致なし → 推薦されない
+  });
+});
+
 describe("venue hit", () => {
   const rows = [
     {
@@ -182,6 +204,54 @@ describe("pickRepresentative", () => {
       NOW,
     );
     expect(picked.map((p: any) => p.conf.key).sort()).toEqual(["a", "b"]);
+  });
+});
+
+describe("journalRows", () => {
+  it("creates rows only for always-open journals", () => {
+    const confs = [
+      { key: "j1", title: "Journal A", tags: ["journal"], editions: [] },
+      {
+        key: "si",
+        title: "Special Issue",
+        tags: ["special-issue"],
+        editions: [{ deadlines: [{ utc: "2026-09-01T00:00:00Z" }] }],
+      },
+      { key: "c1", title: "Conf A", tags: [], editions: [] },
+    ];
+    const rows = R.journalRows(confs, NOW);
+    expect(rows.map((r: any) => r.conf.key)).toEqual(["j1"]);
+    expect(rows[0].kind).toBe("journal");
+    expect(rows[0].t).toBe(NOW);
+    expect(rows[0].dl.label).toBe("");
+  });
+
+  it("journal with deadlines stays a deadline row", () => {
+    const confs = [
+      {
+        key: "j2",
+        title: "Journal B",
+        tags: ["journal"],
+        editions: [{ deadlines: [{ utc: "2026-12-01T00:00:00Z" }] }],
+      },
+    ];
+    expect(R.journalRows(confs, NOW)).toEqual([]);
+  });
+});
+
+describe("pastRepresentatives", () => {
+  it("only venues without a future deadline get one past rep", () => {
+    const rows = [
+      { conf: { key: "a" }, kind: "paper", t: NOW - 1000, est: false },
+      { conf: { key: "a" }, kind: "paper", t: NOW - 2000, est: false },
+      { conf: { key: "b" }, kind: "paper", t: NOW - 1000, est: false },
+      { conf: { key: "b" }, kind: "paper", t: NOW + 1000, est: false },
+      { conf: { key: "c" }, kind: "event", t: NOW - 1000, est: false },
+      { conf: { key: "d" }, kind: "paper", t: NOW - 1000, est: true },
+    ];
+    const reps = R.pastRepresentatives(rows, NOW);
+    expect(reps.map((r: any) => r.conf.key)).toEqual(["a"]);
+    expect(reps[0].t).toBe(NOW - 1000); // 直近の過去 1 行のみ
   });
 });
 
@@ -402,8 +472,9 @@ describe.skipIf(!hasData)("real data integration", () => {
     expect(Math.max(...jpHits.map((k) => scores[k] ?? 0))).toBeGreaterThan(scores.asap ?? 0);
   });
 
-  it("paper mode pipeline: future only and dedupes", () => {
-    // 論文モード: 過去行は完全に除外され、未来の投稿可能会議のみがスコア順に集約される
+  it("paper mode pipeline: dedupes, past reps and journals included", () => {
+    // 論文モード: 未来締切 + 未来の無い会議の過去代表 + 常時受付ジャーナルを網羅し、
+    // 会議単位に集約してスコア降順で並ぶ（網羅性を優先する設計）
     const data = JSON.parse(readFileSync(DATA_JSON, "utf8"));
     const _DAY = 86400000;
     const rows: any[] = [];
@@ -431,8 +502,13 @@ describe.skipIf(!hasData)("real data integration", () => {
         "Similar Paper on TSN Scheduling | scheduling, TSN | RTSS",
     );
     const venueCats = R.venueCategories(pLines, rows);
-    let out = rows
-      .filter((r) => r.t >= NOW)
+    const pool = rows.concat(
+      R.journalRows(data.conferences, NOW),
+      R.pastRepresentatives(rows, NOW),
+    );
+    let out = pool
+      .filter((r) => r.kind === "abstract" || r.kind === "paper" || r.kind === "journal")
+      .filter((r) => !(r.est && r.t < NOW))
       .map((r) => {
         const m = R.breakdown(r, pLines);
         let score = m.score;
@@ -447,15 +523,17 @@ describe.skipIf(!hasData)("real data integration", () => {
     out.sort((a, b) => R.comparePapers(a, b, NOW));
     out = R.pickRepresentative(out, NOW);
 
-    const hasPast = out.some((r) => r.kind !== "event" && r.t < NOW);
     const keys = out.map((r) => r.conf.key);
     const unique = new Set(keys).size === keys.length;
     const sorted = out.every((r, i) => i === 0 || out[i - 1]._matchScore >= r._matchScore);
     const rtasIdx = keys.indexOf("rtas");
+    const rtssIdx = keys.indexOf("rtss");
+    const hasJournal = out.some((r) => r.kind === "journal");
 
-    expect(hasPast).toBe(false); // 過去行が残っている
-    expect(unique).toBe(true); // 会議単位に集約されていない
-    expect(sorted).toBe(true); // スコア降順になっていない
-    expect(rtasIdx >= 0 && rtasIdx < 3).toBe(true); // RTAS が上位にない
+    expect(unique).toBe(true); // 会議単位に集約
+    expect(sorted).toBe(true); // スコア降順
+    expect(rtasIdx >= 0 && rtasIdx < 3).toBe(true); // RTAS が上位
+    expect(rtssIdx).toBe(0); // 掲載先タグ付き過去行 (RTSS) が最上位
+    expect(hasJournal).toBe(true); // 常時受付ジャーナルが含まれる
   });
 });

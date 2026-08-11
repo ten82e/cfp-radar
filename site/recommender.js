@@ -36,7 +36,9 @@
       "here been being was were am if else whether either neither yet still already just even though although " +
       "because system systems network networks conference symposium workshop international annual proceedings " +
       "ieee acm usenix journal letters transactions magazine association machinery electronics engineers " +
-      "special interest group review about applications application computer computing science institute technical").split(/\s+/)
+      "special interest group review about applications application computer computing science institute technical " +
+      // 会議名によく出るが内容語としては弱い語（Signal Processing 等の誤爆防止）
+      "processing technology advanced modern research recent emerging").split(/\s+/)
   );
 
   /* 1行: "タイトル | キーワード | 掲載先(任意)" または "タイトル<TAB>キーワード<TAB>掲載先" */
@@ -162,6 +164,50 @@
     return Math.round(avg * 0.6 + max * 0.4);
   }
 
+  /* 論文モード用: 常時受付ジャーナル（tag: journal で締切なし）の行を合成する。
+   * 特集号（締切付き）は通常の締切行で扱うため除外する。 */
+  function journalRows(confs, now) {
+    var out = [];
+    (confs || []).forEach(function (conf) {
+      if (!conf || !Array.isArray(conf.tags) || conf.tags.indexOf("journal") === -1) return;
+      var hasDl = (conf.editions || []).some(function (e) { return (e.deadlines || []).length > 0; });
+      if (hasDl) return;
+      out.push({
+        conf: conf,
+        ed: { place: "", date_text: "" },
+        dl: { label: "", round: 1 },
+        kind: "journal", est: false,
+        t: now, tLast: now,
+        cats: conf.categories || [],
+        tags: conf.tags || [],
+        rankPairs: [],
+        name: conf.title,
+        year: null
+      });
+    });
+    return out;
+  }
+
+  /* 論文モード用: 未来の投稿締切（abstract/paper）を持たない会議に限り、
+   * 直近の過去投稿締切を 1 行だけ返す（RTSS 等「次回未発表」の会議を推薦圏に残す）。
+   * 推定の過去行・開催イベント行は除外する。 */
+  function pastRepresentatives(rows, now) {
+    var byKey = {};
+    var hasFuture = {};
+    (rows || []).forEach(function (r) {
+      if (r.kind !== "abstract" && r.kind !== "paper") return;
+      var k = r.conf && r.conf.key;
+      if (!k) return;
+      if (r.t >= now) hasFuture[k] = true;
+      if (r.t < now && !r.est && (!byKey[k] || r.t > byKey[k].t)) byKey[k] = r;
+    });
+    var out = [];
+    Object.keys(byKey).forEach(function (k) {
+      if (!hasFuture[k]) out.push(byKey[k]);
+    });
+    return out;
+  }
+
   /* 論文モード: 会議単位に代表行を選ぶ。
    * 締切行優先 → 未来締切優先 → 早い締切 / 直近の過去。 */
   function pickRepresentative(rows, now) {
@@ -184,13 +230,17 @@
     return Object.keys(byKey).map(function (k) { return byKey[k]; });
   }
 
-  /* 論文モードの並び: 適合度が第一、同点なら未来締切（開催中・未到来）を優先。 */
+  /* 論文モードの並び: 適合度が第一、同点なら未来締切 → 常時受付ジャーナル → 過去締切。 */
   function comparePapers(a, b, now) {
     if (b._matchScore !== a._matchScore) { return b._matchScore - a._matchScore; }
     var DAY = 86400000;
     var aFut = a.kind === "event" ? now < (a.tLast || a.t) + DAY : a.t >= now;
     var bFut = b.kind === "event" ? now < (b.tLast || b.t) + DAY : b.t >= now;
     if (aFut !== bFut) { return aFut ? -1 : 1; }
+    // 未来締切の会議をジャーナルより優先（締切がある方が行動可能）
+    var aJ = a.kind === "journal";
+    var bJ = b.kind === "journal";
+    if (aJ !== bJ) { return aJ ? 1 : -1; }
     return a.t - b.t;
   }
 
@@ -267,6 +317,8 @@
     venueCategories: venueCategories,
     scorePapers: scorePapers,
     breakdown: breakdown,
+    journalRows: journalRows,
+    pastRepresentatives: pastRepresentatives,
     pickRepresentative: pickRepresentative,
     comparePapers: comparePapers,
     cosine: cosine,

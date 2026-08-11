@@ -337,6 +337,60 @@ tr.selected td { background: var(--accent-subtle); border-color: rgba(47, 95, 20
 }
 .tag.est { color: var(--soon); border-color: rgba(154, 103, 0, 0.3); background: rgba(154, 103, 0, 0.06); }
 .tag.match { color: #0f7a55; border-color: rgba(15, 122, 85, 0.35); background: rgba(15, 122, 85, 0.08); font-weight: 600; }
+.tag.match-trigger { cursor: pointer; }
+.tag.match-trigger:hover { outline: 1px solid rgba(15, 122, 85, 0.45); background: rgba(15, 122, 85, 0.14); }
+
+/* 推薦理由の行内展開 */
+tr.detail-row td {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 2px 14px 12px;
+}
+.detail-inner {
+  border-left: 3px solid var(--accent);
+  background: var(--panel);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.detail-head { font-weight: 600; color: var(--fg); margin-bottom: 8px; }
+.reason-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.reason-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+.reason-chip b { color: var(--fg); font-weight: 600; }
+.reason-chip em { font-style: normal; font-family: var(--font-mono); color: #0f7a55; font-weight: 600; }
+.perline {
+  border-top: 1px dashed var(--border);
+  margin-top: 8px;
+  padding-top: 6px;
+}
+.perline-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 3px 0;
+  flex-wrap: wrap;
+}
+.perline-idx {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 0.7rem;
+  min-width: 14px;
+}
+.perline-title { flex: 1; min-width: 200px; color: var(--fg); }
+.perline-score { font-family: var(--font-mono); color: var(--muted); }
+.perline-venue { color: #0f7a55; font-weight: 600; font-size: 0.72rem; }
+.perline-parts { color: var(--muted); font-size: 0.7rem; }
+.tag.past { color: var(--muted); border-color: rgba(120, 120, 120, 0.3); background: rgba(120, 120, 120, 0.08); }
 
 #more {
   font-size: 0.85rem;
@@ -571,7 +625,8 @@ footer a:hover { text-decoration: underline; }
 
   var KIND_LABEL = {
     abstract: "概要締切",
-    paper: "論文締切"
+    paper: "論文締切",
+    journal: "常時受付"
   };
 
   // recommender.js から供給（テスト可能な単一正典）。無ければこの場で縮退定義。
@@ -673,13 +728,21 @@ footer a:hover { text-decoration: underline; }
     var html = '<div style="background: var(--chip); padding: 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px;">' +
       '<div style="font-size: 0.78rem; color: var(--muted);">種別・日時</div>' +
       '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
-      '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>' +
+      (r.kind === "journal"
+        ? '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">随時受付（締切なし）</div>'
+        : '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>') +
       '</div>';
 
-    html += '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">' +
-      '<a href="' + getGCalUrl(r) + '" target="_blank" style="flex: 1; text-align: center; background: var(--chip); color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border);">Google カレンダーに追加</a>' +
-      '<button onclick="copyMarkdownRef(window._activeRef)" style="flex: 1; font-size: 0.82rem;">Markdown 参照コピー</button>' +
-      '</div>';
+    var actionRow = '';
+    if (r.kind === "journal") {
+      actionRow = '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">常時受付のジャーナル（締切なし）です。投稿規程を公式サイトで確認してください。</div>';
+    } else {
+      actionRow = '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">' +
+        '<a href="' + getGCalUrl(r) + '" target="_blank" style="flex: 1; text-align: center; background: var(--chip); color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border);">Google カレンダーに追加</a>' +
+        '<button onclick="copyMarkdownRef(window._activeRef)" style="flex: 1; font-size: 0.82rem;">Markdown 参照コピー</button>' +
+        '</div>';
+    }
+    html += actionRow;
 
     if (r.conf.link || r.ed.link) {
       html += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く</a>';
@@ -731,7 +794,10 @@ footer a:hover { text-decoration: underline; }
   });
 
   function updateRowSelection() {
-    var trs = $("tbody").querySelectorAll("tr");
+    // 展開用 detail-row を除外し、shown[] の行と 1:1 対応を保つ
+    var trs = Array.prototype.filter.call($("tbody").querySelectorAll("tr"), function (t) {
+      return !t.classList.contains("detail-row");
+    });
     Array.prototype.forEach.call(trs, function(tr, idx) {
       tr.classList.toggle("selected", idx === selectedIndex);
     });
@@ -877,15 +943,12 @@ footer a:hover { text-decoration: underline; }
 
   function loadTransformers(cb) {
     if (semLoaded) { cb(); return; }
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
-    s.onload = function () {
-      window.transformers.pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2")
-        .then(function (m) { semModel = m; semLoaded = true; cb(); })
-        .catch(function () { cb(); });
-    };
-    s.onerror = function () { cb(); };
-    document.head.appendChild(s);
+    // jsdelivr の素のパッケージ URL は Node 向けバンドルで window.transformers を
+    // 公開しない（実行しても undefined になる）。ESM ビルド（+esm）を動的 import する。
+    import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm")
+      .then(function (m) { return m.pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2"); })
+      .then(function (mdl) { semModel = mdl; semLoaded = true; cb(); })
+      .catch(function () { cb(); });
   }
 
   // 論文テキストが変わったら埋め込みを再計算し、完了後に render する
@@ -930,12 +993,24 @@ footer a:hover { text-decoration: underline; }
     // 掲載先タグの属するカテゴリ（例: RTSS タグ → systems）。同カテゴリの会議を僅かにブースト
     var venueCats = (pLines.length && Rec) ? Rec.venueCategories(pLines, rows) : [];
 
-    var out = rows.filter(function (r) {
+    // 論文モードは網羅性を優先: 未来締切 + 常時受付ジャーナル + 未来締切の無い会議の過去代表行
+    // （過去行は代表 1 行のみに限定し、全過去版で埋めない）
+    var pool = rows;
+    if (pLines.length && Rec) {
+      pool = rows
+        .filter(function (r) { return r.t >= now; })
+        .concat(Rec.journalRows(DATA.conferences, now), Rec.pastRepresentatives(rows, now));
+    }
+
+    var out = pool.filter(function (r) {
       if (!state.est && r.est && !pLines.length) { return false; }
-      if (r.t < now) { return false; }
+      // 過去行は通常モードで除外。論文モードでは「締切済みだが次回予定あり」の会議として許容
+      if (r.t < now && !pLines.length) { return false; }
+      if (r.est && r.t < now) { return false; }
       // このサイトは「これから投稿できるところ」を探すもの。
       // 投稿締切（概要・論文）以外の種別（開催・採否通知等）は表示しない。
-      if (r.kind !== "abstract" && r.kind !== "paper") { return false; }
+      // 論文モードのみ常時受付ジャーナル（kind: journal）を許容する。
+      if (r.kind !== "abstract" && r.kind !== "paper" && !(pLines.length && r.kind === "journal")) { return false; }
       if (r.t > limit) { return false; }
       if (state.kind && r.kind !== state.kind) { return false; }
       if (state.rank && r.rankPairs.indexOf(state.rank) < 0) { return false; }
@@ -960,7 +1035,10 @@ footer a:hover { text-decoration: underline; }
       // 掲載先タグの会議と同カテゴリなら +10（例: RTSS タグ → RTAS/ECRTS も僅かに優先）
       if (r._match && venueCats.length && !r._match.venueHit) {
         var sharedCat = (r.cats || []).some(function (k) { return venueCats.indexOf(k) >= 0; });
-        if (sharedCat) r._matchScore = Math.min(100, r._matchScore + 10);
+        if (sharedCat) {
+          r._matchScore = Math.min(100, r._matchScore + 10);
+          r._boosted = true; // 展開表示用: 同分野ブーストを適用したことを記録
+        }
       }
       if (pLines.length && r._matchScore < 10) return false;
 
@@ -1013,17 +1091,27 @@ footer a:hover { text-decoration: underline; }
   function makeRow(r) {
     var tr = document.createElement("tr");
     tr.onclick = function(e) {
+      if (e.target.classList && e.target.classList.contains("match-trigger")) {
+        toggleDetail(r, tr);
+        return;
+      }
       if (e.target.tagName !== "A") { openDrawer(r); }
     };
     var rem = remain(r.t);
+    // 常時受付ジャーナルは締切の概念がないため「本日終了」等の誤解を与えない表示にする
+    if (r.kind === "journal") { rem = { text: "常時受付", cls: "" }; }
 
     var c0 = td(tr, "", "c-deadline");
     line(c0, rem.text, "left " + rem.cls);
 
     var c1 = td(tr, "日時");
-    var d = new Date(r.t);
-    line(c1, fmtDate(d) + " UTC", "nowrap");
-    line(c1, fmtJst(d), "sub nowrap");
+    if (r.kind === "journal") {
+      line(c1, "随時受付", "nowrap");
+    } else {
+      var d = new Date(r.t);
+      line(c1, fmtDate(d) + " UTC", "nowrap");
+      line(c1, fmtJst(d), "sub nowrap");
+    }
 
     var c2 = td(tr, "会議");
     var head = document.createElement("div");
@@ -1050,7 +1138,8 @@ footer a:hover { text-decoration: underline; }
     });
     if (r._matchScore && r._matchScore >= 10) {
       var ms = document.createElement("span");
-      ms.className = "tag match"; ms.textContent = "適合度 " + r._matchScore + "%";
+      // match-trigger: クリックで行内展開（この会議が選ばれた理由の内訳）
+      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + r._matchScore + "% ▾";
       if (r._match && r._match.agg) {
         var a = r._match.agg;
         var parts = [];
@@ -1073,6 +1162,15 @@ footer a:hover { text-decoration: underline; }
       var es = document.createElement("span");
       es.className = "tag est"; es.textContent = "推定";
       tags.appendChild(es);
+    }
+    if (r.kind === "journal") {
+      var jr = document.createElement("span");
+      jr.className = "tag match"; jr.textContent = "常時受付";
+      tags.appendChild(jr);
+    } else if (r.t < Date.now()) {
+      var pp = document.createElement("span");
+      pp.className = "tag past"; pp.textContent = "締切済み（次回予定）";
+      tags.appendChild(pp);
     }
     if ((r.tags || []).indexOf("domestic-jp") >= 0) {
       var dj = document.createElement("span");
@@ -1116,6 +1214,79 @@ footer a:hover { text-decoration: underline; }
     return tr;
   }
 
+  // ---- 推薦理由の行内展開（適合度タグのクリックで開閉） ----
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function makeDetailRow(r) {
+    var tr = document.createElement("tr");
+    tr.className = "detail-row";
+    var td = document.createElement("td");
+    td.colSpan = 7;
+    var m = r._match || {};
+    var agg = m.agg || { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
+    var lines = [];
+    var pe = $("paperText");
+    if (pe && pe.value.trim() && Recommender) {
+      lines = Recommender.parsePaperLines(pe.value);
+    }
+
+    var chips = [];
+    if (agg.domain > 0) chips.push(["分野シグナル", "+" + agg.domain, "会議のカテゴリと論文キーワードが一致（HPC/AI/Security 等）"]);
+    if (agg.name > 0) chips.push(["会議名一致", "+" + agg.name, "会議名の内容語が論文タイトル・キーワードに含まれる"]);
+    if (agg.jp > 0) chips.push(["日本語一致", "+" + agg.jp, "日本語の会議名・論文語が一致"]);
+    if (agg.tags > 0) chips.push(["領域タグ", "+" + agg.tags, "会議の領域タグ（real-time 等）が論文に含まれる"]);
+    if (agg.venue > 0) chips.push(["掲載先一致", "+" + agg.venue, "論文の掲載先タグとこの会議が一致（強いシグナル）"]);
+    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "%", "埋め込みベクトルの類似度（語彙スコアと 0.7:0.3 で合成）"]);
+    if (r._boosted) chips.push(["同分野ブースト", "+10", "掲載先タグから推定した分野とこの会議が一致"]);
+    if (!chips.length) chips.push(["一致要素なし", "—", "低スコアでも閾値を超えたため表示"]);
+
+    var html = '<div class="detail-inner">';
+    html += '<div class="detail-head">適合度 ' + r._matchScore + '% の内訳 — この会議が選ばれた理由</div>';
+    html += '<div class="reason-chips">' + chips.map(function (c) {
+      return '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>';
+    }).join("") + '</div>';
+
+    if (lines.length > 1) {
+      html += '<div class="perline">';
+      for (var i = 0; i < lines.length; i++) {
+        var p = lines[i];
+        var pl = m.perLine && m.perLine[i];
+        var sc = pl ? pl.score : 0;
+        var parts = [];
+        if (pl) {
+          if (pl.details.domain > 0) parts.push("分野 +" + pl.details.domain);
+          if (pl.details.name > 0) parts.push("会議名 +" + pl.details.name);
+          if (pl.details.jp > 0) parts.push("日本語 +" + pl.details.jp);
+          if (pl.details.tags > 0) parts.push("タグ +" + pl.details.tags);
+          if (pl.details.venue > 0) parts.push("掲載先 +" + pl.details.venue);
+        }
+        html += '<div class="perline-item">' +
+          '<span class="perline-idx">' + (i + 1) + '</span>' +
+          '<span class="perline-title">' + esc(p.title || "") + '</span>' +
+          '<span class="perline-score">' + sc + '%</span>' +
+          (pl && pl.venueHit ? '<span class="perline-venue">掲載先一致' + (p.venue ? " (" + esc(p.venue) + ")" : "") + '</span>' : "") +
+          (parts.length ? '<span class="perline-parts">' + parts.join(" ・ ") + '</span>' : "") +
+          '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    td.innerHTML = html;
+    tr.appendChild(td);
+    return tr;
+  }
+
+  function toggleDetail(r, tr) {
+    var next = tr.nextElementSibling;
+    if (next && next.classList.contains("detail-row")) {
+      next.remove();
+      return;
+    }
+    tr.parentNode.insertBefore(makeDetailRow(r), tr.nextSibling);
+  }
+
   function drawMore() {
     var tbody = $("tbody");
     var frag = document.createDocumentFragment();
@@ -1137,9 +1308,12 @@ footer a:hover { text-decoration: underline; }
     drawn = 0;
     selectedIndex = -1;
     $("tbody").textContent = "";
-    var cnt = shown.length + " 件 / 全 " + rows.length + " 件";
     var pe = $("paperText");
-    if (pe && pe.value.trim() && Recommender) {
+    var paperMode = !!(pe && pe.value.trim() && Recommender);
+    var cnt = paperMode
+      ? "あなたの論文に合う投稿先 " + shown.length + " 件"
+      : shown.length + " 件 / 全 " + rows.length + " 件";
+    if (paperMode) {
       var _lines = Recommender.parsePaperLines(pe.value);
       var _auto = _lines.length ? Recommender.autoDetectCats(_lines) : [];
       if (_auto.length && !state.cats.length) {
@@ -1147,7 +1321,13 @@ footer a:hover { text-decoration: underline; }
       }
     }
     $("count").textContent = cnt;
-    $("empty").hidden = shown.length > 0;
+    if (paperMode && !shown.length) {
+      $("empty").textContent = "該当する投稿先が見つかりません。論文本文を長めに入れるか、分野チップ・検索語を変えてみてください。";
+      $("empty").hidden = false;
+    } else {
+      $("empty").textContent = "該当する締切はありません。";
+      $("empty").hidden = shown.length > 0;
+    }
     drawMore();
   }
 

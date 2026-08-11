@@ -2666,6 +2666,72 @@ conferences:
         deadlines:
           - {kind: paper, label: Work in Progress (WIP) Submission, date: '2026-09-11 23:59:00', tz: AoE}
 
+  # ------------------------- 常時受付ジャーナル（論文モードの推薦対象） -------------------------
+  # 締切の無い著名ジャーナル。tags: journal は論文モードで「常時受付」として推薦される。
+
+  # 根拠: https://www.computer.org/csdl/journal/td (2026-08-11 確認・常時受付)
+  - key: tpds
+    title: IEEE TPDS
+    full_name: IEEE Transactions on Parallel and Distributed Systems
+    link: https://www.computer.org/csdl/journal/td
+    categories: [hpc, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://dl.acm.org/journal/tos (2026-08-11 確認・常時受付)
+  - key: tos
+    title: ACM TOS
+    full_name: ACM Transactions on Storage
+    link: https://dl.acm.org/journal/tos
+    categories: [systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://dl.acm.org/journal/ton (2026-08-11 確認・常時受付)
+  - key: ton
+    title: IEEE/ACM ToN
+    full_name: IEEE/ACM Transactions on Networking
+    link: https://dl.acm.org/journal/ton
+    categories: [networking]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.computer.org/csdl/journal/tq (2026-08-11 確認・常時受付)
+  - key: tdsc
+    title: IEEE TDSC
+    full_name: IEEE Transactions on Dependable and Secure Computing
+    link: https://www.computer.org/csdl/journal/tq
+    categories: [security, systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.computer.org/csdl/journal/tc (2026-08-11 確認・常時受付)
+  - key: tc
+    title: IEEE TC
+    full_name: IEEE Transactions on Computers
+    link: https://www.computer.org/csdl/journal/tc
+    categories: [systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.sciencedirect.com/journal/journal-of-systems-and-software (2026-08-11 確認・常時受付)
+  - key: jss
+    title: JSS
+    full_name: Journal of Systems and Software (Elsevier)
+    link: https://www.sciencedirect.com/journal/journal-of-systems-and-software
+    categories: [systems]
+    tags: [niche, journal]
+    editions: []
+
+  # 根拠: https://www.computer.org/csdl/journal/tm (2026-08-11 確認・常時受付)
+  - key: tmc
+    title: IEEE TMC
+    full_name: IEEE Transactions on Mobile Computing
+    link: https://www.computer.org/csdl/journal/tm
+    categories: [networking, systems]
+    tags: [niche, journal]
+    editions: []
+
   # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/icdcn2027 (2026-08-11 確認)
   #   「Submission deadline August 13, 2026」「January 4-7, 2027 Mangalore, India」。
   #   公式 http://icdcn.org。ACM ICPS 出版 (ACM DL)。上流 ccfddl に 2026/2027 版なし。
