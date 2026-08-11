@@ -88,6 +88,21 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     "KTransformers: Unleashing the Full Potential of CPU/GPU Hybrid Inference for MoE Models",
     "Coyote v2: Raising the Level of Abstraction for Data Center FPGAs",
   ],
+  eurosys: [
+    // R23: EuroSys '25（dblp eurosys2025、85 本。GOLDEN_EN の 7 本と完全分離 = リークなし）
+    "Chrono: Meticulous Hotness Measurement and Flexible Page Migration for Memory Tiering",
+    "Deft: A Scalable Tree Index for Disaggregated Memory",
+    "Daredevil: Rescue Your Flash Storage from Inflexible Kernel Storage Stack",
+    "Towards Efficient Flash Caches with Emerging NVMe Flexible Data Placement SSDs",
+    "Pegasus: Transparent and Unified Kernel-Bypass Networking for Fast Local and Remote Communication",
+    "Byte vSwitch: A High-Performance Virtual Switch for Cloud Networking",
+    "Enabling Virtual Priority in Data Center Congestion Control",
+    "CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion",
+    "SpInfer: Leveraging Low-Level Sparsity for Efficient Large Language Model Inference on GPUs",
+    "Multi-Grained Specifications for Distributed System Model Checking and Verification",
+    "Ladon: High-Performance Multi-BFT Consensus via Dynamic Global Ordering",
+    "Rakis: Secure Fast I/O Primitives Across Trust Boundaries on Intel SGX",
+  ],
   ndss: [
     "A Method to Facilitate Membership Inference Attacks in Deep Learning Models",
     "A Large-Scale Measurement Study of the PROXY Protocol and its Security Implications",

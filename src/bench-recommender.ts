@@ -710,6 +710,37 @@ const GOLDEN_EN: Array<{ title: string; key: string }> = [
     title: "Janus: OS Support for a Secure, Fast Control-Plane",
     key: "rtas",
   },
+  // EuroSys '25（dblp eurosys2025、85 本。VENUE_PAPERS に eurosys は無い = リークなし）
+  {
+    title:
+      "eNetSTL: Towards an In-kernel Library for High-Performance eBPF-based Network Functions",
+    key: "eurosys",
+  },
+  {
+    title: "Achilles: Efficient TEE-Assisted BFT Consensus via Rollback Resilient Recovery",
+    key: "eurosys",
+  },
+  {
+    title: "SkyServe: Serving AI Models across Regions and Clouds with Spot Instances",
+    key: "eurosys",
+  },
+  {
+    title:
+      "Themis: Finding Imbalance Failures in Distributed File Systems via a Load Variance Model",
+    key: "eurosys",
+  },
+  {
+    title: "Fast State Restoration in LLM Serving with HCache",
+    key: "eurosys",
+  },
+  {
+    title: "Revealing the Unstable Foundations of eBPF-Based Kernel Extensions",
+    key: "eurosys",
+  },
+  {
+    title: "RoboRebound: Multi-Robot System Defense with Bounded-Time Interaction",
+    key: "eurosys",
+  },
 ];
 
 /** 会議名から日本語の内容チャンクを取り出す（実論文が使う日本語語彙を模す）。
