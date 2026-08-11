@@ -911,3 +911,50 @@ aaai（**rebuttal_start と rebuttal_end が別日**）、hf 旧形式 1 本、
 - README の締切テーブル自動更新（ビルドが他担当の所有ファイルを書き換える設計を避ける。
   README からは `public/upcoming.md` へリンクする）。
 - 活動を偽装するハートビートコミット（§6 参照）。
+
+---
+
+## 10. 論文推薦システム（`site/recommender.js`・`src/embeddings.ts`）
+
+論文タイトル/キーワード → 会議推薦のスコアリング。本番パスはブラウザ
+（`site/template.html`）と恒久ベンチ（`npm run bench`）が同一コードを共有する。
+
+### 10.1 スコア構成（実測で確定した最終形）
+
+- 語彙スコア（`breakdown`）: 会議名・分野シグナル・VENUE_PAPERS 語彙との一致。
+  適応ブレンド `vocabWeight`（EN: 内容語数 ≤4→0.25 / ≥5→0.4、JP: 0.6）。
+- セマンティックスコア（`semanticScore`）: 埋め込み cosine。
+  `public/embeddings.json`（`src/embeddings.ts` で生成、会議セット変化で自動再生成）。
+- PRF（擬似関連性フィードバック）: 掲載先タグ付き論文はタグ会議の埋め込みを
+  0.3 ブレンド。タグ付き top1 79%→97%（R8 実測）。
+- 日本語: 多言語モデルを遅延ロード。語彙重み 0.6。normKey の FILLER 除去と
+  語境界一致（単複形 s? 許容）を適用。
+
+### 10.2 恒久ベンチ（`npm run bench`）
+
+- 本番と同じコードパスで 446 会議の合成クエリ精度を計測（EN: top1 85.2% /
+  top5 96.0% / top10 98.4%、2026-08-12 時点）。`--samples` / `--failures` /
+  `--topk` / `--lang jp` / `--golden-en` オプション。
+- `--golden-en`: 実採択論文タイトル（`GOLDEN_EN`、DBLP 由来・n=92）で真の精度を
+  測る（top1 26.1% / top5 70.7% / top10 82.6%）。スコア改変の回帰検出に使用。
+
+### 10.3 会議プロファイル拡充手順（`VENUE_PAPERS`）
+
+失敗会議（golden で top5 外）の語彙を補う代表論文リスト。**拡充手順**:
+
+1. 失敗会議の採択リストを dblp から取得（`https://dblp.org/db/conf/<key>/<key>2025.html`）
+2. `GOLDEN_EN`（テストセット）と重複しない論文のみ `VENUE_PAPERS` に追加
+   （**同一タイトルを両方に入れるとリークになり、A/B が偽陽性になる** — R26 事故）。
+   `html.unescape` で `&#38;` 等を正規化し、タイトルは取得リストと機械照合する
+   （補完・捏造防止、R24 事故）。
+3. `npx vitest run tests/recommender.test.ts -t "リークなし"` が PASS すること
+   （**FAIL のままコミットしない**）。
+4. `npm run bench -- --golden-en` で A/B。**net プラス（実数）のみ採用**。
+   既存から top5 を奪う場合（直接衝突・IDF 希釈）は不採用（R25/R26 実績:
+   hpca net 0・sigcomm net -1 は revert、eurosys/ppopp net +3〜+5 は採用）。
+5. 副作用は golden と合成ベンチの両方で確認する（R28 教訓）。
+
+適用済み: usenix-security / rtss / rtas / icdcs / ndss / osdi / sosp / icml /
+eurosys / ppopp（R22-R24）。rtss・usenix-security は論文個別ベクトル
+（paperVecs）も使用。paperVecs 適用条件は「1 分野に収まる + 語彙非衝突」の
+2 条件（R21 で最終化: usenix-security・rtss のみ）。
