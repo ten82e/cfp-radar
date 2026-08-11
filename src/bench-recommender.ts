@@ -768,6 +768,27 @@ const GOLDEN_EN: Array<{ title: string; key: string }> = [
       "AC-Cache: A Memory-Efficient Caching System for Small Objects via Exploiting Access Correlations",
     key: "ppopp",
   },
+  // SIGCOMM '25（dblp sigcomm2025、88 本。VENUE_PAPERS と完全分離 = リークなし）
+  {
+    title: "LeoCC: Making Internet Congestion Control Robust to LEO Satellite Dynamics",
+    key: "sigcomm",
+  },
+  { title: "Falcon: A Reliable, Low Latency Hardware Transport", key: "sigcomm" },
+  { title: "Inter-domain Routing with Extensible Criteria", key: "sigcomm" },
+  {
+    title:
+      "InfiniteHBD: Building Datacenter-Scale High-Bandwidth Domain for LLM with Optical Circuit Switching Transceivers",
+    key: "sigcomm",
+  },
+  { title: "Revisiting RDMA Reliability for Lossy Fabrics", key: "sigcomm" },
+  {
+    title: "ByteDance Jakiro: Enabling RDMA and TCP over Virtual Private Cloud",
+    key: "sigcomm",
+  },
+  {
+    title: "SGLB: Scalable and Robust Global Load Balancing in Commodity AI Clusters",
+    key: "sigcomm",
+  },
 ];
 
 /** 会議名から日本語の内容チャンクを取り出す（実論文が使う日本語語彙を模す）。

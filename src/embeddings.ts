@@ -118,6 +118,21 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     "MARLIN: Mixed-Precision Auto-Regressive Parallel Inference on Large Language Models",
     "Harnessing Inter-GPU Shared Memory for Seamless MoE Communication-Computation Fusion",
   ],
+  sigcomm: [
+    // R26: SIGCOMM '25（dblp sigcomm2025、88 本。GOLDEN_EN の 7 本と完全分離 = リークなし）
+    "LeoCC: Making Internet Congestion Control Robust to LEO Satellite Dynamics",
+    "Falcon: A Reliable, Low Latency Hardware Transport",
+    "Inter-domain Routing with Extensible Criteria",
+    "InfiniteHBD: Building Datacenter-Scale High-Bandwidth Domain for LLM with Optical Circuit Switching Transceivers",
+    "Revisiting RDMA Reliability for Lossy Fabrics",
+    "ByteDance Jakiro: Enabling RDMA and TCP over Virtual Private Cloud",
+    "SGLB: Scalable and Robust Global Load Balancing in Commodity AI Clusters",
+    "Albatross: A Containerized Cloud Gateway Platform with FPGA-accelerated Packet-level Load Balancing",
+    "Centralium: A Hybrid Route-Planning Framework for Large-Scale Data Center Network Migrations",
+    "DeepSpace: Super Resolution Powered Efficient and Reliable Satellite Image Data Acquistion",
+    "Edge Caching as Differentiation",
+    "Towards User-level QoE: Large-scale Practice in Personalized Optimization of Adaptive Video Streaming",
+  ],
   ndss: [
     "A Method to Facilitate Membership Inference Attacks in Deep Learning Models",
     "A Large-Scale Measurement Study of the PROXY Protocol and its Security Implications",
