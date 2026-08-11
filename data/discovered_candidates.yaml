@@ -20506,3 +20506,441 @@ conferences:
         place: Germany
         date_text: Mar 22, 2027
         deadlines: []
+  - key: cais
+    title: CAIS
+    full_name: ACM Conference on AI and Agentic Systems (CAIS)
+    link: https://dblp.org/db/conf/cais/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: sigdoc
+    title: SIGDOC
+    full_name: ACM International Conference on Design of Communication (SIGDOC)
+    link: https://dblp.org/db/conf/sigdoc/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: e-energy
+    title: e-Energy
+    full_name: ACM International Conference on Future Energy Systems (e-Energy)
+    link: https://dblp.org/db/conf/eenergy/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: iat
+    title: IAT
+    full_name: ACM International Conference on International Agent Technology (IAT)
+    link: https://dblp.org/db/conf/iat/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: acm-sigops-operating-systems-review
+    title: 'ACM SIGOPS: Operating Systems Review'
+    full_name: 'ACM SIGOPS: Operating Systems Review'
+    link: https://dblp.org/db/journals/sigops/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: oopsla
+    title: OOPSLA
+    full_name: >-
+      ACM SIGPLAN International Conference on Object-Oriented Programming
+      Systems, Languages, and Applications (OOPSLA)
+    link: https://dblp.org/db/conf/oopsla/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: tophpc
+    title: TopHPC
+    full_name: Big Data and HPC (TopHPC)
+    link: https://dblp.org/db/conf/tophpc/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: ftxs
+    title: FTXS
+    full_name: Fault Tolerance for HPC at eXtreme Scales Workshop (FTXS)
+    link: https://dblp.org/db/conf/ftxs/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpcct
+    title: HPCCT
+    full_name: High Performance Computing and Cluster Technologies Conference (HPCCT)
+    link: https://dblp.org/db/conf/hpcct/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpci
+    title: HPCI
+    full_name: High Performance Computing for Imaging (HPCI)
+    link: https://dblp.org/db/conf/ei-hpci/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpc
+    title: HPC
+    full_name: >-
+      International Advanced Research Workshop on High Performance Computing
+      (HPC)
+    link: https://dblp.org/db/conf/hpc/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpcs
+    title: HPCS
+    full_name: >-
+      International Conference on High Performance Computing &amp; Simulation
+      (HPCS)
+    link: https://dblp.org/db/conf/ieeehpcs/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpc-asia
+    title: HPC Asia
+    full_name: >-
+      International Conference on High Performance Computing in Asia-Pacific
+      Region (HPC Asia)
+    link: https://dblp.org/db/conf/hpcasia/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpcse
+    title: HPCSE
+    full_name: >-
+      International Conference on High Performance Computing in Science and
+      Engineering (HPCSE)
+    link: https://dblp.org/db/conf/hpcse/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpcncs
+    title: HPCNCS
+    full_name: >-
+      International Conference on High Performance Computing, Networking and
+      Communication Systems (HPCNCS)
+    link: https://dblp.org/db/conf/hpcncs/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: hpcn-europe
+    title: HPCN Europe
+    full_name: >-
+      International Conference on High-Performance Computing and Networking
+      (HPCN Europe)
+    link: https://dblp.org/db/conf/hpcn/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: canopie-hpc
+    title: CANOPIE-HPC
+    full_name: >-
+      International Workshop on Containers and New Orchestration Paradigms for
+      Isolated Environments in HPC (CANOPIE-HPC)
+    link: https://dblp.org/db/conf/canopie-hpc/
+    categories:
+      - hpc
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: leo-net
+    title: LEO-NET
+    full_name: ACM Workshop on LEO Networking and Communication (LEO-NET)
+    link: https://dblp.org/db/conf/leo-net/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: immercom
+    title: ImmerCom
+    full_name: >-
+      ACM Workshop on Mobile Immersive Computing, Networking, and Systems
+      (ImmerCom)
+    link: https://dblp.org/db/conf/immercom/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: wmunep
+    title: WMuNeP
+    full_name: >-
+      ACM Workshop on Wireless Multimedia Networking and Performance Modeling
+      (WMuNeP)
+    link: https://dblp.org/db/conf/wmunep/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: broadband-networking-technologies
+    title: Broadband Networking Technologies
+    full_name: Broadband Networking Technologies
+    link: https://dblp.org/db/conf/bnt/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: ccf-transactions-on-networking
+    title: CCF Transactions on Networking
+    full_name: CCF Transactions on Networking
+    link: https://dblp.org/db/journals/ccfton/
+    categories:
+      - systems
+    tags:
+      - niche
+      - journal
+    editions: []
+  - key: caan
+    title: CAAN
+    full_name: Combinatorial and Algorithmic Aspects of Networking (CAAN)
+    link: https://dblp.org/db/conf/caan/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: ccnc
+    title: CCNC
+    full_name: Consumer Communications and Networking Conference (CCNC)
+    link: https://dblp.org/db/conf/ccnc/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: csnet
+    title: CSNet
+    full_name: Cyber Security in Networking Conference (CSNet)
+    link: https://dblp.org/db/conf/csnet/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: cyberpsychology-behavior-and-social-networking
+    title: Cyberpsychology, Behavior, and Social Networking
+    full_name: Cyberpsychology, Behavior, and Social Networking
+    link: https://dblp.org/db/journals/cbsn/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: chinacom
+    title: CHINACOM
+    full_name: EAI International Conference on Communications and Networking (CHINACOM)
+    link: https://dblp.org/db/conf/chinacom/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: eurasip-journal-on-wireless-communications-and-networking
+    title: EURASIP Journal on Wireless Communications and Networking
+    full_name: EURASIP Journal on Wireless Communications and Networking
+    link: https://dblp.org/db/journals/ejwcn/
+    categories:
+      - systems
+    tags:
+      - niche
+      - journal
+    editions: []
+  - key: cpss
+    title: CPSS
+    full_name: ACM Cyber-Physical System Security Workshop (CPSS)
+    link: https://dblp.org/db/conf/cpss/
+    categories:
+      - security
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: storagess
+    title: StorageSS
+    full_name: >-
+      ACM International Workshop on Storage Security And Survivability
+      (StorageSS)
+    link: https://dblp.org/db/conf/storagess/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: plas
+    title: PLAS
+    full_name: >-
+      ACM SIGPLAN International Workshop on Programming Languages and Analysis
+      for Security (PLAS)
+    link: https://dblp.org/db/conf/plas-ws/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: gis
+    title: GIS
+    full_name: >-
+      ACM SIGSPATIAL International Conference on Advances in Geographic
+      Information Systems (GIS)
+    link: https://dblp.org/db/conf/gis/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: tops
+    title: TOPS
+    full_name: ACM Transactions on Privacy and Security (TOPS)
+    link: https://dblp.org/db/journals/tissec/
+    categories:
+      - security
+    tags:
+      - niche
+      - journal
+    editions: []
+  - key: iotpts
+    title: IoTPTS
+    full_name: ACM Workshop on IoT Privacy, Trust, and Security (IoTPTS)
+    link: https://dblp.org/db/conf/iotpts/
+    categories:
+      - security
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: sasn
+    title: SASN
+    full_name: ACM Workshop on Security of ad hoc and Sensor Networks (SASN)
+    link: https://dblp.org/db/conf/sasn/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: acm-workshop-on-wireless-security
+    title: ACM Workshop on Wireless Security
+    full_name: ACM Workshop on Wireless Security
+    link: https://dblp.org/db/conf/ws/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: acm-workshop-on-xml-security
+    title: ACM Workshop on XML Security
+    full_name: ACM Workshop on XML Security
+    link: https://dblp.org/db/conf/xmlsec/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: cyber-security
+    title: Cyber Security
+    full_name: ASE International Conference on Cyber Security (Cyber Security)
+    link: https://dblp.org/db/conf/cybersecurity/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: advances-in-information-security
+    title: Advances in Information Security
+    full_name: Advances in Information Security
+    link: https://dblp.org/db/series/ais/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: isa
+    title: ISA
+    full_name: Advances in Information Security and Assurance (ISA)
+    link: https://dblp.org/db/conf/sersc-isa/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
+  - key: infoseccd
+    title: InfoSecCD
+    full_name: >-
+      Annual Conference on Information Security Curriculum Development
+      (InfoSecCD)
+    link: https://dblp.org/db/conf/infoseccd/
+    categories:
+      - systems
+    tags:
+      - niche
+      - conference
+    editions: []
