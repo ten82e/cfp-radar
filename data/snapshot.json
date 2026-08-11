@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T18:08:28Z",
+  "generated_at": "2026-08-11T18:11:57Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -40615,7 +40615,20 @@
           ]
         }
       ],
-      "papers": []
+      "papers": [
+        "Helios: Efficient Distributed Dynamic Graph Sampling for Online GNN Inference",
+        "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+        "EVeREST: An Effective and Versatile Runtime Energy Saving Tool for GPUs",
+        "Fairer and More Scalable Reader-Writer Locks by Optimizing Queue Management",
+        "Setting a Course for Post-Moore Software Performance",
+        "Big Atomics and Fast Hash Tables",
+        "Boost Lock-free Queue and Stack with Batching",
+        "FlashSparse: Minimizing Computation Redundancy for Fast Sparse Matrix Multiplications on Tensor Cores",
+        "Triangle Counting on Tensor Cores",
+        "Mario: Near Zero-cost Activation Checkpointing in Pipeline Parallelism",
+        "MARLIN: Mixed-Precision Auto-Regressive Parallel Inference on Large Language Models",
+        "Harnessing Inter-GPU Shared Memory for Seamless MoE Communication-Computation Fusion"
+      ]
     },
     {
       "key": "ppsn",
