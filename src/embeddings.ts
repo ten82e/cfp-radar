@@ -106,6 +106,12 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     "CENSOR: Defense Against Gradient Inversion via Orthogonal Subspace Bayesian Sampling",
     "CLIBE: Detecting Dynamic Backdoors in Transformer-based NLP Models",
     "Compiled Models, Built-In Exploits: Uncovering Pervasive Bit-Flip Attack Surfaces in DNN Executables",
+    // R22: ndss golden 失敗 4 件（BULKHEAD/Bootloaders/Side Channels/Alba）対策。
+    // NDSS '25 実採択で GOLDEN_EN に無いものだけ追加（dblp ndss2025 確認 2026-08-12）。
+    "TME-Box: Scalable In-Process Isolation through Intel TME-MK Memory Encryption",
+    "KernelSnitch: Side Channel-Attacks on Kernel Data Structures",
+    "Kronos: A Secure and Generic Sharding Blockchain Consensus with Optimized Overhead",
+    "Manifoldchain: Maximizing Blockchain Throughput via Bandwidth-Clustered Sharding",
   ],
   nsdi: [
     "Holmes: Localizing Irregularities in LLM Training with Mega-scale GPU Clusters",
@@ -143,6 +149,11 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     // R19: QiMeng（transcompiling tensor programs）対策。OSDI '25 採択（公式 program 確認）。
     // Mirage は GOLDEN_EN に既存のためリーク — 追加しない（テストで検出）。
     "Bayesian Code Diffusion for Efficient Automatic Deep Learning Program Optimization",
+    // R22: Quake（vector search）対策。OSDI '25 採択で GOLDEN_EN に無い 1 本
+    // （"Achieving Low-Latency Graph-Based Vector Search via Aligning
+    // Best-First Search Algorithm with SSD"、dblp osdi2025 確認 2026-08-12）。
+    // Quake 自身は GOLDEN_EN 側のためリーク — 追加しない。
+    "Achieving Low-Latency Graph-Based Vector Search via Aligning Best-First Search Algorithm with SSD",
   ],
   rtss: [
     "Probabilistic Response-Time-Aware Search for Transient Astrophysical Phenomena",
@@ -224,6 +235,16 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     "FedLTH: A Privacy-preserving Federated Learning Framework with Model Pruning on Edge Clients",
     "Mast: Efficient Training of Mixture-of-Experts Transformers with Task Pipelining and Ordering",
     "Elastic Scheduling for Mix-Flow in Time-Sensitive Networking",
+    // R22: icdcs golden 失敗 5 件（SGX/Ethereum/BEyes/InverCRS/Backdoor）対策。
+    // いずれも ICDCS '25 実採択で GOLDEN_EN に無いものだけ追加（dblp icdcs2025 確認 2026-08-12）。
+    "FLdetox: Detoxify Persistent Backdoors in Federated Learning",
+    "A Client-level Assessment of Collaborative Backdoor Poisoning in Non-IID Federated Learning",
+    "Enabling Bitcoin Smart Contracts on the Internet Computer",
+    "Fully Decentralized Collection of Attestations for Single-Slot Finality in Ethereum",
+    "Too Clever by Half: Detecting Sampling-based Model Stealing Attacks by Their Own Cleverness",
+    // R22: SGX-Enabled（golden）の encrypted/secure 語彙を補う（privacy 1 本は usenix
+    // top1 を奪うため除外。QuHE は Ethereum/privacy 語彙を持たず衝突しない）。
+    "QuHE: Optimizing Utility-Cost in Quantum Key Distribution and Homomorphic Encryption Enabled Secure Edge Computing Networks",
   ],
   ches: [
     "FANNG-MPC: Framework for Artificial Neural Networks and Generic MPC",
