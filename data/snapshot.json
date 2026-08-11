@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T17:37:44Z",
+  "generated_at": "2026-08-11T17:52:17Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -22488,7 +22488,13 @@
         "Mahi-Mahi: Low-Latency Asynchronous BFT DAG-Based Consensus",
         "FedLTH: A Privacy-preserving Federated Learning Framework with Model Pruning on Edge Clients",
         "Mast: Efficient Training of Mixture-of-Experts Transformers with Task Pipelining and Ordering",
-        "Elastic Scheduling for Mix-Flow in Time-Sensitive Networking"
+        "Elastic Scheduling for Mix-Flow in Time-Sensitive Networking",
+        "FLdetox: Detoxify Persistent Backdoors in Federated Learning",
+        "A Client-level Assessment of Collaborative Backdoor Poisoning in Non-IID Federated Learning",
+        "Enabling Bitcoin Smart Contracts on the Internet Computer",
+        "Fully Decentralized Collection of Attestations for Single-Slot Finality in Ethereum",
+        "Too Clever by Half: Detecting Sampling-based Model Stealing Attacks by Their Own Cleverness",
+        "QuHE: Optimizing Utility-Cost in Quantum Key Distribution and Homomorphic Encryption Enabled Secure Edge Computing Networks"
       ]
     },
     {
@@ -36938,7 +36944,11 @@
         "CHAOS: Exploiting Station Time Synchronization in 802.11 Networks",
         "CENSOR: Defense Against Gradient Inversion via Orthogonal Subspace Bayesian Sampling",
         "CLIBE: Detecting Dynamic Backdoors in Transformer-based NLP Models",
-        "Compiled Models, Built-In Exploits: Uncovering Pervasive Bit-Flip Attack Surfaces in DNN Executables"
+        "Compiled Models, Built-In Exploits: Uncovering Pervasive Bit-Flip Attack Surfaces in DNN Executables",
+        "TME-Box: Scalable In-Process Isolation through Intel TME-MK Memory Encryption",
+        "KernelSnitch: Side Channel-Attacks on Kernel Data Structures",
+        "Kronos: A Secure and Generic Sharding Blockchain Consensus with Optimized Overhead",
+        "Manifoldchain: Maximizing Blockchain Throughput via Bandwidth-Clustered Sharding"
       ]
     },
     {
@@ -38519,7 +38529,8 @@
         "Fork in the Road: Reflections and Optimizations for Cold Start Latency in Production Serverless Systems",
         "Tigon: A Distributed Database for a CXL Pod",
         "XQueue: Preemptive Scheduling for Diverse XPUs using Multi-level Hardware Model",
-        "Bayesian Code Diffusion for Efficient Automatic Deep Learning Program Optimization"
+        "Bayesian Code Diffusion for Efficient Automatic Deep Learning Program Optimization",
+        "Achieving Low-Latency Graph-Based Vector Search via Aligning Best-First Search Algorithm with SSD"
       ]
     },
     {
