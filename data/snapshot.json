@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T09:09:25Z",
+  "generated_at": "2026-08-11T17:37:44Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -77,7 +77,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "3dv",
@@ -217,7 +218,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "aaai",
@@ -501,7 +503,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "aamas",
@@ -716,7 +719,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "accv",
@@ -780,7 +784,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acisp",
@@ -946,7 +951,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acl",
@@ -1226,7 +1232,8 @@
           "source": "ccfddl",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acm-mm",
@@ -1501,7 +1508,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acm-siggraph",
@@ -1858,7 +1866,8 @@
           "source": "aideadlines",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acm-siggraph-asia",
@@ -2033,7 +2042,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acm-toit",
@@ -2052,7 +2062,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "acml",
@@ -2200,7 +2211,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acns",
@@ -2375,7 +2387,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "acsac",
@@ -2505,7 +2518,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "adma",
@@ -2649,7 +2663,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "aft",
@@ -2863,7 +2878,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "agenticai4hpc-2026",
@@ -2903,7 +2919,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ai4s-2026",
@@ -2943,7 +2960,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "aistats",
@@ -3139,7 +3157,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "alt",
@@ -3283,11 +3302,12 @@
               "aoe": "2026-10-12 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": null
+              "comment": "別記載: Paper submission"
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "anrw",
@@ -3365,7 +3385,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apbc",
@@ -3429,7 +3450,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apnet",
@@ -3555,7 +3577,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apnoms",
@@ -3585,7 +3608,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "appt",
@@ -3667,7 +3691,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apsec",
@@ -3749,7 +3774,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apsys",
@@ -3862,7 +3888,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "apweb-waim",
@@ -3975,7 +4002,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "asap",
@@ -4026,7 +4054,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ase",
@@ -4183,7 +4212,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "asiaccs",
@@ -4358,7 +4388,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "asiacrypt",
@@ -4488,7 +4519,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "asp-dac",
@@ -4632,7 +4664,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "asplos",
@@ -4977,7 +5010,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "assets",
@@ -5041,7 +5075,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ats",
@@ -5083,7 +5118,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bdcat",
@@ -5149,7 +5185,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bibm",
@@ -5310,7 +5347,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bigdata",
@@ -5374,7 +5412,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bis",
@@ -5486,7 +5525,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "blocksys",
@@ -5550,7 +5590,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bmvc",
@@ -5707,7 +5748,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "bphte-26-2026",
@@ -5747,7 +5789,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cade",
@@ -5829,7 +5872,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cafcw-2026",
@@ -5869,7 +5913,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "caise",
@@ -6013,7 +6058,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "canopie-2026",
@@ -6053,7 +6099,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "casa",
@@ -6139,7 +6186,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cav",
@@ -6247,7 +6295,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cccg",
@@ -6289,7 +6338,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ccgrid",
@@ -6371,7 +6421,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ccgrid-workshops",
@@ -6403,7 +6454,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ccpe",
@@ -6422,7 +6474,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ccs",
@@ -6650,7 +6703,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cf",
@@ -6754,7 +6808,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cgi",
@@ -6880,7 +6935,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ches",
@@ -7194,6 +7250,28 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "FANNG-MPC: Framework for Artificial Neural Networks and Generic MPC",
+        "TPUXtract: An Exhaustive Hyperparameter Extraction Framework",
+        "Trace Copilot: Automatically Locating Cryptographic Operations in Side-Channel Traces by Firmware Binary Instrumenting",
+        "FalconSign: An Efficient and High-Throughput Hardware Architecture for Falcon Signature Generation",
+        "GPU Acceleration for FHEW/TFHE Bootstrapping",
+        "TFHE Gets Real: An Efficient and Flexible Homomorphic Floating-Point Arithmetic",
+        "KyberSlash: Exploiting Secret-Dependent Division Timings in Kyber Implementations",
+        "CHERI-Crypt: Transparent Memory Encryption on Capability Architectures",
+        "OPTIMSM: FPGA hardware accelerator for Zero-Knowledge MSM",
+        "Constant time lattice reduction in dimension 4 with application to SQIsign",
+        "AETHER: An Ultra-High Throughput and Low Energy Authenticated Encryption Scheme",
+        "New Quantum Cryptanalysis of Binary Elliptic Curves",
+        "POTA: A Pipelined Oblivious Transfer Acceleration Architecture for Secure Multi-Party Computation",
+        "A5/3 make or break: A massively parallel FPGA architecture for exhaustive key search",
+        "Adaptive Template Attacks on the Kyber Binomial Sampler",
+        "SoK: FHE-Friendly Symmetric Ciphers and Transciphering",
+        "Practical Opcode-based Fault Attack on AES-NI",
+        "Accelerating NTT with RISC-V Vector Extension for Fully Homomorphic Encryption",
+        "Fault Attacks on ECC Signature Verification",
+        "FusionMSM: A Collision-Free and Arithmetic-Optimized FPGA-based Accelerator for Multi-Scalar Multiplication"
       ]
     },
     {
@@ -7360,7 +7438,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "chil",
@@ -7449,7 +7528,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cicai",
@@ -7513,7 +7593,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cidr",
@@ -7621,7 +7702,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cikm",
@@ -7882,7 +7964,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "closer",
@@ -7932,7 +8015,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cloud",
@@ -8018,7 +8102,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cloudcom",
@@ -8065,7 +8150,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cluster",
@@ -8204,7 +8290,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cna",
@@ -8242,7 +8329,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cocoa",
@@ -8280,7 +8368,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cocoon",
@@ -8366,7 +8455,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "codaspy",
@@ -8430,7 +8520,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "codes-isss",
@@ -8479,7 +8570,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cogsci",
@@ -8609,7 +8701,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "coling",
@@ -8720,7 +8813,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "collaboratecom",
@@ -8784,7 +8878,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "collas",
@@ -8865,7 +8960,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "colm",
@@ -9045,7 +9141,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "colt",
@@ -9214,7 +9311,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "compsac",
@@ -9301,7 +9399,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "computer-networks",
@@ -9319,7 +9418,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "comsys",
@@ -9349,7 +9449,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "concur",
@@ -9431,7 +9532,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "conext",
@@ -9550,7 +9652,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "conll",
@@ -9675,7 +9778,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "corl",
@@ -9774,7 +9878,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cpal",
@@ -9998,7 +10103,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "crypto",
@@ -10128,7 +10234,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cscloud",
@@ -10170,7 +10277,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cscw",
@@ -10321,7 +10429,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cscwd",
@@ -10429,7 +10538,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "csfw",
@@ -10680,7 +10790,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ct-rsa",
@@ -10810,7 +10921,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cvm",
@@ -10924,7 +11036,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "cvpr",
@@ -11145,7 +11258,8 @@
           "source": "aideadlines",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dac",
@@ -11333,7 +11447,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dai",
@@ -11415,7 +11530,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dasfaa",
@@ -11626,7 +11742,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "date",
@@ -11801,7 +11918,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dcc",
@@ -11865,7 +11983,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dfrws",
@@ -12000,7 +12119,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dfrws-apac",
@@ -12064,7 +12184,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dimva",
@@ -12239,7 +12360,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dis",
@@ -12352,7 +12474,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "dsn",
@@ -12536,7 +12659,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eacl",
@@ -12600,7 +12724,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ease",
@@ -12713,7 +12838,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ecai",
@@ -12950,7 +13076,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eccv",
@@ -13156,7 +13283,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "echo-workshop-2026",
@@ -13196,7 +13324,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ecir",
@@ -13322,7 +13451,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ecml-pkdd",
@@ -13563,7 +13693,8 @@
           "source": "ccfddl",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ecrts",
@@ -13641,6 +13772,17 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "A First Look at ROS 2 Applications Written in Asynchronous Rust",
+        "Multi-Objective Memory Bandwidth Regulation and Cache Partitioning for Multicore Real-Time Systems",
+        "Enabling Containerisation of Distributed Applications with Real-Time Constraints",
+        "RESCUE: Multi-Robot Planning Under Resource Uncertainty and Objective Criticality",
+        "On Real-Time Guarantees in Intel SGX and TDX",
+        "DAMA: A Dual Arbitration Mechanism for Mixed-Criticality Applications",
+        "LoRaHART: Hardware-Aware Real-Time Scheduling for LoRa",
+        "Bounding the WCET of a GPU Thread Block with a Multi-Phase Representation of Warps Execution",
+        "Real-Time System Evaluation Techniques: A Systematic Mapping Study"
       ]
     },
     {
@@ -13727,7 +13869,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "edbt",
@@ -13969,7 +14112,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "edgesys",
@@ -14001,7 +14145,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "egsr",
@@ -14114,7 +14259,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "emnlp",
@@ -14328,7 +14474,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "emnlp-industry-track",
@@ -14412,7 +14559,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "emnlp-system-demonstrations-track",
@@ -14486,7 +14634,8 @@
           "source": "aideadlines",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "emsoft",
@@ -14568,7 +14717,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "esann",
@@ -14711,7 +14861,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "escience",
@@ -14742,7 +14893,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "esem",
@@ -14855,7 +15007,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "esorics",
@@ -15008,7 +15161,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ets",
@@ -15152,7 +15306,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "euro-par",
@@ -15277,7 +15432,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eurocrypt",
@@ -15407,7 +15563,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eurographics",
@@ -15672,7 +15829,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "euros-p",
@@ -15780,7 +15938,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eurosec",
@@ -15812,7 +15971,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eurosys",
@@ -16122,7 +16282,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eurovis",
@@ -16204,7 +16365,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "eusipco",
@@ -16290,7 +16452,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "euvip",
@@ -16358,7 +16521,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "facct",
@@ -16513,7 +16677,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fast",
@@ -16705,7 +16870,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fc",
@@ -16844,7 +17010,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fccm",
@@ -16988,7 +17155,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fg",
@@ -17177,7 +17345,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fgcs",
@@ -17196,7 +17365,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "fit",
@@ -17228,7 +17398,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fmcad",
@@ -17310,7 +17481,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "focs",
@@ -17396,7 +17568,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "forte",
@@ -17509,7 +17682,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fpga",
@@ -17684,7 +17858,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fpt",
@@ -17797,7 +17972,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fse",
@@ -18062,7 +18238,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "fse-se",
@@ -18259,7 +18436,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ftxs-2026",
@@ -18299,7 +18477,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "gecco",
@@ -18412,7 +18591,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geoai-2026",
@@ -18450,7 +18630,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geoanomalies-2026",
@@ -18488,7 +18669,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geohealth-2026",
@@ -18526,7 +18708,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geoindustry-2026",
@@ -18564,7 +18747,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geosearch-2026",
@@ -18602,7 +18786,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "geosim-2026",
@@ -18643,7 +18828,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "globecom",
@@ -18729,7 +18915,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "glsvlsi",
@@ -18815,7 +19002,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "gmp",
@@ -18959,7 +19147,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "group",
@@ -19050,7 +19239,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "h2rc-2026",
@@ -19090,7 +19280,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hclh-sc-2026",
@@ -19130,7 +19321,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hicss",
@@ -19176,7 +19368,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hipeac",
@@ -19216,7 +19409,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hmem-2026",
@@ -19256,7 +19450,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hot-chips",
@@ -19320,7 +19515,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hoti",
@@ -19349,7 +19545,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hotnets",
@@ -19391,7 +19588,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hotos",
@@ -19468,7 +19666,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hotsec",
@@ -19510,7 +19709,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hotstorage",
@@ -19552,7 +19752,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpc-fabrics-2026",
@@ -19592,7 +19793,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpc-oda-2026",
@@ -19641,7 +19843,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpca",
@@ -19848,7 +20051,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpcc",
@@ -19912,7 +20116,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpcsyspros-2026",
@@ -19952,7 +20157,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpctests-2026",
@@ -19992,7 +20198,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpdc",
@@ -20096,7 +20303,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hppss-2026",
@@ -20136,7 +20344,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hpsr",
@@ -20164,7 +20373,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hscc",
@@ -20246,7 +20456,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "humob-2026",
@@ -20284,7 +20495,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "hust-26-2026",
@@ -20324,7 +20536,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ica3pp",
@@ -20431,7 +20644,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icact",
@@ -20469,7 +20683,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icaif",
@@ -20511,7 +20726,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icalp",
@@ -20597,7 +20813,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icann",
@@ -20753,7 +20970,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icaps",
@@ -20866,7 +21084,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icassp",
@@ -21023,7 +21242,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icc",
@@ -21109,7 +21329,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iccad",
@@ -21284,7 +21505,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iccbr",
@@ -21357,7 +21579,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icccn",
@@ -21421,7 +21644,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iccd",
@@ -21556,7 +21780,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icce",
@@ -21596,7 +21821,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iccv",
@@ -21762,7 +21988,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdar",
@@ -21931,7 +22158,8 @@
           "source": "aideadlines",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdcn",
@@ -21970,7 +22198,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdcs",
@@ -22238,6 +22467,28 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Spacker: Unified State Migration for Distributed Streaming",
+        "LLMSched: Uncertainty-Aware Workload Scheduling for Compound LLM Applications",
+        "Communication-Efficient MoE Fine-Tuning with Locality-Aware Expert Placement",
+        "Shuffle-Exchange: Enhancing Collective Communication Efficiency for Large Model Training",
+        "Efficient Serverless Cold Start: Reducing Library Loading Overhead by Profile-guided Optimization",
+        "P4CEMaker: automated hardware acceleration of consensus protocols",
+        "RAPIDSCRIBE: Bandwidth-aware Parallel Snapshots for Distributed Neural-Network Training",
+        "GreenFL: Carbon-efficient Federated Learning over RE Powered Edge Computing Systems",
+        "EquiBFT: A Framework for Achieving Fairness in BFT Consensus",
+        "SOLB: Synchronization-Objective Load Balancing for Distributed DNN Training",
+        "Mosaic: Client-driven Account Allocation Framework in Sharded Blockchains",
+        "PEE: Precise ECN Encoding for Efficient Congestion Control in Data Center Networks",
+        "Asynchronous Dynamic Committee Proactive Secret Sharing for Large Data",
+        "Octopus: Decentralized Workflow-granular Scheduling for Serverless Workflow",
+        "S2M3: Split-and-Share Multi-Modal Models for Distributed Multi-Task Inference on the Edge",
+        "ECCheck: Enhancing In-Memory Checkpoint with Erasure Coding in Distributed DNN Training",
+        "Mahi-Mahi: Low-Latency Asynchronous BFT DAG-Based Consensus",
+        "FedLTH: A Privacy-preserving Federated Learning Framework with Model Pruning on Edge Clients",
+        "Mast: Efficient Training of Mixture-of-Experts Transformers with Task Pipelining and Ordering",
+        "Elastic Scheduling for Mix-Flow in Time-Sensitive Networking"
       ]
     },
     {
@@ -22475,7 +22726,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdf2c",
@@ -22592,7 +22844,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdm",
@@ -22812,7 +23065,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icdt",
@@ -23010,7 +23264,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iceccs",
@@ -23083,7 +23338,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icic",
@@ -23191,7 +23447,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icics",
@@ -23348,7 +23605,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icin",
@@ -23386,7 +23644,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icip",
@@ -23494,7 +23753,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icissp",
@@ -23541,7 +23801,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iclr",
@@ -23784,7 +24045,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icme",
@@ -23936,7 +24198,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icmi",
@@ -24049,7 +24312,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icml",
@@ -24312,6 +24576,29 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Sharp-MAML: Sharpness-Aware Model-Agnostic Meta Learning",
+        "Active Sampling for Min-Max Fairness",
+        "Hierarchical Shrinkage: Improving the accuracy and interpretability of tree-based models",
+        "Learning of Cluster-based Feature Importance for Electronic Health Record Time-series",
+        "On the Convergence of the Shapley Value in Parametric Bayesian Learning Games",
+        "How Faithful is your Synthetic Data? Sample-level Metrics for Evaluating and Auditing Generative Models",
+        "A Natural Actor-Critic Framework for Zero-Sum Markov Games",
+        "Deploying Convolutional Networks on Untrusted Platforms Using 2D Holographic Reduced Representations",
+        "Optimistic Linear Support and Successor Features as a Basis for Optimal Policy Transfer",
+        "Structured Stochastic Gradient MCMC",
+        "XAI for Transformers: Better Explanations through Conservative Propagation",
+        "Neuro-Symbolic Language Modeling with Automaton-augmented Retrieval",
+        "Scalable First-Order Bayesian Optimization via Structured Automatic Differentiation",
+        "Thresholded Lasso Bandit",
+        "Gradient Based Clustering",
+        "Understanding Gradient Descent on the Edge of Stability in Deep Learning",
+        "Do More Negative Samples Necessarily Hurt In Contrastive Learning?",
+        "Proving Theorems using Incremental Learning and Hindsight Experience Replay",
+        "Self-supervised Adversarial Purification for Graph Neural Networks",
+        "HGOT: Self-supervised Heterogeneous Graph Neural Network with Optimal Transport",
+        "Do Not Mimic My Voice: Speaker Identity Unlearning for Zero-Shot Text-to-Speech"
       ]
     },
     {
@@ -24353,7 +24640,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icmr",
@@ -24461,7 +24749,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icnp",
@@ -24636,7 +24925,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icoin",
@@ -24666,7 +24956,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icomp",
@@ -24737,7 +25028,8 @@
           "source": "aideadlines",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iconip",
@@ -24845,7 +25137,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icpads",
@@ -24909,7 +25202,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icpc",
@@ -25076,7 +25370,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icpp",
@@ -25264,7 +25559,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icpr",
@@ -25328,7 +25624,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icra",
@@ -25520,7 +25817,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ics",
@@ -25700,7 +25998,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icse",
@@ -25933,7 +26232,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icsme",
@@ -26108,7 +26408,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icsoc",
@@ -26239,7 +26540,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icst",
@@ -26304,7 +26606,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ictai",
@@ -26368,7 +26671,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icvrv",
@@ -26451,7 +26755,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icws",
@@ -26590,7 +26895,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "icwsm",
@@ -26730,7 +27036,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-access",
@@ -26749,7 +27056,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ieee-acm-cgo",
@@ -26876,7 +27184,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-cec",
@@ -26992,7 +27301,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-gcce",
@@ -27022,7 +27332,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-micro",
@@ -27040,7 +27351,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ieee-msn",
@@ -27087,7 +27399,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-risc",
@@ -27125,7 +27438,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-tnsm",
@@ -27144,7 +27458,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ieee-tps",
@@ -27182,7 +27497,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-vis",
@@ -27295,7 +27611,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-vr",
@@ -27439,7 +27756,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieee-wsce-2026",
@@ -27477,7 +27795,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-cq",
@@ -27539,7 +27858,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-electron-microwave-special",
@@ -27581,7 +27901,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-fundamentals-discrete-math-special",
@@ -27623,7 +27944,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-ia",
@@ -27711,7 +28033,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-icm",
@@ -27766,7 +28089,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-in",
@@ -27852,7 +28176,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-inf-syst-log-data-special",
@@ -27894,7 +28219,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-nolta-recent-advances-special",
@@ -27936,7 +28262,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-nolta-recent-progress-special",
@@ -27978,7 +28305,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-ns",
@@ -28088,7 +28416,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ieice-trans-inf",
@@ -28107,7 +28436,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ifip-wg-11-9",
@@ -28193,7 +28523,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ih-mmsec",
@@ -28323,7 +28654,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iiswc",
@@ -28409,7 +28741,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcai",
@@ -28632,7 +28965,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcar",
@@ -28714,7 +29048,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcb",
@@ -28778,7 +29113,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcnlp",
@@ -28842,7 +29178,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcnlp-aacl",
@@ -28922,7 +29259,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ijcnn",
@@ -29069,7 +29407,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "imc",
@@ -29218,7 +29557,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "indocrypt",
@@ -29304,7 +29644,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "infocom",
@@ -29541,7 +29882,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "inlg",
@@ -29599,7 +29941,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "inscrypt",
@@ -29681,7 +30024,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "interactive-hpc-2026",
@@ -29721,7 +30065,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "internet-of-things",
@@ -29740,7 +30085,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "internetware",
@@ -29911,7 +30257,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "interspeech",
@@ -30100,7 +30447,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iots",
@@ -30141,7 +30489,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipdps",
@@ -30347,7 +30696,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-27-l-superintelligence",
@@ -30389,7 +30739,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-27-m-security",
@@ -30431,7 +30782,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-27-n-info-systems",
@@ -30473,7 +30825,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-27-p-ubiquitous",
@@ -30515,7 +30868,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-27-r-compsac",
@@ -30557,7 +30911,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-sigarc",
@@ -30599,7 +30954,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-sigdps",
@@ -30621,14 +30977,33 @@
         {
           "year": 2026,
           "id": "ipsj-dps-2026-09",
-          "link": "https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html",
+          "link": "https://www.ipsj.or.jp/kenkyukai/event/dps208eip113.html",
           "place": "倉敷市芸文館",
-          "date_text": "2026年9月10日-11日",
+          "date_text": "2026年9月10日-11日 (第208回)",
           "event_start": "2026-09-10",
           "event_end": "2026-09-11",
           "estimated": false,
           "source": "local",
-          "deadlines": []
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "発表申込〆切（延長後）",
+              "utc": "2026-08-03T14:59:00Z",
+              "aoe": "2026-08-03 02:59:00 AoE",
+              "tz_raw": "UTC+9",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "発表原稿〆切",
+              "utc": "2026-08-17T14:59:00Z",
+              "aoe": "2026-08-17 02:59:00 AoE",
+              "tz_raw": "UTC+9",
+              "round": 1,
+              "comment": null
+            }
+          ]
         },
         {
           "year": 2026,
@@ -30642,7 +31017,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-sighpc",
@@ -30727,7 +31103,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsj-sigos",
@@ -30788,7 +31165,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ipsn",
@@ -30839,7 +31217,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iros",
@@ -30995,7 +31374,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iros2026-noc-workshop",
@@ -31033,7 +31413,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isaac",
@@ -31075,7 +31456,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isav-2026",
@@ -31115,7 +31497,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isbra",
@@ -31179,7 +31562,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isc",
@@ -31287,7 +31671,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isc-hpc",
@@ -31315,7 +31700,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isca",
@@ -31521,7 +31907,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iscas",
@@ -31607,7 +31994,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iscc",
@@ -31671,7 +32059,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "isit",
@@ -31735,7 +32124,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ismar",
@@ -31879,7 +32269,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ispa",
@@ -31921,7 +32312,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ispass",
@@ -32034,7 +32426,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iss",
@@ -32116,7 +32509,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "issre",
@@ -32251,7 +32645,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "issta",
@@ -32408,7 +32803,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iswc",
@@ -32583,7 +32979,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "itc",
@@ -32634,7 +33031,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "itc-asia",
@@ -32685,7 +33083,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "itcs",
@@ -32732,7 +33131,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iui",
@@ -32907,7 +33307,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "iwqos",
@@ -33082,7 +33483,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "jcc",
@@ -33164,14 +33566,17 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "jip",
       "title": "JIP",
       "full_name": "Journal of Information Processing (情報処理学会)",
       "categories": [
-        "systems"
+        "systems",
+        "networking",
+        "ai"
       ],
       "rank": {},
       "link": "https://www.ipsj.or.jp/english/jip/",
@@ -33183,7 +33588,31 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [
+        {
+          "year": 2026,
+          "id": "jip-compsac2026-si",
+          "link": "https://www.ipsj.or.jp/journal/cfp/27-R.html",
+          "place": "",
+          "date_text": "特集号予定 2027年9月号 (COMPSAC 2026 関連)",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "投稿締切",
+              "utc": "2026-12-01T14:59:00Z",
+              "aoe": "2026-12-01 02:59:00 AoE",
+              "tz_raw": "UTC+9",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ],
+      "papers": []
     },
     {
       "key": "jpdc",
@@ -33202,7 +33631,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "jss",
@@ -33220,7 +33650,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "kr",
@@ -33395,7 +33826,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ksem",
@@ -33546,7 +33978,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "lcn",
@@ -33588,7 +34021,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "lics",
@@ -33692,7 +34126,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "lisa",
@@ -33734,7 +34169,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "llvm-hpc-2026",
@@ -33774,7 +34210,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "log",
@@ -33875,7 +34312,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "lpc",
@@ -33903,7 +34341,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "lrec",
@@ -33974,7 +34413,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mathai",
@@ -34104,7 +34544,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "miccai",
@@ -34287,7 +34728,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "micro",
@@ -34493,7 +34935,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mid4cc",
@@ -34553,7 +34996,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "middleware",
@@ -34672,7 +35116,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mig",
@@ -34728,7 +35173,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mipro",
@@ -34769,7 +35215,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mlsys",
@@ -34944,7 +35391,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mmasia",
@@ -35048,7 +35496,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mmm",
@@ -35143,7 +35592,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mmsys",
@@ -35225,7 +35675,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mobicom",
@@ -35486,7 +35937,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mobihoc",
@@ -35568,7 +36020,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mobisys",
@@ -35681,7 +36134,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "models",
@@ -35723,7 +36177,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "msn",
@@ -35809,7 +36264,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "msr",
@@ -35954,7 +36410,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "msst",
@@ -36040,7 +36497,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "mswim",
@@ -36082,7 +36540,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "naacl",
@@ -36193,7 +36652,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ncmmsc",
@@ -36235,7 +36695,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ndss",
@@ -36459,6 +36920,25 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "A Method to Facilitate Membership Inference Attacks in Deep Learning Models",
+        "A Large-Scale Measurement Study of the PROXY Protocol and its Security Implications",
+        "A Multifaceted Study on the Use of TLS and Auto-detect in Email Ecosystems",
+        "An Empirical Study on Fingerprint API Misuse with Lifecycle Analysis in Real-world Android Apps",
+        "ASGARD: Protecting On-Device Deep Neural Networks with Virtualization-Based Trusted Execution Environments",
+        "Automatic Insecurity: Exploring Email Auto-configuration in the Wild",
+        "Be Careful of What You Embed: Demystifying OLE Vulnerabilities",
+        "Beyond Classification: Inferring Function Names in Stripped Binaries via Domain Adapted LLMs",
+        "BinEnhance: An Enhancement Framework Based on External Environment Semantics for Binary Code Search",
+        "BitShield: Defending Against Bit-Flip Attacks on DNN Executables",
+        "Blackbox Fuzzing of Distributed Systems with Multi-Dimensional Inputs and Symmetry-Based Feedback Pruning",
+        "Blindfold: Confidential Memory Management by Untrusted Operating System",
+        "Cascading Spy Sheets: Exploiting the Complexity of Modern CSS for Email and Browser Fingerprinting",
+        "CHAOS: Exploiting Station Time Synchronization in 802.11 Networks",
+        "CENSOR: Defense Against Gradient Inversion via Orthogonal Subspace Bayesian Sampling",
+        "CLIBE: Detecting Dynamic Backdoors in Transformer-based NLP Models",
+        "Compiled Models, Built-In Exploits: Uncovering Pervasive Bit-Flip Attack Surfaces in DNN Executables"
       ]
     },
     {
@@ -36488,7 +36968,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "network-flows-2-0",
@@ -36535,7 +37016,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "networking",
@@ -36599,7 +37081,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "netys",
@@ -36650,7 +37133,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "neurips",
@@ -36940,7 +37424,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nlbse",
@@ -37021,7 +37506,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nlpcc",
@@ -37085,7 +37571,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "noms",
@@ -37181,7 +37668,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nordsec",
@@ -37228,7 +37716,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nossdav",
@@ -37314,7 +37803,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nsdi",
@@ -37628,6 +38118,24 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Holmes: Localizing Irregularities in LLM Training with Mega-scale GPU Clusters",
+        "Evolution of Aegis: Fault Diagnosis for AI Model Training Cloud Service in Production",
+        "SimAI: Unifying Architecture Design and Performance Tuning for Large-Scale Large Language Model Training",
+        "Optimizing RLHF Training for Large Language Models with Stage Fusion",
+        "BCP: A Unified Checkpointing System for Large Foundation Model Development",
+        "GPU-Disaggregated Serving for Deep Learning Recommendation Models at Scale",
+        "SuperServe: Fine-Grained Inference Serving for Unpredictable Workloads",
+        "OptiReduce: Resilient and Tail-Optimal AllReduce for Distributed Deep Learning in the Cloud",
+        "White-Boxing RDMA with Packet-Granular Software Control",
+        "ONCache: A Cache-Based Low-Overhead Container Overlay Network",
+        "Preventing Network Bottlenecks: Accelerating Datacenter Services with Hotspot-Aware Placement for Compute and Storage",
+        "Quicksand: Harnessing Stranded Datacenter Resources with Granular Computing",
+        "Making Serverless Pay-For-Use a Reality with Leopard",
+        "Eden: Developer-Friendly Application-Integrated Far Memory",
+        "Mowgli: A Passive Approach to Learning Real-Time Rate Control for Video Conferencing",
+        "Efficient Direct-Connect Topologies for Collective Communications"
       ]
     },
     {
@@ -37736,7 +38244,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "nvmw",
@@ -37767,7 +38276,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ocp-global-summit",
@@ -37795,7 +38305,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "osdi",
@@ -37992,6 +38503,23 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "ZEN: Empowering Distributed Training with Sparsity-driven Data Synchronization",
+        "Understanding Stragglers in Large Model Training Using What-if Analysis",
+        "Training with Confidence: Catching Silent Errors in Deep Learning Training with Automated Proactive Checks",
+        "BlitzScale: Fast and Live Large Model Autoscaling with O(1) Host Caching",
+        "DecDEC: A Systems Approach to Advancing Low-Bit LLM Quantization",
+        "KPerfIR: Towards an Open and Compiler-centric Ecosystem for GPU Kernel Performance Tooling",
+        "PipeThreader: Software-Defined Pipelining for Efficient DNN Execution",
+        "Neutrino: Fine-grained GPU Kernel Profiling via Programmable Probing",
+        "Enabling Efficient GPU Communication over Multiple NICs with FuseLink",
+        "Decouple and Decompose: Scaling Resource Allocation with DeDe",
+        "Kamino: Efficient VM Allocation at Scale with Latency-Driven Cache-Aware Scheduling",
+        "Fork in the Road: Reflections and Optimizations for Cold Start Latency in Production Serverless Systems",
+        "Tigon: A Distributed Database for a CXL Pod",
+        "XQueue: Preemptive Scheduling for Diverse XPUs using Multi-level Hardware Model",
+        "Bayesian Code Diffusion for Efficient Automatic Deep Learning Program Optimization"
       ]
     },
     {
@@ -38032,7 +38560,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "p4-workshop",
@@ -38060,7 +38589,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pacificvis",
@@ -38228,7 +38758,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pact",
@@ -38372,7 +38903,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pakdd",
@@ -38458,7 +38990,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pam",
@@ -38669,7 +39202,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pdcat",
@@ -38752,7 +39286,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pdsw-2026",
@@ -38793,7 +39328,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pearc",
@@ -38824,7 +39360,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "percom",
@@ -38940,7 +39477,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "percom-workshops",
@@ -38972,7 +39510,8 @@
           "source": "local",
           "deadlines": []
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "performance",
@@ -39021,7 +39560,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pets",
@@ -39286,7 +39826,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pg",
@@ -39430,7 +39971,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pkc",
@@ -39560,7 +40102,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pmbs-2026",
@@ -39600,7 +40143,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "podc",
@@ -39744,7 +40288,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pods",
@@ -39813,7 +40358,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "polds-2026",
@@ -39851,7 +40397,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ppopp",
@@ -40043,7 +40590,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ppsn",
@@ -40107,7 +40655,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "prcv",
@@ -40224,7 +40773,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "pricai",
@@ -40310,7 +40860,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "probml",
@@ -40374,7 +40925,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "protools-2026",
@@ -40414,7 +40966,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "qrs",
@@ -40527,7 +41080,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "qspatial-2026",
@@ -40565,7 +41119,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "raid",
@@ -40695,7 +41250,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "re",
@@ -40817,7 +41373,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "recomb",
@@ -40930,7 +41487,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "recsys",
@@ -41074,7 +41632,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "refsq",
@@ -41187,7 +41746,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "resdis-2026",
@@ -41227,7 +41787,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "rlc",
@@ -41335,7 +41896,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "rss",
@@ -41541,7 +42103,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "rtas",
@@ -41646,6 +42209,30 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Asymptotically Optimal Multiprocessor Real-Time Locking for non-JLFP Scheduling",
+        "SPR: Shielded Processor Reservations with Bounded Management Overhead",
+        "Nip it in the Bud: Job Acceptance Multi-Server",
+        "Optimal Priority Assignment for Synchronous Harmonic Tasks with Dynamic Self-Suspension",
+        "A Unified Framework for Quantitative Cache Analysis",
+        "Consistency-Aware and Predictable Memory Processing for Safety-Critical Out-of-Order Multicores",
+        "ParRP: Enabling Space Isolation in Caches with Shared Data",
+        "A Field Practical Approach to Memory Bandwidth Allocation for Consolidating Multi-Domain Automotive Applications on a Single SoC",
+        "Intelligent Power Distribution Systems: Model, Utilization Bounds, and Implementation",
+        "Mesh Network Scheduling Based on Cyber-Physical Sensitivity for Wireless Control Systems",
+        "Analysis of Control Systems Under Sensor Timing Misalignments",
+        "Scheduling Ev Battery Swap/Charge Operations",
+        "Optimal Task Phasing for End-To-End Latency in Harmonic and Semi-Harmonic Automotive Systems",
+        "Reconciling ROS 2 with Classical Real-Time Scheduling of Periodic Tasks",
+        "Jointly Ensuring Timing Disparity and End-to-End Latency Constraints in Hybrid DAGs",
+        "Integrated Real-Time Control and Scheduling for Safety Critical Cyber-Physical Systems",
+        "Recovery-Guaranteed Sensor Attack Detection for Cyber-Physical Systems",
+        "Scheduling Job Streams on Uniprocessors with Cold Start Delays",
+        "MATCH: Real-Time Scheduling of Multiple and Parallel Data Copies in Heterogeneous Architectures",
+        "Scheduling Processing Graphs of Gang Tasks on Heterogeneous Platforms",
+        "Silverline: Lightweight Virtualization and Orchestration of Distributed Systems",
+        "HARD: Hardening Real-Time Scheduling and Analysis for Accelerator Enabled Computing"
       ]
     },
     {
@@ -41732,6 +42319,30 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Probabilistic Response-Time-Aware Search for Transient Astrophysical Phenomena",
+        "Reducing Worst-Case Deadline Failure Probability for EDF Scheduling",
+        "Response Time Analysis for Probabilistic DAG Tasks in Multicore Real-Time Systems",
+        "ROSRT: Enabling Flexible Scheduling in ROS 2",
+        "Partitioning Kernel with Capability Controlled Temporal and Spatial Partitioning",
+        "Jitter Propagation in Task Chains",
+        "Faster, Exact, More General Response-time Analysis for NVIDIA Holoscan Applications",
+        "A Soft-Real-Time Optimal Scheduler for DAG Tasks with Node-Level Self Dependencies",
+        "Recursive Partitioned Scheduling for Real-Time Gang Tasks",
+        "Formal Timing Analysis of CQF Interference in TSN: A Network Calculus-Based Approach",
+        "Lyapunov-Based Stability and Delay Bounds for IEEE 802.1Qbv in Imperfectly Synchronized TSN",
+        "Real-Time Multitasking of Deep Neural Networks with Nvidia TensorRT",
+        "Nova: Real-Time Agentic Vision-Language Model Serving with Adaptive Cross-Stage Parallelization",
+        "DERCA: DetERministic Cycle-Level Accelerator on Reconfigurable Platforms in DNN-Enabled Real-Time Safety-Critical Systems",
+        "Dynamic Fuzzing-Based Whole-System Timing Analysis",
+        "Modern LLVM-based Compiler Autotuning for WCET Optimization",
+        "Exploiting Burstiness to Improve Multi-Core Interference Analysis",
+        "Tight Cache Contention Analysis for WCET Estimation on Multicore Systems",
+        "MemScope: Open-Source Kernel-Level Framework for Heterogeneous Memory Characterization",
+        "TSI: A Time-semantic Instruction Set for Deterministic Data-Flow Execution in Real-Time Embedded Systems",
+        "Requirement-Based Analysis of Self-Suspending Tasks under EDF",
+        "LEFT-RS: A Lock-Free Fault-Tolerant Resource Sharing Protocol for Multicore Real-Time Systems"
       ]
     },
     {
@@ -41797,7 +42408,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "s-p",
@@ -42048,7 +42660,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sac",
@@ -42192,7 +42805,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sacmat",
@@ -42318,7 +42932,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "saner",
@@ -42493,7 +43108,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sat",
@@ -42575,7 +43191,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "satml",
@@ -42707,7 +43324,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sc",
@@ -42864,7 +43482,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sca",
@@ -43017,7 +43636,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "scalah-2026",
@@ -43057,7 +43677,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "scale-to-see-2026",
@@ -43097,7 +43718,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "scam",
@@ -43170,7 +43792,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sdm",
@@ -43274,7 +43897,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sec",
@@ -43325,7 +43949,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sec-sc",
@@ -43442,7 +44067,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "secitc",
@@ -43480,7 +44106,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "secon",
@@ -43553,7 +44180,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "securecomm",
@@ -43715,7 +44343,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "seke",
@@ -43835,7 +44464,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sensys",
@@ -43966,7 +44596,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "setta",
@@ -44092,7 +44723,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sfwm-2026",
@@ -44133,7 +44765,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sgp",
@@ -44413,7 +45046,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sibgrapi",
@@ -44492,7 +45126,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigcomm",
@@ -44698,7 +45333,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigcse",
@@ -44811,7 +45447,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigir",
@@ -45082,7 +45719,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigkdd",
@@ -45414,7 +46052,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigmetrics",
@@ -45635,7 +46274,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigmod",
@@ -46034,7 +46674,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigops-atc",
@@ -46213,7 +46854,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sigspatial",
@@ -46326,7 +46968,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "slt",
@@ -46368,7 +47011,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "smc",
@@ -46476,7 +47120,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "smi",
@@ -46558,7 +47203,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "socc",
@@ -46680,7 +47326,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "socg",
@@ -46793,7 +47440,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "soda",
@@ -46879,7 +47527,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sosp",
@@ -47045,6 +47694,28 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Pesto: Cooking up High Performance BFT Queries",
+        "How to Copy Memory? Coordinated Asynchronous Copy as a First-Class OS Service",
+        "Moirai: Optimizing Placement of Data and Compute in Hybrid Clouds",
+        "Unlocking True Elasticity for the Cloud-Native Era with Dandelion",
+        "Spirit: Fair Allocation of Interdependent Resources in Remote Memory Systems",
+        "HedraRAG: Co-Optimizing Generation and Retrieval for Heterogeneous RAG Workflows",
+        "Supporting POSIX fork Within a Single-Address-Space OS",
+        "DiffKV: Differentiated Memory Management for Large Language Models with Parallel KV Compaction",
+        "Oasis: Pooling PCIe Devices Over CXL to Boost Utilization",
+        "Concurrent OS-level GPU Checkpoint and Restore with Validated Speculation",
+        "A Programmable Serving System for Emerging LLM Applications",
+        "Aegaeon: Effective GPU Pooling for Concurrent LLM Serving on the Market",
+        "Aeolia: A Fast and Secure Userspace Interrupt-Based Storage Stack",
+        "cache_ext: Customizing the Page Cache with eBPF",
+        "Atmosphere: Practical Verified Kernels with Rust and Verus",
+        "Jenga: Effective Memory Management for Serving LLM with Heterogeneity",
+        "IC-Cache: Efficient Large Language Model Serving via In-context Caching",
+        "Managing Scalable Direct Storage Accesses for GPUs",
+        "KTransformers: Unleashing the Full Potential of CPU/GPU Hybrid Inference for MoE Models",
+        "Coyote v2: Raising the Level of Abstraction for Data Center FPGAs"
       ]
     },
     {
@@ -47189,7 +47860,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "spaa",
@@ -47333,7 +48005,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "spatialconnect-2026",
@@ -47371,7 +48044,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "spm",
@@ -47453,7 +48127,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "srds",
@@ -47628,7 +48303,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "sse",
@@ -47692,7 +48368,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ssr",
@@ -47730,7 +48407,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "stoc",
@@ -47838,7 +48516,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "systor",
@@ -47961,7 +48640,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "tc",
@@ -47979,7 +48659,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "tcc",
@@ -48109,7 +48790,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "tdsc",
@@ -48128,7 +48810,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "tmc",
@@ -48147,7 +48830,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "ton",
@@ -48165,7 +48849,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "tos",
@@ -48183,7 +48868,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "tpds",
@@ -48202,7 +48888,8 @@
       "sources": [
         "local"
       ],
-      "editions": []
+      "editions": [],
+      "papers": []
     },
     {
       "key": "trustcom",
@@ -48288,7 +48975,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "uai",
@@ -48421,7 +49109,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ubicomp-iswc",
@@ -48601,7 +49290,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "ucc",
@@ -48666,7 +49356,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "uic",
@@ -48730,7 +49421,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "uist",
@@ -48843,7 +49535,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "urbanai-2026",
@@ -48881,7 +49574,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "usenix-security",
@@ -49150,6 +49844,32 @@
             }
           ]
         }
+      ],
+      "papers": [
+        "Breaking the Layer Barrier: Remodeling Private Transformer Inference with Hybrid CKKS and MPC",
+        "Leuvenshtein: Efficient FHE-based Edit Distance Computation with Single Bootstrap per Cell",
+        "Arbitrary-Threshold Fully Homomorphic Encryption with Lower Complexity",
+        "Beyond Statistical Estimation: Differentially Private Individual Computation via Shuffling",
+        "Voting-Bloc Entropy: A New Metric for DAO Decentralization",
+        "DP-BREM: Differentially-Private and Byzantine-Robust Federated Learning with Client Momentum",
+        "Refiner: Data Refining against Gradient Leakage Attacks in Federated Learning",
+        "Boosting Gradient Leakage Attacks: Data Reconstruction in Realistic FL Settings",
+        "Place Protections at the Right Place: Targeted Hardening for Cryptographic Code against Spectre v1",
+        "TimeTravel: Real-time Timing Drift Attack on System Time Using Acoustic Waves",
+        "BarraCUDA: Edge GPUs do Leak DNN Weights",
+        "SoK: A Security Architect's View of Printed Circuit Board Attacks",
+        "Self-interpreting Adversarial Images",
+        "TwinBreak: Jailbreaking LLM Security Alignments based on Twin Prompts",
+        "Dormant: Defending against Pose-driven Human Image Animation",
+        "Whispering Under the Eaves: Protecting User Privacy Against Commercial and LLM-powered Automatic Speech Recognition Systems",
+        "AUTOVR: Automated UI Exploration for Detecting Sensitive Data Flow Exposures in Virtual Reality Apps",
+        "As Advertised? Understanding the Impact of Influencer VPN Ads",
+        "HawkEye: Statically and Accurately Profiling the Communication Cost of Models in Multi-party Learning",
+        "Towards Understanding and Enhancing Security of Proof-of-Training for DNN Model Ownership Verification",
+        "Predictive Response Optimization: Using Reinforcement Learning to Fight Online Social Network Abuse",
+        "PRSA: Prompt Stealing Attacks against Real-World Prompt Services",
+        "When LLMs Go Online: The Emerging Threat of Web-Enabled LLMs",
+        "\"I Cannot Write This Because It Violates Our Content Policy\": Understanding Content Moderation Policies and User Experiences in Generative AI Products"
       ]
     },
     {
@@ -49192,7 +49912,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "vinci",
@@ -49256,7 +49977,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "vldb",
@@ -50231,7 +50953,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "waccpd-2026",
@@ -50269,7 +50992,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wacv",
@@ -50584,7 +51308,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wasa",
@@ -50670,7 +51395,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wcnc",
@@ -50756,7 +51482,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "whpc-2026",
@@ -50796,7 +51523,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wicon",
@@ -50860,7 +51588,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wine",
@@ -50968,7 +51697,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wisa",
@@ -51050,7 +51780,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wise",
@@ -51092,7 +51823,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wisec",
@@ -51249,7 +51981,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wowmom",
@@ -51353,7 +52086,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wsdm",
@@ -51600,7 +52334,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "wsse-2026",
@@ -51638,7 +52373,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "www",
@@ -51919,7 +52655,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     },
     {
       "key": "xloop-2026",
@@ -51959,7 +52696,8 @@
             }
           ]
         }
-      ]
+      ],
+      "papers": []
     }
   ]
 }
