@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T18:14:50Z",
+  "generated_at": "2026-08-11T18:16:59Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -45371,20 +45371,7 @@
           ]
         }
       ],
-      "papers": [
-        "LeoCC: Making Internet Congestion Control Robust to LEO Satellite Dynamics",
-        "Falcon: A Reliable, Low Latency Hardware Transport",
-        "Inter-domain Routing with Extensible Criteria",
-        "InfiniteHBD: Building Datacenter-Scale High-Bandwidth Domain for LLM with Optical Circuit Switching Transceivers",
-        "Revisiting RDMA Reliability for Lossy Fabrics",
-        "ByteDance Jakiro: Enabling RDMA and TCP over Virtual Private Cloud",
-        "SGLB: Scalable and Robust Global Load Balancing in Commodity AI Clusters",
-        "Albatross: A Containerized Cloud Gateway Platform with FPGA-accelerated Packet-level Load Balancing",
-        "Centralium: A Hybrid Route-Planning Framework for Large-Scale Data Center Network Migrations",
-        "DeepSpace: Super Resolution Powered Efficient and Reliable Satellite Image Data Acquistion",
-        "Edge Caching as Differentiation",
-        "Towards User-level QoE: Large-scale Practice in Personalized Optimization of Adaptive Video Streaming"
-      ]
+      "papers": []
     },
     {
       "key": "sigcse",
