@@ -114,7 +114,8 @@ describe("collisions", () => {
 
   it("built keys are unique", () => {
     const outdir = join(mkdtempSync(join(tmpdir(), "cfp-keys-")), "site");
-    const result = runCli(outdir);
+    // 埋め込み生成は 2 モデル（英語+多言語）で数秒かかるためキー検証ではスキップ
+    const result = runCli(outdir, { extra: ["--no-embeddings"] });
     expect(result.status).toBe(0);
     const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
       conferences: Array<{ key: string }>;

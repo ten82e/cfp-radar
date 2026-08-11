@@ -9,6 +9,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
+// 代表採択論文タイトル（R12: 会議のセマンティック/語彙プロファイル強化）。
+// データパイプラインで conferences に papers として載せ、ブラウザの語彙一致と
+// IDF（buildNameIdf）の両方に使えるようにする。
+import { VENUE_PAPERS } from "./embeddings.ts";
 import {
   addDays,
   type Conference,
@@ -471,6 +475,8 @@ function toJson(
       tags: [...conf.tags],
       sources: [...conf.sources],
       editions,
+      // 代表採択論文タイトル（無い会議は空配列）— 語彙一致 + IDF + 埋め込み強化に使う
+      papers: VENUE_PAPERS[conf.key] ?? [],
     });
   }
   return {
@@ -711,6 +717,7 @@ export async function buildAll(
   config: Record<string, unknown>,
   outdir: string,
   now: Date,
+  opts: { noEmbeddings?: boolean } = {},
 ): Promise<BuildStats> {
   mkdirSync(outdir, { recursive: true });
 
@@ -791,27 +798,29 @@ export async function buildAll(
   write("upcoming.md", toUpcomingMd(records, nowUtc));
 
   // セマンティックレコメンド用の埋め込み（transformers.js が無ければスキップして語彙のみで動作）
-  try {
-    const embPath = join(outdir, "embeddings.json");
-    let needEmb = true;
+  if (!opts.noEmbeddings) {
     try {
-      const existing = JSON.parse(readFileSync(embPath, "utf8")) as {
-        embeddings?: Record<string, unknown>;
-      };
-      const have = new Set(Object.keys(existing.embeddings ?? {}));
-      needEmb = have.size !== new Set(confs.map((c) => c.key)).size;
-    } catch {
-      needEmb = true;
+      const embPath = join(outdir, "embeddings.json");
+      let needEmb = true;
+      try {
+        const existing = JSON.parse(readFileSync(embPath, "utf8")) as {
+          embeddings?: Record<string, unknown>;
+        };
+        const have = new Set(Object.keys(existing.embeddings ?? {}));
+        needEmb = have.size !== new Set(confs.map((c) => c.key)).size;
+      } catch {
+        needEmb = true;
+      }
+      if (needEmb) {
+        const { buildEmbeddings } = await import("./embeddings.ts");
+        await buildEmbeddings(join(outdir, "data.json"), embPath);
+        written.push("embeddings.json");
+      }
+    } catch (exc) {
+      console.warn(
+        `warning: embeddings を生成しなかった（${(exc as Error).constructor.name}: ${String(exc)}）`,
+      );
     }
-    if (needEmb) {
-      const { buildEmbeddings } = await import("./embeddings.ts");
-      await buildEmbeddings(join(outdir, "data.json"), embPath);
-      written.push("embeddings.json");
-    }
-  } catch (exc) {
-    console.warn(
-      `warning: embeddings を生成しなかった（${(exc as Error).constructor.name}: ${String(exc)}）`,
-    );
   }
 
   write(

@@ -31,7 +31,8 @@ let data: Record<string, any>;
 
 beforeAll(() => {
   const outdir = join(mkdtempSync(join(tmpdir(), "cfp-site-")), "public");
-  const run = runCli(outdir);
+  // 埋め込み生成は 2 モデル（英語+多言語）で数秒かかるため、このテスト群ではスキップ
+  const run = runCli(outdir, { extra: ["--no-embeddings"] });
   expect(
     run.status,
     `cli build failed\n--- stdout ---\n${run.stdout}\n--- stderr ---\n${run.stderr}`,
@@ -52,7 +53,7 @@ it.each(PUBLIC_FILES)("public file is generated: %s", (name) => {
 
 it("build is deterministic", () => {
   const second = join(mkdtempSync(join(tmpdir(), "cfp-site2-")), "public2");
-  const run = runCli(second);
+  const run = runCli(second, { extra: ["--no-embeddings"] });
   expect(run.status, run.stderr).toBe(0);
   for (const name of PUBLIC_FILES) {
     expect(readFileSync(join(site, name))).toEqual(readFileSync(join(second, name)));
@@ -365,7 +366,7 @@ it("index.html has the data injected", () => {
 
 it("generated_at follows the --now argument", () => {
   const other = join(mkdtempSync(join(tmpdir(), "cfp-site3-")), "public3");
-  const run = runCli(other, { now: "2027-01-02T00:00:00Z" });
+  const run = runCli(other, { now: "2027-01-02T00:00:00Z", extra: ["--no-embeddings"] });
   expect(run.status, run.stderr).toBe(0);
   const payload = JSON.parse(readFileSync(join(other, "data.json"), "utf8"));
   expect(payload.generated_at).toBe("2027-01-02T00:00:00Z");

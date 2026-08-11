@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .hermes/
+
+# ローカル DB（誤コミット防止 2026-08-12）
+.freebuff/

@@ -354,7 +354,8 @@ tr.detail-row td {
   font-size: 0.78rem;
   color: var(--muted);
 }
-.detail-head { font-weight: 600; color: var(--fg); margin-bottom: 8px; }
+.detail-head { font-weight: 600; color: var(--fg); margin-bottom: 4px; }
+.detail-comp { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; font-family: var(--font-mono); }
 .reason-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
 .reason-chip {
   display: inline-flex;
@@ -544,6 +545,7 @@ footer a:hover { text-decoration: underline; }
         <button class="sample-btn" type="button" data-sample="High-Performance Key-Value Store with RDMA and NVMe | storage, rdma, nvme | USENIX FAST">分散ストレージ</button>
         <button class="sample-btn" type="button" data-sample="Kubernetes Service Mesh with eBPF-based Packet Processing | kubernetes, ebpf, network, packet">K8s ネットワーク</button>
         <button class="sample-btn" type="button" data-sample="Confidential Computing with SGX Enclaves in Cloud | sgx, enclave, confidential computing">SGX セキュリティ</button>
+        <button class="sample-btn" type="button" data-sample="分散システムにおける低遅延ミドルウェアの設計と評価 | 分散, ミドルウェア, 低遅延, リアルタイム">日本語 分散システム</button>
       </div>
     </div>
     <textarea id="paperText" hidden></textarea>
@@ -609,7 +611,7 @@ footer a:hover { text-decoration: underline; }
 
 <script src="recommender.js"></script>
 <script>
-(function () {
+(() => {
   // SPEC.md section 7: DATA is injected by build.py. Defaults to empty so that
   // opening the template standalone displays a blank table instead of throwing.
   var DATA = /*__DATA__*/null;
@@ -631,6 +633,13 @@ footer a:hover { text-decoration: underline; }
 
   // recommender.js から供給（テスト可能な単一正典）。無ければこの場で縮退定義。
   var Recommender = (typeof window !== "undefined" && window.Recommender) || null;
+
+  // R12: 会議名 + 代表採択論文語彙の IDF 重みを実行時に計算して有効化する。
+  // 実測（golden EN）: 実論文タイトルで正解会議 top1 が 25.0→37.5% に改善。
+  // 汎用語（machine/deep/cache 等）が全会議の語彙に現れて誤爆するのを減衰する。
+  if (Recommender && Recommender.buildNameIdf && DATA.conferences.length) {
+    Recommender.setNameIdf(Recommender.buildNameIdf(DATA.conferences));
+  }
   var DOMAIN_SIGNAL = (Recommender && Recommender.DOMAIN_SIGNAL) || {
     hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster", "ハイパフォーマンス", "スーパーコンピュータ", "並列"],
     systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler", "real-time", "realtime", "embedded", "deterministic", "tsn", "ストレージ", "カーネル", "分散システム", "ミドルウェア", "オペレーティングシステム"],
@@ -668,18 +677,18 @@ footer a:hover { text-decoration: underline; }
   }
 
   // Toast Notify
-  window.copyToClipboard = function(text) {
-    navigator.clipboard.writeText(text).then(function() {
+  window.copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
       var t = $("toast");
       if (t) {
         t.classList.add("show");
-        setTimeout(function() { t.classList.remove("show"); }, 2000);
+        setTimeout(() => { t.classList.remove("show"); }, 2000);
       }
     });
   };
 
   // Quick Presets
-  window.applyPreset = function(type) {
+  window.applyPreset = (type) => {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
     if (type === '7d') state.win = "30d";
     if (type === 'a_star') state.rank = "A*";
@@ -691,7 +700,7 @@ footer a:hover { text-decoration: underline; }
   };
 
   // Column Sorting
-  window.toggleSort = function(key) {
+  window.toggleSort = (key) => {
     if (sortKey === key) {
       sortAsc = !sortAsc;
     } else {
@@ -714,13 +723,13 @@ footer a:hover { text-decoration: underline; }
   }
 
   // Copy Markdown Reference
-  window.copyMarkdownRef = function(r) {
+  window.copyMarkdownRef = (r) => {
     var text = "[" + (r.conf.title || r.conf.key) + " '" + String(r.ed.year || "").slice(-2) + "] " + (r.ed.date_text || r.ed.event_start || "") + " " + (r.ed.link || r.conf.link || "");
     copyToClipboard(text);
   };
 
   // Drawer Controls
-  window.openDrawer = function(r) {
+  window.openDrawer = (r) => {
     $("drawerBackdrop").classList.add("active");
     $("drawerTitle").textContent = (r.conf.title || r.conf.key) + " " + (r.ed.year || "");
     $("drawerFullName").textContent = r.conf.full_name || "";
@@ -757,14 +766,14 @@ footer a:hover { text-decoration: underline; }
     $("drawerBody").innerHTML = html;
   };
 
-  window.closeDrawer = function(e) {
+  window.closeDrawer = (e) => {
     if (!e || e.target === $("drawerBackdrop") || e.target.tagName === "BUTTON") {
       $("drawerBackdrop").classList.remove("active");
     }
   };
 
   // Keyboard Navigation (j/k/Enter/Esc//)
-  window.addEventListener("keydown", function(e) {
+  window.addEventListener("keydown", (e) => {
     if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
       if (e.key === "Escape") { e.target.blur(); }
       return;
@@ -795,10 +804,8 @@ footer a:hover { text-decoration: underline; }
 
   function updateRowSelection() {
     // 展開用 detail-row を除外し、shown[] の行と 1:1 対応を保つ
-    var trs = Array.prototype.filter.call($("tbody").querySelectorAll("tr"), function (t) {
-      return !t.classList.contains("detail-row");
-    });
-    Array.prototype.forEach.call(trs, function(tr, idx) {
+    var trs = Array.prototype.filter.call($("tbody").querySelectorAll("tr"), (t) => !t.classList.contains("detail-row"));
+    Array.prototype.forEach.call(trs, (tr, idx) => {
       tr.classList.toggle("selected", idx === selectedIndex);
     });
     if (trs[selectedIndex]) {
@@ -823,7 +830,7 @@ footer a:hover { text-decoration: underline; }
   ];
   var siteBase = ((DATA.site || {}).base_url || "").replace(/\/$/, "");
 
-  FEEDS.forEach(function (f) {
+  FEEDS.forEach((f) => {
     var url = (siteBase ? siteBase + "/" : "") + f.file;
     var div = document.createElement("div");
     div.className = "feed";
@@ -834,7 +841,7 @@ footer a:hover { text-decoration: underline; }
 
   // ---- CATEGORIES ----
   var catsBox = $("cats");
-  Object.keys(DATA.categories || {}).forEach(function (k) {
+  Object.keys(DATA.categories || {}).forEach((k) => {
     var lbl = document.createElement("label");
     var chk = document.createElement("input");
     chk.type = "checkbox"; chk.value = k;
@@ -850,7 +857,7 @@ footer a:hover { text-decoration: underline; }
   var optAllK = document.createElement("option");
   optAllK.value = ""; optAllK.textContent = "投稿締切（概要・論文）";
   kindSel.appendChild(optAllK);
-  Object.keys(KIND_LABEL).forEach(function (k) {
+  Object.keys(KIND_LABEL).forEach((k) => {
     var opt = document.createElement("option");
     opt.value = k; opt.textContent = KIND_LABEL[k];
     kindSel.appendChild(opt);
@@ -860,7 +867,7 @@ footer a:hover { text-decoration: underline; }
   var optAllR = document.createElement("option");
   optAllR.value = ""; optAllR.textContent = "すべて";
   rankSel.appendChild(optAllR);
-  ["A*", "A", "B", "C", "N"].forEach(function (r) {
+  ["A*", "A", "B", "C", "N"].forEach((r) => {
     var opt = document.createElement("option");
     opt.value = r; opt.textContent = "Rank " + r;
     rankSel.appendChild(opt);
@@ -868,11 +875,11 @@ footer a:hover { text-decoration: underline; }
 
   // ---- DATA FLATTENING ----
   var rows = [];
-  (DATA.conferences || []).forEach(function (conf) {
-    (conf.editions || []).forEach(function (e) {
+  (DATA.conferences || []).forEach((conf) => {
+    (conf.editions || []).forEach((e) => {
       var pairs = [];
       if (conf.rank) {
-        Object.keys(conf.rank).forEach(function (rk) {
+        Object.keys(conf.rank).forEach((rk) => {
           if (conf.rank[rk]) { pairs.push(rk + ":" + conf.rank[rk]); }
         });
       }
@@ -880,7 +887,7 @@ footer a:hover { text-decoration: underline; }
         conf.title, conf.full_name, conf.key, e.place, e.date_text
       ].filter(Boolean).join(" ").toLowerCase();
 
-      (e.deadlines || []).forEach(function (dl) {
+      (e.deadlines || []).forEach((dl) => {
         var t = Date.parse(dl.utc);
         if (isNaN(t)) return;
         rows.push({
@@ -900,11 +907,11 @@ footer a:hover { text-decoration: underline; }
   // Update Summary Dashboard Stats
   $("statConfs").textContent = (DATA.conferences || []).length;
   var nowMs = Date.now();
-  var next30 = rows.filter(function(r) { return r.t >= nowMs && (r.t - nowMs) <= 30*DAY; }).length;
+  var next30 = rows.filter((r) => r.t >= nowMs && (r.t - nowMs) <= 30*DAY).length;
   $("statUpcoming").textContent = next30;
-  var nicheCount = (DATA.conferences || []).filter(function(c) { return (c.tags || []).indexOf("niche") !== -1; }).length;
+  var nicheCount = (DATA.conferences || []).filter((c) => (c.tags || []).indexOf("niche") !== -1).length;
   $("statNiche").textContent = nicheCount;
-  var domCount = (DATA.conferences || []).filter(function(c) { return (c.tags || []).indexOf("domestic-jp") !== -1; }).length;
+  var domCount = (DATA.conferences || []).filter((c) => (c.tags || []).indexOf("domestic-jp") !== -1).length;
   $("statDomestic").textContent = domCount;
 
   // ---- REMAIN / STATUS ----
@@ -927,49 +934,90 @@ footer a:hover { text-decoration: underline; }
   // ---- SEMANTIC MATCH (AI 補助: transformers.js + embeddings.json) ----
   // embeddings.json は build 時に生成（scripts/embeddings.py）。
   // ブラウザでは transformers.js でユーザー入力を埋め込み、語彙スコアと合成する。
-  var EMBEDDINGS = null;       // {model, dim, embeddings: {key: [...]}}
-  var semLoaded = false;       // transformers.js 読込済みか
+  var EMBEDDINGS = null;       // {model, dim, embeddings, multi:{...}}（言語別の埋め込み表）
   var semQuery = null;         // 現在のユーザー入力の埋め込みベクトル
   var semModel = null;         // transformers.js の pipeline
+  var semLoadedModel = "";    // ロード済みモデル ID（言語適応で切り替え）
+  var semEmbeddings = null;   // 言語に応じた埋め込み表（en / multi）
   var semBusy = false;
+  var semState = "idle";       // idle | loading | ready | error（AI 状態の表示用）
+  var semLastText = "";       // 最後に埋め込み計算したテキスト（再計算判定用）
+  var lastIsJp = false;        // 直近の論文テキストが日本語か（合成比・閾値の表示用）
+  var lastLen = 0;             // 直近の論文テキストの内容語数（英語の合成比の適応用）
 
   function loadEmbeddings(cb) {
     if (EMBEDDINGS) { cb(); return; }
     fetch("embeddings.json")
-      .then(function (r) { if (!r.ok) throw new Error("embeddings.json " + r.status); return r.json(); })
-      .then(function (d) { EMBEDDINGS = d; cb(); })
-      .catch(function () { cb(); }); // 無ければ語彙スコアのみで動作
+      .then((r) => { if (!r.ok) throw new Error("embeddings.json " + r.status); return r.json(); })
+      .then((d) => { EMBEDDINGS = d; cb(); })
+      .catch(() => { cb(); }); // 無ければ語彙スコアのみで動作
   }
 
-  function loadTransformers(cb) {
-    if (semLoaded) { cb(); return; }
+  function loadTransformers(modelId, cb) {
+    if (semLoadedModel === modelId) { cb(); return; }
+    if (semState === "error") { cb(); return; } // 失敗は再試行しない（リロードで復帰）
+    semState = "loading";
     // jsdelivr の素のパッケージ URL は Node 向けバンドルで window.transformers を
     // 公開しない（実行しても undefined になる）。ESM ビルド（+esm）を動的 import する。
     import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm")
-      .then(function (m) { return m.pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2"); })
-      .then(function (mdl) { semModel = mdl; semLoaded = true; cb(); })
-      .catch(function () { cb(); });
+      .then((m) => m.pipeline("feature-extraction", modelId))
+      .then((mdl) => { semModel = mdl; semLoadedModel = modelId; semState = "ready"; cb(); })
+      .catch(() => { semState = "error"; cb(); });
   }
 
-  // 論文テキストが変わったら埋め込みを再計算し、完了後に render する
+  // 論文テキストが変わったら埋め込みを再計算し、完了後に render する。
+  // 言語適応: 日本語を含む論文は多言語モデル、それ以外は英語モデルで埋め込む
+  // （実測: EN は英語モデル 80.1% > 多言語 76.2%、JP は多言語 42.9% > 英語 19.0%）。
   function scheduleSemantic() {
     var pe = $("paperText");
     var text = pe ? pe.value : "";
     if (!text.trim() || !Recommender) { semQuery = null; return; }
-    if (semBusy) return; // 前回の計算中はスキップ（次の入力で再スケジュール）
-    loadEmbeddings(function () {
+    if (semBusy) return; // 計算中はスキップし、終了後の finally で最新テキストを再計算する
+    loadEmbeddings(() => {
       if (!EMBEDDINGS) return;
-      loadTransformers(function () {
-        if (!semLoaded || !semModel) return;
+      var isJp = Recommender.hasJapanese(text);
+      var modelId = isJp ? "Xenova/paraphrase-multilingual-MiniLM-L12-v2" : "Xenova/all-MiniLM-L6-v2";
+      var embSet = isJp && EMBEDDINGS.multi ? EMBEDDINGS.multi : EMBEDDINGS; // multi 無ければ en で縮退
+      loadTransformers(modelId, () => {
+        if (semLoadedModel !== modelId || !semModel) return;
         semBusy = true;
         var q = Recommender.queryText(Recommender.parsePaperLines(text));
         semModel(q, { pooling: "mean", normalize: true })
-          .then(function (out) {
+          .then((out) => {
             semQuery = Array.from(out.data);
+            // 擬似関連性フィードバック（PRF）: 掲載先タグ付き論文がある場合、
+            // その会議の埋め込みを 0.3 混ぜる（「自分が載せた所と似た会議」を拾う）。
+            // 実測: タグ付きクエリで正解会議 #1 が 78.9% → 92.2% に改善。
+            var tagged = Recommender.parsePaperLines(text).filter((p) => p.venue);
+            if (tagged.length && DATA && DATA.conferences) {
+              var matched = [];
+              tagged.forEach((p) => {
+                Recommender.matchVenueTag(p.venue, DATA.conferences).forEach((c) => matched.push(c));
+              });
+              var mvecs = matched.map((c) => embSet.embeddings[c.key]).filter(Boolean);
+              if (mvecs.length) {
+                var avg = mvecs[0].slice();
+                for (var i = 1; i < mvecs.length; i++) {
+                  for (var j = 0; j < avg.length; j++) avg[j] += mvecs[i][j];
+                }
+                avg = avg.map((x) => x / mvecs.length);
+                semQuery = Recommender.blendVectors(semQuery, avg, 0.7);
+              }
+            }
+            semEmbeddings = embSet.embeddings;
+            // R16: 論文個別ベクトル（max 類似度）は英語クエリのみ。日本語クエリは
+            // 多言語モデルなので英語モデルの論文ベクトルを混ぜない（言語別分離設計）。
+            Recommender.setPaperVecs(isJp ? null : EMBEDDINGS.paperVecs);
+            semLastText = text;
             render();
           })
-          .catch(function () {})
-          .finally(function () { semBusy = false; });
+          .catch(() => {})
+          .finally(() => {
+            semBusy = false;
+            // 計算中に入力が変わっていたら、最新テキストで埋め込みをやり直す
+            var pe2 = $("paperText");
+            if (pe2 && pe2.value.trim() && pe2.value !== semLastText) { scheduleSemantic(); }
+          });
       });
     });
   }
@@ -985,6 +1033,9 @@ footer a:hover { text-decoration: underline; }
     // 単体抽出テスト（node probe）でも動くよう、filter 内では window 経由で解決する
     var Rec = (typeof window !== "undefined" && window.Recommender) || null;
     var pLines = Rec ? Rec.parsePaperLines(pText) : (pText ? [{ title: pText, keywords: "", venue: "" }] : []);
+    var isJp = Rec ? Rec.hasJapanese(pText) : false;
+    lastIsJp = isJp;
+    lastLen = Rec ? Rec.contentWordCount(pText) : 0;
 
     // 分野: 手動チップがあればそれで絞る。論文モードでチップが空なら絞らない
     // （スコア順ソートで自然に候補が上位に来る。自動判定は表示用に留める）。
@@ -998,11 +1049,11 @@ footer a:hover { text-decoration: underline; }
     var pool = rows;
     if (pLines.length && Rec) {
       pool = rows
-        .filter(function (r) { return r.t >= now; })
+        .filter((r) => r.t >= now)
         .concat(Rec.journalRows(DATA.conferences, now), Rec.pastRepresentatives(rows, now));
     }
 
-    var out = pool.filter(function (r) {
+    var out = pool.filter((r) => {
       if (!state.est && r.est && !pLines.length) { return false; }
       // 過去行は通常モードで除外。論文モードでは「締切済みだが次回予定あり」の会議として許容
       if (r.t < now && !pLines.length) { return false; }
@@ -1025,28 +1076,33 @@ footer a:hover { text-decoration: underline; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
 
       r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
-      r._matchScore = r._match ? r._match.score : 0;
+      r._vocabScore = r._match ? r._match.score : 0;
+      r._matchScore = r._vocabScore;
       r._semScore = 0;
-      // セマンティック（AI 埋め込み）スコア: 語彙スコアと 0.7/0.3 で合成
-      if (pLines.length && semQuery && EMBEDDINGS && Rec) {
-        r._semScore = Rec.semanticScore(r.conf.key, semQuery, EMBEDDINGS.embeddings);
-        r._matchScore = Math.round(r._matchScore * 0.7 + r._semScore * 0.3);
+      // セマンティック（AI 埋め込み）スコア: 語彙スコアと合成。
+      // 英語は内容語数で適応（短いクエリは語彙が疎なのでセマンティック寄り）、
+      // 日本語は 0.6/0.4 — ベンチマーク A/B で最良を実測
+      if (pLines.length && semQuery && semEmbeddings && Rec) {
+        r._semScore = Rec.semanticScore(r.conf.key, semQuery, semEmbeddings);
+        r._matchScore = Rec.blendScore(r._vocabScore, r._semScore, { jp: isJp, len: lastLen });
       }
       // 掲載先タグの会議と同カテゴリなら +10（例: RTSS タグ → RTAS/ECRTS も僅かに優先）
       if (r._match && venueCats.length && !r._match.venueHit) {
-        var sharedCat = (r.cats || []).some(function (k) { return venueCats.indexOf(k) >= 0; });
+        var sharedCat = (r.cats || []).some((k) => venueCats.indexOf(k) >= 0);
         if (sharedCat) {
           r._matchScore = Math.min(100, r._matchScore + 10);
           r._boosted = true; // 展開表示用: 同分野ブーストを適用したことを記録
         }
       }
-      if (pLines.length && r._matchScore < 10) return false;
+      // 除外判定: 英語は語彙スコア基準（セマンティックは順序付けに使う）。
+      // 日本語は英語会議名と単語が一致しにくく語彙が疎なため、合成スコアで判定する
+      if (pLines.length && (isJp ? r._matchScore < 10 : r._vocabScore < 10)) return false;
 
       return true;
     });
 
     // Custom Sorting
-    out.sort(function (a, b) {
+    out.sort((a, b) => {
       if (pLines.length && Rec) {
         return Rec.comparePapers(a, b, now);
       }
@@ -1090,7 +1146,7 @@ footer a:hover { text-decoration: underline; }
 
   function makeRow(r) {
     var tr = document.createElement("tr");
-    tr.onclick = function(e) {
+    tr.onclick = (e) => {
       if (e.target.classList && e.target.classList.contains("match-trigger")) {
         toggleDetail(r, tr);
         return;
@@ -1131,7 +1187,7 @@ footer a:hover { text-decoration: underline; }
       line(c2, r.conf.full_name, "sub");
     }
     var tags = document.createElement("div");
-    r.cats.forEach(function (k) {
+    r.cats.forEach((k) => {
       var s = document.createElement("span");
       s.className = "tag"; s.textContent = catLabel(k);
       tags.appendChild(s);
@@ -1188,7 +1244,7 @@ footer a:hover { text-decoration: underline; }
 
     var c4 = td(tr, "ランク");
     if (r.rankPairs.length) {
-      r.rankPairs.forEach(function (p) {
+      r.rankPairs.forEach((p) => {
         var s = p.split(":");
         var e = document.createElement("span");
         e.className = "tag";
@@ -1238,15 +1294,26 @@ footer a:hover { text-decoration: underline; }
     if (agg.jp > 0) chips.push(["日本語一致", "+" + agg.jp, "日本語の会議名・論文語が一致"]);
     if (agg.tags > 0) chips.push(["領域タグ", "+" + agg.tags, "会議の領域タグ（real-time 等）が論文に含まれる"]);
     if (agg.venue > 0) chips.push(["掲載先一致", "+" + agg.venue, "論文の掲載先タグとこの会議が一致（強いシグナル）"]);
-    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "%", "埋め込みベクトルの類似度（語彙スコアと 0.7:0.3 で合成）"]);
+    var chipW = Recommender.vocabWeight(lastLen, lastIsJp);
+    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "%", "埋め込みベクトルの類似度（語彙スコアと " + chipW.toFixed(2) + ":" + (1 - chipW).toFixed(2) + " で合成）"]);
     if (r._boosted) chips.push(["同分野ブースト", "+10", "掲載先タグから推定した分野とこの会議が一致"]);
     if (!chips.length) chips.push(["一致要素なし", "—", "低スコアでも閾値を超えたため表示"]);
 
     var html = '<div class="detail-inner">';
     html += '<div class="detail-head">適合度 ' + r._matchScore + '% の内訳 — この会議が選ばれた理由</div>';
-    html += '<div class="reason-chips">' + chips.map(function (c) {
-      return '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>';
-    }).join("") + '</div>';
+    var w = Recommender.vocabWeight(lastLen, lastIsJp);
+    var comp;
+    if (r._semScore > 0) {
+      comp = '語彙 ' + r._vocabScore + '% × ' + w.toFixed(2) + ' + AI類似度 ' + r._semScore + '% × ' + (1 - w).toFixed(2) + ' → 適合度 ' + r._matchScore + '%';
+    } else if (semState === "loading") {
+      comp = '語彙スコア ' + r._vocabScore + '%（AI 類似度 計算中…）';
+    } else if (semState === "error") {
+      comp = '語彙スコア ' + r._vocabScore + '%（オフラインのため AI 類似度なし）';
+    } else {
+      comp = '語彙スコア ' + r._vocabScore + '%';
+    }
+    html += '<div class="detail-comp">' + comp + '</div>';
+    html += '<div class="reason-chips">' + chips.map((c) => '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>').join("") + '</div>';
 
     if (lines.length > 1) {
       html += '<div class="perline">';
@@ -1317,8 +1384,11 @@ footer a:hover { text-decoration: underline; }
       var _lines = Recommender.parsePaperLines(pe.value);
       var _auto = _lines.length ? Recommender.autoDetectCats(_lines) : [];
       if (_auto.length && !state.cats.length) {
-        cnt += " ｜ 分野自動判定: " + _auto.map(function (k) { return (DATA.categories && DATA.categories[k]) ? DATA.categories[k] : k; }).join(", ");
+        cnt += " ｜ 分野自動判定: " + _auto.map((k) => (DATA.categories && DATA.categories[k]) ? DATA.categories[k] : k).join(", ");
       }
+      // AI 類似度の状態を明示（初回はモデル読込に数秒かかる）
+      if (semState === "loading") { cnt += " ｜ AI 類似度 計算中…"; }
+      else if (semState === "error") { cnt += " ｜ AI 類似度 利用不可（オフラインのため語彙のみ）"; }
     }
     $("count").textContent = cnt;
     if (paperMode && !shown.length) {
@@ -1362,7 +1432,7 @@ footer a:hover { text-decoration: underline; }
     $("win").value = state.win;
     $("est").checked = state.est;
     $("domestic").checked = state.domestic;
-    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
+    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), (chk) => {
       chk.checked = state.cats.indexOf(chk.value) >= 0;
     });
   }
@@ -1375,7 +1445,7 @@ footer a:hover { text-decoration: underline; }
     state.est = $("est").checked;
     state.domestic = $("domestic").checked;
     state.cats = [];
-    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), function (chk) {
+    Array.prototype.forEach.call(catsBox.querySelectorAll("input"), (chk) => {
       if (chk.checked) state.cats.push(chk.value);
     });
   }
@@ -1391,30 +1461,26 @@ footer a:hover { text-decoration: underline; }
     if (window.pdfjsLib) { cb(true); return; }
     var s = document.createElement("script");
     s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-    s.onload = function () {
+    s.onload = () => {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
       cb(true);
     };
-    s.onerror = function () { cb(false); };
+    s.onerror = () => { cb(false); };
     document.head.appendChild(s);
   }
   function fileToLine(name, text) {
-    var ls = String(text).split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var ls = String(text).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
     var title = ls[0] || name.replace(/\.[^.]+$/, "");
     var body = ls.slice(1).join(" ").replace(/\s+/g, " ").slice(0, 1500);
     return title + " | " + body;
   }
   function readPdf(buf) {
-    return window.pdfjsLib.getDocument({ data: buf }).promise.then(function (doc) {
+    return window.pdfjsLib.getDocument({ data: buf }).promise.then((doc) => {
       var pages = [];
       for (var i = 1; i <= doc.numPages; i++) {
-        pages.push(doc.getPage(i).then(function (pg) {
-          return pg.getTextContent().then(function (tc) {
-            return tc.items.map(function (it) { return it.str; }).join(" ");
-          });
-        }));
+        pages.push(doc.getPage(i).then((pg) => pg.getTextContent().then((tc) => tc.items.map((it) => it.str).join(" "))));
       }
-      return Promise.all(pages).then(function (arr) { return arr.join("\n"); });
+      return Promise.all(pages).then((arr) => arr.join("\n"));
     });
   }
   var paperFiles = document.getElementById("paperFiles");
@@ -1423,22 +1489,20 @@ footer a:hover { text-decoration: underline; }
     if (!files.length) return;
     var label = document.getElementById("paperFileLabel");
     label.textContent = "読み込み中…";
-    var jobs = files.map(function (f) {
+    var jobs = files.map((f) => {
       if (/\.txt$/i.test(f.name)) {
-        return f.text().then(function (t) { return fileToLine(f.name, t); });
+        return f.text().then((t) => fileToLine(f.name, t));
       }
-      return new Promise(function (res, rej) {
-        loadPdfJs(function (ok) { ok ? res() : rej(new Error("pdfjs unavailable")); });
-      }).then(function () {
-        return f.arrayBuffer().then(readPdf).then(function (t) { return fileToLine(f.name, t); });
-      });
+      return new Promise((res, rej) => {
+        loadPdfJs((ok) => { ok ? res() : rej(new Error("pdfjs unavailable")); });
+      }).then(() => f.arrayBuffer().then(readPdf).then((t) => fileToLine(f.name, t)));
     });
-    Promise.all(jobs).then(function (lines) {
+    Promise.all(jobs).then((lines) => {
       document.getElementById("paperText").value = lines.filter(Boolean).join("\n");
-      label.textContent = files.map(function (f) { return f.name; }).join(", ");
+      label.textContent = files.map((f) => f.name).join(", ");
       apply();
       scheduleSemantic();
-    }).catch(function () {
+    }).catch(() => {
       label.textContent = "PDF 読込に失敗しました（CDN 未接続時は TXT のみ対応）";
     });
     this.value = "";
@@ -1446,27 +1510,27 @@ footer a:hover { text-decoration: underline; }
 
   // ---- wiring ----
   var timer = null;
-  $("q").addEventListener("input", function () {
+  $("q").addEventListener("input", () => {
     clearTimeout(timer);
     timer = setTimeout(apply, 180);
   });
-  $("paperText").addEventListener("input", function () {
+  $("paperText").addEventListener("input", () => {
     clearTimeout(timer);
-    timer = setTimeout(function () { apply(); scheduleSemantic(); }, 200);
+    timer = setTimeout(() => { apply(); scheduleSemantic(); }, 200);
   });
-  Array.prototype.forEach.call(document.querySelectorAll(".sample-btn"), function (b) {
-    b.addEventListener("click", function () {
+  Array.prototype.forEach.call(document.querySelectorAll(".sample-btn"), (b) => {
+    b.addEventListener("click", () => {
       $("paperText").value = b.getAttribute("data-sample");
       apply();
       scheduleSemantic();
     });
   });
-  ["kind", "rank", "win", "est", "domestic"].forEach(function (id) {
+  ["kind", "rank", "win", "est", "domestic"].forEach((id) => {
     $(id).addEventListener("change", apply);
   });
   catsBox.addEventListener("change", apply);
   $("more").addEventListener("click", drawMore);
-  $("reset").addEventListener("click", function () {
+  $("reset").addEventListener("click", () => {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
     $("paperText").value = "";
     paperFiles.value = "";
@@ -1479,12 +1543,10 @@ footer a:hover { text-decoration: underline; }
   if (DATA.generated_at) {
     $("genat").textContent = "データ生成: " + DATA.generated_at;
   }
-  var srcs = (DATA.sources || []).map(function (s) {
-    return s.name + (s.repo ? " (" + s.repo + (s.license ? ", " + s.license : "") + ")" : "");
-  });
+  var srcs = (DATA.sources || []).map((s) => s.name + (s.repo ? " (" + s.repo + (s.license ? ", " + s.license : "") + ")" : ""));
   $("sources").textContent = srcs.length ? srcs.join(" / ") : "-";
 
-  var localSrc = (DATA.sources || []).filter(function (s) { return s.name === "local"; })[0];
+  var localSrc = (DATA.sources || []).filter((s) => s.name === "local")[0];
   if (localSrc && localSrc.url) {
     var a = document.createElement("a");
     a.href = localSrc.url;

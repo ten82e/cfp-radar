@@ -38,6 +38,8 @@ function args(outdir: string, cache?: string): BuildArgs {
     offline: true,
     now: NOW_ARG,
     cache: cache ?? join(mkdtempSync("/tmp/cfp-snap-cache-"), ".cache"),
+    // 埋め込み生成は 2 モデルで数秒かかるためスナップショット検証ではスキップ
+    noEmbeddings: true,
   };
 }
 

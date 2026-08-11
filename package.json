@@ -10,6 +10,7 @@
   "scripts": {
     "build": "node src/cli.ts build",
     "discover": "node src/cli.ts discover",
+    "bench": "node src/bench-recommender.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check": "biome check src tests",

@@ -105,6 +105,7 @@ export interface BuildArgs {
   offline: boolean;
   now: string | null;
   cache: string;
+  noEmbeddings?: boolean;
 }
 
 export async function cmdBuild(args: BuildArgs): Promise<number> {
@@ -155,7 +156,9 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   }
 
   const outdir = resolve(args.out);
-  const stats = await buildAll(confs, config, outdir, now);
+  const stats = await buildAll(confs, config, outdir, now, {
+    noEmbeddings: Boolean(args.noEmbeddings),
+  });
   // 統合件数は出力に載った会議のぶんだけ数える。
   const byKey = mergeStats.merged_by_key ?? {};
   stats.merged = degraded ? 0 : confs.reduce((n, c) => n + (byKey[c.key] ?? 0), 0);
@@ -244,6 +247,7 @@ interface CliArgs {
   minYear?: number;
   dryRun?: boolean;
   append?: boolean;
+  noEmbeddings?: boolean;
 }
 
 function usage(): string {
@@ -257,6 +261,7 @@ function usage(): string {
     "    --offline         ネットワークを使わずキャッシュのみ使う",
     "    --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
     "    --cache <dir>     上流 tarball のキャッシュ先 (default: .cache)",
+    "    --no-embeddings   埋め込み (embeddings.json) を生成しない（テスト用・高速化）",
     "  discover 穴場の会議・ジャーナルを自律探索する",
     "    --out <path>      出力YAMLパス（未指定時は標準出力表示）",
     "    --categories <s>  カンマ区切りの対象カテゴリ（例: hpc,systems）",
@@ -292,6 +297,8 @@ function parseArgs(argv: string[]): CliArgs {
       i += 1;
     } else if (a === "--offline") {
       args.offline = true;
+    } else if (a === "--no-embeddings") {
+      args.noEmbeddings = true;
     } else if (a === "--dry-run") {
       args.dryRun = true;
     } else if (a === "--append") {
@@ -321,6 +328,7 @@ export async function main(argv: string[]): Promise<number> {
       offline: Boolean(args.offline),
       now: args.now ?? null,
       cache: args.cache ?? ".cache",
+      noEmbeddings: Boolean(args.noEmbeddings),
     });
   }
   if (args.command === "discover") {

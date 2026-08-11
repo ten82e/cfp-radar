@@ -236,15 +236,18 @@ conferences:
     categories: [networking, systems]
     tags: [domestic-jp]
     editions:
-      # 予定表の記載: 「9月10日(木)～11日(金)：倉敷市芸文館」
+      # 第208回（EIP 第113回と合同）: https://www.ipsj.or.jp/kenkyukai/event/dps208eip113.html (2026-08-11 取得)
+      #   発表申込〆切 7/27 → 8/3 延長。論文原稿〆切 8/17 23:59 (JST)。
       - year: 2026
         id: ipsj-dps-2026-09
-        link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
+        link: https://www.ipsj.or.jp/kenkyukai/event/dps208eip113.html
         place: 倉敷市芸文館
-        date_text: 2026年9月10日-11日
+        date_text: 2026年9月10日-11日 (第208回)
         event_start: '2026-09-10'
         event_end: '2026-09-11'
-        deadlines: []
+        deadlines:
+          - {kind: abstract, label: 発表申込〆切（延長後）, date: '2026-08-03 23:59:00', tz: UTC+9}
+          - {kind: paper, label: 発表原稿〆切, date: '2026-08-17 23:59:00', tz: UTC+9}
       # 予定表の記載: 「11月4日(水)～6日(金)：花びしホテル」
       - year: 2026
         id: ipsj-dps-2026-11
@@ -1274,9 +1277,18 @@ conferences:
     title: JIP
     full_name: Journal of Information Processing (情報処理学会)
     link: https://www.ipsj.or.jp/english/jip/
-    categories: [systems]
+    categories: [systems, networking, ai]
     tags: [niche, journal, domestic-jp]
-    editions: []
+    editions:
+      # 根拠: https://www.ipsj.or.jp/journal/cfp/27-R.html (2026-08-11 取得)
+      #   COMPSAC 2026 関連特集号「Applications and the internet」投稿締切 12/1、特集号予定 2027年9月号。
+      #   掲載料無料の英文特集号。
+      - year: 2026
+        id: jip-compsac2026-si
+        link: https://www.ipsj.or.jp/journal/cfp/27-R.html
+        date_text: 特集号予定 2027年9月号 (COMPSAC 2026 関連)
+        deadlines:
+          - {kind: paper, label: 投稿締切, date: '2026-12-01 23:59:00', tz: UTC+9}
 
   # 根拠: DBLP 実績（伊達研 1 本・下條研 2 本）
   #   Future Generation Computer Systems (Elsevier): 並列・分散・科学計算の特集号 CFP が頻繁。
