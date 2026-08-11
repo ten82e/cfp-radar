@@ -26,25 +26,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: npm ci
 
       # 一次ソースの自動抽出 (data/primary.yaml → data/primary_overrides.yaml)。
       # 抽出失敗の会議は前回値を維持するので、サイトが一時的に落ちていても安全。
       - name: Fetch primary sources
-        run: python -m scripts.fetch_primary --apply
+        run: node src/fetch-primary.ts --apply
 
       # 上流取得に失敗しても、コミット済み data/snapshot.json から生成を続ける
       # (SPEC.md 3.5)。退避にも失敗したときは cli が非ゼロで終了し、後続の
       # Upload / Deploy がスキップされて前回の公開内容がそのまま残る。
       - name: Build
         id: build
-        run: python -m scripts.cli build --out public
+        run: node src/cli.ts build --out public
 
       # スナップショットは上流が変わった日にだけ更新される。
       # SPEC.md 6 のとおり、活動を偽装するハートビートコミットは実装しない。
@@ -60,25 +61,30 @@ jobs:
           fi
 
           # generated_at を除いて中身を比べ、実データが変わったときだけコミットする。
-          # 行単位の差分では JSON が 1 行に出力されたときに判定できないので値で比べる。
           git show HEAD:data/snapshot.json > /tmp/snapshot-prev.json 2>/dev/null || true
-          changed=$(python -c '
-          import json, sys
-
-          def norm(path):
-              try:
-                  with open(path, encoding="utf-8") as fh:
-                      data = json.load(fh)
-              except Exception:
-                  return None
-              if isinstance(data, dict):
-                  data.pop("generated_at", None)
-              return json.dumps(data, sort_keys=True, ensure_ascii=False)
-
-          new = norm(sys.argv[2])
-          # 読めない snapshot は書きかけとみなしてコミットしない
-          print("1" if new is not None and norm(sys.argv[1]) != new else "0")
-          ' /tmp/snapshot-prev.json data/snapshot.json)
+          changed=$(node -e '
+          const fs = require("node:fs");
+          function sortKeys(v) {
+            if (Array.isArray(v)) return v.map(sortKeys);
+            if (v && typeof v === "object") {
+              return Object.fromEntries(
+                Object.keys(v).sort().map((k) => [k, sortKeys(v[k])]),
+              );
+            }
+            return v;
+          }
+          function norm(path) {
+            let data;
+            try { data = JSON.parse(fs.readFileSync(path, "utf8")); }
+            catch { return null; }
+            if (data && typeof data === "object") delete data.generated_at;
+            return JSON.stringify(sortKeys(data));
+          }
+          const prev = norm("/tmp/snapshot-prev.json");
+          const next = norm(process.argv[1]);
+          // 読めない snapshot は書きかけとみなしてコミットしない
+          console.log(next !== null && prev !== next ? "1" : "0");
+          ' data/snapshot.json)
 
           if [ "$changed" != '1' ]; then
             echo 'no substantive change; nothing to commit'
@@ -123,13 +129,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: npm ci
 
       - name: Discover candidates
         env:
@@ -139,7 +146,7 @@ jobs:
           CFP_IMAP_USER: ${{ secrets.CFP_IMAP_USER }}
           CFP_IMAP_PASS: ${{ secrets.CFP_IMAP_PASS }}
         run: |
-          python -m scripts.cli discover \
+          node src/cli.ts discover \
             --min-year 2026 \
             --out data/discovered_candidates.yaml \
             --append || echo 'discovery failed; keeping previous candidates'

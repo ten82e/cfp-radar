@@ -1,0 +1,33 @@
+{
+  "name": "cfp-radar",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "HPC・ネットワーク・システム・AI・セキュリティ会議の締切を ICS/JSON/Pages で配信",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node src/cli.ts build",
+    "discover": "node src/cli.ts discover",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check": "biome check src tests",
+    "format": "biome format --write src tests"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
+    "html-entities": "^2.6.0",
+    "imapflow": "^1.6.6",
+    "js-yaml": "^5.2.3",
+    "undici": "^8.10.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.7",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}

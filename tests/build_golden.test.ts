@@ -1,0 +1,657 @@
+/**
+ * End-to-end build from tests/fixtures/ only: SPEC.md sections 4 and 8.
+ * Ported from tests/test_build_golden.py.
+ */
+
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { load as loadYaml } from "js-yaml";
+import { beforeAll, expect, it } from "vitest";
+import { buildAll } from "../src/build.ts";
+import {
+  icsPhysicalLines,
+  makeConference,
+  makeDeadline,
+  makeEdition,
+  NOW,
+  PUBLIC_FILES,
+  REPO_ROOT,
+  runCli,
+  utc,
+} from "./helpers.ts";
+
+const ICS_FEEDS = PUBLIC_FILES.filter((f) => f.endsWith(".ics"));
+const ESTIMATED_FEEDS = ICS_FEEDS.filter((f) => f.endsWith("-estimated.ics"));
+const CONFIRMED_FEEDS = ICS_FEEDS.filter((f) => !f.endsWith("-estimated.ics"));
+
+let site: string;
+let data: Record<string, any>;
+
+beforeAll(() => {
+  const outdir = join(mkdtempSync(join(tmpdir(), "cfp-site-")), "public");
+  const run = runCli(outdir);
+  expect(
+    run.status,
+    `cli build failed\n--- stdout ---\n${run.stdout}\n--- stderr ---\n${run.stderr}`,
+  ).toBe(0);
+  site = outdir;
+  data = JSON.parse(readFileSync(join(site, "data.json"), "utf8"));
+}, 300_000);
+
+// --- generated file set ----------------------------------------------------
+
+it.each(PUBLIC_FILES)("public file is generated: %s", (name) => {
+  const path = join(site, name);
+  expect(require("node:fs").existsSync(path), `${name} missing from public/`).toBe(true);
+  if (name !== ".nojekyll") {
+    expect(require("node:fs").statSync(path).size, `${name} is empty`).toBeGreaterThan(0);
+  }
+});
+
+it("build is deterministic", () => {
+  const second = join(mkdtempSync(join(tmpdir(), "cfp-site2-")), "public2");
+  const run = runCli(second);
+  expect(run.status, run.stderr).toBe(0);
+  for (const name of PUBLIC_FILES) {
+    expect(readFileSync(join(site, name))).toEqual(readFileSync(join(second, name)));
+  }
+}, 300_000);
+
+// --- data.json -------------------------------------------------------------
+
+it("data.json has the spec top-level shape", () => {
+  for (const key of ["generated_at", "sources", "categories", "conferences"]) {
+    expect(key in data).toBe(true);
+  }
+  expect(data.generated_at).toBe("2026-08-09T00:00:00Z");
+  expect(typeof data.categories).toBe("object");
+  for (const cat of ["hpc", "networking", "systems", "ai", "security"]) {
+    expect(cat in data.categories).toBe(true);
+  }
+  expect(Array.isArray(data.sources) && data.sources.length > 0).toBe(true);
+  for (const src of data.sources) {
+    for (const key of ["name", "repo", "license"]) {
+      expect(key in src).toBe(true);
+    }
+  }
+});
+
+it("conference records match the spec", () => {
+  expect(data.conferences.length).toBeGreaterThan(0);
+  for (const conf of data.conferences) {
+    for (const key of [
+      "key",
+      "title",
+      "full_name",
+      "categories",
+      "rank",
+      "link",
+      "sources",
+      "editions",
+    ]) {
+      expect(key in conf).toBe(true);
+    }
+    expect(Array.isArray(conf.categories)).toBe(true);
+    expect(typeof conf.rank).toBe("object");
+    expect(Array.isArray(conf.sources) && conf.sources.length > 0).toBe(true);
+    for (const s of conf.sources) {
+      expect(["ccfddl", "aideadlines", "local"]).toContain(s);
+    }
+  }
+});
+
+it("edition and deadline records match the spec", () => {
+  let seenDeadline = false;
+  for (const conf of data.conferences) {
+    for (const ed of conf.editions) {
+      for (const key of [
+        "year",
+        "id",
+        "place",
+        "link",
+        "event_start",
+        "event_end",
+        "estimated",
+        "deadlines",
+      ]) {
+        expect(key in ed).toBe(true);
+      }
+      expect(typeof ed.year).toBe("number");
+      expect(typeof ed.estimated).toBe("boolean");
+      for (const key of ["event_start", "event_end"]) {
+        if (ed[key] !== null) {
+          expect(String(ed[key])).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        }
+      }
+      for (const dl of ed.deadlines) {
+        seenDeadline = true;
+        for (const key of ["kind", "label", "utc", "aoe", "tz_raw", "round"]) {
+          expect(key in dl).toBe(true);
+        }
+        expect([
+          "abstract",
+          "paper",
+          "supplementary",
+          "notification",
+          "camera_ready",
+          "rebuttal_start",
+          "rebuttal_end",
+          "review_release",
+          "registration",
+          "other",
+        ]).toContain(dl.kind);
+        expect(dl.utc).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+        expect(String(dl.aoe).endsWith("AoE")).toBe(true);
+        expect(typeof dl.round).toBe("number");
+        expect(dl.round).toBeGreaterThanOrEqual(1);
+      }
+    }
+  }
+  expect(seenDeadline).toBe(true);
+});
+
+function conf(key: string): any {
+  const matches = data.conferences.filter((c: any) => c.key === key);
+  expect(matches.length).toBeGreaterThan(0);
+  return matches[0];
+}
+
+it("expected fixture conferences are present", () => {
+  const keys = new Set(data.conferences.map((c: any) => c.key));
+  for (const key of ["sigcomm", "nsdi", "sc"]) {
+    expect(keys.has(key)).toBe(true);
+  }
+});
+
+it("out-of-scope upstream conferences are filtered out", () => {
+  const keys = new Set(data.conferences.map((c: any) => c.key));
+  expect(keys.has("prcv")).toBe(true);
+  for (const key of ["popl", "oopsla", "aplas"]) {
+    expect(keys.has(key)).toBe(false);
+  }
+});
+
+it("ccfddl plain deadline becomes a paper deadline", () => {
+  const sc26 = conf("sc").editions.filter((e: any) => e.id === "sc26")[0];
+  const kinds = new Set(sc26.deadlines.map((d: any) => d.kind));
+  expect(kinds.has("paper")).toBe(true);
+  expect(kinds.has("abstract")).toBe(true);
+});
+
+it("AoE boundary is converted in the generated data", () => {
+  const sc26 = conf("sc").editions.filter((e: any) => e.id === "sc26")[0];
+  const paper = sc26.deadlines.filter((d: any) => d.kind === "paper");
+  expect(paper.length).toBeGreaterThan(0);
+  expect(paper[0].utc).toBe("2026-04-09T11:59:00Z");
+  expect(String(paper[0].tz_raw).toLowerCase()).toBe("aoe");
+  expect(String(paper[0].aoe).startsWith("2026-04-08 23:59")).toBe(true);
+});
+
+it("free-text event dates are parsed", () => {
+  const sigcomm26 = conf("sigcomm").editions.filter((e: any) => e.id === "sigcomm26")[0];
+  expect(sigcomm26.event_start).toBe("2026-08-17");
+  expect(sigcomm26.event_end).toBe("2026-08-21");
+});
+
+it("multiple rounds are preserved", () => {
+  const nsdi27 = conf("nsdi").editions.filter((e: any) => e.id === "nsdi27")[0];
+  const rounds = new Set(nsdi27.deadlines.map((d: any) => `${d.kind}:${d.round}`));
+  expect(rounds.has("paper:1")).toBe(true);
+  expect(rounds.has("paper:2")).toBe(true);
+});
+
+it("unparseable deadline is skipped not fatal", () => {
+  const keys = new Set(data.conferences.map((c: any) => c.key));
+  if (!keys.has("acl")) return;
+  const editions: Record<string, any> = {};
+  for (const e of conf("acl").editions) editions[e.id] = e;
+  if ("acl27" in editions) {
+    expect(editions.acl27.deadlines).toEqual([]);
+  }
+});
+
+it("no deadline is in the far future by accident", () => {
+  for (const c of data.conferences) {
+    for (const ed of c.editions) {
+      for (const dl of ed.deadlines) {
+        const t = Date.parse(dl.utc);
+        expect(t).toBeGreaterThanOrEqual(Date.parse("2015-01-01T00:00:00Z"));
+        expect(t).toBeLessThanOrEqual(Date.parse("2032-01-01T00:00:00Z"));
+      }
+    }
+  }
+});
+
+// --- calendars -------------------------------------------------------------
+
+function events(name: string): Array<Record<string, string>> {
+  const text = readFileSync(join(site, name), "utf8");
+  const lines = text
+    .replace(/\r\n /g, "")
+    .replace(/\r\n\t/g, "")
+    .split("\r\n");
+  const blocks: Array<Record<string, string>> = [];
+  let current: Record<string, string> | null = null;
+  for (const line of lines) {
+    if (line === "BEGIN:VEVENT") {
+      current = {};
+    } else if (line === "END:VEVENT") {
+      if (current !== null) blocks.push(current);
+      current = null;
+    } else if (current !== null) {
+      const idx = line.indexOf(":");
+      if (idx >= 0) current[line.slice(0, idx).split(";", 1)[0]] = line.slice(idx + 1);
+    }
+  }
+  return blocks;
+}
+
+it.each(ICS_FEEDS)("every feed parses: %s", (name) => {
+  const text = readFileSync(join(site, name), "utf8");
+  expect(text.startsWith("BEGIN:VCALENDAR")).toBe(true);
+  for (const ev of events(name)) {
+    expect(ev.UID).toBeTruthy();
+    expect(ev.DTSTART).toBeTruthy();
+  }
+});
+
+it("vevent counts match data.json", () => {
+  let expectedDeadlines = 0;
+  let expectedEvents = 0;
+  let expectedEstimated = 0;
+  for (const c of data.conferences) {
+    for (const ed of c.editions) {
+      if (ed.estimated) {
+        expectedEstimated += ed.deadlines.length;
+        continue;
+      }
+      expectedDeadlines += ed.deadlines.length;
+      if (ed.event_start) expectedEvents += 1;
+    }
+  }
+  expect(events("deadlines.ics").length).toBe(expectedDeadlines);
+  expect(events("all-estimated.ics").length).toBe(expectedEstimated);
+  expect(events("all.ics").length).toBe(expectedDeadlines + expectedEvents);
+});
+
+it("category feeds partition all", () => {
+  const everything = new Set(events("all.ics").map((e) => e.UID));
+  const union = new Set<string>();
+  for (const name of ["hpc.ics", "networking.ics", "systems.ics", "ai.ics", "security.ics"]) {
+    const uids = new Set(events(name).map((e) => e.UID));
+    for (const u of uids) {
+      expect(everything.has(u), `${name} has unknown UID ${u}`).toBe(true);
+      union.add(u);
+    }
+  }
+  for (const u of union) {
+    expect(everything.has(u)).toBe(true);
+  }
+});
+
+it("feeds use CRLF and fold at 75 octets", () => {
+  for (const name of ICS_FEEDS) {
+    const raw = readFileSync(join(site, name));
+    for (const line of icsPhysicalLines(raw)) {
+      // 75 オクテット折り返し（UTF-8 日本語 3 バイト文字を壊さない）
+      expect(Buffer.byteLength(line, "utf8")).toBeLessThanOrEqual(75);
+    }
+  }
+});
+
+// --- other artefacts -------------------------------------------------------
+
+it("CSV is one row per deadline", () => {
+  const text = readFileSync(join(site, "data.csv"), "utf8");
+  const rows = text.trim().split("\n").slice(1);
+  expect(rows.length).toBeGreaterThan(0);
+  let total = 0;
+  let estimated = 0;
+  for (const c of data.conferences) {
+    for (const ed of c.editions) {
+      total += ed.deadlines.length;
+      if (ed.estimated) estimated += ed.deadlines.length;
+    }
+  }
+  expect([total, total - estimated]).toContain(rows.length);
+});
+
+it("upcoming.md is a table", () => {
+  const text = readFileSync(join(site, "upcoming.md"), "utf8");
+  expect(text).toContain("|");
+  expect(text).toMatch(/^\|?\s*-{3,}/m);
+});
+
+it("llms.txt indexes the feeds", () => {
+  const text = readFileSync(join(site, "llms.txt"), "utf8");
+  for (const name of ["all.ics", "data.json", "all-estimated.ics"]) {
+    expect(text).toContain(name);
+  }
+});
+
+it("llms.txt URLs match the published site", () => {
+  const config = (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) ?? {}) as Record<
+    string,
+    any
+  >;
+  const base = String(config.site?.base_url ?? "").replace(/\/+$/, "");
+  expect(base).toBeTruthy();
+  const urls = readFileSync(join(site, "llms.txt"), "utf8")
+    .split("\n")
+    .filter((l) => l.startsWith("- http"))
+    .map((l) => l.slice(2).split(" ", 1)[0]);
+  expect(urls.length).toBeGreaterThanOrEqual(ICS_FEEDS.length);
+  for (const u of urls) {
+    expect(u.startsWith(`${base}/`)).toBe(true);
+  }
+  const readme = join(REPO_ROOT, "README.md");
+  try {
+    const text = readFileSync(readme, "utf8");
+    for (const name of ["all.ics", "data.json", "llms.txt"]) {
+      expect(text).toContain(`${base}/${name}`);
+    }
+  } catch {
+    // README が無い場合はスキップ
+  }
+});
+
+it("index.html has the data injected", () => {
+  const text = readFileSync(join(site, "index.html"), "utf8");
+  expect(text).not.toContain("/*__DATA__*/null");
+  expect(text).toContain("conferences");
+});
+
+it("generated_at follows the --now argument", () => {
+  const other = join(mkdtempSync(join(tmpdir(), "cfp-site3-")), "public3");
+  const run = runCli(other, { now: "2027-01-02T00:00:00Z" });
+  expect(run.status, run.stderr).toBe(0);
+  const payload = JSON.parse(readFileSync(join(other, "data.json"), "utf8"));
+  expect(payload.generated_at).toBe("2027-01-02T00:00:00Z");
+  expect(payload.generated_at).not.toBe(data.generated_at);
+  expect(NOW.toISOString()).toBe("2026-08-09T00:00:00.000Z");
+}, 300_000);
+
+// --- per-category estimated feeds (SPEC.md 4) ------------------------------
+
+it("the single estimated feed is gone", () => {
+  expect(require("node:fs").existsSync(join(site, "estimated.ics"))).toBe(false);
+});
+
+it("every category has its own estimated feed", () => {
+  for (const name of [
+    "all-estimated.ics",
+    "hpc-estimated.ics",
+    "networking-estimated.ics",
+    "systems-estimated.ics",
+    "ai-estimated.ics",
+    "security-estimated.ics",
+  ]) {
+    expect(ESTIMATED_FEEDS).toContain(name);
+    expect(require("node:fs").existsSync(join(site, name))).toBe(true);
+  }
+});
+
+it.each(ESTIMATED_FEEDS)("estimated feed is a subset of all-estimated: %s", (name) => {
+  const everything = new Set(events("all-estimated.ics").map((e) => e.UID));
+  for (const e of events(name)) {
+    expect(everything.has(e.UID)).toBe(true);
+  }
+});
+
+it("estimated feed routes by category", () => {
+  const expected: Record<string, Set<string>> = {};
+  for (const c of data.conferences) {
+    for (const ed of c.editions) {
+      if (!ed.estimated) continue;
+      for (const cat of c.categories) {
+        if (!expected[cat]) expected[cat] = new Set();
+        expected[cat].add(`${c.key}:${ed.year}`);
+      }
+    }
+  }
+  expect(Object.keys(expected).length).toBeGreaterThan(0);
+  for (const [cat, pairs] of Object.entries(expected)) {
+    const uids = events(`${cat}-estimated.ics`).map((e) => e.UID);
+    for (const pair of pairs) {
+      const [key, year] = pair.split(":");
+      expect(uids.some((u) => u.startsWith(`${key}-${year}-`))).toBe(true);
+    }
+  }
+});
+
+it.each(CONFIRMED_FEEDS)("confirmed feed carries no estimate: %s", (name) => {
+  const estimated = new Set<string>();
+  for (const c of data.conferences) {
+    for (const ed of c.editions) {
+      if (ed.estimated) estimated.add(`${c.key}-${ed.year}-`);
+    }
+  }
+  expect(estimated.size).toBeGreaterThan(0);
+  for (const ev of events(name)) {
+    for (const prefix of estimated) {
+      expect(String(ev.UID).startsWith(prefix)).toBe(false);
+    }
+  }
+});
+
+// --- meeting-only conferences reach the site (SPEC.md 7) -------------------
+
+it("conferences without deadlines keep their meeting dates", () => {
+  for (const key of ["isc-hpc", "hoti", "apnoms"]) {
+    const c = conf(key);
+    const dated = c.editions.filter((e: any) => e.event_start);
+    expect(dated.length).toBeGreaterThan(0);
+    for (const ed of dated) {
+      expect(ed.deadlines.length).toBe(0);
+    }
+  }
+});
+
+it("index.html has no meeting rows", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  expect(html).not.toContain('event: "開催"');
+  expect(html).toContain("KIND_LABEL[r.kind]");
+  expect(html).toMatch(/r\.kind !== "abstract" && r\.kind !== "paper"/);
+  for (const title of ["ISC High Performance", "HOTI", "情報処理学会 HPC 研究会"]) {
+    expect(html).toContain(title);
+  }
+});
+
+it("index.html has domestic filter and tag", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  expect(html).toContain('id="domestic"');
+  expect(html).toContain("domestic-jp");
+  expect(html).toContain('textContent = "国内"');
+  expect(html).toContain('p.get("domestic") === "1"');
+  for (const title of [
+    "情報処理学会 OS 研究会",
+    "電子情報通信学会 NS 研究会",
+    "電子情報通信学会 IA 研究会",
+    "電子情報通信学会 CQ 研究会",
+    "電子情報通信学会 ICM 研究会",
+    "APNOMS",
+    "FIT",
+  ]) {
+    expect(html).toContain(title);
+  }
+});
+
+// --- coincident deadlines are told apart (SPEC.md 3.6) ---------------------
+
+function summariesOf(text: string): string[] {
+  const lines = text
+    .replace(/\r\n /g, "")
+    .replace(/\r\n\t/g, "")
+    .split("\r\n");
+  const out: string[] = [];
+  for (const line of lines) {
+    if (line.startsWith("SUMMARY:")) out.push(line.slice(8));
+  }
+  return out;
+}
+
+it("coincident deadlines get distinguishable titles", async () => {
+  const at = utc(2026, 9, 21, 22, 0, 0);
+  const confs = [
+    makeConference({
+      key: "acm-siggraph",
+      title: "SIGGRAPH",
+      categories: ["ai"],
+      sources: ["aideadlines"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "siggraph26",
+          source: "aideadlines",
+          deadlines: [
+            makeDeadline("paper", "Posters deadline", at),
+            makeDeadline("paper", "Appy Hour deadline", at),
+            makeDeadline("paper", "Technical Papers deadline", utc(2026, 10, 22, 22, 0, 0)),
+          ],
+        }),
+      ],
+    }),
+  ];
+  const outdir = mkdtempSync(join(tmpdir(), "cfp-sig-"));
+  await buildAll(confs, { categories: { ai: "AI" } }, outdir, NOW);
+  const summaries = summariesOf(readFileSync(join(outdir, "all.ics"), "utf8"));
+  expect([...summaries].sort()).toEqual(
+    [
+      "SIGGRAPH 2026 論文締切: Appy Hour deadline",
+      "SIGGRAPH 2026 論文締切: Posters deadline",
+      "SIGGRAPH 2026 論文締切",
+    ].sort(),
+  );
+  expect(new Set(summaries).size).toBe(summaries.length);
+  const upcoming = readFileSync(join(outdir, "upcoming.md"), "utf8");
+  expect(upcoming).toContain("論文締切: Posters deadline");
+});
+
+// --- upcoming.md carries meetings too (SPEC.md 4) --------------------------
+
+function upcomingRows(dir: string): string[][] {
+  const text = readFileSync(join(dir, "upcoming.md"), "utf8");
+  const rows: string[][] = [];
+  for (const line of text.split("\n")) {
+    if (!line.startsWith("|") || new Set(line).isSubsetOf(new Set("|- "))) continue;
+    rows.push(
+      line
+        .slice(1, -1)
+        .split("|")
+        .map((c) => c.trim()),
+    );
+  }
+  return rows.slice(1);
+}
+
+it("upcoming.md lists meetings as well as deadlines", () => {
+  const rows = upcomingRows(site);
+  const kinds = new Set(rows.map((r) => r[3]));
+  expect(kinds.has("開催")).toBe(true);
+  const names = rows
+    .filter((r) => r[3] === "開催")
+    .map((r) => r[2])
+    .join(" ");
+  for (const title of [
+    "HOTI 2026",
+    "SC 2026",
+    "情報処理学会 HPC 研究会 2026",
+    "P4 Workshop 2026",
+    "LPC 2026",
+  ]) {
+    expect(names).toContain(title);
+  }
+});
+
+it("upcoming.md keeps a running meeting and drops a finished one", async () => {
+  const meeting = (key: string, start: Date, end: Date) =>
+    makeConference({
+      key,
+      title: key.toUpperCase(),
+      categories: ["hpc"],
+      sources: ["local"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: `${key}26`,
+          source: "local",
+          event_start: start,
+          event_end: end,
+        }),
+      ],
+    });
+  const confs = [
+    meeting("running", utc(2026, 8, 7), utc(2026, 8, 11)),
+    meeting("lastday", utc(2026, 8, 5), utc(2026, 8, 9)),
+    meeting("finished", utc(2026, 8, 1), utc(2026, 8, 8)),
+    meeting("future", utc(2026, 8, 19), utc(2026, 8, 21)),
+  ];
+  const outdir = mkdtempSync(join(tmpdir(), "cfp-mtg-"));
+  await buildAll(confs, { categories: { hpc: "HPC" } }, outdir, NOW);
+  const text = readFileSync(join(outdir, "upcoming.md"), "utf8");
+  expect(text).toContain("開催中(残り3日)");
+  expect(text).not.toContain("| 本日開催 |");
+  expect(text).toContain("開催中(残り1日)");
+  expect(text).not.toContain("FINISHED");
+  expect(text).toContain("| 10日 |");
+});
+
+// --- the site's meeting rows run to the end of the meeting (SPEC.md 7) -----
+
+function jsFunction(html: string, name: string): string {
+  const start = html.indexOf(`function ${name}(`);
+  let depth = 0;
+  let i = html.indexOf("{", start);
+  while (true) {
+    if (html[i] === "{") depth += 1;
+    else if (html[i] === "}") {
+      depth -= 1;
+      if (depth === 0) return html.slice(start, i + 1);
+    }
+    i += 1;
+  }
+}
+
+it("default filter shows only submission deadlines", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  const filterSrc = jsFunction(html, "filter");
+  const script = [
+    "const DAY = 86400000;",
+    `const FILTER = ${JSON.stringify(filterSrc)};`,
+    'const now = Date.parse("2026-08-10T00:00:00Z");',
+    // filter() は実時刻 (Date.now()) と行の t を比較するため、凍結した now を
+    // 返す FakeDate を注入する。実時刻に依存させると実行日が進んだだけで
+    // 行が全て「過去」になり [] に化ける（2026-08-11 に実測）。
+    "class FakeDate extends Date { static now() { return now; } }",
+    "function row(kind) {",
+    "  return {",
+    "    kind: kind, est: false, cats: ['hpc'], rankPairs: [], hay: 'x',",
+    "    t: now + 86400000, tLast: now + 2 * 86400000, ed: { deadlines: [] }",
+    "  };",
+    "}",
+    'const rows = ["paper", "abstract", "event", "notification", "camera_ready"].map(row);',
+    'const state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false };',
+    'const filter = new Function("Date", "DAY", "rows", "state", "sortAsc", "sortKey",',
+    '                            "return (" + FILTER + ")")(FakeDate, DAY, rows, state, false, "time");',
+    "console.log(JSON.stringify(filter().map(r => r.kind)));",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(JSON.parse(proc.stdout)).toEqual(["paper", "abstract"]);
+});
+
+it("meeting past rule is wired to the end date", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  expect(html).not.toContain('kind: "event"');
+  expect(html).not.toContain('event: "開催"');
+});
+
+it("two meetings in one year get distinct event UIDs", () => {
+  const uids = new Set(events("all.ics").map((e) => e.UID));
+  expect(uids.has("ipsj-sigdps-2026-event@conf-deadlines.github.io")).toBe(true);
+  expect(uids.has("ipsj-sigdps-2026-event-2@conf-deadlines.github.io")).toBe(true);
+  expect(uids.has("sigcomm-2026-event@conf-deadlines.github.io")).toBe(true);
+  expect(uids.has("sigcomm-2026-event-1@conf-deadlines.github.io")).toBe(false);
+});

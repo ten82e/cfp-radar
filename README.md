@@ -121,7 +121,7 @@ iOS と iPadOS の場合。
 - 分野チップが空のときは論文内容から分野を自動判定して表示する（手動でチップを選ぶとその分野に絞る）。
 - 英語・日本語どちらのタイトル/キーワードにも対応。日本語の場合は会議名の日本語表記と部分一致し、国内研究会（情報処理学会・電子情報通信学会等）も拾う。
 - **AI セマンティック補助**: 会議スコープは build 時に all-MiniLM-L6-v2 で埋め込み済み（`embeddings.json`）。ブラウザで transformers.js が使える環境では、論文入力の埋め込みとコサイン類似度を計算し、語彙スコア（70%）と AI 類似度（30%）を合成する。CDN が使えない環境では語彙スコアのみで動作（フォールバック）。
-- 適合度は、分野シグナル・会議名・領域タグとの語彙一致と掲載先タグの合算。スコアリングの実装は `site/recommender.js` で、`tests/test_recommender.py` が実データで回帰検証する。
+- 適合度は、分野シグナル・会議名・領域タグとの語彙一致と掲載先タグの合算。スコアリングの実装は `site/recommender.js` で、`tests/recommender.test.ts` が実データで回帰検証する。
 
 ## データ源とライセンス
 
@@ -142,13 +142,13 @@ iOS と iPadOS の場合。
 上流に登録されていない特化ワークショップ、地域シンポジウム、ジャーナルの Call for Papers などの「穴場」を自律探索するには以下を実行する。
 
 ```sh
-env -u PYTHONPATH .venv/bin/python -m scripts.cli discover --dry-run
+node src/cli.ts discover --dry-run
 ```
 
 探索結果を `extra.yaml` スキーマ互換の YAML に保存する場合:
 
 ```sh
-env -u PYTHONPATH .venv/bin/python -m scripts.cli discover --out data/discovered_candidates.yaml
+node src/cli.ts discover --out data/discovered_candidates.yaml
 ```
 
 `--append` を付けると既存の候補を保持したまま key 重複なしで追記する。
@@ -194,9 +194,8 @@ Settings の Pages を開き、Build and deployment の Source を「GitHub Acti
 ## 手元で動かす
 
 ```sh
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
-.venv/bin/python -m scripts.cli build --out public
+npm ci
+node src/cli.ts build --out public
 ```
 
 `public/index.html` をブラウザで開けばサイトを確認できる。
@@ -204,7 +203,7 @@ python3 -m venv .venv
 テストを走らせる。
 
 ```sh
-.venv/bin/pytest -q
+npm test
 ```
 
 その他の指定。

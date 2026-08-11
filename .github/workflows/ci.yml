@@ -19,16 +19,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: pip install -r requirements.txt -r requirements-dev.txt
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run check
 
       - name: Run tests
-        run: pytest -q
+        run: npm test
 
   # 実際の上流を取りに行く。上流障害で PR が赤くならないよう必須にしない。
   smoke:
@@ -39,26 +46,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: npm ci
 
       - name: Build against live upstream
-        run: python -m scripts.cli build --out /tmp/site --now 2026-08-09T00:00:00Z
+        run: node src/cli.ts build --out /tmp/site --now 2026-08-09T00:00:00Z
 
       # 終了コードだけでは上流のスキーマ変更を検出できない(退避経路が働くと
       # 成功したまま件数だけ落ちる)ので、件数の下限を検査する。
       - name: Check the result is not degraded
         run: |
-          python - <<'PY'
-          import json, sys
-          with open('/tmp/site/data.json', encoding='utf-8') as fh:
-              data = json.load(fh)
-          n = len(data['conferences'])
-          print(f'{n} conferences')
-          sys.exit(0 if n >= 150 else 1)
-          PY
+          node -e '
+          const fs = require("node:fs");
+          const data = JSON.parse(fs.readFileSync("/tmp/site/data.json", "utf8"));
+          const n = data.conferences.length;
+          console.log(`${n} conferences`);
+          process.exit(n >= 150 ? 0 : 1);
+          '

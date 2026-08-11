@@ -1,0 +1,151 @@
+/**
+ * 候補レビュー支援: レビュー優先順位 (締切昇順)・重複グループ・predatory 疑い・
+ * 過去締切を一覧する。Ported from scripts/review_candidates.py.
+ * 使い方: node src/review-candidates.ts [--limit 60] [--candidates data/discovered_candidates.yaml]
+ * 出力はレビュー時の判断材料で、収録 (extra.yaml 昇格) は公式サイト裏取り後に人間が行う。
+ */
+
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { load as loadYaml } from "js-yaml";
+import { parseDeadlineText } from "./discover.ts";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// 名乗りベースの危険フラグ。確定 predatory ではない (IEEE の一部も Ei 名乗り)。
+const PREDATORY_HINTS = ["ei compendex", "scopus", "ieee xplore", "indexed by"];
+
+export function isPredatory(text: string): boolean {
+  const t = text.toLowerCase();
+  return PREDATORY_HINTS.some((h) => t.includes(h));
+}
+
+export function normTitle(title: string): string {
+  /** 年・記号を落とした正規化タイトル (重複グループ検出用)。 */
+  let t = title.toLowerCase();
+  t = t.replace(/'\d\d\b/g, ""); // '26 形式の短縮年
+  t = t.replace(/\b20\d\d\b/g, ""); // 2026 形式の年
+  t = t.replace(/[^a-z0-9]+/g, " ");
+  return t.trim().split(/\s+/).join(" ");
+}
+
+export function loadTrackedTitles(): Set<string> {
+  /** 収録済み (snapshot.json + data/extra.yaml) の正規化タイトル集合。 */
+  const tracked = new Set<string>();
+  const add = (title: unknown): void => {
+    if (typeof title === "string" && title) tracked.add(normTitle(title));
+  };
+  try {
+    const snap = JSON.parse(readFileSync(join(ROOT, "data", "snapshot.json"), "utf8")) as Record<
+      string,
+      any
+    >;
+    for (const c of (snap.conferences as unknown[] | null) ?? []) {
+      if (typeof c === "object" && c !== null) add((c as Record<string, unknown>).title);
+    }
+  } catch {
+    // snapshot が無い/壊れている場合も extra.yaml 側で拾う
+  }
+  try {
+    const extra = loadYaml(readFileSync(join(ROOT, "data", "extra.yaml"), "utf8")) as Record<
+      string,
+      any
+    >;
+    for (const c of (extra.conferences as unknown[] | null) ?? []) {
+      if (typeof c === "object" && c !== null) add((c as Record<string, unknown>).title);
+    }
+  } catch {
+    // extra.yaml が無い場合
+  }
+  return tracked;
+}
+
+interface Enriched {
+  c: Record<string, any>;
+  dl: Date | null;
+  pred: boolean;
+  tracked: boolean;
+}
+
+export function runReviewCandidates(candidatesPath: string, limit: number, today: Date): void {
+  const data = loadYaml(readFileSync(candidatesPath, "utf8")) as Record<string, any>;
+  const cands = (data.conferences as unknown[] | null) ?? [];
+
+  const tracked = loadTrackedTitles();
+  const enriched: Enriched[] = cands.map((raw) => {
+    const c = raw as Record<string, any>;
+    const ed = (
+      Array.isArray(c.editions) && c.editions.length > 0 ? c.editions : [{}]
+    )[0] as Record<string, any>;
+    const dateText = String(ed.date_text ?? "");
+    return {
+      c,
+      dl: parseDeadlineText(dateText),
+      pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
+      tracked: tracked.has(normTitle(String(c.title ?? ""))),
+    };
+  });
+
+  const future = enriched
+    .filter((e) => e.dl && e.dl.getTime() >= today.getTime() && !e.tracked)
+    .sort((a, b) => a.dl!.getTime() - b.dl!.getTime());
+  const past = enriched.filter((e) => e.dl && e.dl.getTime() < today.getTime() && !e.tracked);
+  const unknown = enriched.filter((e) => !e.dl && !e.tracked);
+  const already = enriched.filter((e) => e.tracked);
+
+  const fmt = (d: Date): string => d.toISOString().slice(0, 10);
+  console.log(`=== レビュー推奨: 締切昇順 (未来 ${future.length} 件中 上位 ${limit} 件) ===`);
+  for (const e of future.slice(0, limit)) {
+    const flag = e.pred ? " [predatory疑い]" : "";
+    console.log(`${fmt(e.dl!)}  ${String(e.c.title).slice(0, 44)}${flag}`);
+    console.log(`    ${e.c.link ?? ""}  tags=${e.c.tags ?? ""}`);
+  }
+
+  const groups = new Map<string, Enriched[]>();
+  for (const e of enriched) {
+    const key = normTitle(String(e.c.title ?? ""));
+    groups.set(key, [...(groups.get(key) ?? []), e]);
+  }
+  const dups = [...groups.entries()]
+    .filter(([, v]) => v.length > 1)
+    .sort((a, b) => b[1].length - a[1].length);
+  console.log(`\n=== 重複グループ (${dups.length} 組) ===`);
+  for (const [k, v] of dups.slice(0, 20)) {
+    const srcs = v.map((e) => `${e.c.title}@${(e.c.tags ?? ["?"]).slice(-1)[0]}`);
+    console.log(`- ${k}: ${srcs.join(", ")}`);
+  }
+
+  const preds = enriched.filter((e) => e.pred);
+  console.log(`\n=== predatory 疑い (${preds.length} / ${cands.length} 件) ===`);
+  for (const e of preds.slice(0, 20)) {
+    console.log(`- ${String(e.c.title).slice(0, 50)}`);
+  }
+
+  console.log(`\n=== 収録済みと重複 (${already.length} 件・レビュー不要) ===`);
+  for (const e of already.slice(0, 15)) {
+    console.log(`- ${String(e.c.title).slice(0, 50)}  (${(e.c.tags ?? ["?"]).slice(-1)[0]})`);
+  }
+
+  console.log(`\n=== 過去締切のみ (${past.length} 件・レビュー不要/削除候補) ===`);
+  console.log(`=== 締切不明 (${unknown.length} 件・公式サイト確認が必要) ===`);
+}
+
+function parseArgs(argv: string[]): { candidates: string; limit: number } {
+  let candidates = join(ROOT, "data", "discovered_candidates.yaml");
+  let limit = 60;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--candidates" && argv[i + 1]) {
+      candidates = argv[++i];
+    } else if (argv[i] === "--limit" && argv[i + 1]) {
+      limit = Number(argv[++i]);
+    }
+  }
+  return { candidates, limit };
+}
+
+const isMain = process.argv[1]?.endsWith("review-candidates.ts");
+if (isMain) {
+  const { candidates, limit } = parseArgs(process.argv.slice(2));
+  runReviewCandidates(candidates, limit, new Date());
+}

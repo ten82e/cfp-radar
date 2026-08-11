@@ -163,32 +163,35 @@ conf-deadlines/
 ├── README.md                    # 購読手順（手書き。自動更新しない）      [担当E]
 ├── LICENSE                      # MIT                                    [担当E]
 ├── NOTICE.md                    # 上流 MIT の帰属表示                     [担当E]
-├── requirements.txt             # PyYAML のみ                            [担当E]
-├── requirements-dev.txt         # pytest, icalendar                      [担当E]
+├── package.json                 # 依存・スクリプト (npm test / build)     [担当E]
+├── tsconfig.json                # TS 設定                                [担当E]
+├── biome.json                   # lint/format                            [担当E]
 ├── config.yaml                  # 収録範囲・カテゴリ・フィード定義        [担当B]
 ├── data/
 │   ├── extra.yaml               # 上流に無い会議                          [担当B]
 │   ├── overrides.yaml           # 上流の訂正・別名・カテゴリ上書き        [担当B]
 │   └── snapshot.json            # 生成物(コミットされる。上流障害時の退避) [自動]
-├── scripts/
-│   ├── __init__.py
-│   ├── model.py                 # 型・時刻解決・日付パーサ・snapshot 入出力 [担当A]
-│   ├── sources/__init__.py      #                                        [担当A]
-│   ├── sources/base.py          #                                        [担当A]
-│   ├── sources/ccfddl.py        #                                        [担当A]
-│   ├── sources/aideadlines.py   #                                        [担当A]
-│   ├── sources/local.py         # data/extra.yaml 読み込み                [担当A]
-│   ├── merge.py                 # 名寄せ・分類・上書き・推定              [担当B]
-│   ├── discover.py              # 穴場会議・ジャーナル自律探索           [担当G]
-│   ├── build.py                 # ICS/JSON/CSV/MD/llms.txt/HTML 出力      [担当C]
-│   └── cli.py                   # エントリポイント                        [担当C]
+├── src/
+│   ├── model.ts                 # 型・時刻解決・日付パーサ・snapshot 入出力 [担当A]
+│   ├── sources/
+│   │   ├── base.ts              #                                        [担当A]
+│   │   ├── ccfddl.ts            #                                        [担当A]
+│   │   ├── aideadlines.ts       #                                        [担当A]
+│   │   └── local.ts             # data/extra.yaml 読み込み                [担当A]
+│   ├── merge.ts                 # 名寄せ・分類・上書き・推定              [担当B]
+│   ├── discover.ts              # 穴場会議・ジャーナル自律探索           [担当G]
+│   ├── fetch-primary.ts         # 一次ソース自動抽出                     [担当E]
+│   ├── review-candidates.ts     # 候補レビュー支援                       [担当G]
+│   ├── embeddings.ts            # 埋め込み生成                           [担当C]
+│   ├── build.ts                 # ICS/JSON/CSV/MD/llms.txt/HTML 出力      [担当C]
+│   └── cli.ts                   # エントリポイント                        [担当C]
 ├── site/template.html           # 単一ファイル静的サイト                  [担当D]
 ├── public/                      # 生成物(git 管理外)
-├── tests/                       # pytest                                 [担当F]
+├── tests/                       # vitest                                 [担当F]
 └── .github/workflows/
     ├── update.yml               # 日次 cron: 収集→生成→コミット→Pages    [担当E]
     ├── discover.yml             # 週次 cron: 穴場会議・ジャーナル自律探索 [担当G]
-    └── ci.yml                   # PR/push: pytest + 出力検証             [担当E]
+    └── ci.yml                   # PR/push: vitest + 出力検証             [担当E]
 ```
 
 **担当は自分のファイルだけを書く。他担当のファイルを作成・編集しない。**
@@ -196,14 +199,14 @@ conf-deadlines/
 
 ---
 
-## 3. 凍結インタフェース（`scripts/model.py`・担当A が実装、他は前提として使う）
+## 3. 凍結インタフェース（`src/model.ts`・担当A が実装、他は前提として使う）
 
-```python
-from __future__ import annotations
-from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone, tzinfo
-from pathlib import Path
-from typing import Protocol
+```ts
+// 型・時刻解決・日付パーサ・snapshot 入出力（src/model.ts）
+export interface Deadline { kind: string; label: string; at_utc: Date; tz_raw: string; round: number; comment: string | null; }
+export interface Edition { year: number; edition_id: string; link: string; place: string; date_text: string; event_start: Date | null; event_end: Date | null; deadlines: Deadline[]; estimated: boolean; source: string; }
+export interface Conference { key: string; title: string; full_name: string; link: string; rank: Record<string, string>; dblp: string | null; upstream_sub: string | null; tags: string[]; categories: string[]; editions: Edition[]; sources: string[]; }
+```
 
 AOE = timezone(timedelta(hours=-12))          # Anywhere on Earth
 
@@ -250,27 +253,29 @@ class Conference:
 
 ### 3.1 キーの決め方（衝突が実在するので規則を凍結する）
 
-```python
-def slug(title: str) -> str: ...
-    # 小文字化、英数字以外を '-'、連続 '-' を畳む、前後 '-' 除去
-    # 'Hot Interconnects' -> 'hot-interconnects', 'IH&MMSec' -> 'ih-mmsec'
-
-def conference_key(title: str, upstream_sub: str | None, key_overrides: dict[str, str]) -> str: ...
-    # 1. key_overrides に '<SUB>/<slug(title)>' があればその値を使う（最優先・安定）
-    # 2. 無ければ slug(title)
+```ts
+// src/model.ts
+export function slug(title: string): string;
+// 小文字化、英数字以外を '-'、連続 '-' を畳む、前後 '-' 除去
+// 'Hot Interconnects' -> 'hot-interconnects', 'IH&MMSec' -> 'ih-mmsec'
 ```
 
-実データで確認された衝突は 2 組。`config.yaml` の `key_overrides` に **固定値として**書く。
+各 Source の Conference は `key = slug(title)` を持つ（ccfddl・aideadlines・local 共通）。
+**同一 key に別会議が載ったときは merge_sources が upstream_sub で分割する**
+（§3.6）。`key_overrides` のような設定は持たない。
 
-| 上流 | title | 実体 | 割り当てる key |
+実データで確認された衝突は 2 組。`data/overrides.yaml` の `aliases` と
+`merge_sources` の分割で解決する。
+
+| 上流 | title | 実体 | 解決後 key |
 |---|---|---|---|
-| `SC/fse.yml` | FSE | Fast Software Encryption | `fse-crypto` |
+| `SC/fse.yml` | FSE | Fast Software Encryption | `fse`（sub が辞書順先） |
 | `SE/fse.yml` | FSE | Foundations of Software Engineering | `fse-se` |
-| `DS/sec.yml` | SEC | ACM/IEEE Symposium on Edge Computing | `sec-edge` |
+| `DS/sec.yml` | SEC | ACM/IEEE Symposium on Edge Computing | `sec` |
 | `SC/sec.yml` | SEC | IFIP Information Security Conference | `sec-ifip` |
 
-**新たな衝突が上流に生じたら CI を落とす。** `tests/test_keys.py` で
-「`key_overrides` に載っていない slug 衝突が 0 件」を検査する。
+**新たな衝突が上流に生じたら CI を落とす。** `tests/merge.test.ts` で
+「同じ key を共有する会議が 0 件（sub 分割後）」を検査する。
 自動で `-{sub}` を付けて回避してはならない（既存 key が動いて UID が変わり、
 購読者のカレンダーにイベントが重複登録される）。
 
@@ -280,44 +285,53 @@ ccfddl と hf で同一会議が別 title になっている組は `data/overrid
 
 ### 3.2 時刻と日付
 
-```python
-def resolve_tz(tz_raw: str | None) -> tzinfo: ...
-    # 'AoE'/'aoe' -> UTC-12
-    # 'UTC' / 'GMT' / '' / None -> UTC
-    # 'UTC+8' 'UTC-08' 'GMT+02' 'UTC+0' 'UTC+05:30' -> 固定オフセット
-    #   （ゼロ埋め・1〜2桁・コロン区切りの全てを受ける）
-    # 'PT' 'PST' 'PDT' -> ZoneInfo('America/Los_Angeles')   ※固定オフセット禁止
-    # 'EST'/'EDT'/'ET' -> ZoneInfo('America/New_York'), 'CET'/'CEST' -> ZoneInfo('Europe/Paris')
-    # IANA 名（'/' を含む）-> ZoneInfo
-    # 不明 -> UTC を返し、警告を 1 回だけ記録
+```ts
+// src/model.ts
+export type Tz =
+  | { kind: "fixed"; offsetMinutes: number }
+  | { kind: "iana"; name: string };
 
-def parse_instant(text: str, tz_raw: str | None) -> datetime | None: ...
-    # 'YYYY-MM-DD HH:MM:SS' / 'YYYY-MM-DD HH:MM' / 'YYYY-MM-DD' を受ける
-    # naive として読み、resolve_tz の tz を付与し、UTC に変換して返す
-    # 'TBD' 等パース不能は None（例外にしない）
-    # 日付のみの場合は 23:59:59 とみなす
+export function resolveTz(tzRaw: string | null | undefined): Tz;
+// 'AoE'/'aoe' -> {kind:'fixed', offsetMinutes:-720}
+// 'UTC' / 'GMT' / '' / null / undefined -> {kind:'fixed', offsetMinutes:0}
+// 'UTC+8' 'UTC-08' 'GMT+02' 'UTC+0' 'UTC+05:30' -> 固定オフセット
+//   （ゼロ埋め・1〜2桁・コロン区切りの全てを受ける）
+// 'PT' 'PST' 'PDT' -> {kind:'iana', name:'America/Los_Angeles'} ※固定オフセット禁止
+// 'EST'/'EDT'/'ET' -> 'America/New_York', 'CET'/'CEST' -> 'Europe/Paris'
+// IANA 名（'/' を含む）-> {kind:'iana', name: <そのまま>}
+// 不明 -> UTC を返し、警告を 1 回だけ記録
 
-def parse_date_range(text: str, fallback_year: int) -> tuple[date | None, date | None]: ...
-    # 'August 17 - 21, 2026'            -> (2026-08-17, 2026-08-21)
-    # 'September 29 - October 3, 2025'  -> (2025-09-29, 2025-10-03)
-    # 'June 28 - July 2, 2026'          -> (2026-06-28, 2026-07-02)
-    # 'Oct 12-16, 2025' / 'Sept. 12-16, 2025' -> 略記・ピリオド・'Sept' を受ける
-    # 'November 15, 2026'               -> (2026-11-15, 2026-11-15)
-    # 'July 31-August 8, 2022'          -> (2022-07-31, 2022-08-08)
-    # en dash '–' も区切りとして受ける
-    # 年跨ぎ 'December 28, 2025 - January 3, 2026' は各側の明示年を優先
-    # date 中の明示年が Edition.year と食い違う場合も date を優先する（罠 §1.1-9）
-    # 解釈不能 -> (None, None)。例外にしない
+export function parseInstant(text: unknown, tzRaw: string | null | undefined): Date | null;
+// 'YYYY-MM-DD HH:MM:SS' / 'YYYY-MM-DD HH:MM' / 'YYYY-MM-DD' を受ける
+// naive として読み、resolveTz の tz を付与し、UTC に変換して返す
+// 'TBD' 等パース不能は null（例外にしない）
+// 日付のみの場合は 23:59:59 とみなす
 
-def parse_rankings(s: str | None) -> dict[str, str]: ...
-    # hf の 'CCF: A, CORE: A*, THCPL: A' -> {'ccf':'A','core':'A*','thcpl':'A'}
-    # None / 解釈不能 -> {}
+export function parseDateRange(
+  text: string | null | undefined,
+  fallbackYear: number,
+): [Date | null, Date | null];
+// 'August 17 - 21, 2026'            -> (2026-08-17, 2026-08-21)
+// 'September 29 - October 3, 2025'  -> (2025-09-29, 2025-10-03)
+// 'June 28 - July 2, 2026'          -> (2026-06-28, 2026-07-02)
+// 'Oct 12-16, 2025' / 'Sept. 12-16, 2025' -> 略記・ピリオド・'Sept' を受ける
+// 'November 15, 2026'               -> (2026-11-15, 2026-11-15)
+// 'July 31-August 8, 2022'          -> (2022-07-31, 2022-08-08)
+// en dash '–' も区切りとして受ける
+// 年跨ぎ 'December 28, 2025 - January 3, 2026' は各側の明示年を優先
+// date 中の明示年が Edition.year と食い違う場合も date を優先する（罠 §1.1-9）
+// 解釈不能 -> [null, null]。例外にしない
 ```
+
+rankings のパースは `src/sources/aideadlines.ts` の内部関数 `rankOf`:
+`'CCF: A, CORE: A*, THCPL: A'` -> `{ccf:'A', core:'A*', thcpl:'A'}`、
+`null` / 解釈不能 -> `{}`。
 
 ### 3.3 締切種別の正規化
 
-```python
-def kind_of(raw: str) -> DeadlineKind: ...
+```ts
+// src/model.ts
+export function kindOf(rawTypeOrKey: string | null | undefined): DeadlineKind;
 ```
 
 `raw` の入力は **ccfddl の timeline キー名**と **hf の `type` 値**の両方である。
@@ -341,63 +355,92 @@ def kind_of(raw: str) -> DeadlineKind: ...
 
 ### 3.4 取得源
 
-```python
-class Source(Protocol):
-    name: str
-    def load(self, cache_dir: Path, *, offline: bool = False) -> list[Conference]: ...
+```ts
+// src/sources/base.ts
+export interface Source {
+  name: string;
+  load(cacheDir: string, opts: { offline?: boolean }): Promise<Conference[]>;
+}
 
-def fetch_tarball(repo: str, ref: str, cache_dir: Path, *, offline: bool = False) -> Path: ...
-    # codeload から tar.gz を取得して cache_dir 配下へ展開、展開先ルートを返す
-    # 展開時に path traversal を防ぐ（'..' や絶対パスを含むメンバを拒否）
-    # offline=True かつキャッシュがあればそれを使う。無ければ FileNotFoundError
-    # ネットワーク失敗時は既存キャッシュへフォールバックし警告
+export async function fetchTarball(
+  repo: string,
+  ref: string,
+  cacheDir: string,
+  opts: { offline?: boolean },
+): Promise<string>;
+// codeload から tar.gz を取得して cacheDir 配下へ展開、展開先ルートを返す
+// 展開時に path traversal を防ぐ（'..' や絶対パスを含むメンバを拒否）
+// offline=true かつキャッシュがあればそれを使う。無ければ throw
+// ネットワーク失敗時は既存キャッシュへフォールバックし警告
 ```
+
+実装: `src/sources/ccfddl.ts`（`NAME = "ccfddl"`・`REPO = "ccfddl/ccf-deadlines"`）、
+`src/sources/aideadlines.ts`（`NAME = "aideadlines"`・`REPO = "huggingface/ai-deadlines"`）、
+`src/sources/local.ts`（`NAME = "local"`・`data/extra.yaml`）。
 
 ### 3.5 スナップショット（上流障害時の復旧経路）
 
 `.cache/` は git 管理外であり、GitHub Actions の checkout には存在しない。
 上流取得が失敗したときに頼れるのはコミット済みの `data/snapshot.json` だけである。
 
-```python
-def dump_snapshot(confs: list[Conference], path: Path) -> None: ...
-    # data.json と同一スキーマ（§4.2）で書く。generated_at は含めない
-    # キーの順序を安定させ、差分がデータ変更時にのみ出るようにする
-
-def load_snapshot(path: Path) -> list[Conference]: ...
-    # dump_snapshot の逆。ファイルが無ければ空リスト
-```
-
-`cli.build` の取得順序を凍結する:
+`cli.build`（`src/cli.ts` の `cmdBuild`）の取得順序を凍結する:
 
 1. 各 Source を順に `load()` する。
-2. **全 Source が失敗した場合に限り** `load_snapshot('data/snapshot.json')` へ退避し、
-   警告を出して処理を継続する（サイトを壊さない）。
+2. **全 Source が失敗した場合に限り** `data/snapshot.json` から
+   `restoreSnapshot()` で復元し、警告を出して処理を継続する（サイトを壊さない）。
 3. 一部の Source だけ失敗した場合は、成功した分に snapshot の該当分をマージして継続する。
 4. snapshot も空なら異常終了する（黙って空のカレンダーを公開しない）。
 
+snapshot の書き込みは build の最後に `data.json` を `data/snapshot.json` へ
+コピーする（`generated_at` を含まない・§4.2 と同一スキーマ）。
+
+**注意**: `--out` がどこでも、`--offline` でなく健全な build なら snapshot を
+上書きする（`--now` 指定の検証 build も例外ではない）。検証で `--now` を
+使ったあとは `git checkout -- data/snapshot.json` で戻すこと。
+
 ### 3.6 統合
 
-```python
-def merge_sources(groups: list[list[Conference]], config: dict,
-                  stats: dict | None = None) -> list[Conference]: ...
-    # key で名寄せ（aliases 適用後）。同一 key の Conference をマージ
-    # Edition は year で突き合わせる
-    # Deadline は和集合を取ったあと、下記「締切の重複統合」の許容幅で畳む
-    # 競合時の優先順は config['source_priority']（既定 ['local','aideadlines','ccfddl']）
-    # stats は任意の出力引数。merged_deadlines と merged_by_key を受け取る
+```ts
+// src/merge.ts
+export const DEFAULT_SOURCE_PRIORITY = ["local", "aideadlines", "ccfddl"];
+export const DEFAULT_CROSS_SOURCE_TOLERANCE_S = 90000; // 25 h
 
-def classify(confs: list[Conference], config: dict) -> list[Conference]: ...
-def apply_overrides(confs: list[Conference], overrides: dict) -> list[Conference]: ...
-    # editions.<year>.deadlines が指定されたらその版の締切を**置換**する
-    # （延長・訂正用。drop と違い、rollforward が推定版を再生成しない）。
-    # 形式は extra.yaml と同じ kind/label/date/tz。根拠 URL をコメントで残す。
-def rollforward(confs: list[Conference], today: date, config: dict) -> list[Conference]: ...
-    # 最新版の paper 締切が過去で、未来の版が無い会議に推定版を 1 つ足す
-    # 推定間隔は直近 2 版の実間隔の中央値、取れなければ 364 日。曜日を保つ
-    # 未来の版が既に存在する会議には足さない
-def select(confs: list[Conference], config: dict) -> list[Conference]: ...
-    # カテゴリ・exclude・rank_filter に加え、締切も開催日も持たない会議を落とす
-    # （全出力が日付を軸にするので、そういう会議はどこにも描画されず件数だけ増やす）
+export function mergeSources(
+  groups: Conference[][],
+  config: Record<string, unknown>,
+  stats?: MergeStats | null,
+): Conference[];
+// key で名寄せ（aliases 適用後）。同一 key の Conference をマージ
+// 同一 key で upstream_sub が異なる会議は分割する（§3.1 の FSE/SEC）
+//   sub が辞書順先の bucket が素の key、後続は `<key>-<sub-lowercased>`
+// Edition は year で突き合わせる
+// Deadline は和集合を取ったあと、下記「締切の重複統合」の許容幅で畳む
+// 競合時の優先順は config['source_priority']（既定 ["local","aideadlines","ccfddl"]）
+// stats は任意の出力引数。merged_deadlines と merged_by_key を受け取る
+
+export function classify(confs: Conference[], config: Record<string, unknown>): Conference[];
+export function applyOverrides(
+  confs: Conference[],
+  overrides: Record<string, unknown> | null | undefined,
+): Conference[];
+// editions.<year>.deadlines が指定されたらその版の締切を**置換**する
+// （延長・訂正用。drop と違い、rollforward が推定版を再生成しない）。
+// 形式は extra.yaml と同じ kind/label/date/tz。根拠 URL をコメントで残す。
+export function rollforward(
+  confs: Conference[],
+  today: Date,
+  config: Record<string, unknown>,
+): Conference[];
+// 最新版の paper 締切が過去で、未来の版が無い会議に推定版を 1 つ足す
+// 推定間隔は直近 2 版の実間隔の中央値、取れなければ 364 日。曜日を保つ
+// 未来の版が既に存在する会議には足さない
+export function select(confs: Conference[], config: Record<string, unknown>): Conference[];
+// カテゴリ・exclude・rank_filter に加え、締切も開催日も持たない会議を落とす
+// （全出力が日付を軸にするので、そういう会議はどこにも描画されず件数だけ増やす）
+export function dedupDeadlinesAfterRollforward(
+  confs: Conference[],
+  config: Record<string, unknown>,
+): Conference[];
 ```
 
 #### 締切の重複統合
@@ -473,14 +516,23 @@ WACV は Round 1 と Round 2 の通知を同一時刻に置く）。源を問わ
 
 ### 3.7 出力と CLI
 
-```python
-def build_all(confs: list[Conference], config: dict, outdir: Path, now: datetime) -> dict: ...
-def render_ics(entries: list[dict], *, calname: str, caldesc: str) -> str: ...
+```ts
+// src/build.ts
+export async function buildAll(
+  confs: Conference[],
+  config: Record<string, unknown>,
+  outdir: string,
+  now: Date,
+): Promise<BuildStats>;
+export function renderIcs(
+  entries: { title: string; kind: string; label: string; at: Date; comment: string; uid: string }[],
+  opts: { calname: string; caldesc: string },
+): string;
 ```
 
-```
-python -m scripts.cli build [--out public] [--config config.yaml]
-                            [--offline] [--now 2026-08-09T00:00:00Z] [--cache .cache]
+```sh
+node --experimental-strip-types src/cli.ts build [--out public] [--config config.yaml]
+                              [--offline] [--now 2026-08-09T00:00:00Z] [--cache .cache]
 ```
 
 `--offline` は「新規取得をせず、キャッシュ → snapshot の順で退避する」。
@@ -688,11 +740,11 @@ conferences:
 
 - `data/primary.yaml` に会議ごとの一次ソース URL と edition 年を登録する
   （URL の発見だけが人間の仕事。データの訂正は以後自動）。
-- `scripts/fetch_primary.py` が各 URL を取得し、「deadline キーワード行の近傍
+- `src/fetch-primary.ts` が各 URL を取得し、「deadline キーワード行の近傍
   （前後 1 行）の日付」だけを保守的に抽出して `data/primary_overrides.yaml`
   （自動生成・手編集禁止）を書く。
-- build (`scripts/cli.py`) は `overrides.yaml` → `primary_overrides.yaml` の順に
-  適用し、**一次ソースの実測を最優先**にする。
+- build (`src/cli.ts` の `cmdBuild`) は `overrides.yaml` → `primary_overrides.yaml`
+  の順に適用し、**一次ソースの実測を最優先**にする。
 - 抽出した edition が上流に存在しない場合、`_patch_editions` が新規 edition として
   追加する（`source: override`・`estimated: false`）。rollforward はその実測を基準に
   次 edition を推定する。
@@ -703,12 +755,12 @@ conferences:
   - 取得失敗・抽出 0 件の会議は**前回値を維持**する（一時的なサイト障害で
     データが消えない）。警告は stderr に出るので、レジストリの URL が古くなると
     気づける。
-- CI (`update.yml`) は build の前に `python -m scripts.fetch_primary --apply` を
+- CI (`update.yml`) は build の前に `node --experimental-strip-types src/fetch-primary.ts --apply` を
   実行し、毎日自動で一次ソースを巡回する。
 - 向き不向き: EasyChair CFP (`easychair.org/cfp/...`) と静的 HTML の CFP /
   Important Dates ページは抽出しやすい。JS レンダリングサイト（wacv.thecvf.com /
   vldb.org / bigdataieee.org 等）は静的 HTML に締切が無く現行抽出では 0 件になる
-  ため登録しない。必要になったら個別の抽出ルールを `fetch_primary.py` に足す。
+  ため登録しない。必要になったら個別の抽出ルールを `src/fetch-primary.ts` に足す。
 
 ---
 
@@ -721,9 +773,9 @@ conferences:
 - `concurrency: {group: pages, cancel-in-progress: false}`（**update.yml にのみ付ける**。
   concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
   デプロイと直列化して不利益になる）
-- 手順: checkout → setup-python 3.12 → `pip install -r requirements.txt` →
-  `python -m scripts.fetch_primary --apply`（一次ソース自動抽出）→
-  `python -m scripts.cli build --out public` →
+- 手順: checkout → setup-node 24 → `npm ci` →
+  `node --experimental-strip-types src/fetch-primary.ts --apply`（一次ソース自動抽出）→
+  `node --experimental-strip-types src/cli.ts build --out public` →
   `data/snapshot.json` に差分があればコミット → `actions/upload-pages-artifact@v3` →
   `actions/deploy-pages@v4`
 - 上流取得に失敗しても §3.5 の退避経路でサイトを壊さない。
@@ -759,11 +811,11 @@ on:
 ```
 
 - job `test`（ネットワーク非依存）:
-  `pip install -r requirements.txt -r requirements-dev.txt` → `pytest -q`。
-  pytest 側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含め、
-  生成 ICS は `icalendar` で読み直して構文検証する（自前パーサで検証しない）。
+  `npm ci` → `npm run typecheck` → `npm run check` → `npm test`。
+  テスト側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含め、
+  生成 ICS は `node-ical` で読み直して構文検証する（自前パーサで検証しない）。
 - job `smoke`（`continue-on-error: true`・ネットワーク依存）:
-  実際の上流を取りにいく `python -m scripts.cli build --out /tmp/site --now 2026-08-09T00:00:00Z`。
+  実際の上流を取りにいく `node --experimental-strip-types src/cli.ts build --out /tmp/site --now 2026-08-09T00:00:00Z`。
 - `paths-ignore` でスキップされたジョブは required check として Pending のまま残るため、
   ブランチ保護を掛ける場合は required check に指定しない旨を README に注記する。
 
@@ -808,32 +860,32 @@ on:
 
 実装を読まずに本仕様だけから書く。
 
-- `test_timezone.py`: `resolve_tz` の実在値 19 + 12 種すべて。`AoE` = UTC-12。
+- `timezone.test.ts`: `resolveTz` の実在値 19 + 12 種すべて。`AoE` = UTC-12。
   `UTC-08` と `UTC-8` が同じ。IANA 名。**`PT` が夏と冬で異なるオフセットになること**。
   不明値が UTC にフォールバックすること。
-- `test_parse.py`: `parse_instant` の AoE→UTC 変換
-  （`2026-04-08 23:59:00 AoE` → `2026-04-09T11:59:00Z`）。`TBD` が None。
-  `parse_date_range` の月跨ぎ・年跨ぎ・略記月・`Sept.`・en dash・単日。
-  `parse_rankings` の自由文字列変換。
-- `test_kind.py`: §3.3 の表の全 20 行。特に **`deadline` → `paper`**、
+- `parse.test.ts`: `parseInstant` の AoE→UTC 変換
+  （`2026-04-08 23:59:00 AoE` → `2026-04-09T11:59:00Z`）。`TBD` が null。
+  `parseDateRange` の月跨ぎ・年跨ぎ・略記月・`Sept.`・en dash・単日。
+  上流 rankings の自由文字列変換（`rankOf`）。
+- `kind.test.ts`: §3.3 の表の全 20 行。特に **`deadline` → `paper`**、
   `supplementary` が `paper` に潰れないこと、`rebuttal_start` と `rebuttal_end` が別物であること。
-- `test_keys.py`: `key_overrides` に載っていない slug 衝突が 0 件であること
+- `keys.test.ts`: sub 分割後も同じ key を共有する会議が 0 件であること
   （上流に新しい衝突が入ったら落ちる）。`aliases` が cross-source 名寄せを行うこと。
-- `test_merge.py`: 同一版に同じ kind の締切が複数あっても消えないこと
+- `merge.test.ts`: 同一版に同じ kind の締切が複数あっても消えないこと
   （notification 3 本、submission 4 本のケース）。round の保持。overrides 適用。
   rollforward が未来版のある会議に推定を足さないこと。
   §3.6「締切の重複統合」の 3 事象（源間の丸め違い・上流内の同日ラウンド重複・
   源間の round 表現差）がそれぞれ 1 件に畳まれること。
   NSDI 型の数か月離れたラウンドと、許容幅の外側（3601 秒差）が畳まれないこと。
   締切も開催日も持たない会議が `select` で落ちること。
-- `test_ics.py`: CRLF、75 オクテット折り返し（**日本語 3 バイト文字を壊さない**）、
+- `ics.test.ts`: CRLF、75 オクテット折り返し（**日本語 3 バイト文字を壊さない**）、
   エスケープ（`,` `;` `\` と `:` を区別）、終日イベントの `DTEND` が +1 日、
   `METHOD` を出力しないこと、UID が §4.1 の形であること、
   **UID が全 VEVENT で一意であること**、同一入力で 2 回生成した出力が bit 一致すること。
-  `icalendar` で読み直して検証する。
-- `test_snapshot.py`: `dump_snapshot` → `load_snapshot` の往復で情報が落ちないこと。
-  全 Source が失敗したとき snapshot から復旧すること。
-- `test_build_golden.py`: 小さな固定入力から `--now` 固定でビルドし、
+  物理行分割（`icsPhysicalLines`）で読み直して検証する。
+- `snapshot.test.ts`: build の最後に `data.json` → `snapshot.json` のコピーで
+  情報が落ちないこと。全 Source が失敗したとき snapshot から復旧すること。
+- `build_golden.test.ts`: 小さな固定入力から `--now` 固定でビルドし、
   ファイル一式が生成されること・JSON スキーマが §4.2 どおりであること。
   推定フィードがカテゴリ別に分かれ、確定フィードに推定が混ざらないこと。
   締切を持たない会議（ISC High Performance・HOTI・情報処理学会 HPC 研究会）の

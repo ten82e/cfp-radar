@@ -17,16 +17,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: npm ci
 
       - name: Discover niche venues and journals
-        run: python -m scripts.cli discover --out data/discovered_candidates.yaml
+        run: node src/cli.ts discover --out data/discovered_candidates.yaml
 
       - name: Upload Discovered Candidates Artifact
         uses: actions/upload-artifact@v4

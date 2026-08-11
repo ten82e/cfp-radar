@@ -1,0 +1,89 @@
+/**
+ * fetch-primary.ts の抽出ロジックの最小テスト。
+ * Ported from tests/test_fetch_primary.py.
+ */
+
+import { describe, expect, it } from "vitest";
+import { extractDeadline, extractDeadlines, pageYear, toLines } from "../src/fetch-primary.ts";
+
+describe("fetch-primary extraction", () => {
+  it("easychair style", () => {
+    // SETTA 2026 の実例: "Submission deadline May 10, 2026"
+    expect(extractDeadline("Submission deadline May 10, 2026", 2026)).toEqual({
+      kind: "paper",
+      label: "Paper submission",
+      date: "2026-05-10",
+      round: 1,
+    });
+  });
+
+  it("abstract with round and tz", () => {
+    const got = extractDeadline("Abstract submission (Round 2) deadline: Aug 16, 2026 (AoE)", 2026);
+    expect(got).not.toBeNull();
+    expect(got?.kind).toBe("abstract");
+    expect(got?.round).toBe(2);
+    expect(got?.tz).toBe("AoE");
+    expect(got?.date).toBe("2026-08-16");
+    expect(got?.label).toBe("Round 2 Abstract submission");
+  });
+
+  it("ignore stale year", () => {
+    // 2 年前の残骸 (2024) は 2026 edition に拾わない。
+    expect(extractDeadline("Paper submission deadline: August 21, 2024", 2026)).toBeNull();
+  });
+
+  it("no keyword is none", () => {
+    expect(extractDeadline("Registration opens January 5, 2026", 2026)).toBeNull();
+  });
+
+  it("camera ready", () => {
+    const got = extractDeadline("Camera-ready deadline: October 3, 2026 23:59 UTC", 2026);
+    expect(got).not.toBeNull();
+    expect(got?.kind).toBe("camera_ready");
+    expect(got?.tz).toBe("UTC");
+  });
+
+  it("to_lines splits cells", () => {
+    const lines = toLines(
+      "<table><tr><td>Submission deadline</td><td>Aug 16, 2026</td></tr></table>",
+    );
+    expect(lines).toContain("Submission deadline");
+    expect(lines).toContain("Aug 16, 2026");
+  });
+
+  it("extract_deadlines window", () => {
+    const lines = [
+      "All deadlines refer to AoE.",
+      "Paper submission deadline: August 21, 2026",
+      "Notification: October 15, 2026",
+    ];
+    const got = extractDeadlines(lines, 2026);
+    const kinds = new Set(got.map((g) => g.kind));
+    // deadline を含まない行 (Notification) は抽出しない。kind は行自体の
+    // キーワードで決まる (隣接行の notification に化けない)。
+    expect(kinds).toEqual(new Set(["paper"]));
+    const paper = got.find((g) => g.kind === "paper")!;
+    expect(paper.tz).toBe("AoE"); // 前の行の AoE をウィンドウで拾う
+  });
+
+  it("kind hint wins over adjacent notification", () => {
+    // deadline 行の次行に Notification があっても paper のまま (hmem 実例)。
+    const lines = ["Submission deadline: August 17, 2026", "Notification: September 4, 2026"];
+    const got = extractDeadlines(lines, 2026);
+    expect(got.length).toBe(1);
+    expect(got[0].kind).toBe("paper");
+    expect(got[0].date).toBe("2026-08-17");
+  });
+});
+
+describe("pageYear", () => {
+  it("matches the registry year from the title", () => {
+    expect(pageYear("<title>SETTA 2026: International Symposium on ...</title>", 2026)).toBe(2026);
+    // レジストリが 2027 なのに title が古い版のまま → default が勝つ
+    expect(pageYear("<title>SETTA 2025 (archived)</title>", 2026)).toBe(2026);
+    // title に年が無い
+    expect(pageYear("<title>Call for Papers</title>", 2026)).toBe(2026);
+    // 未来版の誤検出防止
+    expect(pageYear("<title>SETTA 2030</title>", 2026)).toBe(2026);
+  });
+});
