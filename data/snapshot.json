@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T17:52:17Z",
+  "generated_at": "2026-08-11T18:08:28Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -16283,7 +16283,20 @@
           ]
         }
       ],
-      "papers": []
+      "papers": [
+        "Chrono: Meticulous Hotness Measurement and Flexible Page Migration for Memory Tiering",
+        "Deft: A Scalable Tree Index for Disaggregated Memory",
+        "Daredevil: Rescue Your Flash Storage from Inflexible Kernel Storage Stack",
+        "Towards Efficient Flash Caches with Emerging NVMe Flexible Data Placement SSDs",
+        "Pegasus: Transparent and Unified Kernel-Bypass Networking for Fast Local and Remote Communication",
+        "Byte vSwitch: A High-Performance Virtual Switch for Cloud Networking",
+        "Enabling Virtual Priority in Data Center Congestion Control",
+        "CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion",
+        "SpInfer: Leveraging Low-Level Sparsity for Efficient Large Language Model Inference on GPUs",
+        "Multi-Grained Specifications for Distributed System Model Checking and Verification",
+        "Ladon: High-Performance Multi-BFT Consensus via Dynamic Global Ordering",
+        "Rakis: Secure Fast I/O Primitives Across Trust Boundaries on Intel SGX"
+      ]
     },
     {
       "key": "eurovis",
