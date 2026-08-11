@@ -21094,3 +21094,13 @@ conferences:
         place: ''
         date_text: Aug 21, 2026
         deadlines: []
+  - key: adc-2026-second-round-cfp-and
+    title: 'ADC 2026: Second-Round CFP and'
+    full_name: 'ADC 2026: Second-Round CFP and'
+    link: >-
+      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;98c4e7b0.2608
+    categories: []
+    tags:
+      - niche
+      - dbworld
+    editions: []
