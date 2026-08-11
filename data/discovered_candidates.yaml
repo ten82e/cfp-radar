@@ -20944,3 +20944,153 @@ conferences:
       - niche
       - conference
     editions: []
+  - key: ijit-2026
+    title: IJIT 2026
+    full_name: International Journal on Information Theory
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199892&copyownerid=33993
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijit-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199892&copyownerid=33993
+        place: ''
+        date_text: Aug 23, 2026
+        deadlines: []
+  - key: ijics-2026
+    title: IJICS 2026
+    full_name: International Journal of Instrumentation and Control Systems
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189817&copyownerid=33993
+    categories:
+      - systems
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijics-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189817&copyownerid=33993
+        place: ''
+        date_text: Aug 23, 2026
+        deadlines: []
+  - key: acii-2026
+    title: ACII 2026
+    full_name: 'Advanced Computational Intelligence: An International Journal'
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191990&copyownerid=46167
+    categories:
+      - fuzzy
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: acii-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191990&copyownerid=46167
+        place: ''
+        date_text: Aug 23, 2026
+        deadlines: []
+  - key: ijcga-2026
+    title: IJCGA 2026
+    full_name: International Journal of Computer Graphics & Animation
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189974&copyownerid=33993
+    categories:
+      - robotics
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijcga-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189974&copyownerid=33993
+        place: ''
+        date_text: Aug 23, 2026
+        deadlines: []
+  - key: ijnsa-2026
+    title: IJNSA 2026
+    full_name: >-
+      International Journal of Network Security & Its Applications - ERA
+      Indexed, H Index - 52
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190234&copyownerid=33993
+    categories:
+      - security
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijnsa-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190234&copyownerid=33993
+        place: ''
+        date_text: Aug 21, 2026
+        deadlines: []
+  - key: ijdps-2026
+    title: IJDPS 2026
+    full_name: International Journal of Distributed and Parallel systems
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199638&copyownerid=33993
+    categories:
+      - security
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijdps-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199638&copyownerid=33993
+        place: ''
+        date_text: Aug 21, 2026
+        deadlines: []
+  - key: iccta-2026
+    title: ICCTA 2026
+    full_name: >-
+      36th International Conference on Computer Theory and Applications -
+      Towards Smart Applications and AI-driven Secure Systems
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202646&copyownerid=126913
+    categories:
+      - cybersecurity
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: iccta-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202646&copyownerid=126913
+        place: Alexandria, Egypt
+        date_text: Sep 1, 2026
+        deadlines: []
+  - key: ijsea-2026
+    title: IJSEA 2026
+    full_name: >-
+      International Journal of Software Engineering & Applications - ERA
+      Indexed, H Index 35
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194120&copyownerid=33993
+    categories:
+      - multimedia
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ijsea-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194120&copyownerid=33993
+        place: ''
+        date_text: Aug 21, 2026
+        deadlines: []
