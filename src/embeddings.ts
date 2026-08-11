@@ -103,6 +103,21 @@ export const VENUE_PAPERS: Record<string, string[]> = {
     "Ladon: High-Performance Multi-BFT Consensus via Dynamic Global Ordering",
     "Rakis: Secure Fast I/O Primitives Across Trust Boundaries on Intel SGX",
   ],
+  ppopp: [
+    // R24: PPoPP '25（dblp ppopp2025、50 本。GOLDEN_EN の 7 本と完全分離 = リークなし）
+    "Helios: Efficient Distributed Dynamic Graph Sampling for Online GNN Inference",
+    "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+    "EVeREST: An Effective and Versatile Runtime Energy Saving Tool for GPUs",
+    "Fairer and More Scalable Reader-Writer Locks by Optimizing Queue Management",
+    "Setting a Course for Post-Moore Software Performance",
+    "Big Atomics and Fast Hash Tables",
+    "Boost Lock-free Queue and Stack with Batching",
+    "FlashSparse: Minimizing Computation Redundancy for Fast Sparse Matrix Multiplications on Tensor Cores",
+    "Triangle Counting on Tensor Cores",
+    "Mario: Near Zero-cost Activation Checkpointing in Pipeline Parallelism",
+    "MARLIN: Mixed-Precision Auto-Regressive Parallel Inference on Large Language Models",
+    "Harnessing Inter-GPU Shared Memory for Seamless MoE Communication-Computation Fusion",
+  ],
   ndss: [
     "A Method to Facilitate Membership Inference Attacks in Deep Learning Models",
     "A Large-Scale Measurement Study of the PROXY Protocol and its Security Implications",

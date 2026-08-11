@@ -741,6 +741,33 @@ const GOLDEN_EN: Array<{ title: string; key: string }> = [
     title: "RoboRebound: Multi-Robot System Defense with Bounded-Time Interaction",
     key: "eurosys",
   },
+  // PPoPP '25（dblp ppopp2025、50 本。VENUE_PAPERS と完全分離 = リークなし）
+  {
+    title:
+      "Accelerating GNNs on GPU Sparse Tensor Cores through N: M Sparsity-Oriented Graph Reordering",
+    key: "ppopp",
+  },
+  {
+    title: "Adaptive Parallel Training for Graph Neural Networks",
+    key: "ppopp",
+  },
+  {
+    title:
+      "TurboFFT: Co-Designed High-Performance and Fault-Tolerant Fast Fourier Transform on GPUs",
+    key: "ppopp",
+  },
+  { title: "Reciprocating Locks", key: "ppopp" },
+  { title: "Aggregating Funnels for Faster Fetch&Add and Queues", key: "ppopp" },
+  {
+    title:
+      "Publish on Ping: A Better Way to Publish Reservations in Memory Reclamation for Concurrent Data Structures",
+    key: "ppopp",
+  },
+  {
+    title:
+      "AC-Cache: A Memory-Efficient Caching System for Small Objects via Exploiting Access Correlations",
+    key: "ppopp",
+  },
 ];
 
 /** 会議名から日本語の内容チャンクを取り出す（実論文が使う日本語語彙を模す）。
