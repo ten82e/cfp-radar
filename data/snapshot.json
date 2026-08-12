@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T07:35:38Z",
+  "generated_at": "2026-08-12T07:44:06Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -10827,7 +10827,7 @@
         "core": "B",
         "thcpl": "B"
       },
-      "link": "https://conference.wsu.edu/ct-rsa-2026/",
+      "link": "https://www.esat.kuleuven.be/cosic/events/ct-rsa-2027/",
       "tags": [],
       "sources": [
         "ccfddl"
@@ -10923,14 +10923,14 @@
         },
         {
           "year": 2027,
-          "id": "override-2027",
+          "id": "ct-rsa27",
           "link": "https://www.esat.kuleuven.be/cosic/events/ct-rsa-2027/",
           "place": "San Francisco, California, USA",
           "date_text": "April 5-8, 2027",
           "event_start": "2027-04-05",
           "event_end": "2027-04-08",
           "estimated": false,
-          "source": "override",
+          "source": "ccfddl",
           "deadlines": [
             {
               "kind": "paper",
@@ -37796,18 +37796,18 @@
             {
               "kind": "abstract",
               "label": "Abstract Registration",
-              "utc": "2026-08-17T23:59:00Z",
-              "aoe": "2026-08-17 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-18T11:59:00Z",
+              "aoe": "2026-08-17 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             },
             {
               "kind": "paper",
               "label": "Paper Submission",
-              "utc": "2026-08-17T23:59:00Z",
-              "aoe": "2026-08-17 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-18T11:59:00Z",
+              "aoe": "2026-08-17 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
@@ -44231,9 +44231,9 @@
             {
               "kind": "paper",
               "label": "Submission Deadline",
-              "utc": "2026-09-07T20:59:00Z",
-              "aoe": "2026-09-07 08:59:00 AoE",
-              "tz_raw": "UTC+3",
+              "utc": "2026-09-07T23:59:00Z",
+              "aoe": "2026-09-07 11:59:00 AoE",
+              "tz_raw": "UTC",
               "round": 1,
               "comment": null
             }
@@ -48532,9 +48532,9 @@
             {
               "kind": "paper",
               "label": "Submission Deadline",
-              "utc": "2026-09-15T23:59:00Z",
-              "aoe": "2026-09-15 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-09-16T11:59:00Z",
+              "aoe": "2026-09-15 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             }
