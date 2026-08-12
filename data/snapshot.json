@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T07:51:47Z",
+  "generated_at": "2026-08-12T08:04:03Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -6205,6 +6205,47 @@
               "tz_raw": "AoE",
               "round": 1,
               "comment": "Estimated from the 2025 edition"
+            }
+          ]
+        }
+      ],
+      "papers": []
+    },
+    {
+      "key": "cascade",
+      "title": "CASCADE",
+      "full_name": "Constructive Approaches for Security Analysis and Design of Embedded systems (CASCADE)",
+      "categories": [
+        "security"
+      ],
+      "rank": {},
+      "link": "https://cascade-conference.org/",
+      "tags": [
+        "niche"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "cascade27",
+          "link": "https://cascade-conference.org/",
+          "place": "",
+          "date_text": "",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Winter paper submission",
+              "utc": "2026-11-10T23:59:00Z",
+              "aoe": "2026-11-10 11:59:00 AoE",
+              "tz_raw": "UTC",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -32895,6 +32936,37 @@
               "comment": null
             }
           ]
+        },
+        {
+          "year": 2027,
+          "id": "override-2027",
+          "link": "https://conf.researchr.org/home/issta-2027",
+          "place": "Singapore",
+          "date_text": "July 2027",
+          "event_start": null,
+          "event_end": null,
+          "estimated": false,
+          "source": "override",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Round 1 abstract submission",
+              "utc": "2027-01-09T11:59:59Z",
+              "aoe": "2027-01-08 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Round 1 full paper submission",
+              "utc": "2027-01-12T11:59:59Z",
+              "aoe": "2027-01-11 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
         }
       ],
       "papers": []
@@ -49236,6 +49308,48 @@
               "label": "Paper submission",
               "utc": "2026-02-26T11:59:59Z",
               "aoe": "2026-02-25 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ],
+      "papers": []
+    },
+    {
+      "key": "uasc",
+      "title": "uASC",
+      "full_name": "Microarchitecture Security Conference (uASC)",
+      "categories": [
+        "security"
+      ],
+      "rank": {},
+      "link": "https://uasc.cc",
+      "tags": [
+        "niche",
+        "workshop"
+      ],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "uasc27",
+          "link": "https://uasc.cc",
+          "place": "",
+          "date_text": "February 3-4, 2027",
+          "event_start": "2027-02-03",
+          "event_end": "2027-02-04",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "paper",
+              "label": "Cycle 2 submission deadline",
+              "utc": "2026-10-28T11:59:00Z",
+              "aoe": "2026-10-27 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
