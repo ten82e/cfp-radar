@@ -2390,9 +2390,10 @@ conferences:
         link: https://womeninhpc.org/events/sc-2026-workshop
         place: Chicago, IL, USA
         date_text: 'November 16, 2026'
-        # Submission deadline: August 14, 2026
+        # Application deadline: 「<s>August 14, 2026</s> Extended! August 21, 2026」
+        # （公式 womeninhpc.org、2026-08-12 確認）。通知 9/9・受諾確認 10/2。
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: AoE}
 
   - key: hmem-2026
     title: HMEM 2026

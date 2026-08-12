@@ -42,9 +42,7 @@ function rawDeadlines(): RawDeadline[] {
         });
       }
     }
-  }
-
-  // data/overrides.yaml: conferences はキー → { editions: { <年>: { deadlines } } }。
+  } // data/overrides.yaml: conferences はキー → { editions: { <年>: { deadlines } } }。
   const ovr = loadYaml(readFileSync(join(REPO_ROOT, "data", "overrides.yaml"), "utf8")) as {
     conferences?: Record<string, { editions?: Record<string, { deadlines?: unknown[] }> }>;
   };
@@ -54,6 +52,27 @@ function rawDeadlines(): RawDeadline[] {
         const rec = dl as Record<string, unknown>;
         out.push({
           src: "overrides.yaml",
+          key,
+          date: String(rec.date ?? ""),
+          tz: String(rec.tz ?? rec.timezone ?? ""),
+        });
+      }
+    }
+  }
+
+  // data/primary_overrides.yaml: 一次ソース自動抽出の結果（overrides.yaml と同じ構造）。
+  // パース失敗は cli が静かに {} を返すため（2026-08-12 whpc で実証）、ここで必ず検出する。
+  const prim = loadYaml(
+    readFileSync(join(REPO_ROOT, "data", "primary_overrides.yaml"), "utf8"),
+  ) as {
+    conferences?: Record<string, { editions?: Record<string, { deadlines?: unknown[] }> }>;
+  };
+  for (const [key, conf] of Object.entries(prim?.conferences ?? {})) {
+    for (const ed of Object.values(conf.editions ?? {})) {
+      for (const dl of ed.deadlines ?? []) {
+        const rec = dl as Record<string, unknown>;
+        out.push({
+          src: "primary_overrides.yaml",
           key,
           date: String(rec.date ?? ""),
           tz: String(rec.tz ?? rec.timezone ?? ""),
@@ -85,5 +104,24 @@ describe("local source data integrity", () => {
     const counts = warningCounts();
     const unknownTz = Object.keys(counts).filter((k) => k.startsWith("unknown timezone"));
     expect(unknownTz).toEqual([]);
+  });
+
+  it("every YAML data file parses without error", () => {
+    // primary_overrides.yaml のパース失敗は cli が静かに {} を返して全エントリを
+    // 消す（2026-08-12 whpc で実証: _comment 内の「: 」でパースエラー→ビルドは成功）。
+    // YAML 自体が壊れていると loadYaml が throw するので、ここで全ファイルを検証する。
+    const files = [
+      "data/extra.yaml",
+      "data/overrides.yaml",
+      "data/primary_overrides.yaml",
+      "data/primary.yaml",
+      "config.yaml",
+    ];
+    for (const f of files) {
+      expect(
+        () => loadYaml(readFileSync(join(REPO_ROOT, f), "utf8")),
+        `${f} must parse`,
+      ).not.toThrow();
+    }
   });
 });

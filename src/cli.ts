@@ -19,7 +19,7 @@ import {
   sanitizeEditions,
   select,
 } from "./merge.ts";
-import { type Conference, cmpStr, conferencesFromJson, warningCounts } from "./model.ts";
+import { type Conference, cmpStr, conferencesFromJson, warn, warningCounts } from "./model.ts";
 import { AideadlinesSource } from "./sources/aideadlines.ts";
 import { CcfddlSource } from "./sources/ccfddl.ts";
 import { LocalSource } from "./sources/local.ts";
@@ -50,7 +50,10 @@ function loadYamlFile(path: string): Record<string, unknown> {
   try {
     const loaded = loadYaml(readFileSync(path, "utf8"));
     return typeof loaded === "object" && loaded !== null ? (loaded as Record<string, unknown>) : {};
-  } catch {
+  } catch (exc) {
+    // 静かに {} を返すと primary_overrides 等のエントリが全滅するのにビルドは
+    // 成功し続ける（2026-08-12 whpc で実証）。必ず警告を出す。
+    warn(`cannot parse ${path}: ${String(exc)}`);
     return {};
   }
 }

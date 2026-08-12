@@ -102,9 +102,9 @@ conferences:
         deadlines:
         - kind: paper
           label: Paper submission
-          date: '2026-08-14'
+          date: '2026-08-21'
           tz: AoE
-    _comment: 一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-10)
+    _comment: '一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-10)。2026-08-12 手動更新: 公式「<s>Aug 14</s> Extended! Aug 21」'
   wsse-2026:
     editions:
       2026:
