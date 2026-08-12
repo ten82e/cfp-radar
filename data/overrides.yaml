@@ -161,3 +161,16 @@ conferences:
         deadlines:
           - {kind: abstract, label: 'Round 1 abstract submission', date: '2027-01-08 23:59:59', tz: AoE}
           - {kind: paper, label: 'Round 1 full paper submission', date: '2027-01-11 23:59:59', tz: AoE}
+
+  # 根拠: https://www.ecir2027.co.uk/call-for-full-papers (2026-08-12 取得)
+  #   「Authors have to first submit the abstract of their paper by September 21,
+  #   2026, 11:59pm (GMT)」「Full paper submission: 5 October 2026」
+  #   (calls トップの timeline も 21 SEPT / 5 Oct で一致)。
+  #   上流 aideadlines は abstract 9/25・paper 10/2 を収録（ECIR 2026 の日付を
+  #   引き写した疑い。2026 は公式 abstract 9/25・paper 10/2 だった）→ 訂正。
+  ecir:
+    editions:
+      2027:
+        deadlines:
+          - {kind: abstract, label: 'Abstract submission', date: '2026-09-21 23:59:59', tz: GMT}
+          - {kind: paper, label: 'Paper submission', date: '2026-10-05 23:59:59', tz: GMT}
