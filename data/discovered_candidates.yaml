@@ -21235,3 +21235,21 @@ conferences:
         place: Singapore, Singapore
         date_text: Sep 15, 2026
         deadlines: []
+  - key: iar-2026
+    title: IAR 2026
+    full_name: 2026 3rd International Conference on Intelligent Algorithms and Robotics
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202658&copyownerid=182680
+    categories:
+      - robotics
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: iar-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202658&copyownerid=182680
+        place: Guangzhou, China
+        date_text: Aug 20, 2026
+        deadlines: []
