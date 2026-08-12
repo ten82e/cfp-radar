@@ -836,10 +836,12 @@ conferences:
         deadlines:
           - {kind: paper, label: Paper submission deadline, date: '2026-10-12 23:59:00', tz: AoE}
 
-  # 根拠: https://conf.researchr.org/home/hpca-2027 (2026-08-09 取得)
-  #   Sat 20 - Wed 24 March 2027, Salt Lake City, Utah, co-located HPCA/CGO/PPoPP/CC 2027.
-  #   上流は 2027-01-30..02-03（HPCA 2026 系の日付混入）で会期が誤っていた。
-  #   Paper CFP は researchr に未掲載 → deadlines なし（会期のみで推定を止める）。
+  # 根拠: https://conf.researchr.org/track/hpca-2027/hpca-2027-main-conference (2026-08-12 取得)
+  #   「Paper Registration and Abstract Submission 11:59 pm July 24 2026 AoE /
+  #    Paper Submission 11:59 pm July 31 2026 AoE / Notification Nov 6 2026」。
+  #   CFP は 2026-07-14 公開（researchr ニュース）。8/9 時点の「CFP 未掲載」は
+  #   古い記録 → 公式値で明示。上流 ccfddl も同値（7/24・7/31 AoE）。
+  #   会期: Sat 20 - Wed 24 March 2027, Salt Lake City, co-located HPCA/CGO/PPoPP/CC 2027。
   - key: hpca
     title: HPCA
     full_name: IEEE International Symposium on High-Performance Computer Architecture
@@ -853,7 +855,9 @@ conferences:
         date_text: March 20-24, 2027
         event_start: '2027-03-20'
         event_end: '2027-03-24'
-        deadlines: []
+        deadlines:
+          - {kind: abstract, label: 'Paper registration and abstract submission', date: '2026-07-24 23:59:59', tz: AoE}
+          - {kind: paper, label: 'Paper submission', date: '2026-07-31 23:59:59', tz: AoE}
 
   # 根拠: https://dac.com/2026 (2026-08-09 取得)「DAC 2027 July 11-14, 2027
   #   San Jose Convention Center San Jose, CA」。投稿締切は未公開。
@@ -2530,10 +2534,12 @@ conferences:
         link: https://lrec2026.info/
         deadlines: []
 
-  # ---------------- ICST 2027 (2026-08-10 裏取り) ----------------
-  # 根拠: https://conf.researchr.org/home/icst-2027 (公開済み)
-  # Research Papers Submission: Tue 22 Dec 2026, AoE (UTC-12h) 明記。
-  # Initial Notification 1/31, Major Revision 2/20, Final Notification 3/7。
+  # ---------------- ICST 2027 (2026-08-10 裏取り → 2026-08-12 訂正) ----------------
+  # 根拠: https://conf.researchr.org/track/icst-2027/icst-2027-research-papers
+  #   「Important Dates AoE (UTC-12h) Mon 2 Nov 2026 Submission Deadline
+  #    Tue 22 Dec 2026 Initial Notification」— 8/10 の初回収録は 12/22 を
+  #   Submission と誤読した（実際は Initial Notification）。submissiondates も
+  #   11/2 で一致。Initial Notification 1/31・Major Revision 2/20・Final 3/7。
   # 会期: May 17-21, 2027, San Sebastian, Spain
   - key: icst
     title: ICST
@@ -2547,7 +2553,7 @@ conferences:
         place: San Sebastian, Spain
         date_text: 'May 17-21, 2027'
         deadlines:
-          - {kind: paper, label: 'Research Papers Submission', date: '2026-12-22 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Research Papers Submission', date: '2026-11-02 23:59:00', tz: AoE}
 
   # ---------------- COMPSAC 2027 (2026-08-10 裏取り) ----------------
   # 根拠: https://ieeecompsac.computer.org/2027/call-for-papers/ (公開済み)
