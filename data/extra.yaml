@@ -2289,9 +2289,10 @@ conferences:
         link: https://hust-workshop.github.io/
         place: Chicago, IL, USA
         date_text: 'November 15, 2026'
-        # Submissions Deadline: August 7, 2026 → August 14, 2026 (final extension)
+        # Submissions Deadline: 8/7 → 8/14 (final extension) → 8/21 AoE (SC26 提出ポータル
+        # 2026-08-12 取得: 「11:59pm (AoE) Aug 21, 2026」が一次。公式サイトは 8/14 のまま更新遅れ)
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: AoE}
 
   - key: isav-2026
     title: ISAV 2026
@@ -2813,10 +2814,10 @@ conferences:
           - {kind: camera_ready, label: Camera-Ready Papers Due, date: '2026-10-15 23:59:00', tz: UTC}
 
   # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/mig2026 (2026-08-11 確認)
-  #   19th ACM SIGGRAPH MIG「Paper Submission Deadline: 14 August 2026 /
+  #   19th ACM SIGGRAPH MIG「Paper Deadline 7 → 14 August 2026 23:59 AoE (Extended) /
   #   Acceptance Notification: 30 September / Camera-Ready: 15 October /
   #   December 11-13, 2026 Charleston, SC」。公式 https://mig.siggraph.org/2026/。
-  #   上流 ccfddl に 2026 版なし。公式 tz 表記なし → 23:59 UTC。
+  #   上流 ccfddl に 2026 版なし。公式「All submission deadlines are 23:59 AoE」→ tz: AoE。
   - key: mig
     title: MIG
     full_name: ACM SIGGRAPH Conference on Motion, Interaction and Games
@@ -2831,7 +2832,7 @@ conferences:
         event_start: '2026-12-11'
         event_end: '2026-12-13'
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
           - {kind: notification, label: Acceptance Notification, date: '2026-09-30 23:59:00', tz: UTC}
           - {kind: camera_ready, label: Camera-Ready Deadline, date: '2026-10-15 23:59:00', tz: UTC}
 
@@ -2879,3 +2880,25 @@ conferences:
         deadlines:
           - {kind: abstract, label: Abstract Registration, date: '2026-08-17 23:59:00', tz: UTC}
           - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
+
+  # 根拠: https://host.conferences.computer.org/2027/ (2026-08-12 取得)
+  #   Winter Submission「Abstract Submission November 1, 2026 — AoE / Full Paper
+  #   Submission November 8, 2026 — AoE」。会期 May 3-6, 2027。
+  #   (Fall Submission 7/22・7/29 2026 GMT は終了済みのため収録しない。)
+  #   上流 ccfddl に host は無い (2026 版もなし)。
+  - key: host
+    title: HOST
+    full_name: IEEE International Symposium on Hardware Oriented Security and Trust
+    link: https://host.conferences.computer.org/2027/
+    categories: [security]
+    editions:
+      - year: 2027
+        id: host27
+        link: https://host.conferences.computer.org/2027/
+        place: Washington DC, USA
+        date_text: May 3-6, 2027
+        event_start: '2027-05-03'
+        event_end: '2027-05-06'
+        deadlines:
+          - {kind: abstract, label: 'Winter round abstract submission', date: '2026-11-01 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Winter round full paper submission', date: '2026-11-08 23:59:00', tz: AoE}
