@@ -16,9 +16,6 @@
     "check": "biome check src tests",
     "format": "biome format --write src tests"
   },
-  "vitest": {
-    "testTimeout": 30000
-  },
   "license": "MIT",
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",
