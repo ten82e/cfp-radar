@@ -1415,9 +1415,10 @@ conferences:
           - {kind: abstract, label: Abstract Submission, date: '2026-09-02 16:59:00', tz: PDT}
           - {kind: paper, label: Full Paper Submission, date: '2026-09-04 16:59:00', tz: PDT}
 
-  # 根拠: https://www.secitc.eu/ (2026-08-10 取得)
-  #   「Submission deadline: September 7th, 2026 at 23:59」
-  #   公式に tz 表記なし。開催地 Bucharest (ルーマニア夏時間 = UTC+3) として解釈。
+  # 根拠: https://www.secitc.eu/ (2026-08-12 再取得)
+  #   「Paper Submission deadline: September 7th, 2026 at 23:59 UTC」→ tz: UTC。
+  #   （2026-08-10 時点は tz 表記なしとして Bucharest = UTC+3 解釈だったが、
+  #   公式が UTC 明記のため訂正。通知 10/5・プロシーディング 11/5・登録 11/6）
   #   開催: 「Conference: November 12-13, 2026」
   - key: secitc
     title: SECITC
@@ -1431,7 +1432,7 @@ conferences:
         place: Bucharest, Romania
         date_text: November 12-13, 2026
         deadlines:
-          - {kind: paper, label: Submission Deadline, date: '2026-09-07 23:59:00', tz: UTC+3}
+          - {kind: paper, label: Submission Deadline, date: '2026-09-07 23:59:00', tz: UTC}
 
   # 根拠: https://complexnetworks.org/ (2026-08-10 取得)
   #   Important Dates に「Paper Submission: September 02, 2026 (23:59 AoE)」
@@ -1483,10 +1484,10 @@ conferences:
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-10-30 23:59:00', tz: UTC}
 
-  # 根拠: https://ssresearch26.umbc.edu/ (2026-08-10 取得)
+  # 根拠: https://ssresearch26.umbc.edu/ (2026-08-12 再取得)
   #   「Submit Paper」「Conference Dates December 13–15, 2026」「Baltimore, Maryland, USA」
-  #   締切はトップのメニューに「September 15, 2026」（wikiCFP も Sep 15 で一致）。
-  #   公式に時刻・tz 表記なし → 日付のみ裏取り、23:59 UTC として解釈。
+  #   締切「Submission Deadline September 15, 2026」（wikiCFP も Sep 15 で一致）。
+  #   公式「Time Zone Notice: All deadlines are Anywhere on Earth (AoE = UTC−12h)」→ tz: AoE。
   - key: ssr
     title: SSR
     full_name: Security Standardisation Research Conference
@@ -1499,7 +1500,7 @@ conferences:
         place: Baltimore, MD, USA
         date_text: December 13-15, 2026
         deadlines:
-          - {kind: paper, label: Submission Deadline, date: '2026-09-15 23:59:00', tz: UTC}
+          - {kind: paper, label: Submission Deadline, date: '2026-09-15 23:59:00', tz: AoE}
 
   # 根拠: https://tps.ieee-cs.org/2026/ (2026-08-10)
   #   Important Dates に Aug. 15, 2026。wikiCFP の公式 CFP 引用「Time Zone:
@@ -2862,8 +2863,9 @@ conferences:
   # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/nordsec26 (2026-08-11 確認)
   #   31st NordSec「Abstract registration deadline August 17, 2026 / Submission
   #   deadline August 17, 2026 / November 11-12, 2026 Aarhus, Denmark」。
-  #   公式 http://nordsec2026.dk/。Springer LNCS 出版。上流 ccfddl に 2026 版なし。
-  #   公式 tz 表記なし → 23:59 UTC。
+  #   公式 http://nordsec2026.dk/（2026-08-12 再確認）「Submission of manuscripts:
+  #   August 17, 2026 (AOE)」→ tz: AoE。2025 版も AoE 慣例。Springer LNCS 出版。
+  #   上流 ccfddl に 2026 版なし。
   - key: nordsec
     title: NordSec
     full_name: Nordic Conference on Secure IT Systems
@@ -2878,8 +2880,8 @@ conferences:
         event_start: '2026-11-11'
         event_end: '2026-11-12'
         deadlines:
-          - {kind: abstract, label: Abstract Registration, date: '2026-08-17 23:59:00', tz: UTC}
-          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: UTC}
+          - {kind: abstract, label: Abstract Registration, date: '2026-08-17 23:59:00', tz: AoE}
+          - {kind: paper, label: Paper Submission, date: '2026-08-17 23:59:00', tz: AoE}
 
   # 根拠: https://host.conferences.computer.org/2027/ (2026-08-12 取得)
   #   Winter Submission「Abstract Submission November 1, 2026 — AoE / Full Paper
