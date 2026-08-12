@@ -516,7 +516,7 @@ it("coincident deadlines get distinguishable titles", async () => {
     }),
   ];
   const outdir = mkdtempSync(join(tmpdir(), "cfp-sig-"));
-  await buildAll(confs, { categories: { ai: "AI" } }, outdir, NOW);
+  await buildAll(confs, { categories: { ai: "AI" }, noEmbeddings: true }, outdir, NOW);
   const summaries = summariesOf(readFileSync(join(outdir, "all.ics"), "utf8"));
   expect([...summaries].sort()).toEqual(
     [
@@ -590,7 +590,7 @@ it("upcoming.md keeps a running meeting and drops a finished one", async () => {
     meeting("future", utc(2026, 8, 19), utc(2026, 8, 21)),
   ];
   const outdir = mkdtempSync(join(tmpdir(), "cfp-mtg-"));
-  await buildAll(confs, { categories: { hpc: "HPC" } }, outdir, NOW);
+  await buildAll(confs, { categories: { hpc: "HPC" }, noEmbeddings: true }, outdir, NOW);
   const text = readFileSync(join(outdir, "upcoming.md"), "utf8");
   expect(text).toContain("開催中(残り3日)");
   expect(text).not.toContain("| 本日開催 |");

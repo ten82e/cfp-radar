@@ -116,7 +116,7 @@ function realConfig(): Record<string, unknown> {
 
 function buildTo(dir: string, confs: Conference[], config?: Record<string, unknown>): void {
   mkdirSync(dir, { recursive: true });
-  void buildAll(confs, config ?? realConfig(), dir, NOW);
+  void buildAll(confs, { ...(config ?? realConfig()), noEmbeddings: true }, dir, NOW);
 }
 
 function read(dir: string, name: string): Buffer {
