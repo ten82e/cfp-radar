@@ -21202,3 +21202,36 @@ conferences:
         place: Guizhou,China
         date_text: Aug 14, 2026
         deadlines: []
+  - key: ssp-2026
+    title: SSP 2026
+    full_name: 17th Symposium on Software Performance
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202657&copyownerid=95863
+    categories:
+      - performance
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ssp-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202657&copyownerid=95863
+        place: Würzburg
+        date_text: Aug 24, 2026 (Aug 17, 2026)
+        deadlines: []
+  - key: iaim-2026
+    title: iAIM 2026
+    full_name: International Conference on AI in Medicine (iAIM) 2026
+    link: https://easychair.org/cfp/iAIM2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: iaim-202626
+        link: https://easychair.org/cfp/iAIM2026
+        place: Singapore, Singapore
+        date_text: Sep 15, 2026
+        deadlines: []
