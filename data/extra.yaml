@@ -1603,12 +1603,12 @@ conferences:
   - key: iros2026-noc-workshop
     title: NOC Workshop
     full_name: Workshop on Nonverbal Cues for Human-Robot Cooperative Intelligence (IROS 2026)
-    link: https://2026.ieee-iros.org/program/workshops-tutorials/
+    link: https://nocworkshop.github.io/2026-IROS/
     categories: [ai]
     editions:
       - year: 2026
         id: iros2026noc
-        link: https://2026.ieee-iros.org/program/workshops-tutorials/
+        link: https://nocworkshop.github.io/2026-IROS/
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
 
