@@ -26,7 +26,9 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 
 - **https://ccfddl.com/ をフォーク・複製（パクり）するブランチは作らない**。cfp-radar は
   独自名・独自 UI の独立プロジェクト。ccfddl/ccf-deadlines の GitHub リポジトリは
-  「上流データソース」としてだけ扱い、改善点は上流 PR で還元する（#1622 済み・#1624/#1628 等）。
+  「上流データソース」としてだけ扱う。改善点はパッチとして `upstream-patches/` に用意し、
+  **上流への PR 送信はユーザーの明示確認を得てから**（2026-08-12 指示: 無断送信の禁止。
+  #1629〜#1633 の無断 PR 連投を受けて明文化。#1622 等の過去分は既送）。
 - フォーク用途の `~/ccf-deadlines` は停止済み・放置（触らない・コミットしない）。
 - このリポジトリは `origin = ten82e/cfp-radar`（フォークではない）を維持する。
 
@@ -44,7 +46,8 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 2. Obsidian ノート `Claude/memory/research-loop-conf-deadlines-20260809.md` の「次の問い」から再開
 3. このリポジトリ（`/Users/ten82e/conf-deadlines`）に留まる。他リポジトリへ移らない
 4. 知見はノートに書け。停止時は問い・既知・次の問いを残す
-5. 実装で正せる残差が 0 でも、公式 CFP の突合・上流 PR・Pages 公開状態は定期再確認
+5. 実装で正せる残差が 0 でも、公式 CFP の突合・Pages 公開状態は定期再確認。
+   上流へ還元したい差分は `upstream-patches/` に溜めるだけにし、PR 送信はユーザー確認待ち
 
 公開（未実施なら）:
 
