@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 // 代表採択論文タイトル（R12: 会議のセマンティック/語彙プロファイル強化）。
 // データパイプラインで conferences に papers として載せ、ブラウザの語彙一致と
 // IDF（buildNameIdf）の両方に使えるようにする。
-import { VENUE_PAPERS } from "./embeddings.ts";
+import { VENUE_PAPERS, venuePapersHash } from "./embeddings.ts";
 import {
   addDays,
   type Conference,
@@ -807,7 +807,11 @@ export async function buildAll(
           embeddings?: Record<string, unknown>;
         };
         const have = new Set(Object.keys(existing.embeddings ?? {}));
-        needEmb = have.size !== new Set(confs.map((c) => c.key)).size;
+        // 会議セットの変化に加え、VENUE_PAPERS の内容変化でも再生成する（R29:
+        // 会議数が同じでもプロファイル追加が embeddings に反映されないバグ修正）
+        const stalePapers =
+          (existing as { venuePapersHash?: string }).venuePapersHash !== venuePapersHash();
+        needEmb = stalePapers || have.size !== new Set(confs.map((c) => c.key)).size;
       } catch {
         needEmb = true;
       }

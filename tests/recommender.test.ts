@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 // recommender.js は UMD（module.exports あり、DOM 非依存）。型宣言なしのプレーン JS。
 // @ts-expect-error - no declaration file for plain-JS recommender.js
 import recommender from "../site/recommender.js";
+import { venuePapersHash } from "../src/embeddings.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 const R = recommender as any;
@@ -824,6 +825,13 @@ describe.skipIf(!hasData)("real data integration", () => {
       .sort((a, b) => b.score - a.score);
     return { cats, top: scored.slice(0, topN), n: scored.length };
   };
+
+  it("venuePapersHash は決定的で内容変化を反映する（R29）", () => {
+    const h1 = venuePapersHash();
+    const h2 = venuePapersHash();
+    expect(h1).toBe(h2);
+    expect(h1).toMatch(/^[0-9a-f]{16}$/);
+  });
 
   it("embeddings.json covers all conferences", () => {
     try {

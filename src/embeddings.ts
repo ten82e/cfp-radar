@@ -10,6 +10,7 @@
  *   node src/embeddings.ts public/data.json public/embeddings.json
  */
 
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
@@ -65,6 +66,11 @@ function hasJapanese(text: string): boolean {
  * bench の golden EN テストセット（GOLDEN_EN, src/bench-recommender.ts）とは
  * **完全に重複しないタイトルだけを使う**（リークなし検証）。
  */
+/** VENUE_PAPERS の内容ハッシュ（embeddings 再生成判定用。R29） */
+export function venuePapersHash(): string {
+  return createHash("sha256").update(JSON.stringify(VENUE_PAPERS)).digest("hex").slice(0, 16);
+}
+
 export const VENUE_PAPERS: Record<string, string[]> = {
   sosp: [
     "Pesto: Cooking up High Performance BFT Queries",
@@ -530,6 +536,7 @@ export async function buildEmbeddings(
     JSON.stringify({
       model: EMBEDDING_MODEL,
       dim: EMBEDDING_DIM,
+      venuePapersHash: venuePapersHash(),
       embeddings: out,
       multi: {
         model: EMBEDDING_MULTI_MODEL,
