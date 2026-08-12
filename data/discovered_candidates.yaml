@@ -21253,3 +21253,241 @@ conferences:
         place: Guangzhou, China
         date_text: Aug 20, 2026
         deadlines: []
+  - key: mlds-2026
+    title: MLDS 2026
+    full_name: >-
+      7th International Conference on Machine Learning Techniques and Data
+      Science
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189523&copyownerid=170233
+    categories:
+      - networking
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: mlds-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189523&copyownerid=170233
+        place: Copenhagen, Denmark
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: wimoa-2026
+    title: WiMoA 2026
+    full_name: 18th International Conference on Wireless, Mobile Network & Applications
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192619&copyownerid=46167
+    categories:
+      - networking
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: wimoa-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192619&copyownerid=46167
+        place: Copenhagen, Denmark
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: ccsita-2026
+    title: CCSITA 2026
+    full_name: >-
+      4th International Conference on Computer Science and Information
+      Technology Advances
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191883&copyownerid=46167
+    categories:
+      - networking
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ccsita-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191883&copyownerid=46167
+        place: Virtual Conference
+        date_text: Aug 22, 2026
+        deadlines: []
+  - key: neco-2026
+    title: NECO 2026
+    full_name: 15th International Conference of Networks and Communications
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189583&copyownerid=170233
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: neco-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=189583&copyownerid=170233
+        place: Copenhagen, Denmark
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: edit-2026
+    title: EDIT 2026
+    full_name: 4th International Conference on Education & Integrating Technology
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191585&copyownerid=46167
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: edit-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191585&copyownerid=46167
+        place: Virtual Conference
+        date_text: Aug 22, 2026
+        deadlines: []
+  - key: asoft-2026
+    title: ASOFT 2026
+    full_name: 7th International Conference on Advances in Software Engineering
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191553&copyownerid=46167
+    categories:
+      - software
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: asoft-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191553&copyownerid=46167
+        place: Sydney, Australia
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: csse-2026
+    title: CSSE 2026
+    full_name: 4th International Conference on Computer Science and Software Engineering
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191990&copyownerid=46167
+    categories:
+      - fuzzy
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: csse-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=191990&copyownerid=46167
+        place: Virtual Conference
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: the-interdisciplinary-journal-of-computing-ai-ijcai
+    title: The Interdisciplinary Journal of Computing & AI (IJCAI)
+    full_name: The Interdisciplinary Journal of Computing & AI (IJCAI)
+    link: >-
+      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;fb1edd80.2608
+    categories: []
+    tags:
+      - niche
+      - dbworld
+    editions: []
+  - key: su2con07
+    title: SU2CON07
+    full_name: 7th SU2 conference
+    link: https://easychair.org/cfp/su2-conference-2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: su2con0726
+        link: https://easychair.org/cfp/su2-conference-2026
+        place: Milan, Italy
+        date_text: Oct 30, 2026
+        deadlines: []
+  - key: set-iv-2027
+    title: SET-IV-2027
+    full_name: >-
+      Entrepreneurship Ahead: AI, Innovation, and Transformative Learning
+      Systems
+    link: https://easychair.org/cfp/SET-IV-2027
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2027
+        id: set-iv-202727
+        link: https://easychair.org/cfp/SET-IV-2027
+        place: Boston, Massachusetts, United States
+        date_text: Feb 28, 2027
+        deadlines: []
+  - key: wace-2026
+    title: WACE 2026
+    full_name: >-
+      The Second WACE WebAssembly, Cloud and Edge: Shaping the Future of
+      Computing Workshop
+    link: https://easychair.org/cfp/WACE_2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: wace-202626
+        link: https://easychair.org/cfp/WACE_2026
+        place: Tarragona, Spain
+        date_text: Sep 17, 2026
+        deadlines: []
+  - key: sesame-26
+    title: SESAME-26
+    full_name: >-
+      Smarter Extraction of Scholarly Metadata using Knowledge Graphs, Language
+      Models, and Agents
+    link: https://easychair.org/cfp/sesame26
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: sesame-2626
+        link: https://easychair.org/cfp/sesame26
+        place: Dallas, Texas, United States
+        date_text: Aug 15, 2026
+        deadlines: []
+  - key: ifou2026
+    title: IFOU2026
+    full_name: >-
+      Urbanism & AI For Better Human Settlements: Reflection, Re-creation, and
+      Regeneration
+    link: https://easychair.org/cfp/IFOU-26
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: ifou202626
+        link: https://easychair.org/cfp/IFOU-26
+        place: Beijing, China
+        date_text: Aug 16, 2026
+        deadlines: []
+  - key: eocon26
+    title: EOCON26
+    full_name: EyesOpen Cybersecurity Conference - 7th edition
+    link: https://easychair.org/cfp/EOCON7
+    categories: []
+    tags:
+      - niche
+      - easychair
+    editions:
+      - year: 2026
+        id: eocon2626
+        link: https://easychair.org/cfp/EOCON7
+        place: ''
+        date_text: Sep 30, 2026
+        deadlines: []
