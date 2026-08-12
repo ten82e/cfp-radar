@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T08:57:27Z",
+  "generated_at": "2026-08-12T09:19:56Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -13497,18 +13497,18 @@
             {
               "kind": "abstract",
               "label": "Abstract submission",
-              "utc": "2026-09-25T23:59:59Z",
-              "aoe": "2026-09-25 11:59:59 AoE",
-              "tz_raw": "UTC+0",
+              "utc": "2026-09-21T23:59:59Z",
+              "aoe": "2026-09-21 11:59:59 AoE",
+              "tz_raw": "GMT",
               "round": 1,
               "comment": null
             },
             {
               "kind": "paper",
               "label": "Paper submission",
-              "utc": "2026-10-02T23:59:59Z",
-              "aoe": "2026-10-02 11:59:59 AoE",
-              "tz_raw": "UTC+0",
+              "utc": "2026-10-05T23:59:59Z",
+              "aoe": "2026-10-05 11:59:59 AoE",
+              "tz_raw": "GMT",
               "round": 1,
               "comment": null
             }
