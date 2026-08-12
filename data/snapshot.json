@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T08:35:38Z",
+  "generated_at": "2026-08-12T08:47:36Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -51762,8 +51762,8 @@
             {
               "kind": "paper",
               "label": "Paper submission",
-              "utc": "2026-08-15T11:59:59Z",
-              "aoe": "2026-08-14 23:59:59 AoE",
+              "utc": "2026-08-22T11:59:59Z",
+              "aoe": "2026-08-21 23:59:59 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
