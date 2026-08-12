@@ -1671,8 +1671,10 @@ conferences:
         link: https://qspatial.github.io/
         place: Riverside, CA, USA
         date_text: November 3, 2026
+        # 公式 qspatial.github.io「<s>August 12, 2026</s> August 26, 2026」延長
+        # （2026-08-12 確認）。通知 9/20・camera-ready 10/1・11:59 PM Pacific。
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-12 23:59:00', tz: pt}
+          - {kind: paper, label: Submission, date: '2026-08-26 23:59:00', tz: PT}
 
   # 根拠: https://onspatial.github.io/geo-health-2026/ 「Submission deadline August 15, 2026」
   - key: geohealth-2026
