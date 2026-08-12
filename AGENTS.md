@@ -26,7 +26,9 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 
 - **https://ccfddl.com/ をフォーク・複製（パクり）するブランチは作らない**。cfp-radar は
   独自名・独自 UI の独立プロジェクト。ccfddl/ccf-deadlines の GitHub リポジトリは
-  「上流データソース」としてだけ扱う。**上流への PR・issue・コメント等の送信は絶対禁止**
+  「上流データソース」としてだけ扱う。**第三者に届く送信は一切絶対禁止** — 上流に限らず、
+  PR・issue・コメント・レビュー返信・リアクション・既存 PR の再オープン・fork
+  （ten82e/ccf-deadlines）への push・メール・問い合わせフォーム・SNS すべて
   （2026-08-12 指示「還元 PR とかで迷惑かけるのは絶対にやめて」。要確認ですらない。
   #1629〜#1633 の無断連投を受けての改定）。上流の誤り・欠落は `data/overrides.yaml` /
   `data/extra.yaml` で自前吸収する。`upstream-patches/` は過去の記録として残すだけで、
@@ -51,13 +53,4 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 5. 実装で正せる残差が 0 でも、公式 CFP の突合・Pages 公開状態は定期再確認。
    上流（ccfddl 等）へは何も送らない（上の禁止節参照）。差分は overrides/extra で自前吸収
 
-公開（未実施なら）:
-
-```sh
-git add -A && git commit -m "..."
-gh repo create ten82e/cfp-radar --public --source=. --remote=origin --push
-# Settings → Pages → Source = GitHub Actions
-gh workflow run update.yml
-```
-
-上流 PR 追跡: https://github.com/ccfddl/ccf-deadlines/pull/1622
+公開状態: 公開済み（ten82e/cfp-radar・Pages 稼働・CI 毎日 20:17 UTC）。再セットアップ不要。
