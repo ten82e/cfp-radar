@@ -161,3 +161,18 @@ conferences:
         event_end: '2027-04-08'
         deadlines:
           - {kind: paper, label: 'Paper submission', date: '2026-10-22 23:59:59', tz: AoE}
+
+  # 根拠: https://conf.researchr.org/home/issta-2027 (2026-08-12 取得)
+  #   Round 1「Mandatory Abstract submission Mon 8 Jan 2027 / Full Paper
+  #   submission Mon 11 Jan 2027」(researchr は AoE (UTC-12h) 明記)。
+  #   会期 July 2027 @ Singapore（venue ページ確認。正確な日レンジは未公開のため month-only）。
+  #   上流 ccfddl は 2026 まで → 2027 Round 1 を新規 edition で追加。
+  issta:
+    editions:
+      2027:
+        link: https://conf.researchr.org/home/issta-2027
+        place: Singapore
+        date_text: 'July 2027'
+        deadlines:
+          - {kind: abstract, label: 'Round 1 abstract submission', date: '2027-01-08 23:59:59', tz: AoE}
+          - {kind: paper, label: 'Round 1 full paper submission', date: '2027-01-11 23:59:59', tz: AoE}

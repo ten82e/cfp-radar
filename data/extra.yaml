@@ -2905,3 +2905,43 @@ conferences:
         deadlines:
           - {kind: abstract, label: 'Winter round abstract submission', date: '2026-11-01 23:59:00', tz: AoE}
           - {kind: paper, label: 'Winter round full paper submission', date: '2026-11-08 23:59:00', tz: AoE}
+
+  # 根拠: https://uasc.cc (2026-08-12 取得)
+  #   「Important Dates (AoE)」Cycle 2 submission deadline: October 27, 2026 /
+  #   notification December 7, 2026。会期 Feb 3-4, 2027。
+  #   Cycle 1 (7/28) は終了済みのため収録しない。上流 ccfddl・dblp とも未収録。
+  - key: uasc
+    title: uASC
+    full_name: Microarchitecture Security Conference (uASC)
+    link: https://uasc.cc
+    categories: [security]
+    tags: [niche, workshop]
+    editions:
+      - year: 2027
+        id: uasc27
+        link: https://uasc.cc
+        place: ""
+        date_text: February 3-4, 2027
+        event_start: '2027-02-03'
+        event_end: '2027-02-04'
+        deadlines:
+          - {kind: paper, label: 'Cycle 2 submission deadline', date: '2026-10-27 23:59:00', tz: AoE}
+
+  # 根拠: https://cascade-conference.org/ (2026-08-12 取得)
+  #   Winter Submission「Paper submission: November 10, 2026」（tz 表記なし → 23:59 UTC）。
+  #   Summer Submission (6/26 → 7/3 延長) は終了済みのため収録しない。
+  #   COSADE と CARDIS の統合新会議。dblp: cascade。上流 ccfddl に無し。
+  - key: cascade
+    title: CASCADE
+    full_name: Constructive Approaches for Security Analysis and Design of Embedded systems (CASCADE)
+    link: https://cascade-conference.org/
+    categories: [security]
+    tags: [niche]
+    editions:
+      - year: 2027
+        id: cascade27
+        link: https://cascade-conference.org/
+        place: ""
+        date_text: ""
+        deadlines:
+          - {kind: paper, label: 'Winter paper submission', date: '2026-11-10 23:59:00', tz: UTC}
