@@ -14,6 +14,7 @@ import {
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { type BuildArgs, cmdBuild, hooks, setRoot } from "../src/cli.ts";
+import { fmtUTC } from "../src/model.ts";
 import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
 
 function allUpstreamsDown(): void {
@@ -93,5 +94,29 @@ describe("snapshot fallback", () => {
       conferences: unknown[];
     };
     expect(live.conferences.length).toBeGreaterThan(100);
+  });
+
+  it("every snapshot deadline's aoe is the UTC-12 wall clock of its utc (R37 guard)", () => {
+    const live = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: Array<{
+        key: string;
+        editions: Array<{ year: number; deadlines: Array<{ utc: string; aoe: string }> }>;
+      }>;
+    };
+    const AOE_MS = 12 * 60 * 60 * 1000;
+    let checked = 0;
+    for (const conf of live.conferences) {
+      for (const ed of conf.editions ?? []) {
+        for (const dl of ed.deadlines ?? []) {
+          const ms = Date.parse(dl.utc);
+          expect(Number.isNaN(ms), `${conf.key}/${ed.year} has bad utc ${dl.utc}`).toBe(false);
+          const expected = `${fmtUTC(new Date(ms - AOE_MS), "%Y-%m-%d %H:%M:%S")} AoE`;
+          expect(dl.aoe, `${conf.key}/${ed.year} aoe ${dl.aoe} != ${expected}`).toBe(expected);
+          checked++;
+        }
+      }
+    }
+    // 実データが空になっていないこと（フィクスチャ混入・snapshot 置換の検出）。
+    expect(checked).toBeGreaterThan(1000);
   });
 });
