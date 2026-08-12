@@ -2227,9 +2227,11 @@ conferences:
         id: ihpc26
         link: https://www.interactivehpc.com/cfp
         place: Chicago, IL, USA
-        # Submission deadline: 15th August 2026
+        # Submission deadline: 14th August 2026（公式 cfp ページ、2026-08-12 再取得で確認）
+        # SC26 提出ポータル (R33) も 8/14 AoE。SC26 WS は全て AoE 慣例（agenticai4hpc 等の
+        # PDT/EDT 例外を除く）→ 旧値 (8/15 23:59 UTC = AoE 8/15) は 1 日遅れの誤りを修正。
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+          - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   - key: hpctests-2026
     title: HPCTESTS 2026
