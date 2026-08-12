@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T04:59:50Z",
+  "generated_at": "2026-08-12T07:35:38Z",
   "sources": [
     {
       "name": "ccfddl",
@@ -2226,7 +2226,7 @@
         "core": "B",
         "thcpl": "B"
       },
-      "link": "https://acns2026.github.io/index.html",
+      "link": "https://acns2027.isg.rhul.ac.uk/",
       "tags": [],
       "sources": [
         "ccfddl"
@@ -2358,32 +2358,32 @@
         },
         {
           "year": 2027,
-          "id": "acns27-est",
-          "link": "https://acns2026.github.io/index.html",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
+          "id": "acns27",
+          "link": "https://acns2027.isg.rhul.ac.uk/",
+          "place": "Royal Holloway, Egham, UK",
+          "date_text": "June 28 - July 1, 2027",
+          "event_start": "2027-06-28",
+          "event_end": "2027-07-01",
+          "estimated": false,
           "source": "ccfddl",
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2026-10-31T11:59:59Z",
-              "aoe": "2026-10-30 23:59:59 AoE",
+              "label": "Cycle 1 paper submission",
+              "utc": "2026-09-25T11:59:00Z",
+              "aoe": "2026-09-24 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2027-02-27T11:59:59Z",
-              "aoe": "2027-02-26 23:59:59 AoE",
+              "label": "Cycle 2 paper submission",
+              "utc": "2027-01-22T11:59:00Z",
+              "aoe": "2027-01-21 23:59:00 AoE",
               "tz_raw": "AoE",
-              "round": 2,
-              "comment": "Estimated from the 2026 edition"
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -10923,23 +10923,23 @@
         },
         {
           "year": 2027,
-          "id": "ct-rsa27-est",
-          "link": "https://conference.wsu.edu/ct-rsa-2026/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "id": "override-2027",
+          "link": "https://www.esat.kuleuven.be/cosic/events/ct-rsa-2027/",
+          "place": "San Francisco, California, USA",
+          "date_text": "April 5-8, 2027",
+          "event_start": "2027-04-05",
+          "event_end": "2027-04-08",
+          "estimated": false,
+          "source": "override",
           "deadlines": [
             {
               "kind": "paper",
               "label": "Paper submission",
-              "utc": "2026-11-07T11:59:59Z",
-              "aoe": "2026-11-06 23:59:59 AoE",
-              "tz_raw": "UTC-12",
+              "utc": "2026-10-23T11:59:59Z",
+              "aoe": "2026-10-22 23:59:59 AoE",
+              "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             }
           ]
         }
@@ -18225,51 +18225,33 @@
           ]
         },
         {
-          "year": 2028,
-          "id": "fse28-est",
-          "link": "https://fse.iacr.org/2026/",
-          "place": "",
-          "date_text": "",
-          "event_start": null,
-          "event_end": null,
-          "estimated": true,
-          "source": "ccfddl",
+          "year": 2027,
+          "id": "override-2027",
+          "link": "https://fse.iacr.org/2027/",
+          "place": "Maastricht, Netherlands",
+          "date_text": "May 24-28, 2027",
+          "event_start": "2027-05-24",
+          "event_end": "2027-05-28",
+          "estimated": false,
+          "source": "override",
           "deadlines": [
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2027-02-28T11:59:59Z",
-              "aoe": "2027-02-27 23:59:59 AoE",
-              "tz_raw": "UTC-12",
+              "label": "ToSC 2026 Issue 4 submission",
+              "utc": "2026-09-02T11:59:59Z",
+              "aoe": "2026-09-01 23:59:59 AoE",
+              "tz_raw": "AoE",
               "round": 1,
-              "comment": "Estimated from the 2026 edition"
+              "comment": null
             },
             {
               "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2027-05-31T11:59:59Z",
-              "aoe": "2027-05-30 23:59:59 AoE",
-              "tz_raw": "UTC-12",
-              "round": 2,
-              "comment": "Estimated from the 2026 edition"
-            },
-            {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2027-08-31T11:59:59Z",
-              "aoe": "2027-08-30 23:59:59 AoE",
-              "tz_raw": "UTC-12",
-              "round": 3,
-              "comment": "Estimated from the 2026 edition"
-            },
-            {
-              "kind": "paper",
-              "label": "Paper submission",
-              "utc": "2027-11-22T11:59:59Z",
-              "aoe": "2027-11-21 23:59:59 AoE",
-              "tz_raw": "UTC-12",
-              "round": 4,
-              "comment": "Estimated from the 2026 edition"
+              "label": "ToSC 2027 Issue 1 submission",
+              "utc": "2026-12-02T11:59:59Z",
+              "aoe": "2026-12-01 23:59:59 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
             }
           ]
         }
@@ -19489,6 +19471,54 @@
       "papers": []
     },
     {
+      "key": "host",
+      "title": "HOST",
+      "full_name": "IEEE International Symposium on Hardware Oriented Security and Trust",
+      "categories": [
+        "security"
+      ],
+      "rank": {},
+      "link": "https://host.conferences.computer.org/2027/",
+      "tags": [],
+      "sources": [
+        "local"
+      ],
+      "editions": [
+        {
+          "year": 2027,
+          "id": "host27",
+          "link": "https://host.conferences.computer.org/2027/",
+          "place": "Washington DC, USA",
+          "date_text": "May 3-6, 2027",
+          "event_start": "2027-05-03",
+          "event_end": "2027-05-06",
+          "estimated": false,
+          "source": "local",
+          "deadlines": [
+            {
+              "kind": "abstract",
+              "label": "Winter round abstract submission",
+              "utc": "2026-11-02T11:59:00Z",
+              "aoe": "2026-11-01 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            },
+            {
+              "kind": "paper",
+              "label": "Winter round full paper submission",
+              "utc": "2026-11-09T11:59:00Z",
+              "aoe": "2026-11-08 23:59:00 AoE",
+              "tz_raw": "AoE",
+              "round": 1,
+              "comment": null
+            }
+          ]
+        }
+      ],
+      "papers": []
+    },
+    {
       "key": "hot-chips",
       "title": "Hot Chips",
       "full_name": "Hot Chips: A Symposium on High Performance Chips",
@@ -20585,8 +20615,8 @@
             {
               "kind": "paper",
               "label": "Submission",
-              "utc": "2026-08-15T11:59:00Z",
-              "aoe": "2026-08-14 23:59:00 AoE",
+              "utc": "2026-08-22T11:59:00Z",
+              "aoe": "2026-08-21 23:59:00 AoE",
               "tz_raw": "AoE",
               "round": 1,
               "comment": null
@@ -35210,9 +35240,9 @@
             {
               "kind": "paper",
               "label": "Paper Submission",
-              "utc": "2026-08-14T23:59:00Z",
-              "aoe": "2026-08-14 11:59:00 AoE",
-              "tz_raw": "UTC",
+              "utc": "2026-08-15T11:59:00Z",
+              "aoe": "2026-08-14 23:59:00 AoE",
+              "tz_raw": "AoE",
               "round": 1,
               "comment": null
             },
