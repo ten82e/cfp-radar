@@ -21104,3 +21104,101 @@ conferences:
       - niche
       - dbworld
     editions: []
+  - key: ccat-2026
+    title: CCAT 2026
+    full_name: >-
+      ACM--2026 5th International Conference on Computer Applications Technology
+      (CCAT 2026)
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192686&copyownerid=13881
+    categories:
+      - networks
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: ccat-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192686&copyownerid=13881
+        place: Fukuoka, Japan
+        date_text: Sep 10, 2026
+        deadlines: []
+  - key: icecai-2026
+    title: ICECAI 2026
+    full_name: >-
+      IEEE 2026 7th International Conference on Electronic Communication and
+      Artificial Intelligence
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202650&copyownerid=182680
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icecai-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202650&copyownerid=182680
+        place: Changsha, China
+        date_text: Aug 28, 2026
+        deadlines: []
+  - key: iedm-2026
+    title: IEDM 2026
+    full_name: >-
+      2026 6th International Conference on Informatization Economy Development
+      and Management
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201336&copyownerid=163220
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: iedm-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201336&copyownerid=163220
+        place: Tianjin, China
+        date_text: Aug 31, 2026
+        deadlines: []
+  - key: icpdi-2026
+    title: ICPDI 2026
+    full_name: >-
+      2026 5th International Conference on Public Management, Digital Economy
+      and Internet Technology
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201371&copyownerid=163220
+    categories:
+      - internet
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icpdi-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=201371&copyownerid=163220
+        place: Tianjin, China
+        date_text: Aug 28, 2026
+        deadlines: []
+  - key: icifde-2026
+    title: ICIFDE 2026
+    full_name: 2026 6th International Conference on Internet Finance and Digital Economy
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199945&copyownerid=163220
+    categories:
+      - security
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icifde-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=199945&copyownerid=163220
+        place: Guizhou,China
+        date_text: Aug 14, 2026
+        deadlines: []
