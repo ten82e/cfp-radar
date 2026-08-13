@@ -54,3 +54,19 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
    上流（ccfddl 等）へは何も送らない（上の禁止節参照）。差分は overrides/extra で自前吸収
 
 公開状態: 公開済み（ten82e/cfp-radar・Pages 稼働・CI 毎日 20:17 UTC）。再セットアップ不要。
+
+## IDD execution policy
+
+This repository uses the imported Issue-Driven Development (IDD) loop in
+`.github/instructions/`. The selected policy is `fully_autonomous_merge`
+with `no-advisory`: IDD may merge a ready PR automatically, but it never
+requests or waits for a Copilot/advisory review. CI, branch state, required
+reviews configured outside IDD, unresolved conversations, claim ownership,
+and review-watermark freshness remain merge gates.
+
+Start each IDD session with [`docs/idd-workflow.md`](docs/idd-workflow.md)
+and then open the phase file matching the current issue/PR state.
+
+IDD actions are limited to this repository's own Issues, branches, and PRs.
+The upstream/no-contact rules above remain authoritative and must not be
+weakened by the IDD loop.

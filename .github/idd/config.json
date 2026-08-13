@@ -1,0 +1,30 @@
+{
+  "$schema": "https://kurone-kito.github.io/idd-skill/schemas/policy.schema.json",
+  "iddVersion": "0.6.0",
+  "markerPrefix": "cfp-radar",
+  "mergePolicy": "fully_autonomous_merge",
+  "reviewPolicy": "no-advisory",
+  "threadResolutionPolicy": "fast-agent-resolve",
+  "claimTiming": {
+    "staleAge": "PT24H",
+    "heartbeatInterval": "PT12H"
+  },
+  "trustedMarkerActors": ["ten82e"],
+  "workshop": {
+    "exampleRepository": ""
+  },
+  "commands": {
+    "install-deps": "npm ci",
+    "fix-validate": "npm run format && npm run check",
+    "pre-push-validate": "npm run typecheck && npm run check && npm test",
+    "post-fix-validate": "npm run format && npm run typecheck && npm run check && npm test"
+  },
+  "helperRuntime": {
+    "profile": "package-manager"
+  },
+  "issueScope": "roadmap-first",
+  "orphanFirstPolicy": "none",
+  "autopilotSuitability": {
+    "floor": 3
+  }
+}
