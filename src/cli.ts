@@ -45,7 +45,7 @@ export function parseNow(text: string | null | undefined): Date {
   return dt;
 }
 
-function loadYamlFile(path: string): Record<string, unknown> {
+function loadYamlFile(path: string, opts?: { strict?: boolean }): Record<string, unknown> {
   if (!existsSync(path)) return {};
   try {
     const loaded = loadYaml(readFileSync(path, "utf8"));
@@ -53,6 +53,13 @@ function loadYamlFile(path: string): Record<string, unknown> {
   } catch (exc) {
     // 静かに {} を返すと primary_overrides 等のエントリが全滅するのにビルドは
     // 成功し続ける（2026-08-12 whpc で実証）。必ず警告を出す。
+    if (opts?.strict) {
+      // 手編集の入力 (config.yaml / data/overrides.yaml) は、破損したまま
+      // 警告だけで続行すると公式締切の訂正が消えたり縮退サイトが配信されたり
+      // する（2026-08-13 実証）。SPEC.md 3.5 の「縮退した内容を配信しない」
+      // 契約に合わせて中断させる（main の rejection handler が exit 1 にする）。
+      throw new Error(`cannot parse ${path}: ${String(exc)}`);
+    }
     warn(`cannot parse ${path}: ${String(exc)}`);
     return {};
   }
@@ -114,10 +121,12 @@ export interface BuildArgs {
 export async function cmdBuild(args: BuildArgs): Promise<number> {
   const now = parseNow(args.now);
   const configPath = isAbsolute(args.config) ? args.config : join(ROOT, args.config);
-  const config = loadYamlFile(configPath);
-  const overrides = loadYamlFile(join(ROOT, "data", "overrides.yaml"));
+  const config = loadYamlFile(configPath, { strict: true });
   // 一次ソースからの自動抽出結果 (src/fetch-primary.ts 生成) は手書き
   // overrides の後に適用する: 公式ページの実測が最優先。
+  // overrides は手編集なのでパース失敗で中断する（strict）。primary は
+  // 自動生成のため従来どおり警告続行（2026-08-12 whpc の趣旨）。
+  const overrides = loadYamlFile(join(ROOT, "data", "overrides.yaml"), { strict: true });
   const primary = loadYamlFile(join(ROOT, "data", "primary_overrides.yaml"));
   const offline = Boolean(args.offline);
 
