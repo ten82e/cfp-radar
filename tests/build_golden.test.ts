@@ -51,6 +51,22 @@ it.each(PUBLIC_FILES)("public file is generated: %s", (name) => {
   }
 });
 
+it("site template feed picker covers every confirmed feed (PR #16 events.ics regression)", () => {
+  // ビルド生成物の検証に加え、フロントページの購読 UI（site/template.html の
+  // FEEDS 配列）が確定フィード全 12 本（all + カテゴリ 9 + deadlines + events）
+  // を参照していることを静的に検証する。events.ics は生成・文書化されていたが
+  // テンプレに追加されていなかった（#21）。推定フィードは「確定情報ではない」
+  // ため UI には載せない判断（README のみ）を維持する。
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const fileRefs = [...template.matchAll(/file: "([^"]+\.ics)"/g)].map((m) => m[1]);
+  expect(fileRefs.length, `template FEEDS refs (${fileRefs.join(", ")})`).toBe(
+    CONFIRMED_FEEDS.length,
+  );
+  for (const feed of CONFIRMED_FEEDS) {
+    expect(fileRefs, `template FEEDS missing ${feed}`).toContain(feed);
+  }
+});
+
 it("build is deterministic", () => {
   const second = join(mkdtempSync(join(tmpdir(), "cfp-site2-")), "public2");
   const run = runCli(second, { extra: ["--no-embeddings"] });
