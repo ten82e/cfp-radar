@@ -17,6 +17,9 @@ export const NOW = new Date("2026-08-09T00:00:00Z");
 export const NOW_ARG = "2026-08-09T00:00:00Z";
 
 // public/ contents required by SPEC.md section 4.
+// config.yaml の categories 9 分野すべての live / estimated フィードと events.ics を含む
+// （9 分野拡大・events.ics 導入に合わせて 2026-08-13 に拡張）。embeddings.json は
+// golden テストが --no-embeddings で走るためここには含めない。
 export const PUBLIC_FILES = [
   "index.html",
   "all.ics",
@@ -25,13 +28,22 @@ export const PUBLIC_FILES = [
   "systems.ics",
   "ai.ics",
   "security.ics",
+  "db.ics",
+  "graphics.ics",
+  "hci.ics",
+  "theory.ics",
   "deadlines.ics",
+  "events.ics",
   "all-estimated.ics",
   "hpc-estimated.ics",
   "networking-estimated.ics",
   "systems-estimated.ics",
   "ai-estimated.ics",
   "security-estimated.ics",
+  "db-estimated.ics",
+  "graphics-estimated.ics",
+  "hci-estimated.ics",
+  "theory-estimated.ics",
   "data.json",
   "data.csv",
   "upcoming.md",

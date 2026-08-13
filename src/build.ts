@@ -764,6 +764,14 @@ export async function buildAll(
     "投稿・通知などの締切のみ。開催日は含まない。",
     records.filter((r) => live(r) && r.type === "deadline").map((r) => r.entry),
   ]);
+  // 開催日のみの終日イベント（README / SPEC の events.ics 契約）。イベントは
+  // recordsOf が非推定版の event_start からしか作らないため推定判定は不要。
+  feeds.push([
+    "events.ics",
+    "会議開催日のみ",
+    "会期の終日イベントのみ。締切は含まない。",
+    records.filter((r) => r.type === "event").map((r) => r.entry),
+  ]);
   const est = (r: CalendarRecord): boolean => r.estimated && r.type === "deadline";
   feeds.push([
     "all-estimated.ics",

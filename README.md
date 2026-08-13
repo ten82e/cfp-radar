@@ -96,6 +96,10 @@ iOS と iPadOS の場合。
 | 推定・システム | `https://ten82e.github.io/cfp-radar/systems-estimated.ics` | `systems` 分野の推定締切のみ |
 | 推定・人工知能 | `https://ten82e.github.io/cfp-radar/ai-estimated.ics` | `ai` 分野の推定締切のみ |
 | 推定・セキュリティ | `https://ten82e.github.io/cfp-radar/security-estimated.ics` | `security` 分野の推定締切のみ |
+| 推定・データベース | `https://ten82e.github.io/cfp-radar/db-estimated.ics` | `db` 分野の推定締切のみ |
+| 推定・グラフィックス | `https://ten82e.github.io/cfp-radar/graphics-estimated.ics` | `graphics` 分野の推定締切のみ |
+| 推定・HCI | `https://ten82e.github.io/cfp-radar/hci-estimated.ics` | `hci` 分野の推定締切のみ |
+| 推定・理論 | `https://ten82e.github.io/cfp-radar/theory-estimated.ics` | `theory` 分野の推定締切のみ |
 
 締切のイベントは締切時刻の 30 分前から締切時刻までの予定として作られる。
 7 日前・1 日前・3 時間前の 3 本の通知が入っている。
