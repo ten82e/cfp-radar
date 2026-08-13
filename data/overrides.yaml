@@ -213,3 +213,24 @@ conferences:
         event_end: '2027-01-08'
         deadlines:
           - {kind: paper, label: 'Paper/panel submission', date: '2026-10-10 23:59:59', tz: UTC}
+
+  # 根拠: https://www.esann.org/ (2026-08-13 取得) —「The deadlines: Submission
+  #   deadline 18.11.2026 / Decisions 22.01.2027 / Conference 21.04.2027 - 23.04.2027」
+  #   「The 35th European Symposium ... will be organized in hybrid mode, from Wednesday
+  #   21 to Friday 23 April 2027」「The location: Bruges (Belgium) and online event」。
+  #   上流 ccfddl (conference/AI/esann.yml) も aideadlines (src/data/conferences/esann.yml)
+  #   も 2027 版なし (2026 版からの推定 esann27-est: 11/19 UTC-8・11/26 AoE の 2 本)
+  #   → estimated: false で実版へ昇格し、公式の単一締切に置換する。公式サイトに
+  #   タイムゾーン明記なし → README「タイムゾーンが不明な締切は協定世界時として扱う」
+  #   の規約に従い UTC で扱う。
+  esann:
+    editions:
+      2027:
+        estimated: false
+        link: https://www.esann.org/
+        place: Bruges, Belgium
+        date_text: 'April 21 - 23, 2027'
+        event_start: '2027-04-21'
+        event_end: '2027-04-23'
+        deadlines:
+          - {kind: paper, label: 'Paper submission deadline', date: '2026-11-18 23:59:59', tz: UTC}
