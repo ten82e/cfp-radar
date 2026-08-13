@@ -9,6 +9,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
+import { warn } from "./model.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REGISTRY = join(ROOT, "data", "primary.yaml");
@@ -164,11 +165,15 @@ export function extractDeadlines(lines: string[], year: number): PrimaryDeadline
   return out;
 }
 
-function loadYamlFile(path: string): Record<string, any> {
+export function loadYamlFile(path: string): Record<string, any> {
   try {
     const loaded = loadYaml(readFileSync(path, "utf8"));
     return typeof loaded === "object" && loaded !== null ? (loaded as Record<string, any>) : {};
-  } catch {
+  } catch (exc) {
+    // 静かに {} を返すと primary_overrides の「前回値」が失われ、前回値維持の
+    // 保証（SPEC §data/primary.yaml）が無警告で機能しなくなる。cli.ts の
+    // loadYamlFile と同じ形式で必ず警告する（2026-08-12 whpc の教訓）。
+    warn(`cannot parse ${path}: ${String(exc)}`);
     return {};
   }
 }
