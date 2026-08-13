@@ -20,7 +20,7 @@
     "post-fix-validate": "npm run format && npm run typecheck && npm run check && npm test"
   },
   "helperRuntime": {
-    "profile": "package-manager"
+    "profile": "instructions-only"
   },
   "issueScope": "roadmap-first",
   "orphanFirstPolicy": "none",
