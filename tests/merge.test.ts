@@ -587,6 +587,67 @@ describe("apply_overrides", () => {
     expect(edition.deadlines[0].label).toBe("Regular paper submission (extended)");
   });
 
+  it("override promotes an estimated edition to real and replaces deadlines", () => {
+    // acisp27-est: rollforward 由来の推定版 (12/11・3/12) を公式 CFP (11/30・3/1 AoE) に訂正。
+    const confs = [
+      makeConference({
+        key: "acisp",
+        title: "ACISP",
+        editions: [
+          makeEdition({
+            year: 2027,
+            edition_id: "acisp27-est",
+            estimated: true,
+            deadlines: [
+              makeDeadline("paper", "Paper submission", utc(2026, 12, 11, 11, 59, 59), "AoE", 1),
+              makeDeadline("paper", "Paper submission", utc(2027, 3, 12, 11, 59, 59), "AoE", 2),
+            ],
+          }),
+        ],
+      }),
+    ];
+    const overrides = {
+      conferences: {
+        acisp: {
+          editions: {
+            2027: {
+              estimated: false,
+              link: "https://acisp.org/",
+              place: "Melbourne, Australia",
+              deadlines: [
+                {
+                  kind: "paper",
+                  label: "Paper submission (Round 1)",
+                  date: "2026-11-30 23:59:59",
+                  tz: "AoE",
+                },
+                {
+                  kind: "paper",
+                  label: "Paper submission (Round 2)",
+                  date: "2027-03-01 23:59:59",
+                  tz: "AoE",
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    const edition = out[0].editions[0];
+    expect(edition.estimated).toBe(false);
+    expect(edition.link).toBe("https://acisp.org/");
+    expect(edition.place).toBe("Melbourne, Australia");
+    expect(edition.deadlines.length).toBe(2);
+    // AoE = UTC-12: 11/30 23:59:59 AoE → 12/01 11:59:59Z、3/1 23:59:59 AoE → 3/2 11:59:59Z。
+    expect(edition.deadlines[0].at_utc.getTime()).toBe(utc(2026, 12, 1, 11, 59, 59).getTime());
+    expect(edition.deadlines[1].at_utc.getTime()).toBe(utc(2027, 3, 2, 11, 59, 59).getTime());
+    expect(edition.deadlines[0].label).toBe("Paper submission (Round 1)");
+    expect(edition.deadlines[1].label).toBe("Paper submission (Round 2)");
+    expect(edition.deadlines[0].round).toBe(1);
+    expect(edition.deadlines[1].round).toBe(2);
+  });
+
   it("override adds missing edition", () => {
     const confs = [
       makeConference({

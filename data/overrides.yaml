@@ -174,3 +174,22 @@ conferences:
         deadlines:
           - {kind: abstract, label: 'Abstract submission', date: '2026-09-21 23:59:59', tz: GMT}
           - {kind: paper, label: 'Paper submission', date: '2026-10-05 23:59:59', tz: GMT}
+
+  # 根拠: https://acisp.org/cfp.html (2026-08-13 取得) — 公式 CFP「ACISP 2027
+  #   will have two rounds of submission: Round one will be on 30 Nov 2026.
+  #   Round two will be on 1 March 2027. … All submissions must be received by
+  #   11:59PM AoE (UTC-12) on the day of the corresponding deadline.」
+  #   → r1 = 2026-11-30 23:59 AoE = 2026-12-01T11:59:59Z / r2 = 2027-03-01 23:59 AoE
+  #   = 2027-03-02T11:59:59Z。上流 ccfddl は過去実績からの推定版 (acisp27-est:
+  #   12/11・3/12) を収録 → estimated: false で実版へ昇格し締切を置換する。
+  #   会期は https://acisp.org/ で「When: To be announced」のため date_text /
+  #   event_start / event_end は付けない (Melbourne のみ確定として place に記載)。
+  acisp:
+    editions:
+      2027:
+        estimated: false
+        link: https://acisp.org/
+        place: Melbourne, Australia
+        deadlines:
+          - {kind: paper, label: 'Paper submission (Round 1)', date: '2026-11-30 23:59:59', tz: AoE}
+          - {kind: paper, label: 'Paper submission (Round 2)', date: '2027-03-01 23:59:59', tz: AoE}
