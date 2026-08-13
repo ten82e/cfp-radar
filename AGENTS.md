@@ -60,16 +60,21 @@ Review → Merge** を唯一のループとする。`autonomous-research-loop` �
 必ず既存の GitHub Issue（または明示された Issue URL/番号）に紐付ける。
 
 1. `docs/idd-workflow.md` と `.github/idd/config.json` を読む。
-2. 現在のリポジトリの open Issue を Discover する。
-3. startable な Issue が 0 件なら、候補なしを報告して停止する（Issue の
-   自動作成、無関係なビルド調査、無制限のリサーチ再開は行わない）。
-4. Issue を選んだら、状態に対応する `.github/instructions/idd-*.instructions.md`
+2. 新しい具体的な作業候補が見つかった場合は、まず `docs/issue-authoring-skill.md`
+   の重複検索・受入条件・authoring hold を適用し、既存 Issue を再利用できない
+   場合だけ Issue を作成する。Obsidian には新しい進捗や次の問いを書かない。
+3. authoring hold 中の Issue は claim せず、明示的な release 後にだけ Discover する。
+4. 現在のリポジトリの open Issue を Discover する。
+5. startable な Issue が 0 件なら、候補なしを報告して停止する（Issue の
+   無制限な自動作成、無関係なビルド調査、無制限のリサーチ再開は行わない）。
+6. Issue を選んだら、状態に対応する `.github/instructions/idd-*.instructions.md`
    を読み、claim 証拠を作ってから作業する。
-5. すべての変更はこのリポジトリ内だけで行い、上記の外部送信禁止を守る。
+7. すべての変更はこのリポジトリ内だけで行い、上記の外部送信禁止を守る。
 
-Freebuff 等の継続実行ハーネスを使う場合もこの停止条件を継承する。
+Freebuff 等の継続実行ハーネスを使う場合もこの authoring/release と停止条件を継承する。
 キューが空になったときに同じ調査を繰り返さず、次の Discover ラウンドで
-Issue が現れるまで待機する。
+Issue が現れるまで待機する。具体的な候補がある場合だけ、重複検索を通した
+Issue-authoringターンを先にキューへ入れる。
 
 ## IDD execution policy
 
@@ -81,9 +86,12 @@ reviews configured outside IDD, unresolved conversations, claim ownership,
 and review-watermark freshness remain merge gates.
 
 Start each IDD session with [`docs/idd-workflow.md`](docs/idd-workflow.md)
-and then open the phase file matching the current issue/PR state. When no
-startable open Issue exists, Discover is a terminal no-candidate result; do
-not substitute autonomous research or an unrelated debugging task.
+and then open [`docs/issue-authoring-skill.md`](docs/issue-authoring-skill.md)
+when a new task candidate needs an Issue. New Issues remain under
+`status:authoring` until the operator explicitly releases them. When no
+startable open Issue exists and no concrete candidate is available, Discover
+is a terminal no-candidate result; do not substitute autonomous research or
+an unrelated debugging task.
 
 IDD actions are limited to this repository's own Issues, branches, and PRs.
 The upstream/no-contact rules above remain authoritative and must not be

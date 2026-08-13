@@ -26,5 +26,10 @@
   "orphanFirstPolicy": "none",
   "autopilotSuitability": {
     "floor": 3
+  },
+  "issueAuthoring": {
+    "maxClarificationRounds": 3,
+    "authoringLabelName": "status:authoring",
+    "authoringStaleAge": "PT4H"
   }
 }

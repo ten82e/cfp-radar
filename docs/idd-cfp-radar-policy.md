@@ -38,14 +38,25 @@ Freebuff の Auto は、IDD の外側の作業を発明するための機能で�
 キューに入った IDD ターンを継続するためだけに使う。キューが空になった
 ときの Discover は次の順序で行う。
 
-1. `gh issue list --repo ten82e/cfp-radar --state open` で候補を取得する。
-2. startable な Issue が無ければ「候補なし」で停止し、同じ調査を再実行しない。
-3. Issue がある場合だけ `idd-discover` → `idd-claim` → 現在フェーズの指示へ進む。
-4. `autonomous-research-loop` の再注入、Issue 外のビルド調査、Issue の自動作成は行わない。
+1. 新しい具体的な作業候補がある場合だけ、`docs/issue-authoring-skill.md`
+   の `state=all` 重複検索を先に実行する。
+2. 既存Issueで吸収できない場合に限り、`status:authoring` 付きIssueを作成し、
+   受入条件とSuitability footerを検証する。
+3. authoring hold中はclaimしない。ユーザーがreleaseしたIssueだけを
+   `idd-discover` → `idd-claim` → 現在フェーズの指示へ進める。
+4. 作業候補もstartable Issueも無ければ「候補なし」で停止し、同じ調査を再実行しない。
+5. `autonomous-research-loop` の再注入、Issue外のビルド調査、ダミーIssueの量産は行わない。
 
 `autonomous-research-loop` のスキル注入は無効のまま維持し、Auto のスコープは
 Freebuff 側の設定を尊重する。open Issue が 0 件であることは正常な待機状態で
-あり、キューを埋めるためのダミー作業を作らない。
+あり、キューを埋めるためのダミー作業やIssueを作らない。1回のauthoring
+セッションで作成する新規Issueは、roadmap分解が明示的に必要な場合を除き1件までとする。
+
+## Obsidian と Issue の役割
+
+Obsidianの既存ノートは履歴・参照用であり、IDDの状態管理には使わない。
+新しい問い、候補、ブロッカー、受入結果、完了リンクはGitHub Issue/PRへ
+記録する。Issue本文・コメント・PRが、他セッションから追跡可能な正本である。
 
 ## Verification evidence
 
@@ -60,3 +71,6 @@ Freebuff 側の設定を尊重する。open Issue が 0 件であることは正
   metadata for `ten82e/cfp-radar:main` was not readable.
 - On 2026-08-13, Discover found 0 open Issues in `ten82e/cfp-radar`; the
   correct IDD/Freebuff state is therefore to stop at no-candidate Discover.
+- Issue authoring is reuse-first and hold-based: existing Issues are extended
+  before new creation, new drafts carry `status:authoring`, and release is an
+  explicit operator boundary.
