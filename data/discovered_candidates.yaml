@@ -21491,3 +21491,59 @@ conferences:
         place: ''
         date_text: Sep 30, 2026
         deadlines: []
+  - key: imbsa-2027
+    title: IMBSA 2027
+    full_name: 11th International Symposium on Model-Based Safety Assessment
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202536&copyownerid=132142
+    categories:
+      - reliability
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2027
+        id: imbsa-202727
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202536&copyownerid=132142
+        place: Paphos, Cyprus
+        date_text: Mar 3, 2027
+        deadlines: []
+  - key: icear-2026
+    title: ICEAR 2026
+    full_name: 2026 International Conference on Embodied AI and Robotics
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190921&copyownerid=182680
+    categories:
+      - robotics
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icear-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190921&copyownerid=182680
+        place: Haikou, China
+        date_text: Aug 16, 2026
+        deadlines: []
+  - key: icahn-2026
+    title: ICAHN 2026
+    full_name: >-
+      2026 2nd International Conference on Artificial Intelligence,
+      Human-Computer Interaction and Natural Language Processing-EI/Scopus
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190324&copyownerid=182680
+    categories:
+      - cryptography
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icahn-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=190324&copyownerid=182680
+        place: Haikou, China
+        date_text: Aug 18, 2026
+        deadlines: []
