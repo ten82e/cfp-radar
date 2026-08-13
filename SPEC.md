@@ -547,18 +547,18 @@ node --experimental-strip-types src/cli.ts build [--out public] [--config config
 |---|---|
 | `index.html` | 静的サイト（担当D のテンプレートに JSON を埋め込み） |
 | `all.ics` | 全カテゴリ・全種別（推定は含めない） |
-| `hpc.ics` `networking.ics` `systems.ics` `ai.ics` `security.ics` | カテゴリ別 |
+| `hpc.ics` `networking.ics` `systems.ics` `ai.ics` `security.ics` `db.ics` `graphics.ics` `hci.ics` `theory.ics` | カテゴリ別（config.yaml `categories` の 9 分野） |
 | `deadlines.ics` | 締切のみ |
 | `events.ics` | 開催日のみ（終日イベント） |
 | `all-estimated.ics` | 推定締切のみ・全カテゴリ（別フィード。`all.ics` には混ぜない） |
-| `hpc-estimated.ics` `networking-estimated.ics` `systems-estimated.ics` `ai-estimated.ics` `security-estimated.ics` | 推定締切のカテゴリ別 |
+| `hpc-estimated.ics` `networking-estimated.ics` `systems-estimated.ics` `ai-estimated.ics` `security-estimated.ics` `db-estimated.ics` `graphics-estimated.ics` `hci-estimated.ics` `theory-estimated.ics` | 推定締切のカテゴリ別 |
 | `data.json` | 正規化データ全体（機械可読の正）。**推定版も含む** |
 | `data.csv` | 1 行 1 締切のフラット表。**推定版も含み `estimated` 列で区別** |
 | `upcoming.md` | 直近 180 日の締切と開催の表。推定行は「推定」列で区別する |
 | `llms.txt` | エージェント向け索引 |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
-確定フィード（`all.ics` とカテゴリ別 5 本、`deadlines.ics`、`events.ics`）に
+確定フィード（`all.ics` とカテゴリ別 9 本、`deadlines.ics`、`events.ics`）に
 推定を混ぜてはならない。推定は `*-estimated.ics` にのみ出す。
 
 **推定フィードをカテゴリ別に割る理由（実測）**: 2026-08-09 時点で `hpc.ics` に
