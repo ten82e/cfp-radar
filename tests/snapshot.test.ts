@@ -65,6 +65,37 @@ describe("snapshot fallback", () => {
     expect(data.conferences.length).toBe(snapshot.conferences.length);
   });
 
+  it("degraded builds still apply overrides to the restored snapshot", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    const snapshot = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: unknown[];
+    };
+    writeFileSync(join(root, "data", "snapshot.json"), JSON.stringify(snapshot), "utf8");
+
+    allUpstreamsDown();
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out4-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{
+        key: string;
+        editions: Array<{ year: number; estimated: boolean; deadlines: Array<{ utc: string }> }>;
+      }>;
+    };
+    // 退避 snapshot は overrides 未反映の推定版を含むことがある（merge から
+    // 次回日次更新までの窓）。上流障害時も data/overrides.yaml の修正が効くこと。
+    const ccgrid = data.conferences.find((c) => c.key === "ccgrid");
+    const e2027 = ccgrid?.editions.find((e) => e.year === 2027);
+    expect(e2027).toBeDefined();
+    expect(e2027?.estimated).toBe(false);
+    expect(e2027?.deadlines.map((d) => d.utc).sort()).toEqual([
+      "2026-11-25T11:59:59Z",
+      "2026-12-02T11:59:59Z",
+    ]);
+  });
+
   it("build aborts instead of publishing a gutted calendar", async () => {
     const root = isolatedRepo();
     setRoot(root);
