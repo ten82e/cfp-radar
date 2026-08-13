@@ -193,3 +193,23 @@ conferences:
         deadlines:
           - {kind: paper, label: 'Paper submission (Round 1)', date: '2026-11-30 23:59:59', tz: AoE}
           - {kind: paper, label: 'Paper submission (Round 2)', date: '2027-03-01 23:59:59', tz: AoE}
+
+  # 根拠: https://www.ifip119.org/Conferences/WG11-9-CFP-2027.pdf (2026-08-13 取得・
+  #   HTTP 200・pdftotext で本文確認) —「Twenty-Third Annual IFIP WG 11.9
+  #   International Conference on Digital Forensics, Eros Hotel, New Delhi, India,
+  #   January 7-8, 2027」「Conference Deadlines Paper/Panel Submission: October 10,
+  #   2026 / Notification of Acceptance: November 10, 2026」。上流 ccfddl は 2027 版なし
+  #   (2026 版からの推定 ifip-wg-11-927-est: 9/30 AoE) → estimated: false で実版へ昇格し
+  #   締切を置換する。CFP にタイムゾーン明記なし → README「タイムゾーンが不明な締切は
+  #   協定世界時として扱う」の規約に従い UTC で扱う。
+  ifip-wg-11-9:
+    editions:
+      2027:
+        estimated: false
+        link: https://www.ifip119.org/Conferences/
+        place: New Delhi, India
+        date_text: 'January 7-8, 2027'
+        event_start: '2027-01-07'
+        event_end: '2027-01-08'
+        deadlines:
+          - {kind: paper, label: 'Paper/panel submission', date: '2026-10-10 23:59:59', tz: UTC}
