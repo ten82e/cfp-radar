@@ -21547,3 +21547,31 @@ conferences:
         place: Haikou, China
         date_text: Aug 18, 2026
         deadlines: []
+  - key: icds-2026
+    title: ICDS 2026
+    full_name: 3rd International Conference on Digital Sovereignty
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202683&copyownerid=3644
+    categories:
+      - security
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: icds-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202683&copyownerid=3644
+        place: Oslo
+        date_text: Aug 31, 2026
+        deadlines: []
+  - key: percom-2027-workshops
+    title: PerCom 2027 Workshops
+    full_name: PerCom 2027 Workshops
+    link: >-
+      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;295843b1.2608
+    categories: []
+    tags:
+      - niche
+      - dbworld
+    editions: []
