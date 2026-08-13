@@ -28,8 +28,11 @@ current session and stop. Do not publish a vague Issue.
 New or materially revised Issues are created with the `status:authoring`
 label. The label keeps incomplete drafts out of IDD Discover. A draft is not
 eligible for claim until the release checklist passes and the operator
-explicitly releases it by removing the label. If publishing the label fails,
-close the newly created Issue and report the failure.
+explicitly releases it by removing the label. In the repository's autonomous
+mode, the release is performed by the same loop after the checklist passes;
+the authoring label remains the audit boundary until that automated check is
+complete. If publishing the label fails, close the newly created Issue and
+report the failure.
 
 The release checklist is:
 
@@ -81,7 +84,9 @@ roadmap package is explicitly required by the task's decomposition.
 
 ## IDD handoff
 
-Issue authoring ends at the authoring hold. The normal IDD loop starts only
-after explicit release. Once released, Freebuff may Discover, Claim, Work,
-submit a PR, wait for CI, and merge under the repository policy. It must never
-replace an empty queue with an unrelated research loop.
+Issue authoring ends at the authoring hold. After the release checklist passes,
+the repository's autonomous loop removes `status:authoring` and immediately
+hands the Issue to IDD. Freebuff may then Discover, Claim, Work, submit a PR,
+wait for CI, and merge under the repository policy. It must never replace an
+empty queue with an unrelated research loop. If the checklist fails, keep the
+hold (or add `status:needs-decision`) and stop rather than claiming the Issue.

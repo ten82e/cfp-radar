@@ -144,8 +144,9 @@ Freebuff の Auto は、IDD の外側の作業を発明するための機能で�
    の `state=all` 重複検索を先に実行する。
 2. 既存Issueで吸収できない場合に限り、`status:authoring` 付きIssueを作成し、
    受入条件とSuitability footerを検証する。
-3. authoring hold中はclaimしない。ユーザーがreleaseしたIssueだけを
-   `idd-discover` → `idd-claim` → 現在フェーズの指示へ進める。
+3. authoring hold中はclaimしない。Freebuff の自律実行契約が release checklist と
+   suitability floor を検証した後に自動でラベルを外し、`idd-discover` →
+   `idd-claim` → 現在フェーズの指示へ進める。検証失敗時はholdを維持する。
 4. 作業候補もstartable Issueも無ければ「候補なし」で停止し、同じ調査を再実行しない。
 5. `autonomous-research-loop` の再注入、Issue外のビルド調査、ダミーIssueの量産は行わない。
 
@@ -175,7 +176,7 @@ Obsidianの既存ノートは履歴・参照用であり、IDDの状態管理に
 
 **Mode**: `direct-import` core + bounded Issue authoring (2026-08-13).
 Initial onboarding was imported directly to `main`; subsequent work uses
-Issue -> explicit release -> claim -> PR -> CI -> autonomous merge.
+Issue -> automated release checklist -> claim -> PR -> CI -> autonomous merge.
 
 ## Placeholder Values（オンボーディング確定値）
 

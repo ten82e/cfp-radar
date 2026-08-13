@@ -63,7 +63,9 @@ Review → Merge** を唯一のループとする。`autonomous-research-loop` �
 2. 新しい具体的な作業候補が見つかった場合は、まず `docs/issue-authoring-skill.md`
    の重複検索・受入条件・authoring hold を適用し、既存 Issue を再利用できない
    場合だけ Issue を作成する。Obsidian には新しい進捗や次の問いを書かない。
-3. authoring hold 中の Issue は claim せず、明示的な release 後にだけ Discover する。
+3. authoring hold 中の Issue は claim しない。Freebuff の自律実行契約では、
+   release checklist と suitability floor を機械的に検証して自動 release し、
+   その後だけ Discover/claim する。検証に失敗したら hold のまま止める。
 4. 現在のリポジトリの open Issue を Discover する。
 5. startable な Issue が 0 件なら、候補なしを報告して停止する（Issue の
    無制限な自動作成、無関係なビルド調査、無制限のリサーチ再開は行わない）。
@@ -88,10 +90,11 @@ and review-watermark freshness remain merge gates.
 Start each IDD session with [`docs/idd-workflow.md`](docs/idd-workflow.md)
 and then open [`docs/issue-authoring-skill.md`](docs/issue-authoring-skill.md)
 when a new task candidate needs an Issue. New Issues remain under
-`status:authoring` until the operator explicitly releases them. When no
-startable open Issue exists and no concrete candidate is available, Discover
-is a terminal no-candidate result; do not substitute autonomous research or
-an unrelated debugging task.
+`status:authoring` until the automated release checklist passes; the loop then
+removes the label and continues through Discover, Claim, Work, PR, CI, and
+Merge. When no startable open Issue exists and no concrete candidate is
+available, Discover is a terminal no-candidate result; do not substitute
+autonomous research or an unrelated debugging task.
 
 IDD actions are limited to this repository's own Issues, branches, and PRs.
 The upstream/no-contact rules above remain authoritative and must not be
