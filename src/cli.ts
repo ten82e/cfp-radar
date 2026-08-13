@@ -150,6 +150,14 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
         `warning: 上流 ${[...failed].sort().join(",")} が取得できないため ${snapshot} から ${restored.length} 会議で生成する\n`,
       );
       confs = restored;
+      // 退避 snapshot は最後に健全な online ビルドが生成した時点のデータのため、
+      // その後 merge された overrides（締切修正・estimated 昇格・新規 edition 追加）を
+      // 含まないことがある。上流障害時の退避配信で修正済み締切が推定値へ巻き戻らないよう、
+      // 復元データにも overrides / primary を再適用する。applyOverrides は冪等なので、
+      // snapshot が既に overrides 込みのときは値が変わらない（SPEC.md 3.5）。
+      confs = applyOverrides(confs, overrides);
+      confs = applyOverrides(confs, primary);
+      confs = sanitizeEditions(confs);
     } else {
       process.stderr.write(
         `error: 上流 ${[...failed].sort().join(",")} が取得できず、退避に使える ${snapshot} も無い（${confs.length} 会議）。縮退した内容を配信しないため中断する\n`,
