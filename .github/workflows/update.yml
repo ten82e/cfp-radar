@@ -49,7 +49,9 @@ jobs:
 
       # スナップショットは上流が変わった日にだけ更新される。
       # SPEC.md 6 のとおり、活動を偽装するハートビートコミットは実装しない。
-      - name: Commit snapshot
+      # snapshot と primary_overrides のどちらかに実質変更があるときだけ
+      # 両方をコミットする（_comment の抽出日付の変化だけではコミットしない）。
+      - name: Commit data
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -60,39 +62,18 @@ jobs:
             exit 0
           fi
 
-          # generated_at を除いて中身を比べ、実データが変わったときだけコミットする。
-          git show HEAD:data/snapshot.json > /tmp/snapshot-prev.json 2>/dev/null || true
-          changed=$(node -e '
-          const fs = require("node:fs");
-          function sortKeys(v) {
-            if (Array.isArray(v)) return v.map(sortKeys);
-            if (v && typeof v === "object") {
-              return Object.fromEntries(
-                Object.keys(v).sort().map((k) => [k, sortKeys(v[k])]),
-              );
-            }
-            return v;
-          }
-          function norm(path) {
-            let data;
-            try { data = JSON.parse(fs.readFileSync(path, "utf8")); }
-            catch { return null; }
-            if (data && typeof data === "object") delete data.generated_at;
-            return JSON.stringify(sortKeys(data));
-          }
-          const prev = norm("/tmp/snapshot-prev.json");
-          const next = norm(process.argv[1]);
-          // 読めない snapshot は書きかけとみなしてコミットしない
-          console.log(next !== null && prev !== next ? "1" : "0");
-          ' data/snapshot.json)
+          # 実質差分（generated_at / _comment は無視・キー順序は正規化）を
+          # HEAD と比較し、どちらかが変わっていれば両方コミットする。
+          snap_changed=$(node scripts/compare-head.ts data/snapshot.json)
+          primary_changed=$(node scripts/compare-head.ts data/primary_overrides.yaml)
 
-          if [ "$changed" != '1' ]; then
+          if [ "$snap_changed" != '1' ] && [ "$primary_changed" != '1' ]; then
             echo 'no substantive change; nothing to commit'
             exit 0
           fi
 
-          git add data/snapshot.json
-          git commit -m 'chore: update deadline snapshot [skip ci]'
+          git add data/snapshot.json data/primary_overrides.yaml
+          git commit -m 'chore: update deadline data [skip ci]'
           # 実行中に人手のコミットが入ると非 fast-forward で弾かれるので、
           # 取り込んでから押し直す。
           for attempt in 1 2 3; do
@@ -102,7 +83,7 @@ jobs:
             echo "push rejected (attempt ${attempt}); rebasing onto origin/${GITHUB_REF_NAME}"
             git pull --rebase --autostash origin "$GITHUB_REF_NAME"
           done
-          echo 'could not push the snapshot' >&2
+          echo 'could not push the deadline data' >&2
           exit 1
 
       # 配信はビルドの成否だけに依存させる。コミット/push の失敗で
