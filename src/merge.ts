@@ -472,6 +472,10 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
     for (const field of ["event_start", "event_end"] as const) {
       if (field in patch) next[field] = asDate(patch[field]);
     }
+    if ("estimated" in patch) {
+      // 推定版 (rollforward 生成) を実版へ昇格 / 降格させるための上書き。
+      next.estimated = Boolean(patch.estimated);
+    }
     if ("deadlines" in patch) {
       // 置換 (延長・訂正): 上流の古い締切を残さず差し替える (SPEC.md 3.5)。
       next.deadlines = deadlinesOf({ deadlines: patch.deadlines });
