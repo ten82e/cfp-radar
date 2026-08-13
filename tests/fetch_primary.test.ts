@@ -3,8 +3,28 @@
  * Ported from tests/test_fetch_primary.py.
  */
 
-import { describe, expect, it } from "vitest";
-import { extractDeadline, extractDeadlines, pageYear, toLines } from "../src/fetch-primary.ts";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  extractDeadline,
+  extractDeadlines,
+  loadYamlFile,
+  pageYear,
+  toLines,
+} from "../src/fetch-primary.ts";
+
+let stderrSpy: ReturnType<typeof vi.spyOn> | null = null;
+
+afterEach(() => {
+  stderrSpy?.mockRestore();
+  stderrSpy = null;
+});
+
+function spyStderr(): void {
+  stderrSpy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+}
 
 describe("fetch-primary extraction", () => {
   it("easychair style", () => {
@@ -41,6 +61,29 @@ describe("fetch-primary extraction", () => {
     expect(got).not.toBeNull();
     expect(got?.kind).toBe("camera_ready");
     expect(got?.tz).toBe("UTC");
+  });
+
+  it("loadYamlFile warns and returns {} on unparsable YAML", () => {
+    spyStderr();
+    const path = join(mkdtempSync(join(tmpdir(), "cfp-fp-")), "bad.yaml");
+    writeFileSync(path, "conferences:\n  whpc: [unclosed\n", "utf8");
+    expect(loadYamlFile(path)).toEqual({});
+    const calls: string[] = (stderrSpy?.mock.calls ?? []).map((c: unknown[]) => String(c[0]));
+    expect(calls.some((s) => s.includes(`cannot parse ${path}`))).toBe(true);
+  });
+
+  it("loadYamlFile parses valid YAML without warning", () => {
+    spyStderr();
+    const path = join(mkdtempSync(join(tmpdir(), "cfp-fp2-")), "ok.yaml");
+    writeFileSync(
+      path,
+      "conferences:\n  whpc:\n    editions:\n      2026:\n        deadlines:\n          - date: 2026-08-21\n",
+      "utf8",
+    );
+    const got = loadYamlFile(path);
+    expect((got.conferences as Record<string, unknown>).whpc).toBeDefined();
+    const calls: string[] = (stderrSpy?.mock.calls ?? []).map((c: unknown[]) => String(c[0]));
+    expect(calls.some((s) => s.includes("cannot parse"))).toBe(false);
   });
 
   it("to_lines splits cells", () => {
