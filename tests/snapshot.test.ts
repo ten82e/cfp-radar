@@ -106,6 +106,46 @@ describe("snapshot fallback", () => {
     expect(existsSync(join(outdir, "all.ics"))).toBe(false);
   });
 
+  it("build aborts when hand-edited data/overrides.yaml is unparsable", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(
+      join(root, "data", "overrides.yaml"),
+      "conferences:\n  ccgrid: [unclosed\n",
+      "utf8",
+    );
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out5-"), "out");
+    await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*overrides\.yaml/);
+    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+  });
+
+  it("build aborts when hand-edited config.yaml is unparsable", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(join(root, "config.yaml"), "categories:\n  hpc: [unclosed\n", "utf8");
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out6-"), "out");
+    await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*config\.yaml/);
+    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+  });
+
+  it("auto-generated primary_overrides.yaml keeps warn-and-continue", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    const snapshot = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: unknown[];
+    };
+    writeFileSync(join(root, "data", "snapshot.json"), JSON.stringify(snapshot), "utf8");
+    writeFileSync(
+      join(root, "data", "primary_overrides.yaml"),
+      "conferences:\n  whpc: [unclosed\n",
+      "utf8",
+    );
+    // 自動生成ファイルの破損は警告のみで続行（2026-08-12 whpc の趣旨）。
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out7-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+  });
+
   it("an offline build does not overwrite the snapshot", async () => {
     const root = isolatedRepo();
     setRoot(root);
