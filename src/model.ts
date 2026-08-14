@@ -305,17 +305,26 @@ interface Naive {
 function parseNaive(s: string): Naive | null {
   let m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s);
   if (m) {
-    return { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: +m[6] };
+    return validTime(+m[4], +m[5], +m[6])
+      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: +m[6] }
+      : null;
   }
   m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(s);
   if (m) {
-    return { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: 0 };
+    return validTime(+m[4], +m[5], 0)
+      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: 0 }
+      : null;
   }
   m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (m) {
     return { y: +m[1], m: +m[2], d: +m[3], h: 23, min: 59, s: 59 };
   }
   return null;
+}
+
+/** Reject out-of-range wall-clock time components (00:00–23:59:59). */
+function validTime(h: number, min: number, s: number): boolean {
+  return h <= 23 && min <= 59 && s <= 59;
 }
 
 function naiveToMs(n: Naive): number | null {
