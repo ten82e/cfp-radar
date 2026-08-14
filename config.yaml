@@ -83,6 +83,7 @@ taxonomy:
       - pam           # Passive and Active Measurement (上流 sub は SC)
       - noms          # Network Operations and Management Symposium (同上)
       - ieice-rcs     # 電子情報通信学会 無線通信システム研究会 (RCS)
+      - internet-conference  # インターネットコンファレンス (Internet Conference, 国内)
 
   # ---- Systems ------------------------------------------------------------
   # SE 全体(PL 寄りは exclude で落とす) + DS のうち hpc に入れなかった残り。
@@ -141,6 +142,7 @@ taxonomy:
       - ieice-cpsy    # 電子情報通信学会 コンピュータシステム研究会 (CPSY)
       - ipsj-sigpro   # 情報処理学会 プログラミング研究会 (PRO)
       - ipsj-sigemb   # 情報処理学会 組込みシステム研究会 (EMB)
+      - ipsj-sigse    # 情報処理学会 ソフトウェア工学研究会 (SE)
 
   # ---- AI -----------------------------------------------------------------
   ai:
@@ -154,6 +156,7 @@ taxonomy:
       - smc           # IEEE SMC (上流 MX)
       - iiai-aai      # IIAI International Congress on Advanced Applied Informatics
       - ipsj-sigkbs   # 情報処理学会 知能システム研究会 (KBS)
+      - lrec          # Language Resources and Evaluation Conference (extra.yaml 由来)
 
   # ---- Security -----------------------------------------------------------
   security:
@@ -195,6 +198,7 @@ taxonomy:
     venues:
       - wine           # Conference on Web and Internet Economics (上流 MX)
       - ieice-sita     # 情報理論とその応用シンポジウム (SITA)
+      - ieice-nolta    # 電子情報通信学会 非線形問題研究会 (NOLTA)
 
 
 # 収録しない会議。SE を丸ごと取り込む代償として、プログラミング言語・形式手法寄りの
