@@ -204,6 +204,35 @@ describe("parseDeadlineText", () => {
     expect(parseDeadlineText("November, 2026")).toBeNull(); // 月のみはでっち上げない
     expect(parseDeadlineText("unknown")).toBeNull();
   });
+
+  it("keeps valid leap-year and year-omitted dates", () => {
+    expect(parseDeadlineText("Feb 29, 2028")).toEqual(utcDate(2028, 2, 29)); // うるう年
+    expect(parseDeadlineText("29 February 2028")).toEqual(utcDate(2028, 2, 29));
+    const year = new Date().getUTCFullYear();
+    expect(parseDeadlineText("Dec 5")).toEqual(utcDate(year, 12, 5)); // 年省略は当年
+  });
+
+  it("rejects impossible calendar dates instead of rolling them over", () => {
+    // ISO 形式
+    expect(parseDeadlineText("2026-02-30")).toBeNull(); // 2月30日
+    expect(parseDeadlineText("2025-02-29")).toBeNull(); // 平年の2月29日
+    expect(parseDeadlineText("2026-04-31")).toBeNull(); // 4月31日
+    // 日本語形式
+    expect(parseDeadlineText("2026年2月30日")).toBeNull();
+    expect(parseDeadlineText("2025年2月29日")).toBeNull();
+    // 日-月形式
+    expect(parseDeadlineText("30 February 2026")).toBeNull();
+    expect(parseDeadlineText("31 April 2026")).toBeNull();
+    // 月-日形式
+    expect(parseDeadlineText("Feb 30, 2026")).toBeNull();
+    expect(parseDeadlineText("Feb 29, 2025")).toBeNull();
+    expect(parseDeadlineText("April 31, 2026")).toBeNull();
+    // 範囲外の月・日
+    expect(parseDeadlineText("2026-00-15")).toBeNull();
+    expect(parseDeadlineText("2026-13-01")).toBeNull();
+    expect(parseDeadlineText("2026-01-00")).toBeNull();
+    expect(parseDeadlineText("2026-01-32")).toBeNull();
+  });
 });
 
 describe("parseComsocCfpHtml", () => {
@@ -313,5 +342,15 @@ describe("deadlineIsFuture", () => {
     expect(deadlineIsFuture("Feb 1, 2026", today)).toBe(false);
     expect(deadlineIsFuture("TBA", today)).toBe(false); // 形式不明は候補にしない
     expect(deadlineIsFuture("Mar 15, 2027", today)).toBe(true);
+  });
+
+  it("treats impossible calendar dates as not future", () => {
+    const today = utcDate(2026, 8, 10);
+    expect(deadlineIsFuture("2026-02-30", today)).toBe(false);
+    expect(deadlineIsFuture("2026年2月30日", today)).toBe(false);
+    expect(deadlineIsFuture("30 February 2026", today)).toBe(false);
+    expect(deadlineIsFuture("Feb 30, 2026", today)).toBe(false);
+    expect(deadlineIsFuture("April 31, 2026", today)).toBe(false);
+    expect(deadlineIsFuture("Feb 29, 2025", today)).toBe(false);
   });
 });

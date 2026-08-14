@@ -324,6 +324,15 @@ export function parseWikiCfpHtml(
   return entries;
 }
 
+/** Date.UTC は不正な年月日を繰り上げてしまうため、暦の妥当性を検証してから返す。 */
+function validUtcDate(year: number, month: number, day: number): Date | null {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
+    return null;
+  }
+  return d;
+}
+
 /** 'Aug 15, 2026 (Aug 1, 2026)' または '31 December 2026' 形式の締切を Date に変換。 */
 export function parseDeadlineText(dateText: string): Date | null {
   const months: Record<string, number> = {
@@ -341,17 +350,17 @@ export function parseDeadlineText(dateText: string): Date | null {
     Dec: 12,
   };
   let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(dateText);
-  if (m) return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
   m = /(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(dateText);
-  if (m) return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
   m = /(\d{1,2})\s+([A-Z][a-z]{2})\w*\s+(20\d\d)/.exec(dateText);
   if (m && m[2] in months) {
-    return new Date(Date.UTC(Number(m[3]), months[m[2]] - 1, Number(m[1])));
+    return validUtcDate(Number(m[3]), months[m[2]], Number(m[1]));
   }
   m = /([A-Z][a-z]{2})\w*\s+(\d{1,2}),?\s*(20\d\d)?/.exec(dateText);
   if (m && m[1] in months) {
     const year = m[3] ? Number(m[3]) : new Date().getUTCFullYear();
-    return new Date(Date.UTC(year, months[m[1]] - 1, Number(m[2])));
+    return validUtcDate(year, months[m[1]], Number(m[2]));
   }
   return null;
 }
