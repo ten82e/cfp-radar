@@ -96,6 +96,120 @@ describe("snapshot fallback", () => {
     ]);
   });
 
+  it("degraded builds re-apply the local source onto the restored snapshot", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    const snapshot = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: unknown[];
+    };
+    writeFileSync(join(root, "data", "snapshot.json"), JSON.stringify(snapshot), "utf8");
+
+    // 上流障害時も local (data/extra.yaml) は読める。復元 snapshot に無い会議と、
+    // snapshot には無い追加締切（satml 2027 通知系など）が配信に残ること。
+    // snapshot の satml27 は paper 締切のみ（2026-08-14 時点）。extra.yaml は
+    // 通知 3 件を持つ。degraded 復元に local が再適用されれば通知締切が入る。
+    hooks.collect = async () => ({
+      groups: [
+        [],
+        [],
+        [
+          {
+            key: "extra-only-conf",
+            title: "Extra Only Conf",
+            full_name: "Extra Only Conf 2027",
+            link: "",
+            rank: {},
+            dblp: null,
+            upstream_sub: null,
+            tags: [],
+            categories: [],
+            editions: [
+              {
+                year: 2027,
+                edition_id: "extra-only-conf27",
+                link: "",
+                place: "",
+                date_text: "2027-03-01..2027-03-03",
+                event_start: new Date("2027-03-01T00:00:00Z"),
+                event_end: new Date("2027-03-03T00:00:00Z"),
+                deadlines: [
+                  {
+                    kind: "paper",
+                    label: "Paper submission",
+                    at_utc: new Date("2026-11-04T23:59:59Z"),
+                    tz_raw: "America/Los_Angeles",
+                    round: 1,
+                    comment: null,
+                  },
+                ],
+                estimated: false,
+                source: "local",
+              },
+            ],
+            sources: ["local"],
+          },
+          {
+            key: "satml",
+            title: "Security and Machine Learning",
+            full_name: "Security and Machine Learning",
+            link: "",
+            rank: {},
+            dblp: null,
+            upstream_sub: null,
+            tags: [],
+            categories: [],
+            editions: [
+              {
+                year: 2027,
+                edition_id: "satml27",
+                link: "",
+                place: "",
+                date_text: "2027-02-11..2027-02-13",
+                event_start: new Date("2027-02-11T00:00:00Z"),
+                event_end: new Date("2027-02-13T00:00:00Z"),
+                deadlines: [
+                  {
+                    kind: "notification",
+                    label: "Notification to authors",
+                    at_utc: new Date("2026-12-16T23:59:59Z"),
+                    tz_raw: "America/Los_Angeles",
+                    round: 1,
+                    comment: null,
+                  },
+                ],
+                estimated: false,
+                source: "local",
+              },
+            ],
+            sources: ["local"],
+          },
+        ],
+      ],
+      failed: new Set(["ccfddl", "aideadlines"]),
+    });
+
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out8-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{
+        key: string;
+        editions: Array<{
+          year: number;
+          deadlines: Array<{ utc: string; kind: string }>;
+        }>;
+      }>;
+    };
+    // local のみが持つ会議は復元 snapshot に無くても残る
+    const extra = data.conferences.find((c) => c.key === "extra-only-conf");
+    expect(extra).toBeDefined();
+    // snapshot には無い追加締切（通知系）も degraded 配信に残る
+    const satml = data.conferences.find((c) => c.key === "satml");
+    const e27 = satml?.editions.find((e) => e.year === 2027);
+    expect(e27?.deadlines.some((d) => d.kind === "notification")).toBe(true);
+  });
+
   it("build aborts instead of publishing a gutted calendar", async () => {
     const root = isolatedRepo();
     setRoot(root);

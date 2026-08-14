@@ -394,6 +394,14 @@ export async function fetchTarball(
 snapshot の書き込みは build の最後に `data.json` を `data/snapshot.json` へ
 コピーする（`generated_at` を含まない・§4.2 と同一スキーマ）。
 
+**退避時の local 再適用**: snapshot は「最後に健全な online ビルドが生成した
+時点」のデータなので、その後に `data/extra.yaml`（local source）へ追加された
+会議・締切（新規収録・通知締切など）を含まない。local source はローカル
+ファイルなので上流障害時も読めるため、`restoreSnapshot()` の復元データに
+`mergeSources()` で local を再マージしてから overrides を再適用する
+（`local` は `source_priority` 最上位なので、snapshot 側の古い締切を正しく
+上書きする）。local グループが空なら再マージを省略する（従来動作と同一）。
+
 **注意**: `--out` がどこでも、`--offline` でなく健全な build なら snapshot を
 上書きする（`--now` 指定の検証 build も例外ではない）。検証で `--now` を
 使ったあとは `git checkout -- data/snapshot.json` で戻すこと。
