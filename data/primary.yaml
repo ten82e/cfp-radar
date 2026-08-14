@@ -81,3 +81,8 @@ conferences:
   polds-2026:
     url: https://iharp.umbc.edu/polds26/
     year: 2026
+  iiai-aai-2026:
+    url: https://iaiai.org/conference/aai2026/
+    year: 2026
+    tz: PST
+

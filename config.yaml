@@ -82,6 +82,7 @@ taxonomy:
     venues:
       - pam           # Passive and Active Measurement (上流 sub は SC)
       - noms          # Network Operations and Management Symposium (同上)
+      - ieice-rcs     # 電子情報通信学会 無線通信システム研究会 (RCS)
 
   # ---- Systems ------------------------------------------------------------
   # SE 全体(PL 寄りは exclude で落とす) + DS のうち hpc に入れなかった残り。
@@ -137,6 +138,9 @@ taxonomy:
       - socc          # ACM Symposium on Cloud Computing
       - systor
       - vee           # Virtual Execution Environments
+      - ieice-cpsy    # 電子情報通信学会 コンピュータシステム研究会 (CPSY)
+      - ipsj-sigpro   # 情報処理学会 プログラミング研究会 (PRO)
+      - ipsj-sigemb   # 情報処理学会 組込みシステム研究会 (EMB)
 
   # ---- AI -----------------------------------------------------------------
   ai:
@@ -148,12 +152,18 @@ taxonomy:
       - icaif         # International Conference on AI in Finance (上流 MX)
       - icic          # International Conference on Intelligent Computing (上流 MX)
       - smc           # IEEE SMC (上流 MX)
+      - iiai-aai      # IIAI International Congress on Advanced Applied Informatics
+      - ipsj-sigkbs   # 情報処理学会 知能システム研究会 (KBS)
 
   # ---- Security -----------------------------------------------------------
   security:
     ccfddl_subs: [SC]
     venues:
       - aft            # Advances in Financial Technologies (上流 MX)
+      - ieice-isec     # 電子情報通信学会 情報セキュリティ研究会 (ISEC)
+      - ieice-cys      # 電子情報通信学会 サイバーセキュリティ研究会 (CyS)
+      - ipsj-css       # 情報処理学会 コンピュータセキュリティシンポジウム (CSS)
+      - ipsj-sigsec    # 情報処理学会 コンピュータセキュリティ研究会 (CSEC)
 
   # ---- Database / Data Mining ---------------------------------------------
   db:
@@ -165,6 +175,7 @@ taxonomy:
       - isbra          # International Symposium on Bioinformatics (上流 MX)
       - recomb         # International Conference on Computational Biology (上流 MX)
       - sigspatial     # ACM SIGSPATIAL (上流 MX)
+      - ipsj-deim      # DEIM フォーラム (データ工学と情報マネジメント)
 
   # ---- Graphics / Multimedia ----------------------------------------------
   graphics:
@@ -175,12 +186,16 @@ taxonomy:
     ccfddl_subs: [HI]
     venues:
       - sigcse         # Technical Symposium on Computer Science Education (上流 MX)
+      - ipsj-wiss      # ワークショップ インタラクティブシステムとソフトウェア (WISS)
+      - ipsj-sigubi    # 情報処理学会 ユビキタスコンピューティングシステム研究会 (UBI)
 
   # ---- Theory / Algorithms ------------------------------------------------
   theory:
     ccfddl_subs: [CT]
     venues:
       - wine           # Conference on Web and Internet Economics (上流 MX)
+      - ieice-sita     # 情報理論とその応用シンポジウム (SITA)
+
 
 # 収録しない会議。SE を丸ごと取り込む代償として、プログラミング言語・形式手法寄りの
 # 会議がまとめて入ってくるのでここで落とす。OS/システム寄り(osdi, sosp, hotos,
