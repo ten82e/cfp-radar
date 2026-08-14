@@ -11,7 +11,9 @@ import {
   extractDeadline,
   extractDeadlines,
   loadYamlFile,
+  pageTitleYear,
   pageYear,
+  pageYearMismatch,
   toLines,
 } from "../src/fetch-primary.ts";
 
@@ -50,6 +52,15 @@ describe("fetch-primary extraction", () => {
   it("ignore stale year", () => {
     // 2 年前の残骸 (2024) は 2026 edition に拾わない。
     expect(extractDeadline("Paper submission deadline: August 21, 2024", 2026)).toBeNull();
+  });
+
+  it("accepts a valid previous-calendar-year deadline", () => {
+    expect(extractDeadline("Paper submission deadline: December 31, 2025", 2026)).toEqual({
+      kind: "paper",
+      label: "Paper submission",
+      date: "2025-12-31",
+      round: 1,
+    });
   });
 
   it("no keyword is none", () => {
@@ -128,5 +139,25 @@ describe("pageYear", () => {
     expect(pageYear("<title>Call for Papers</title>", 2026)).toBe(2026);
     // 未来版の誤検出防止
     expect(pageYear("<title>SETTA 2030</title>", 2026)).toBe(2026);
+  });
+});
+
+describe("page-year diagnostics", () => {
+  it.each([
+    ["matching", "<title>SETTA 2026</title>", 2026, null],
+    ["archived", "<title>SETTA 2025 (archived)</title>", 2026, 2025],
+    ["future", "<title>SETTA 2030</title>", 2026, 2030],
+    ["missing", "<title>Call for Papers</title>", 2026, null],
+  ])(
+    "detects %s title years without changing the safe fallback",
+    (_name, html, registryYear, mismatch) => {
+      expect(pageYearMismatch(html, registryYear)).toBe(mismatch);
+      expect(pageYear(html, registryYear)).toBe(registryYear);
+    },
+  );
+
+  it("exposes only an unambiguous title year", () => {
+    expect(pageTitleYear("<title>SETTA 2026</title>")).toBe(2026);
+    expect(pageTitleYear("<title>SETTA 2025 / 2026</title>")).toBeNull();
   });
 });

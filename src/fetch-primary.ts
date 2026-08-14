@@ -139,15 +139,24 @@ export function extractDeadline(
   return out;
 }
 
-export function pageYear(htmlText: string, fallback: number): number {
+export function pageTitleYear(htmlText: string): number | null {
   const m = /<title[^>]*>(.*?)<\/title>/is.exec(htmlText);
-  if (!m) return fallback;
+  if (!m) return null;
   const title = m[1].replace(
     /&[a-zA-Z#0-9]+;/g,
     (x) => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'" })[x] ?? x,
   );
   const years = [...title.matchAll(/\b(20\d{2})\b/g)].map((x) => Number(x[1]));
-  return years.includes(fallback) ? fallback : fallback;
+  return years.length === 1 ? years[0] : null;
+}
+
+export function pageYearMismatch(htmlText: string, registryYear: number): number | null {
+  const titleYear = pageTitleYear(htmlText);
+  return titleYear !== null && titleYear !== registryYear ? titleYear : null;
+}
+
+export function pageYear(_htmlText: string, fallback: number): number {
+  return fallback;
 }
 
 export function extractDeadlines(lines: string[], year: number): PrimaryDeadline[] {
@@ -199,12 +208,13 @@ export async function runFetchPrimary(apply: boolean): Promise<number> {
     let deadlines: PrimaryDeadline[] = [];
     try {
       const page = await fetchPage(url);
-      const pageYr = pageYear(page, Number(year));
-      if (pageYr !== Number(year)) {
+      const mismatch = pageYearMismatch(page, Number(year));
+      if (mismatch !== null) {
         process.stderr.write(
-          `warning: ${key}: title の年が ${pageYr} (registry: ${year}) — registry の year 更新を検討\n`,
+          `warning: ${key}: title の年が ${mismatch} (registry: ${year}) — registry の year 更新を検討\n`,
         );
       }
+      const pageYr = pageYear(page, Number(year));
       deadlines = extractDeadlines(toLines(page), pageYr);
       // 収録の「締切」を正すのが目的なので、提出締切 (paper/abstract) だけを書く。
       deadlines = deadlines.filter((d) => d.kind === "paper" || d.kind === "abstract");
