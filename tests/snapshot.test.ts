@@ -210,6 +210,101 @@ describe("snapshot fallback", () => {
     expect(e27?.deadlines.some((d) => d.kind === "notification")).toBe(true);
   });
 
+  it("degraded builds drop local-only keys removed from extra.yaml", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    const snapshot = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: unknown[];
+    };
+    // 削除済み local 会議を snapshot に仕込む（extra.yaml から消えたが snapshot に残る状態）
+    snapshot.conferences.push({
+      key: "ghost-local-conf",
+      title: "Ghost Local Conf",
+      full_name: "Ghost Local Conf",
+      link: "",
+      rank: {},
+      dblp: null,
+      upstream_sub: null,
+      tags: [],
+      categories: ["networking"],
+      editions: [
+        {
+          year: 2026,
+          edition_id: "ghost-local-conf26",
+          link: "",
+          place: "",
+          date_text: "2026-12-01..2026-12-03",
+          event_start: new Date("2026-12-01T00:00:00Z"),
+          event_end: new Date("2026-12-03T00:00:00Z"),
+          deadlines: [],
+          estimated: false,
+          source: "local",
+        },
+      ],
+      sources: ["local"],
+    });
+    writeFileSync(join(root, "data", "snapshot.json"), JSON.stringify(snapshot), "utf8");
+
+    // local group を注入（ghost は含めない = extra.yaml から削除された状態）。
+    // 既存キー satml は snapshot にも local にもあるため「削除されていない local 会議は残る」検証に使う。
+    hooks.collect = async () => ({
+      groups: [
+        [],
+        [],
+        [
+          {
+            key: "satml",
+            title: "Security and Machine Learning",
+            full_name: "Security and Machine Learning",
+            link: "",
+            rank: {},
+            dblp: null,
+            upstream_sub: null,
+            tags: [],
+            categories: [],
+            editions: [
+              {
+                year: 2027,
+                edition_id: "satml27",
+                link: "",
+                place: "",
+                date_text: "2027-02-11..2027-02-13",
+                event_start: new Date("2027-02-11T00:00:00Z"),
+                event_end: new Date("2027-02-13T00:00:00Z"),
+                deadlines: [
+                  {
+                    kind: "notification",
+                    label: "Notification to authors",
+                    at_utc: new Date("2026-12-16T23:59:59Z"),
+                    tz_raw: "America/Los_Angeles",
+                    round: 1,
+                    comment: null,
+                  },
+                ],
+                estimated: false,
+                source: "local",
+              },
+            ],
+            sources: ["local"],
+          },
+        ],
+      ],
+      failed: new Set(["ccfddl", "aideadlines"]),
+    });
+
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-ghost-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{ key: string }>;
+    };
+    // extra.yaml に存在しない local 由来キー（削除された会議）は復活しない
+    expect(data.conferences.find((c) => c.key === "ghost-local-conf")).toBeUndefined();
+    // 削除されていない local 会議（satml）は従来通り残る
+    expect(data.conferences.find((c) => c.key === "satml")).toBeDefined();
+  });
+
   it("build aborts instead of publishing a gutted calendar", async () => {
     const root = isolatedRepo();
     setRoot(root);
