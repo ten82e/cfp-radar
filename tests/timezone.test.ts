@@ -61,6 +61,32 @@ describe("resolve_tz", () => {
     expect(offset(resolveTz("UTC-03:30"))).toBe(-(3 * 60 + 30));
   });
 
+  // Issue #31: impossible numeric offsets (minute > 59, or |offset| >= 24 h)
+  // must fall back to UTC with the unknown-timezone warning instead of
+  // silently producing a fixed offset.
+  it.each(["UTC+25", "UTC+24", "UTC+24:00", "UTC+12:60", "UTC+05:99", "UTC-99:99"])(
+    "impossible fixed offset %s falls back to UTC with a warning",
+    (raw) => {
+      resetWarnings();
+      expect(offset(resolveTz(raw))).toBe(0);
+      const total = Object.values(warningCounts()).reduce((a, b) => a + b, 0);
+      expect(total).toBeGreaterThanOrEqual(1);
+      resetWarnings();
+    },
+  );
+
+  it.each([
+    ["UTC+23:59", 23 * 60 + 59],
+    ["UTC-23:59", -(23 * 60 + 59)],
+    ["UTC+05:30", 5 * 60 + 30],
+    ["UTC-03:30", -(3 * 60 + 30)],
+    ["UTC+8", 8 * 60],
+    ["UTC-08", -8 * 60],
+    ["GMT+02", 2 * 60],
+  ] as Array<[string, number]>)("boundary fixed offset %s", (raw, minutes) => {
+    expect(offset(resolveTz(raw))).toBe(minutes);
+  });
+
   it.each(["PT", "PST", "PDT"])("pacific alias %s observes DST", (raw) => {
     const tz = resolveTz(raw);
     expect(offset(tz, WINTER)).toBe(-8 * 60);
