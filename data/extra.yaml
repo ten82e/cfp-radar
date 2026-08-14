@@ -229,10 +229,11 @@ conferences:
         deadlines:
           - {kind: abstract, label: 発表申込〆切（延長後）, date: '2026-07-31 23:59:00', tz: UTC+9}
           - {kind: paper, label: 発表原稿〆切, date: '2026-08-21 23:59:00', tz: UTC+9}
+  # (2026-08-12) 旧 sig-dps.html は 404 → sig-plan2026.html (会合計画一覧・生存) へ。
   - key: ipsj-sigdps
     title: 情報処理学会 DPS 研究会
     full_name: 情報処理学会 マルチメディア通信と分散処理研究会 (SIGDPS)
-    link: https://www.ipsj.or.jp/kenkyukai/sig-dps.html
+    link: https://www.ipsj.or.jp/kenkyukai/sig-plan2026.html
     categories: [networking, systems]
     tags: [domestic-jp]
     editions:
@@ -738,6 +739,10 @@ conferences:
   #   Paper submission deadline: Tue, Sep 29, 2026 (11:59 PM AoE) /
   #   Conference: Early May, 2027, Reykjavik, Iceland.
   #   上流 rollforward 推定は 2026-09-17（12 日早い）だった → 公式で置換。
+  # 根拠: https://satml.org/ (2026-08-13 再取得) 「Paper submission deadline: Tue, Sep 29, 2026
+  #   / Early reject notification: Wed, Nov 4, 2026 / Decision notification: Wed, Dec 16, 2026 /
+  #   Revisions due: Thu, Jan 21, 2027 / All deadlines 11:59 PM AoE」。paper は収録済みと一致。
+  #   R135 で通知系が未収録と判明 → 3 件追加。会期は「Early May, 2027」のまま維持。
   - key: satml
     title: SaTML
     full_name: IEEE Conference on Secure and Trustworthy Machine Learning
@@ -753,6 +758,9 @@ conferences:
         event_end: '2027-05-31'
         deadlines:
           - {kind: paper, label: Paper submission deadline, date: '2026-09-29 23:59:00', tz: AoE}
+          - {kind: notification, label: Early reject notification, date: '2026-11-04 23:59:00', tz: AoE}
+          - {kind: notification, label: Decision notification, date: '2026-12-16 23:59:00', tz: AoE}
+          - {kind: rebuttal_end, label: Revisions due, date: '2027-01-21 23:59:00', tz: AoE}
 
   # 根拠: https://2027.msrconf.org/ (2026-08-09 取得)
   #   Technical Papers Abstract Fri 20 Oct 2026 / Paper Fri 23 Oct 2026 /
@@ -795,6 +803,8 @@ conferences:
         deadlines:
           - {kind: abstract, label: Abstract submission deadline (main/special sessions), date: '2026-10-09 23:59:00', tz: AoE}
           - {kind: paper, label: Paper submission deadline (main/special sessions), date: '2026-10-16 23:59:00', tz: AoE}
+          - {kind: notification, label: Notifications to authors, date: '2026-12-20 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera-ready paper, date: '2027-01-26 23:59:00', tz: AoE}
 
   # 根拠: https://conf.researchr.org/home/icpc-2027 (2026-08-09 取得)
   #   Research Track Paper Submission Deadline: Thu 5 Nov 2026 /
@@ -968,38 +978,39 @@ conferences:
         event_end: '2026-03-10'
         deadlines: []
 
-  # 根拠: https://www.eurosec.org/ (2026-08-09 取得)
+  # 根拠: https://eurosec-workshop.github.io/ (2026-08-12 取得。旧 eurosec.org は
+  #   接続不可 000)
   #   European Workshop on Systems Security (EuroSec 2026) April 20, 2026, co-located EuroSys.
   #   システムセキュリティ特化型ワークショップ。
   - key: eurosec
     title: EuroSec
     full_name: European Workshop on Systems Security
-    link: https://www.eurosec.org/
+    link: https://eurosec-workshop.github.io/
     categories: [security, systems]
     tags: [niche, workshop]
     editions:
       - year: 2026
         id: eurosec26
-        link: https://www.eurosec.org/
+        link: https://eurosec-workshop.github.io/
         place: Europe
         date_text: April 20, 2026
         event_start: '2026-04-20'
         event_end: '2026-04-20'
         deadlines: []
 
-  # 根拠: https://www.edgesys.org/ (2026-08-09 取得)
+  # 根拠: https://edge-sys.github.io/2026/ (2026-08-12 取得。旧 edgesys.org は NXDOMAIN)
   #   EdgeSys 2026: ACM International Workshop on Edge Systems, Analytics and Networking.
   #   エッジコンピューティング・分散アナリティクスの穴場国際ワークショップ。
   - key: edgesys
     title: EdgeSys
     full_name: ACM International Workshop on Edge Systems, Analytics and Networking
-    link: https://www.edgesys.org/
+    link: https://edge-sys.github.io/2026/
     categories: [systems, networking]
     tags: [niche, workshop]
     editions:
       - year: 2026
         id: edgesys26
-        link: https://www.edgesys.org/
+        link: https://edge-sys.github.io/2026/
         place: Online / Co-located
         date_text: May 15, 2026
         event_start: '2026-05-15'
@@ -1047,32 +1058,33 @@ conferences:
         event_end: '2026-03-20'
         deadlines: []
 
-  # 根拠: https://ccgrid2026.github.io/ (2026-08-09 取得)
+  # 根拠: https://www.ccgrid2026.org/ (2026-08-12 取得。旧 ccgrid2026.github.io は 404)
   #   IEEE/ACM CCGrid 2026 Workshops.
   #   クラウド・並列分散計算の特化ワークショップ。
   - key: ccgrid-workshops
     title: CCGrid Workshops
     full_name: IEEE/ACM International Symposium on Cluster, Cloud and Grid Computing Workshops
-    link: https://ccgrid2026.github.io/
+    link: https://www.ccgrid2026.org/
     categories: [hpc, systems]
     tags: [niche, workshop]
     editions:
       - year: 2026
         id: ccgrid-ws26
-        link: https://ccgrid2026.github.io/
+        link: https://www.ccgrid2026.org/
         place: Co-located
         date_text: May 11-14, 2026
         event_start: '2026-05-11'
         event_end: '2026-05-14'
         deadlines: []
 
-  # 根拠: https://tnsm.ieee-comsoc.org/ (2026-08-09 取得)
+  # 根拠: https://www.comsoc.org/publications/journals/ieee-tnsm (2026-08-12 取得。
+  #   旧 tnsm.ieee-comsoc.org は DNS 消失)
   #   IEEE Transactions on Network and Service Management (TNSM) Special Issues.
   #   ネットワーク運用・計測管理の主要学会誌 Call for Papers.
   - key: ieee-tnsm
     title: IEEE TNSM
     full_name: IEEE Transactions on Network and Service Management
-    link: https://tnsm.ieee-comsoc.org/
+    link: https://www.comsoc.org/publications/journals/ieee-tnsm
     categories: [networking, systems]
     tags: [niche, journal]
     editions: []
@@ -1124,6 +1136,14 @@ conferences:
             date: '2026-12-21T23:59:59Z'
             tz: AoE
             comment: Position/Regular Paper Submission
+          - kind: notification
+            date: '2027-01-15T23:59:59Z'
+            tz: AoE
+            comment: Authors Notification (1st stage, official ImportantDates AoE)
+          - kind: notification
+            date: '2027-02-15T23:59:59Z'
+            tz: AoE
+            comment: Authors Notification (2nd stage, official ImportantDates AoE)
 
   # 根拠: https://mipro.hr/MIPRO2027/ELink.aspx (2026-08-10 取得)
   #   MIPRO 2027: May 31 - Jun 4, 2027, Opatija, Croatia. 最終レビュー 2027-02-01.
@@ -1267,10 +1287,12 @@ conferences:
 
   # 根拠: DBLP 実績（下條研 4 本）
   #   IEICE Transactions on Information and Systems: 情報処理・ネットワークの特集号 CFP が頻繁。
+  #   (2026-08-12) 旧 eng/transactions/ は 404 → 現行パス eng_r/transactions/ へ
+  #   (bot は WAF 403 だが実在)。
   - key: ieice-trans-inf
     title: IEICE Trans. Inf. & Syst.
     full_name: IEICE Transactions on Information and Systems
-    link: https://www.ieice.org/eng/transactions/
+    link: https://globals.ieice.org/en_transactions/information
     categories: [systems, networking]
     tags: [niche, journal]
     editions: []
@@ -1381,29 +1403,14 @@ conferences:
   # wikiCFP 候補から公式裏取りできた 5 件。
   # いずれも上流 ccfddl / aideadlines に無い会議（網羅性ギャップの解消）。
 
-  # 根拠: https://ieee-msn.org/2026/cf-papers.php (2026-08-10 取得)
-  #   「Regular Paper Submission Deadline Aug. 20, 2026」(AoE 表記あり)
-  #   「Industry Paper and Poster Submission Deadline Aug. 25, 2026」
-  #   開催: https://ieee-msn.org/2026/ 「December 18-20, 2026」Ningbo, China
-  - key: ieee-msn
-    title: IEEE MSN
-    full_name: IEEE MSN 2026
-    link: https://ieee-msn.org/2026/
-    categories: [networking]
-    editions:
-      - year: 2026
-        id: msn2026
-        link: https://ieee-msn.org/2026/
-        place: Ningbo, China
-        date_text: December 18-20, 2026
-        deadlines:
-          - {kind: paper, label: Regular Paper Submission, date: '2026-08-20 23:59:00', tz: AoE}
-          - {kind: paper, label: Industry Paper and Poster Submission, date: '2026-08-25 23:59:00', tz: AoE}
-
+  # 2026-08-12: ieee-msn は上流 ccfddl に既存 (key: msn, NW) の同会議で重複だったため削除。
+  # 固有情報（Industry Paper and Poster Submission Aug 25, 2026 AoE・開催 Dec 18-20 Ningbo）は
+  # overrides.yaml の msn 2026 へ統合した。
   # 根拠: https://itcs-conf.org/ (2026-08-10 取得)
   #   「Abstract submission: September 2, 2026 (04:59pm PDT)」
   #   「Full paper submission: September 4, 2026 (04:59pm PDT)」
-  #   「January 12-15, 2027」開催地は UC Berkeley (wikiCFP 表記、公式は venue 未明記)
+  #   「Notification to authors: November 6, 2026」「January 12-15, 2027」
+  #   開催地は UC Berkeley (wikiCFP 表記、公式は venue 未明記)。通知は日付のみ → AoE 慣例。
   - key: itcs
     title: ITCS
     full_name: Innovations in Theoretical Computer Science
@@ -1418,6 +1425,7 @@ conferences:
         deadlines:
           - {kind: abstract, label: Abstract Submission, date: '2026-09-02 16:59:00', tz: PDT}
           - {kind: paper, label: Full Paper Submission, date: '2026-09-04 16:59:00', tz: PDT}
+          - {kind: notification, label: 'Notification to Authors', date: '2026-11-06 23:59:59', tz: AoE}
 
   # 根拠: https://www.secitc.eu/ (2026-08-12 再取得)
   #   「Paper Submission deadline: September 7th, 2026 at 23:59 UTC」→ tz: UTC。
@@ -1441,6 +1449,11 @@ conferences:
   # 根拠: https://complexnetworks.org/ (2026-08-10 取得)
   #   Important Dates に「Paper Submission: September 02, 2026 (23:59 AoE)」
   #   開催日は公式サイトで未確認（過去開催は 11 月）→ date_text なし
+  # 根拠: https://complexnetworks.org/ (2026-08-13 再取得、R133 では本文空だったが
+  #   R135 で取得可) 「Important Dates: Submission deadline September 02, 2026 (23:59 AoE)
+  #   / Acceptance Notification October 01, 2026 / Camera Ready October 08, 2026 /
+  #   Registration October 15, 2026」。ページ内に「23:59 AoE」明記 → 通知/CR も AoE 解釈
+  #   (canopie 前例)。registration は会議系のため収録せず (secitc 前例)。
   - key: cna
     title: Complex Networks & Their Applications
     full_name: International Conference on Complex Networks and Their Applications
@@ -1453,11 +1466,14 @@ conferences:
         place: Granada, Spain
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-09-02 23:59:00', tz: AoE}
+          - {kind: notification, label: Acceptance Notification, date: '2026-10-01 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: Camera Ready, date: '2026-10-08 23:59:00', tz: AoE}
 
-  # 根拠: https://www.icact.org/ (2026-08-10 取得)
+  # 根拠: https://www.icact.org/ (2026-08-12 再取得)
   #   「Full Paper Submission : Oct 01, 2026」「Acceptance Notification : Oct 15, 2026」
-  #   Venue: Phoenix Park Hotel, Pyeong Chang, Korea。開催日は公式で未確認
-  #   （ICACT は毎年 2 月開催）→ date_text なし。公式に tz 表記なし → KST (UTC+9) として解釈。
+  #   「CFP: The 29th ICACT 2027 — Date: Jan. 24 (Sun) - 27 (Wed), 2027 / Venue:
+  #   Phoenix Park Hotel, Pyeong Chang, Korea」→ 会期 1/24-27 を確定（2026-08-10 時点は
+  #   公式未確認で date_text なし）。公式に tz 表記なし → KST (UTC+9) として解釈。
   - key: icact
     title: ICACT
     full_name: International Conference on Advanced Communications Technology
@@ -1467,9 +1483,14 @@ conferences:
       - year: 2027
         id: icact2027
         link: https://www.icact.org/
-        place: Pyeong Chang, Korea
+        place: Pyeongchang, Korea
+        date_text: 'January 24-27, 2027'
+        event_start: '2027-01-24'
+        event_end: '2027-01-27'
         deadlines:
           - {kind: paper, label: Full Paper Submission, date: '2026-10-01 23:59:00', tz: UTC+9}
+          - {kind: notification, label: 'Acceptance Notification', date: '2026-10-15 23:59:00', tz: UTC+9}
+          - {kind: camera_ready, label: 'Final CRF Submission', date: '2026-11-15 23:59:00', tz: UTC+9}
 
   # 根拠: https://www.icin-conference.org/ (2026-08-10 取得)
   #   Important dates「Paper Submission Due October 30, 2026」
@@ -1487,6 +1508,8 @@ conferences:
         date_text: March 15-18, 2027
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-10-30 23:59:00', tz: UTC}
+          - {kind: notification, label: 'Notification of Acceptance', date: '2026-12-13 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: 'Camera-Ready Papers Due', date: '2026-12-27 23:59:00', tz: UTC}
 
   # 根拠: https://ssresearch26.umbc.edu/ (2026-08-12 再取得)
   #   「Submit Paper」「Conference Dates December 13–15, 2026」「Baltimore, Maryland, USA」
@@ -1522,8 +1545,15 @@ conferences:
         link: https://tps.ieee-cs.org/2026/
         place: San Jose, CA, USA
         date_text: November 4-6, 2026
+        # 公式 CFP (2026-08-13 取得、R117/R118 時は 422 だったが jina 経由で再取得可)
+        #   Round 2「Submission Deadline August 15, 2026 / Notification of Acceptance
+        #   Date September 20, 2026 / Camera Ready Due September 30, 2026」。
+        #   Round 1 (6/15) は終了済みのため収録しない。SC26 慣例でなく AoE は
+        #   wikiCFP 引用 (R81 根拠) を維持。
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Paper Submission (Round 2)', date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Notification of Acceptance (Round 2)', date: '2026-09-20 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera Ready (Round 2)', date: '2026-09-30 23:59:00', tz: AoE}
 
   # 根拠: https://risc.ieee-cs.org/2026/ (2026-08-10)
   #   トップに「November 4-6, 2026」。wikiCFP の公式 CFP 引用（AoE・Aug 15, 2026）
@@ -1539,13 +1569,23 @@ conferences:
         link: https://risc.ieee-cs.org/2026/
         place: San Jose, CA, USA
         date_text: November 4-6, 2026
+        # 公式 CFP (2026-08-13 取得、R117/R118 時は 422 だったが jina 経由で再取得可)
+        #   Round 2「Submission Deadline August 15, 2026 / Notification of Acceptance
+        #   Date September 20, 2026 / Camera Ready Due September 30, 2026」。
+        #   Round 1 (6/15) は終了済みのため収録しない。AoE は wikiCFP 引用
+        #   (R81 根拠) を維持。
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Paper Submission (Round 2)', date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Notification of Acceptance (Round 2)', date: '2026-09-20 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera Ready (Round 2)', date: '2026-09-30 23:59:00', tz: AoE}
 
-  # 根拠: https://icissp.scitevents.org/ (2026-08-10)
+  # 根拠: https://icissp.scitevents.org/ (2026-08-10・2026-08-12 再確認)
   #   トップ「Regular Paper Submission: September 15, 2026」+ Important Dates の
-  #   「Note: All dates refer to AOE time」で一致。開催日は公式で未確認 → 省略。
-  #   開催地 Valletta, Malta は wikiCFP 表記。
+  #   「Note: All dates refer to AOE time」で一致。開催日 22-24 Feb 2027 Valletta,
+  #   Malta は公式 IndustrialPartners 頁「to be held on 22-24 February, 2027 in
+  #   Valletta, Malta」で確定 (2026-08-12)。
+  #   Important Dates (2026-08-13 再取得): Regular notification Nov 13・CR Nov 27 /
+  #   Position notification Dec 4・CR Dec 18 (AoE)。
   - key: icissp
     title: ICISSP
     full_name: International Conference on Information Systems Security and Privacy
@@ -1556,9 +1596,16 @@ conferences:
         id: icissp2027
         link: https://icissp.scitevents.org/
         place: Valletta, Malta
+        date_text: February 22-24, 2027
+        event_start: '2027-02-22'
+        event_end: '2027-02-24'
         deadlines:
           - {kind: paper, label: Regular Paper Submission, date: '2026-09-15 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Regular papers author notification', date: '2026-11-13 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Regular papers camera ready and registration', date: '2026-11-27 23:59:00', tz: AoE}
           - {kind: paper, label: Position Paper Submission, date: '2026-10-22 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Position papers author notification', date: '2026-12-04 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Position papers camera ready and registration', date: '2026-12-18 23:59:00', tz: AoE}
 
   # 根拠: https://easychair.org/cfp/cocoa2026 (2026-08-10)
   #   「deadline August 23, 2026」「December 4-6, 2026 in Beijing, China, hosted
@@ -1619,6 +1666,7 @@ conferences:
   # 根拠: https://easychair.org/cfp/WSSE2026 (2026-08-10)
   #   「Submission deadline August 15, 2026」— wikiCFP と一致。開催地は EasyChair に記載なし。
   #   公式に tz 表記なし → 23:59 UTC として解釈。
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: wsse-2026
     title: WSSE
     full_name: World Symposium on Software Engineering
@@ -1634,6 +1682,7 @@ conferences:
   # 根拠: https://easychair.org/cfp/flowchallenge2 (2026-08-10)
   #   「Submission deadline September 15, 2026」— DIMACS 実装チャレンジ (ALENEX/SOSA 併設)。
   #   公式に tz 表記なし → 23:59 UTC として解釈。
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: network-flows-2-0
     title: Network Flows 2.0
     full_name: "DIMACS Implementation Challenge: Network Flows 2.0"
@@ -1648,6 +1697,7 @@ conferences:
 
   # 根拠: https://easychair.org/cfp/jornadas-dl2 (2026-08-10)
   #   「Submission deadline: 30th September 2026」— 公式に tz 表記なし → 23:59 UTC。
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: 1st-dl2-international-workshop
     title: DL2 Workshop
     full_name: 1st DL2 International Workshop
@@ -1679,8 +1729,11 @@ conferences:
         # （2026-08-12 確認）。通知 9/20・camera-ready 10/1・11:59 PM Pacific。
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-26 23:59:00', tz: PT}
+          - {kind: notification, label: 'Notification of Decision', date: '2026-09-20 23:59:00', tz: PT}
+          - {kind: camera_ready, label: 'Camera-Ready Deadline', date: '2026-10-01 23:59:00', tz: PT}
 
   # 根拠: https://onspatial.github.io/geo-health-2026/ 「Submission deadline August 15, 2026」
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: geohealth-2026
     title: GeoHealth 2026
     full_name: The 2nd ACM SIGSPATIAL International Workshop on Geospatial Computing for Public Health
@@ -1696,6 +1749,7 @@ conferences:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
 
   # 根拠: https://iharp.umbc.edu/polds26/ 「All PolDS submissions are due by August 15, 2026」
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: polds-2026
     title: PolDS 2026
     full_name: The 2nd ACM International Workshop on Polar Data Science
@@ -1711,6 +1765,8 @@ conferences:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
 
   # 根拠: https://geoanomalies.github.io/ 「August 9, 2026 --> August 16, 2026」= 延長後
+  # 2026-08-12 r.jina.ai 再確認: Paper ~~Aug 9~~ Aug 16 / Notification ~~Sep 11~~ Sep 14 /
+  #   Camera-Ready Oct 10。tz 表記なし → UTC (bdcat/ucc 前例。既存 paper の UTC 採用と整合)。
   - key: geoanomalies-2026
     title: GeoAnomalies 2026
     full_name: The 3rd ACM SIGSPATIAL International Workshop on Geospatial Anomaly Detection
@@ -1724,8 +1780,12 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-16 23:59:00', tz: UTC}
+          - {kind: notification, label: 'Author notification', date: '2026-09-14 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: 'Camera-ready', date: '2026-10-10 23:59:00', tz: UTC}
 
-  # 根拠: https://events.ornl.gov/acmsigspatial-geoai2026/ 「Paper submission: 21st August, 2026」
+  # 根拠: https://events.ornl.gov/acmsigspatial-geoai2026/ 「Paper submission: 21st August,
+  #   2026 / Decisions to authors: 18th September, 2026 / Camera-ready: 4th October, 2026」
+  #   (2026-08-12 取得)。
   - key: geoai-2026
     title: GeoAI 2026
     full_name: The 9th International Workshop on AI for Geographic Knowledge Discovery
@@ -1739,6 +1799,8 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: UTC}
+          - {kind: notification, label: Decisions to authors, date: '2026-09-18 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: Camera-ready versions, date: '2026-10-04 23:59:00', tz: UTC}
 
   # 根拠: https://events.ornl.gov/urbanai2026/ 「Submission Deadline: August 21, 2026」
   - key: urbanai-2026
@@ -1772,6 +1834,7 @@ conferences:
 
   # 根拠: https://geoindustry.github.io/geoindustryworkshop2026/
   #   「Submission deadline August 28, 2026, 11:59 PM AoE」— AoE 明記
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: geoindustry-2026
     title: GeoIndustry 2026
     full_name: The 5th ACM SIGSPATIAL International Workshop on Spatial Big Data and AI for Industry
@@ -1787,7 +1850,9 @@ conferences:
           - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: AoE}
 
   # 根拠: https://spatialconnect.github.io/2026/
-  #   「Submission: September 1, 2026 (11:59PM (AOE))」— AOE 明記
+  #   「Submission: September 1, 2026 (11:59PM (AOE)) / Notification of
+  #   Accept/Reject: September 20, 2026 (11:59PM (AOE))」— AOE 明記
+  #   (2026-08-13 再取得)
   - key: spatialconnect-2026
     title: SpatialConnect 2026
     full_name: The 2nd ACM SIGSPATIAL International Workshop on Spatial Intelligence for Smart Connectivity
@@ -1801,6 +1866,7 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-09-01 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Notification of Accept/Reject', date: '2026-09-20 23:59:00', tz: AoE}
 
   # 根拠: https://takayabe0505.github.io/humob-2026/ 「Submission deadline September 20, 2026」
   - key: humob-2026
@@ -1832,11 +1898,60 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Notification of acceptance', date: '2026-08-31 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera-ready deadline', date: '2026-09-21 23:59:00', tz: AoE}
 
-  # ---------------- IEICE 論文誌特集号 (2026-08-10 裏取り再確認) ----------------
+  # ---------------- IEICE 論文誌・ジャーナル (2026-08-12 裏取り) ----------------
   # 根拠: https://www.ieice.org/eng_r/information/schedule/journals.php
-  #   テーブル行 [Trans. | 申込締切 | 特集号名 | 発行予定] を 2026-08-10 に直接確認。
+  #   IEICE Trans 論文誌は特集号以外は通年受付（固定締切なし）。
+  #   各ジャーナルの「Submission guidelines」は globals.ieice.org で公開。
+  #   特集号は journals.php から個別エントリとして管理。
+  - key: ieice-trans-com
+    title: IEICE Trans. Commun.
+    full_name: IEICE Transactions on Communications
+    link: https://globals.ieice.org/en_transactions/communications
+    categories: [networking, systems]
+    tags: [niche, journal]
+    editions: []
+
+  - key: ieice-trans-funda
+    title: IEICE Trans. Fundamentals
+    full_name: IEICE Transactions on Fundamentals of Electronics, Communications and Computer Sciences
+    link: https://globals.ieice.org/en_transactions/fundamentals
+    categories: [systems, theory]
+    tags: [niche, journal]
+    editions: []
+
+  - key: ieice-trans-electron
+    title: IEICE Trans. Electron.
+    full_name: IEICE Transactions on Electronics
+    link: https://globals.ieice.org/en_transactions/electronics
+    categories: [systems]
+    tags: [niche, journal]
+    editions: []
+
+  - key: ieice-elex
+    title: IEICE ELEX
+    full_name: IEICE Electronics Express
+    link: https://globals.ieice.org/en_publications/elex
+    categories: [systems]
+    tags: [niche, journal, domestic-jp]
+    editions: []
+
+  - key: ieice-comex
+    title: IEICE ComEX
+    full_name: IEICE Communications Express
+    link: https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=10400553
+    categories: [networking]
+    tags: [niche, journal]
+    editions: []
+
+  # ---------------- IEICE 論文誌特集号 (2026-08-12 裏取り再確認) ----------------
+  # 根拠: https://www.ieice.org/eng_r/information/schedule/journals.php
+  #   テーブル行 [Trans. | 申込締切 | 特集号名 | 発行予定] を 2026-08-12 に直接確認。
   #   日付のみの表記で tz なし → COCOA 前例どおり 23:59 UTC。
+  #   2026-08-12 現在: Fundamentals(1件), NOLTA(2件), Electron(2件), Inf&Syst(1件)
+  #   Commun は特集号なし (type=02 で空結果)
   - key: ieice-fundamentals-discrete-math-special
     title: IEICE Trans. Fundamentals 特集号（離散数学とその応用）
     full_name: Special Section on Discrete Mathematics and Its Applications（IEICE Trans. Fundamentals）
@@ -1877,6 +1992,20 @@ conferences:
         link: https://www.ieice.org/eng_r/information/schedule/journals.php
         deadlines:
           - {kind: paper, label: Submission, date: '2026-11-16 23:59:00', tz: UTC}
+
+  # 根拠: journals.php 2026-08-12 取得。「2026-10-15 | Analog Circuits and Their Application Technologies | 2027-10」
+  - key: ieice-electron-analog-circuits-special
+    title: IEICE Trans. Electron. 特集号（アナログ回路と応用技術）
+    full_name: Special Section on Analog Circuits and Their Application Technologies（IEICE Trans. Electron.）
+    link: https://www.ieice.org/eng_r/information/schedule/journals.php
+    categories: [systems]
+    tags: [niche, special-issue, domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-electron-analog-2027-10
+        link: https://www.ieice.org/eng_r/information/schedule/journals.php
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-10-15 23:59:00', tz: UTC}
 
   # ---------------- IPSJ 論文誌特集号 (2026-08-10 裏取り再確認) ----------------
   # 根拠: https://www.ipsj.or.jp/journal/cfp/27-*.html 各ページの申込締切を 2026-08-10 に直接確認。
@@ -1946,9 +2075,13 @@ conferences:
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-28 23:59:00', tz: UTC}
 
-  # ---------------- SC26 併設 WS 追加 (2026-08-10 裏取り) ----------------
-  # 根拠: https://echo-workshop.github.io/ Important Dates
-  #   「Paper submission deadline: August 15, 2026 (AoE)」（August 20, 2026 は打ち消し線=旧締切）
+  # ---------------- SC26 併設 WS 追加 (2026-08-12 再裏取り) ----------------
+  # 根拠: https://echo-workshop.github.io/ Important Dates (2026-08-12 再検証)
+  #   「Paper submission deadline: <del>August 20, 2026</del> August 15, 2026 (AoE)」
+  #   → 2026-08-10 時点の読取（8/15 現行）が正で、2026-08-12 の再読取は打ち消し線の
+  #   方向を逆に誤読した（8/20 が旧日付・8/15 AoE が現行）。GitHub の index.html
+  #   最終コミット 2026-08-01 以後ページ不変のため、現在の 8/15 AoE が一貫して正。
+  #   通知 9/4（tz 未表記 → AoE 前例）・CR 9/25 AoE も公式同時取得。
   #   SC26 併設 1st International Workshop on Edge-Cloud-HPC Operational Continuum
   - key: echo-workshop-2026
     title: ECHO Workshop 2026
@@ -1961,8 +2094,13 @@ conferences:
         id: echo2026
         link: https://echo-workshop.github.io/
         place: Chicago, IL, USA
+        date_text: November 20, 2026
+        event_start: '2026-11-20'
+        event_end: '2026-11-20'
         deadlines:
-          - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: paper, label: 'Submission', date: '2026-08-15 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Author notification', date: '2026-09-04 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera-ready deadline (with AD/AE)', date: '2026-09-25 23:59:00', tz: AoE}
 
   # ---------------- IEICE NOLTA 特集号 (2026-08-10 裏取り) ----------------
   # 根拠: journals.php 2026-08-10 取得。「NOLTA | 2026-10-03 | Recent Advances in Nonlinear Problems | 2027-04」
@@ -2008,6 +2146,9 @@ conferences:
         id: pmbs26
         link: https://pmbs-workshop.github.io/
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         deadlines:
           - {kind: paper, label: Late Breaking and Short Paper, date: '2026-08-26 23:59:00', tz: AoE}
 
@@ -2029,6 +2170,10 @@ conferences:
         link: https://hpc-oda.org/
         place: Chicago, IL, USA
         date_text: 'November 20, 2026'
+        # 公式 hpc-announce (2026-08-12 再確認, r.jina.ai レンダリング):
+        #   "*** Paper submission deadline extended to August 12, 2026 ***"
+        #   → Aug 12 AoE が確定。本サイトは JS 遮蔽で直接取得不能だったが、
+        #   mailman3.cels.anl.gov の延長アナウンスで裏取り完了 (教訓 67 の SC26 延長波に一致)。
         deadlines:
           - {kind: paper, label: Full/Short Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
           - {kind: other, label: Lightning Talk Submission, date: '2026-09-18 23:59:00', tz: AoE}
@@ -2049,8 +2194,13 @@ conferences:
         id: p3hpc-2026
         link: https://p3hpc.org/workshop/2026/
         place: Chicago, IL, USA
+        date_text: 'November 15-20, 2026'
+        event_start: '2026-11-15'
+        event_end: '2026-11-20'
         deadlines:
         - {kind: paper, label: Paper Submission, date: '2026-08-12 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Author Notification', date: '2026-09-04 23:59:00', tz: AoE}
+        - {kind: camera_ready, label: 'Camera-Ready Submissions', date: '2026-09-25 23:59:00', tz: AoE}
 
   # ---------------- ICVRV 2026 (2026-08-10 裏取り) ----------------
   # 根拠: http://www.icvrv.org/ Important Dates:
@@ -2073,13 +2223,18 @@ conferences:
         deadlines:
           - {kind: abstract, label: Abstracts Due, date: '2026-08-15 23:59:00', tz: UTC}
           - {kind: paper, label: Paper Due, date: '2026-08-22 23:59:00', tz: UTC}
+          - {kind: notification, label: 'Author Notification', date: '2026-09-15 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: 'Camera-Ready Paper Upload', date: '2026-10-15 23:59:00', tz: UTC}
 
-  # ---------------- CAFCW 2026 (SC26 併設, 2026-08-10 裏取り) ----------------
+  # ---------------- CAFCW 2026 (SC26 併設, 2026-08-10/2026-08-12 裏取り) ----------------
   # 根拠: https://www.cafcw.org/services/ Key Dates:
   #   August 15, 2026 — Submission Deadline for Papers for SC26 Proceedings
-  #   September 4 — Notification / September 25 — Camera Ready
+  #   September 4, 2026 — Notification for Accepted Papers (proceedings)
+  #   September 5, 2026 — CAFCW Student and Abstract Only Submission deadline
+  #   September 25, 2026 — Accepted Papers Camera Ready Deadline
+  #   September 30, 2026 — Notification of accepted abstracts
   #   November 16, 2026 — CAFCW26 Workshop (2pm-5:30pm)
-  #   TZ 明記なし → 23:59 UTC 解釈 (COCOA 前例)。
+  #   TZ 明記なし → 既存 paper エントリと同じ AoE 解釈 (SC26 ポータル慣例)。
   - key: cafcw-2026
     title: CAFCW 2026
     full_name: The 12th Computational Approaches for Cancer Workshop (CAFCW26)
@@ -2094,6 +2249,10 @@ conferences:
         date_text: 'November 16, 2026'
         deadlines:
         - {kind: paper, label: Paper Submission (SC26 Proceedings), date: '2026-08-15 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Notification (proceedings papers)', date: '2026-09-04 23:59:00', tz: AoE}
+        - {kind: other, label: 'Student and Abstract Only Submission', date: '2026-09-05 23:59:00', tz: AoE}
+        - {kind: camera_ready, label: 'Accepted Papers Camera Ready', date: '2026-09-25 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Notification of accepted abstracts', date: '2026-09-30 23:59:00', tz: AoE}
 
   # ---------------- SC26 併設 WS 追補 (2026-08-10 裏取り) ----------------
   # 根拠: 各 WS 公式サイト / CFP。8/14 締切の 4 件。
@@ -2124,8 +2283,17 @@ conferences:
         link: https://canopie-hpc.org/
         place: Chicago, IL, USA
         date_text: 'November 16, 2026'
+        # 公式 CFP (2026-08-13 取得、R112 時は取得不能だったが jina 経由で再取得可)
+        #   「Submission closes (hard deadline - no extensions): August 14th, 2026 /
+        #   Papers decisions: September 4th, 2026 / Lightning talks decisions:
+        #   September 11th, 2026 / Camera-ready papers deadline: September 25th, 2026 /
+        #   Workshop date: November 16th, 2026」+「23:59 anywhere on Earth (UTC-12)」
+        #   明記 → 全件 tz: AoE。
         deadlines:
           - {kind: paper, label: Paper Submission (hard deadline), date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Papers decisions', date: '2026-09-04 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Lightning talks decisions', date: '2026-09-11 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera-ready papers deadline', date: '2026-09-25 23:59:00', tz: AoE}
 
   - key: hpcsyspros-2026
     title: HPCSYSPROS 2026
@@ -2140,6 +2308,7 @@ conferences:
         place: Chicago, IL, USA
         deadlines:
         - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Notifications of accepted submissions', date: '2026-09-11 23:59:00', tz: AoE}
 
   - key: hppss-2026
     title: HPPSS 2026
@@ -2152,11 +2321,15 @@ conferences:
         id: hppss-2026
         link: https://hppss.github.io/SC26/
         place: Chicago, IL, USA
-        # SC26 ポータル一次 (2026-08-10): Closes: 12am (AoE) Aug 14 = 8/13 23:59 AoE 相当
-        # (Linklings は締切 1 分後の翌日 0:00 を表示。resdis の 12am Aug 15 = 8/14 AoE 前例と同則)
-        # 公式サイト (hppss.github.io/SC26/callfordemos.html) は "August 14, 2026" (tz 明記なし)
+        date_text: 'November 15, 2026'
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
+        # 公式 callfordemos.html「Submit abstracts ... by the end of the day (AoE) 8/14/2026」
+        # (2026-08-12 再確認) → end of Aug 14 AoE = 8/15T11:59:59Z。
+        # 旧値 (8/13 23:59 AoE) は 2026-08-10 のポータル「Closes: 12am (AoE) Aug 14」表示
+        # (締切 1 分後表示説) に引きずられ 1 日早かった。公式文言を正として訂正。
         deadlines:
-          - {kind: abstract, label: Abstract Submission, date: '2026-08-13 23:59:00', tz: AoE}
+          - {kind: abstract, label: Abstract Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
   # ---------------- SC26 併設 WS 一括 (2026-08-10 裏取り) ----------------
   # 根拠: sc26.supercomputing.org 「50 accepted workshops」記事 (2026-04-03) のリンク先
@@ -2172,6 +2345,9 @@ conferences:
         id: scalah26
         link: https://www.csm.ornl.gov/srt/conferences/Scala/2026/
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         # Full paper submission: August 14, 2026 (firm, no extensions)
         deadlines:
         - {kind: paper, label: Full Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
@@ -2187,6 +2363,9 @@ conferences:
         id: protools26
         link: https://sc-protools-workshop.github.io/protools26
         place: Chicago, IL, USA
+        date_text: November 15-16, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-16'
         # Paper submission deadline: August 5, 2026 (AoE) → August 10, 2026 (AoE) 延長
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-10 23:59:00', tz: AoE}
@@ -2202,11 +2381,15 @@ conferences:
         id: agenticai4hpc26
         link: https://ornl.github.io/events/agenticai4hpc2026/
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         # Submission: August 10, 2026 11:59pm (PDT) — submissions.supercomputing.org
         # 一次ソース: SC26 ポータル Submission Forms (2026-08-10 取得)。公式サイトは日付なし。
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-10 23:59:00', tz: PDT}
 
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: ai4s-2026
     title: AI4S 2026
     full_name: 8th Workshop on Artificial Intelligence and Machine Learning for Scientific Applications (AI4S)
@@ -2218,6 +2401,9 @@ conferences:
         id: ai4s26
         link: https://ai4s.github.io/
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         # Paper submission deadline: August 14, 2026, 11:59 PM Anywhere on Earth
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
@@ -2236,8 +2422,11 @@ conferences:
         # Submission deadline: 14th August 2026（公式 cfp ページ、2026-08-12 再取得で確認）
         # SC26 提出ポータル (R33) も 8/14 AoE。SC26 WS は全て AoE 慣例（agenticai4hpc 等の
         # PDT/EDT 例外を除く）→ 旧値 (8/15 23:59 UTC = AoE 8/15) は 1 日遅れの誤りを修正。
+        # 通知 9/4・CR 9/25（tz 未表記 → AoE 前例）も公式同時取得（2026-08-12）。
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Author notification', date: '2026-09-04 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera-ready paper', date: '2026-09-25 23:59:00', tz: AoE}
 
   - key: hpctests-2026
     title: HPCTESTS 2026
@@ -2250,6 +2439,9 @@ conferences:
         id: hpctests26
         link: https://olcf.github.io/hpc-system-test-wg/hpctests/hpctests2026
         place: Chicago, IL, USA
+        date_text: November 20, 2026
+        event_start: '2026-11-20'
+        event_end: '2026-11-20'
         # Paper Submission Deadline: August 3, 2026 AoE → August 10, 2026 AoE 延長
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-10 23:59:00', tz: AoE}
@@ -2285,6 +2477,8 @@ conferences:
         # Paper submission deadline: 10 August 2026 → 14 August 2026 延長
         deadlines:
         - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Notification of acceptance', date: '2026-08-31 23:59:00', tz: AoE}
+        - {kind: camera_ready, label: 'Camera-ready deadline', date: '2026-09-21 23:59:00', tz: AoE}
 
   - key: hust-26-2026
     title: HUST-26
@@ -2298,10 +2492,16 @@ conferences:
         link: https://hust-workshop.github.io/
         place: Chicago, IL, USA
         date_text: 'November 15, 2026'
-        # Submissions Deadline: 8/7 → 8/14 (final extension) → 8/21 AoE (SC26 提出ポータル
-        # 2026-08-12 取得: 「11:59pm (AoE) Aug 21, 2026」が一次。公式サイトは 8/14 のまま更新遅れ)
+        # Submissions Deadline: 8/7 → 8/14 (final extension)。根拠: 主催公式 CFP
+        #   (hust-workshop.github.io, 2026-08-12 取得)「August 14, 2026 (final extension)」
+        #   + hpc-announce 2026-08-03「extended to August 14, 2026 (AoE)」。
+        #   以前「SC26 ポータルで Aug 21 AoE」と記録したが再現不能 (ポータルは JS で取得不可)
+        #   かつ主催 3 ソースが全て 8/14 → 8/14 AoE を採用 (hclh と同じ 8/7→8/14 延長パターン)。
+        #   通知 9/4・Camera-ready 9/25・Workshop Nov 15 (主催 CFP 2026-08-12 取得)。
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: notification, label: Acceptance Notifications, date: '2026-09-04 23:59:00', tz: AoE}
+        - {kind: camera_ready, label: Camera-Ready, date: '2026-09-25 23:59:00', tz: AoE}
 
   - key: isav-2026
     title: ISAV 2026
@@ -2314,10 +2514,18 @@ conferences:
         id: isav26
         link: https://isav-workshop.github.io/2026/
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         # Extended submission deadline (all types): 14 Aug 2026 (deadline is FIRM)
+        # Author notification 04 Sep 2026 / Camera ready copy due 25 Sep 2026 (FIRM)
+        # （2026-08-13 再確認）。
         deadlines:
         - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: notification, label: 'Author notification', date: '2026-09-04 23:59:00', tz: AoE}
+        - {kind: camera_ready, label: 'Camera-ready copy due', date: '2026-09-25 23:59:00', tz: AoE}
 
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: llvm-hpc-2026
     title: LLVM-HPC 2026
     full_name: The Twelfth Workshop on the LLVM Compiler Infrastructure in HPC (LLVM-HPC 2026)
@@ -2345,11 +2553,35 @@ conferences:
         id: scale2see26
         link: https://sites.google.com/view/scale-to-see-workshop/home
         place: Chicago, IL, USA
-        # SC26 ポータル一次 (2026-08-10): Closes: 12am (AoE) Aug 15 = 8/14 23:59 AoE 相当
-        # (Linklings は締切 1 分後の翌日 0:00 を表示。resdis の 12am Aug 15 = 8/14 AoE 前例と同則)
-        # 公式サイトは "postponed to August 15th, 2026, AOE" — ポータル実設定が一次
+        date_text: 'November 20, 2026'
+        event_start: '2026-11-20'
+        event_end: '2026-11-20'
+        # 公式サイト「The deadline is postponed to August, 15th, 2026, AOE」
+        # (2026-08-12 再確認) → end of Aug 15 AoE = 8/16T11:59:59Z。
+        # 旧値 (8/14 23:59 AoE) はポータル「12am (AoE) Aug 15」表示に引きずられ 1 日早かった
+        # (fd9add6 の「8/15 AoE」修正は日付文字列が一致していたが AoE 終端変換対象日が
+        # 1 日ずれていた — 教訓 42/44 の表示日比較では検出不能なパターン)。
+        # 公式文言を正として訂正。
+        # 2026-08-12 r.jina.ai 再レンダリングでも現行は「postponed to August, 15th, 2026, AOE」
+        # + 「Notification of Decisions: September 4th, 2026」を確認 (tz 表記なし → esann 前例で AoE)。
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-14 23:59:00', tz: AoE}
+        - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: AoE}
+        - {kind: notification, label: Notification of Decisions, date: '2026-09-04 23:59:00', tz: AoE}
+
+  # 根拠: https://sibgrapi.sbc.org.br/2026/call-for-papers/ 「Submission Deadline: ~~August 8, 2026~~
+  #   August 15, 2026」(全締切 23:59 PDT 明示)。SIBGRAPI main track は overrides.yaml 参照。
+  - key: sibgrapi-wuw-2026
+    title: SIBGRAPI WUW 2026
+    full_name: "SIBGRAPI 2026 Workshop of Undergraduate Works (WUW)"
+    link: https://sibgrapi.sbc.org.br/2026/call-for-papers/
+    categories: [graphics]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: sibgrapi-wuw-2026
+        link: https://sibgrapi.sbc.org.br/2026/call-for-papers/
+        deadlines:
+          - {kind: paper, label: 'WUW submission', date: '2026-08-15 23:59:00', tz: PDT}
 
   - key: h2rc-2026
     title: H2RC 2026
@@ -2396,9 +2628,12 @@ conferences:
         date_text: 'November 16, 2026'
         # Application deadline: 「<s>August 14, 2026</s> Extended! August 21, 2026」
         # （公式 womeninhpc.org、2026-08-12 確認）。通知 9/9・受諾確認 10/2。
+        # 注: 実際の収録は data/primary_overrides.yaml が優先（ここの deadline は影）。
         deadlines:
-        - {kind: paper, label: Submission, date: '2026-08-21 23:59:00', tz: AoE}
+        - {kind: paper, label: Application Deadline, date: '2026-08-21 23:59:00', tz: AoE}
+        - {kind: notification, label: Application Notifications, date: '2026-09-09 23:59:00', tz: AoE}
 
+  # 注: このキーは data/primary_overrides.yaml が優先（締切を変更するときはそちらを編集。教訓 68）
   - key: hmem-2026
     title: HMEM 2026
     full_name: 7th Workshop on Heterogeneity and Memory Systems (HMEM)
@@ -2410,6 +2645,9 @@ conferences:
         id: hmem26
         link: https://hmem-workshop.github.io/
         place: Chicago, IL, USA
+        date_text: November 16, 2026
+        event_start: '2026-11-16'
+        event_end: '2026-11-16'
         # Paper submission deadline: August 17, 2026
         # 公式: "Time Zone: AOE (Anywhere One Earth)" 明記 (2026-08-10 確認)
         deadlines:
@@ -2420,7 +2658,9 @@ conferences:
   #   2027-02-02 確認済み): Full Paper Submission = June 6, 2027, 11:59PM AOE。
   #   Author Notification Aug 16 / Camera Ready Sep 9。ホームの「Nov 22, 2026」は更新前の残骸。
   #   会期: ヘッダーに May 28-30, 2027 表記があるが、締切 6/6 が会期後になり矛盾するため
-  #   未確定扱い (dates ページに会期の記載なし)。会期は入れない。
+  #   未確定扱い (dates/list.htm に会期の記載なし。2026-08-12 再確認: Full Paper 6/6・
+  #   Notification 8/16・Camera Ready 9/9 は全て 5/28-30 より後 → ヘッダー表記が誤りの
+  #   可能性が高く会期は入れない)。
   #   推定締切 (9/22 abstract・9/29 paper, rollforward) は real で置換 (merge 実装)。
   - key: dasfaa
     title: DASFAA
@@ -2478,6 +2718,7 @@ conferences:
         deadlines:
           - {kind: abstract, label: 'Abstract submission', date: '2026-10-23 23:59:00', tz: GMT}
           - {kind: paper, label: 'Full papers submission', date: '2026-10-26 23:59:00', tz: GMT}
+          - {kind: notification, label: 'Acceptance notification', date: '2026-12-15 23:59:00', tz: GMT}
 
   # ---------------- PerCom 2027 (2026-08-10 裏取り) ----------------
   # 根拠: https://percom.org/call-for-papers/ (Wayback 2026-06-01 スナップショット。
@@ -2613,6 +2854,7 @@ conferences:
         date_text: November 3, 2026
         deadlines:
           - {kind: paper, label: Submission, date: '2026-08-15 23:59:00', tz: UTC}
+          - {kind: notification, label: Notification, date: '2026-09-15 23:59:00', tz: UTC}
 
   # 根拠: https://www.mmm2027.net/ (2026-08-10 取得)。上流 ccfddl の 8/16 AoE は
   #   overrides で drop 済み (延長前)。公式「Paper Submission Deadline Extended:
@@ -2623,8 +2865,10 @@ conferences:
   # ---------------- SC26 併設 WS 追加 4 (2026-08-10 SC26 提出ポータル裏取り) ----------------
   # 根拠: https://submissions.supercomputing.org Submission Forms (2026-08-10 確認):
   #   「SC Workshop: XLOOP — Closes: 11:59pm (AoE) Aug 14, 2026」。
-  #   公式サイト wordpress.cels.anl.gov/xloop-2026 は Cloudflare 403 のため
-  #   フォームが正 (SC26 公式提出システム)。SC26 併設 (11/15-20 Chicago)。
+  # 根拠: 公式 dates ページ wordpress.cels.anl.gov/xloop-2026/paper-submission-and-dates/
+  #   「Submissions due: August 14th / Workshop @ SC: November 15th」(2026-08-12 確認。
+  #   Cloudflare 403 で直接取得不能のため検索スニペット経由)。締切 tz は SC26 提出
+  #   ポータル「Closes: 11:58pm (AoE) Aug 14, 2026」を採用。SC26 併設 (Chicago)。
   - key: xloop-2026
     title: XLOOP 2026
     full_name: "XLOOP 2026: The 8th Annual Workshop on Extreme-Scale Experiment-in-the-Loop Computing"
@@ -2636,12 +2880,23 @@ conferences:
         id: xloop-2026
         link: https://wordpress.cels.anl.gov/xloop-2026
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
+        # 公式 Paper Submission and Dates (2026-08-13 取得、R112 時は 403/取得不能だったが
+        #   jina 経由で再取得可)「Submissions due: August 14th / Author notification:
+        #   August 28th / AD-AE Stage 2 Badge Application: September 4th / Camera-ready
+        #   version: September 25th / Workshop @ SC: November 15th」。SC26 WS 慣例で AoE
+        #   (教訓 44)。
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Author notification', date: '2026-08-28 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Camera-ready version', date: '2026-09-25 23:59:00', tz: AoE}
 
-  # 根拠: SC26 提出ポータル「SC Workshop: SFWM — Closes: 11:58pm (AoE) Aug 14, 2026」。
-  #   正式名は公式サイト https://sfwqhe.github.io/sfwm-sc26 (SC26 SFWM Workshop)。
-  #   サイト本体の日付欄は未記入 (2026-08-10 確認) → ポータルが正。
+  # 根拠: 公式 CFP https://sfwqhe.github.io/sfwm-sc26/call4papers-sc26.html
+  #   「Paper Submission Deadline: August 14, 2026 / When: November 15 (Sunday), 2026」
+  #   (2026-08-12 確認)。SC26 提出ポータルも「Closes: 11:58pm (AoE) Aug 14, 2026」で一致。
+  #   締切 tz はサイト非明記のためポータルの AoE を採用。
   - key: sfwm-2026
     title: SFWM 2026
     full_name: "SFWM 2026: The 2nd International Workshop on Software Frameworks and Workload Management for Quantum and HPC Ecosystems"
@@ -2653,6 +2908,9 @@ conferences:
         id: sfwm-2026
         link: https://sfwqhe.github.io/sfwm-sc26
         place: Chicago, IL, USA
+        date_text: November 15, 2026
+        event_start: '2026-11-15'
+        event_end: '2026-11-15'
         deadlines:
           - {kind: paper, label: Paper Submission, date: '2026-08-14 23:59:00', tz: AoE}
 
@@ -2675,19 +2933,24 @@ conferences:
           - {kind: paper, label: Paper Submission, date: '2026-08-15 23:59:00', tz: PDT}
 
   # 根拠: SC26 提出ポータル「PDSW—Work in Progress Papers: Closes: 11:59pm (AoE)
-  #   Sep 11, 2026」。Regular Papers は 7/31 AoE で締切済み (wayback 2026-07-10
-  #   スナップショットで確認)。pdsw.org は DNS 消失中 (2026-08-10) だが正ドメイン。
+  #   Sep 11, 2026」。Regular Papers は 7/31→8/7 AoE 延長済み (hpc-announce 2026-08-12
+  #   確認)。開催日 Nov 16 (Monday) も同アナウンス「Workshop day: Monday, Nov 16th,
+  #   2026」で確定。pdsw.org は DNS 消失中 (2026-08-10)。リンクは SIGARCH の公式 CFP
+  #   ページ (2026-08-12 確認・生存) へ張り替え。
   - key: pdsw-2026
     title: PDSW'26
     full_name: "PDSW'26: The 11th International Parallel Data Systems Workshop"
-    link: https://www.pdsw.org/
+    link: https://www.sigarch.org/call-contributions/pdsw-2026-sc26/
     categories: [hpc]
     tags: [workshop, storage]
     editions:
       - year: 2026
         id: pdsw-2026
-        link: https://www.pdsw.org/
+        link: https://www.sigarch.org/call-contributions/pdsw-2026-sc26/
         place: Chicago, IL, USA
+        date_text: November 16, 2026
+        event_start: '2026-11-16'
+        event_end: '2026-11-16'
         deadlines:
           - {kind: paper, label: Work in Progress (WIP) Submission, date: '2026-09-11 23:59:00', tz: AoE}
 
@@ -2759,8 +3022,11 @@ conferences:
 
   # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/icdcn2027 (2026-08-11 確認)
   #   「Submission deadline August 13, 2026」「January 4-7, 2027 Mangalore, India」。
-  #   公式 http://icdcn.org。ACM ICPS 出版 (ACM DL)。上流 ccfddl に 2026/2027 版なし。
-  #   公式 tz 表記なし → 23:59 UTC (COCOA 前例)。
+  #   公式 http://icdcn.org (→ cs3-lab.github.io/icdcn)。ACM ICPS 出版 (ACM DL)。
+  #   上流 ccfddl に 2026/2027 版なし。
+  #   公式 Important Dates「All the deadlines are in AoE」明記 (2026-08-12 再確認) →
+  #   2026-08-11 時点の「tz 表記なし → 23:59 UTC (COCOA 前例)」を撤回し AoE 解釈に訂正
+  #   (旧値は end of Aug 13 の 12h 前を表示していた)。
   - key: icdcn
     title: ICDCN
     full_name: International Conference on Distributed Computing and Networking
@@ -2775,7 +3041,7 @@ conferences:
         event_start: '2027-01-04'
         event_end: '2027-01-07'
         deadlines:
-          - {kind: paper, label: Paper Submission, date: '2026-08-13 23:59:00', tz: UTC}
+          - {kind: paper, label: Paper Submission, date: '2026-08-13 23:59:00', tz: AoE}
 
   # 根拠: EasyChair 公開 CFP https://easychair.org/cfp/UCC2026 (2026-08-11 確認)
   #   19th IEEE/ACM UCC「Paper Submission Deadline: August 19, 2026 / Acceptance
@@ -2919,8 +3185,9 @@ conferences:
 
   # 根拠: https://uasc.cc (2026-08-12 取得)
   #   「Important Dates (AoE)」Cycle 2 submission deadline: October 27, 2026 /
-  #   notification December 7, 2026。会期 Feb 3-4, 2027。
-  #   Cycle 1 (7/28) は終了済みのため収録しない。上流 ccfddl・dblp とも未収録。
+  #   notification December 7, 2026 / Cycle 1 notification September 15, 2026。
+  #   会期 Feb 3-4, 2027。Cycle 1 submission (7/28) は終了済みのため収録しない。
+  #   上流 ccfddl・dblp とも未収録。
   - key: uasc
     title: uASC
     full_name: Microarchitecture Security Conference (uASC)
@@ -2936,12 +3203,15 @@ conferences:
         event_start: '2027-02-03'
         event_end: '2027-02-04'
         deadlines:
+          - {kind: notification, label: 'Cycle 1 notification', date: '2026-09-15 23:59:00', tz: AoE}
           - {kind: paper, label: 'Cycle 2 submission deadline', date: '2026-10-27 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Cycle 2 notification', date: '2026-12-07 23:59:00', tz: AoE}
 
   # 根拠: https://cascade-conference.org/ (2026-08-12 取得)
   #   Winter Submission「Paper submission: November 10, 2026」（tz 表記なし → 23:59 UTC）。
   #   Summer Submission (6/26 → 7/3 延長) は終了済みのため収録しない。
-  #   COSADE と CARDIS の統合新会議。dblp: cascade。上流 ccfddl に無し。
+  #   会期「CASCADE 2027 will be held in Heilbronn, Germany, on April 4 to April 7, 2027」
+  #   （2026-08-12 確認）。COSADE と CARDIS の統合新会議。dblp: cascade。上流 ccfddl に無し。
   - key: cascade
     title: CASCADE
     full_name: Constructive Approaches for Security Analysis and Design of Embedded systems (CASCADE)
@@ -2952,7 +3222,349 @@ conferences:
       - year: 2027
         id: cascade27
         link: https://cascade-conference.org/
-        place: ""
-        date_text: ""
+        place: Heilbronn, Germany
+        date_text: 'April 4-7, 2027'
+        event_start: '2027-04-04'
+        event_end: '2027-04-07'
         deadlines:
           - {kind: paper, label: 'Winter paper submission', date: '2026-11-10 23:59:00', tz: UTC}
+
+  # 根拠: https://artman-workshop.gitlab.io/ (2026-08-13 取得)
+  #   「Submission Deadline: August 31, 2026 / Acceptance Notification: September 28,
+  #   2026 / Camera-Ready Deadline: October 19, 2026 / Workshop Day: December 8, 2026」。
+  #   4th ARTMAN (Workshop on Recent Advances in Resilient and Trustworthy Machine
+  #   learning-driven systems)。IEEE ACSAC 2026 併設 (Los Angeles)。tz 表記なし →
+  #   23:59 UTC 解釈 (COCOA 前例・教訓 43)。上流 ccfddl に無し。
+  - key: artman-2026
+    title: ARTMAN 2026
+    full_name: "ARTMAN: Workshop on Recent Advances in Resilient and Trustworthy Machine learning-driven systems"
+    link: https://artman-workshop.gitlab.io/
+    categories: [security, ai]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: artman26
+        link: https://artman-workshop.gitlab.io/
+        place: Los Angeles, CA, USA
+        date_text: 'December 8, 2026'
+        event_start: '2026-12-08'
+        event_end: '2026-12-08'
+        deadlines:
+          - {kind: paper, label: Submission, date: '2026-08-31 23:59:00', tz: UTC}
+          - {kind: notification, label: 'Acceptance Notification', date: '2026-09-28 23:59:00', tz: UTC}
+          - {kind: camera_ready, label: 'Camera-Ready Deadline', date: '2026-10-19 23:59:00', tz: UTC}
+
+  # 根拠: https://aidcworkshop.github.io/ (2026-08-13 取得)
+  #   「Paper submission due: September 25, 2026 (Anywhere-on-Earth, AoE) /
+  #   Notification of paper acceptance: October 16, 2026 / Final paper due:
+  #   October 30, 2026 / Lightning Talk/Tutorial submission due: October 8, 2026
+  #   (Anywhere-on-Earth, AoE)」。Inaugural Workshop on Agentic AI in Offensive and
+  #   Defensive Cyber Operations (AIDC'26)。ACSAC 2026 併設 (Monday, December 7, 2026,
+  #   Los Angeles)。上流 ccfddl に無し。
+  - key: aidc-2026
+    title: AIDC 2026
+    full_name: "AIDC 2026: Workshop on Agentic AI in Offensive and Defensive Cyber Operations"
+    link: https://aidcworkshop.github.io/
+    categories: [security, ai]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: aidc26
+        link: https://aidcworkshop.github.io/
+        place: Los Angeles, CA, USA
+        date_text: 'December 7, 2026'
+        event_start: '2026-12-07'
+        event_end: '2026-12-07'
+        deadlines:
+          - {kind: paper, label: 'Paper submission', date: '2026-09-25 23:59:00', tz: AoE}
+          - {kind: other, label: 'Lightning Talk/Tutorial submission', date: '2026-10-08 23:59:00', tz: AoE}
+          - {kind: notification, label: 'Notification of paper acceptance', date: '2026-10-16 23:59:00', tz: AoE}
+          - {kind: camera_ready, label: 'Final paper', date: '2026-10-30 23:59:00', tz: AoE}
+
+  # 根拠: https://bcca-conference.org/2026/Workshops/B4TI.php (2026-08-13 取得)
+  #   「Paper Submissions: July 31, August 31 2026 (Firm Deadline) / Paper Acceptance
+  #   Notification: September 15, 2026」。2nd International Workshop on Blockchain for
+  #   Decentralized Trust and Digital Identity (B4TI 4.0)。BCCA 2026 併設
+  #   (16-20 November 2026, Barcelona, Spain)。tz 表記なし → 23:59 UTC 解釈
+  #   (COCOA 前例・教訓 43)。上流 ccfddl に無し。
+  - key: b4ti-2026
+    title: B4TI 2026
+    full_name: "B4TI: International Workshop on Blockchain for Decentralized Trust and Digital Identity"
+    link: https://bcca-conference.org/2026/Workshops/B4TI.php
+    categories: [security]
+    tags: [workshop]
+    editions:
+      - year: 2026
+        id: b4ti26
+        link: https://bcca-conference.org/2026/Workshops/B4TI.php
+        place: Barcelona, Spain
+        date_text: 'November 16-20, 2026'
+        event_start: '2026-11-16'
+        event_end: '2026-11-20'
+        deadlines:
+          - {kind: paper, label: 'Paper Submission', date: '2026-08-31 23:59:00', tz: UTC}
+          - {kind: notification, label: 'Paper Acceptance Notification', date: '2026-09-15 23:59:00', tz: UTC}
+
+  # -------------------------------------------------------- IIAI (国際会議) --
+  # 根拠: https://iaiai.org/conference/aai2026/ (2026-08-14 取得)
+  - key: iiai-aai
+    title: IIAI AAI
+    full_name: IIAI International Congress on Advanced Applied Informatics
+    link: https://iaiai.org/conference/aai2026/
+    categories: [ai, systems]
+    editions:
+      - year: 2026
+        id: aai2026
+        link: https://iaiai.org/conference/aai2026/
+        place: Fukui, Japan
+        date_text: 'July 12-17, 2026'
+        event_start: '2026-07-12'
+        event_end: '2026-07-17'
+        deadlines:
+          - {kind: paper, label: 'Paper submission', date: '2026-04-30 23:59:59', tz: PST}
+      - year: 2025
+        id: aai2025-winter
+        link: https://iaiai.org/conference/aai2025-winter/
+        place: Phuket, Thailand
+        date_text: 'December 15-17, 2025'
+        event_start: '2025-12-15'
+        event_end: '2025-12-17'
+        deadlines: []
+      - year: 2025
+        id: aai2025
+        link: https://iaiai.org/conference/aai2025/
+        place: Kitakyushu, Japan
+        date_text: 'July 13-19, 2025'
+        event_start: '2025-07-13'
+        event_end: '2025-07-19'
+        deadlines: []
+
+  # ---------------------------------------------------- IEICE / IPSJ 国内学会 --
+  # 根拠: https://www.ipsj.or.jp/event/dicomo/2026/
+  - key: ipsj-dicomo
+    title: DICOMO
+    full_name: マルチメディア、分散、協調とモバイルシンポジウム (DICOMO)
+    link: https://dicomo.org/
+    categories: [networking, systems]
+    tags: [domestic-jp, symposium]
+    editions:
+      - year: 2026
+        id: dicomo2026
+        link: https://dicomo.org/
+        place: Japan
+        date_text: 'July 2026'
+        deadlines: []
+
+  # 根拠: https://www.iwsec.org/css/
+  - key: ipsj-css
+    title: CSS
+    full_name: コンピュータセキュリティシンポジウム (CSS)
+    link: https://www.iwsec.org/css/
+    categories: [security]
+    tags: [domestic-jp, symposium]
+    editions:
+      - year: 2026
+        id: css2026
+        link: https://www.iwsec.org/css/
+        place: Japan
+        date_text: 'October 2026'
+        deadlines: []
+
+  # 根拠: https://www.wiss.org/
+  - key: ipsj-wiss
+    title: WISS
+    full_name: ワークショップ インタラクティブシステムとソフトウェア (WISS)
+    link: https://www.wiss.org/
+    categories: [hci, systems]
+    tags: [domestic-jp, workshop]
+    editions:
+      - year: 2026
+        id: wiss2026
+        link: https://www.wiss.org/
+        place: Japan
+        date_text: 'December 2026'
+        deadlines: []
+
+  # 根拠: https://db-event.jpn.org/deim/
+  - key: ipsj-deim
+    title: DEIM
+    full_name: データ工学と情報マネジメントフォーラム (DEIM)
+    link: https://db-event.jpn.org/deim/
+    categories: [db]
+    tags: [domestic-jp, symposium]
+    editions:
+      - year: 2026
+        id: deim2026
+        link: https://db-event.jpn.org/deim/
+        place: Japan
+        date_text: 'March 2026'
+        deadlines: []
+
+  - key: ipsj-sigsec
+    title: 情報処理学会 CSEC 研究会
+    full_name: 情報処理学会 コンピュータセキュリティ研究会 (CSEC)
+    link: https://www.ipsj.or.jp/kenkyukai/event/csec.html
+    categories: [security]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-csec-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/csec.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ipsj-sigse
+    title: 情報処理学会 SE 研究会
+    full_name: 情報処理学会 ソフトウェア工学研究会 (SE)
+    link: https://www.ipsj.or.jp/kenkyukai/event/se.html
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-se-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/se.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ieice-isec
+    title: 電子情報通信学会 ISEC 研究会
+    full_name: 電子情報通信学会 情報セキュリティ研究会 (ISEC)
+    link: https://www.ieice.org/iss/isec/
+    categories: [security]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-isec-2026
+        link: https://www.ieice.org/iss/isec/
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ieice-sita
+    title: SITA
+    full_name: 情報理論とその応用シンポジウム (SITA)
+    link: https://www.sita.gr.jp/
+    categories: [theory, security]
+    tags: [domestic-jp, symposium]
+    editions:
+      - year: 2026
+        id: sita2026
+        link: https://www.sita.gr.jp/
+        place: Japan
+        date_text: 'December 2026'
+        deadlines: []
+
+  - key: ieice-nolta
+    title: NOLTA
+    full_name: International Symposium on Nonlinear Theory and Its Applications (NOLTA)
+    link: https://www.nolta.org/
+    categories: [theory, systems]
+    editions:
+      - year: 2026
+        id: nolta2026
+        link: https://www.nolta.org/
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ipsj-sigpro
+    title: 情報処理学会 PRO 研究会
+    full_name: 情報処理学会 プログラミング研究会 (PRO)
+    link: https://www.ipsj.or.jp/kenkyukai/event/pro.html
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-pro-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/pro.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ipsj-sigubi
+    title: 情報処理学会 UBI 研究会
+    full_name: 情報処理学会 ユビキタスコンピューティングシステム研究会 (UBI)
+    link: https://www.ipsj.or.jp/kenkyukai/event/ubi.html
+    categories: [hci, networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-ubi-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/ubi.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ipsj-sigemb
+    title: 情報処理学会 EMB 研究会
+    full_name: 情報処理学会 組込みシステム研究会 (EMB)
+    link: https://www.ipsj.or.jp/kenkyukai/event/emb.html
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-emb-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/emb.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ipsj-sigkbs
+    title: 情報処理学会 KBS 研究会
+    full_name: 情報処理学会 知能システム研究会 (KBS)
+    link: https://www.ipsj.or.jp/kenkyukai/event/kbs.html
+    categories: [ai]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ipsj-kbs-2026
+        link: https://www.ipsj.or.jp/kenkyukai/event/kbs.html
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ieice-cys
+    title: 電子情報通信学会 CyS 研究会
+    full_name: 電子情報通信学会 サイバーセキュリティ研究会 (CyS)
+    link: https://www.ieice.org/iss/cys/
+    categories: [security]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-cys-2026
+        link: https://www.ieice.org/iss/cys/
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ieice-rcs
+    title: 電子情報通信学会 RCS 研究会
+    full_name: 電子情報通信学会 無線通信システム研究会 (RCS)
+    link: https://www.ieice.org/cs/rcs/
+    categories: [networking]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-rcs-2026
+        link: https://www.ieice.org/cs/rcs/
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+  - key: ieice-cpsy
+    title: 電子情報通信学会 CPSY 研究会
+    full_name: 電子情報通信学会 コンピュータシステム研究会 (CPSY)
+    link: https://www.ieice.org/cpsy/
+    categories: [systems]
+    tags: [domestic-jp]
+    editions:
+      - year: 2026
+        id: ieice-cpsy-2026
+        link: https://www.ieice.org/cpsy/
+        place: Japan
+        date_text: '2026'
+        deadlines: []
+
+

@@ -7,9 +7,11 @@ conferences:
         - kind: abstract
           label: Abstract submission
           date: '2026-09-30'
+          tz: UTC
         - kind: paper
           label: Paper submission
           date: '2026-09-30'
+          tz: UTC
     _comment: 一次ソース (https://easychair.org/cfp/jornadas-dl2) から自動抽出 (2026-08-10)
   ai4s-2026:
     editions:
@@ -36,6 +38,7 @@ conferences:
         - kind: paper
           label: Paper submission
           date: '2026-08-15'
+          tz: UTC
     _comment: 一次ソース (https://onspatial.github.io/geo-health-2026/) から自動抽出 (2026-08-10)
   geoindustry-2026:
     editions:
@@ -69,14 +72,22 @@ conferences:
   network-flows-2-0:
     editions:
       2026:
+        place: Bethlehem, PA, USA
+        date_text: January 28-29, 2027
+        event_start: '2027-01-28'
+        event_end: '2027-01-29'
         deadlines:
         - kind: abstract
           label: Abstract submission
           date: '2026-09-15'
+          tz: UTC
         - kind: paper
           label: Paper submission
           date: '2026-09-15'
-    _comment: 一次ソース (https://easychair.org/cfp/flowchallenge2) から自動抽出 (2026-08-10)
+          tz: UTC
+    _comment: 一次ソース (https://easychair.org/cfp/flowchallenge2) から自動抽出 (2026-08-10)。
+      会期は公式 https://coral.ise.lehigh.edu/flow-challenge-2-0/schedule/ の
+      「January 28-29, 2027, Challenge workshop」で 2026-08-12 追記。
   polds-2026:
     editions:
       2026:
@@ -84,6 +95,7 @@ conferences:
         - kind: paper
           label: Paper submission
           date: '2026-08-15'
+          tz: UTC
     _comment: 一次ソース (https://iharp.umbc.edu/polds26/) から自動抽出 (2026-08-10)
   setta:
     editions:
@@ -92,6 +104,7 @@ conferences:
         - kind: paper
           label: Paper submission
           date: '2026-05-10'
+          tz: UTC
         link: https://www.setta2026.sg
         place: Singapore
         date_text: December 2-4, 2026
@@ -101,10 +114,14 @@ conferences:
       2026:
         deadlines:
         - kind: paper
-          label: Paper submission
+          label: Application Deadline
           date: '2026-08-21'
           tz: AoE
-    _comment: '一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-10)。2026-08-12 手動更新: 公式「<s>Aug 14</s> Extended! Aug 21」'
+        - kind: notification
+          label: Application Notifications
+          date: '2026-09-09'
+          tz: AoE
+    _comment: '一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-10)。2026-08-12 手動更新: 公式「<s>Aug 14</s> Extended! Aug 21」+ 通知 9/9 (r.jina.ai レンダリングで再確認)'
   wsse-2026:
     editions:
       2026:
@@ -112,4 +129,5 @@ conferences:
         - kind: paper
           label: Paper submission
           date: '2026-08-15'
+          tz: UTC
     _comment: 一次ソース (https://easychair.org/cfp/WSSE2026) から自動抽出 (2026-08-10)
