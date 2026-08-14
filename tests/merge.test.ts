@@ -18,6 +18,7 @@ import {
   select,
 } from "../src/merge.ts";
 import type { Conference, Deadline, Edition } from "../src/model.ts";
+import { parseFile, DEFAULT_PATH } from "../src/sources/local.ts";
 import { makeConference, makeDeadline, makeEdition, REPO_ROOT } from "./helpers.ts";
 
 const TODAY = new Date(Date.UTC(2026, 7, 9));
@@ -929,6 +930,14 @@ describe("select", () => {
     );
     const kept = new Set(select(confs, CONFIG).map((c) => c.key));
     expect(kept).toEqual(new Set(venues));
+  });
+
+  it("keeps every extra.yaml key (venues 名指しは hasDates なしでも残る)", () => {
+    const confs = parseFile(DEFAULT_PATH);
+    expect(confs.length).toBeGreaterThan(0);
+    const kept = new Set(select(confs, CONFIG).map((c) => c.key));
+    const missing = confs.map((c) => c.key).filter((k) => !kept.has(k));
+    expect(missing).toEqual([]);
   });
 });
 
