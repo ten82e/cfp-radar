@@ -18,7 +18,7 @@ import {
   select,
 } from "../src/merge.ts";
 import type { Conference, Deadline, Edition } from "../src/model.ts";
-import { parseFile, DEFAULT_PATH } from "../src/sources/local.ts";
+import { DEFAULT_PATH, parseFile } from "../src/sources/local.ts";
 import { makeConference, makeDeadline, makeEdition, REPO_ROOT } from "./helpers.ts";
 
 const TODAY = new Date(Date.UTC(2026, 7, 9));

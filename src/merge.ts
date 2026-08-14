@@ -690,7 +690,8 @@ export function select(confs: Conference[], config: Record<string, unknown>): Co
     if (categories.length === 0) continue;
     if (!alwaysKeep.has(conf.key) && !rankOk(conf, schemes, keepIfNoRank)) continue;
     // ジャーナル（tags: [journal]）は日付なしでも残す。venues 名指し（alwaysKeep）も同様 — 名指し＝収録意思。
-    if (!alwaysKeep.has(conf.key) && !hasDates(conf) && !(conf.tags ?? []).includes("journal")) continue;
+    if (!alwaysKeep.has(conf.key) && !hasDates(conf) && !(conf.tags ?? []).includes("journal"))
+      continue;
     out.push({ ...conf, categories });
   }
   return out;
