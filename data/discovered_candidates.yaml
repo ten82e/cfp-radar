@@ -21575,3 +21575,44 @@ conferences:
       - niche
       - dbworld
     editions: []
+  - key: jcrt-book-reviews-2027
+    title: jcrt-book-reviews 2027
+    full_name: Call for Book Reviews - Journal for Cultural and Religious Theory
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202686&copyownerid=44597
+    categories:
+      - theory
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: jcrt-book-reviews-202726
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202686&copyownerid=44597
+        place: Online
+        date_text: Aug 31, 2026
+        deadlines: []
+  - key: >-
+      internet-of-agents-for-communications-and-networking-architectures-protocols-and-orchestration-ieee-communications-magazine
+    title: >-
+      Internet of Agents for Communications and Networking: Architectures,
+      Protocols, and Orchestration（IEEE Communications Magazine 特集号）
+    full_name: >-
+      Internet of Agents for Communications and Networking: Architectures,
+      Protocols, and Orchestration（IEEE Communications Magazine 特集号）
+    link: >-
+      https://www.comsoc.org/publications/magazines/ieee-communications-magazine/cfp
+    categories: []
+    tags:
+      - niche
+      - special-issue
+    editions:
+      - year: 2027
+        id: >-
+          internet-of-agents-for-communications-and-networking-architectures-protocols-and-orchestration-ieee-communications-magazine27
+        link: >-
+          https://www.comsoc.org/publications/magazines/ieee-communications-magazine/cfp
+        place: ''
+        date_text: 1 February 2027
+        deadlines: []
