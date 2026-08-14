@@ -206,7 +206,12 @@ export function resolveTz(tzRaw: string | null | undefined): Tz {
     const sign = m[1] === "-" ? -1 : 1;
     const hours = Number(m[2]);
     const minutes = Number(m[3] ?? 0);
-    return { kind: "fixed", offsetMinutes: sign * (hours * 60 + minutes) };
+    // Reject impossible numeric offsets (minute > 59, or |offset| >= 24 h)
+    // instead of silently shifting the deadline; fall through to the
+    // unknown-timezone warning and UTC fallback below.
+    if (hours <= 23 && minutes <= 59) {
+      return { kind: "fixed", offsetMinutes: sign * (hours * 60 + minutes) };
+    }
   }
 
   if (raw.includes("/")) {

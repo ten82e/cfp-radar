@@ -137,6 +137,15 @@ describe("parse_instant", () => {
   it("unparseable does not raise for missing timezone", () => {
     expect(parseInstant("TBD", null)).toBeNull();
   });
+
+  // Issue #31: rejected numeric offsets use UTC and must not throw.
+  it("rejected numeric timezone offset uses UTC and does not throw", () => {
+    resetWarnings();
+    expect(parseInstant("2026-01-15 12:00:00", "UTC+25")?.toISOString()).toBe(
+      "2026-01-15T12:00:00.000Z",
+    );
+    resetWarnings();
+  });
 });
 
 describe("parse_date_range", () => {
