@@ -77,6 +77,34 @@ describe("parse_instant", () => {
     );
   });
 
+  // Issue #28: out-of-range time components must be rejected, not normalized
+  // by Date.UTC (e.g. 00:60 -> 01:00 when the calendar date stays unchanged).
+  it.each([
+    "2026-02-28 00:60:00",
+    "2026-02-28 00:00:60",
+    "2026-02-28 12:99:00",
+    "2026-02-28 12:00:99",
+    "2026-02-28 24:00:00",
+  ])("full-precision invalid time %j returns null", (text) => {
+    expect(parseInstant(text, "UTC")).toBeNull();
+  });
+
+  it.each(["2026-02-28 24:00", "2026-02-28 00:60", "2026-02-28 12:99"])(
+    "minute-precision invalid time %j returns null",
+    (text) => {
+      expect(parseInstant(text, "UTC")).toBeNull();
+    },
+  );
+
+  it.each([
+    ["2026-02-28 00:00", utc(2026, 2, 28, 0, 0, 0).getTime()],
+    ["2026-02-28 23:59", utc(2026, 2, 28, 23, 59, 0).getTime()],
+    ["2026-02-28 23:59:59", utc(2026, 2, 28, 23, 59, 59).getTime()],
+    ["2026-02-28", utc(2026, 2, 28, 23, 59, 59).getTime()],
+  ] as Array<[string, number]>)("valid boundary %j parses unchanged", (text, expected) => {
+    expect(parseInstant(text, "UTC")?.getTime()).toBe(expected);
+  });
+
   // R37 (2026-08-12) の教訓: Interactive HPC (SC26) で「8/15 23:59Z = 8/14 AoE」と
   // 暗算したため収録値が 1 日遅れた。正しくは AoE 8/14 23:59 = 8/15T11:59Z。
   // 表示日比較（"14th" vs "14th"）では 12h ずれを検出できない — utc/aoe 両フィールド
