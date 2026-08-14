@@ -164,6 +164,16 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
       // 含まないことがある。上流障害時の退避配信で修正済み締切が推定値へ巻き戻らないよう、
       // 復元データにも overrides / primary を再適用する。applyOverrides は冪等なので、
       // snapshot が既に overrides 込みのときは値が変わらない（SPEC.md 3.5）。
+      // 同様に local (data/extra.yaml) も上流障害時には読めるため、snapshot 生成後に
+      // extra.yaml へ追加された会議・締切（新規収録・通知締切など）が退避配信から
+      // 消えないよう復元データに再マージする。mergeSources は key/edition で名寄せし、
+      // local は source_priority 最上位なので snapshot 側の古い締切を正しく上書きする。
+      const localGroup = groups[sourceInstances().findIndex((s) => s.name === "local")] ?? [];
+      if (localGroup.length > 0) {
+        confs = mergeSources([localGroup, restored], config, mergeStats);
+        confs = classify(confs, config);
+        confs = sanitizeEditions(confs);
+      }
       confs = applyOverrides(confs, overrides);
       confs = applyOverrides(confs, primary);
       confs = sanitizeEditions(confs);
