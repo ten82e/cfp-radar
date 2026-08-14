@@ -173,6 +173,13 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
         confs = mergeSources([localGroup, restored], config, mergeStats);
         confs = classify(confs, config);
         confs = sanitizeEditions(confs);
+        // mergeSources は追加・上書きのみで削除を表現できない。snapshot に残る
+        // 「sources が local のみ」のキーで extra.yaml に存在しないものは
+        // 削除された会議として除外する（例: ieee-msn 重複削除が snapshot から復活する事故）。
+        const localKeys = new Set(localGroup.map((c) => c.key));
+        confs = confs.filter(
+          (c) => !(c.sources.length === 1 && c.sources[0] === "local" && !localKeys.has(c.key)),
+        );
       }
       confs = applyOverrides(confs, overrides);
       confs = applyOverrides(confs, primary);
