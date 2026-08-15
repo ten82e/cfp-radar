@@ -21,8 +21,6 @@ const UA =
 const BLOCK_RE =
   /<(?:br|\/p|\/div|\/tr|\/td|\/th|\/li|\/h[1-6]|\/section|\/article|\/table|\/ul|\/ol|\/dl)[^>]*>/gi;
 const TAG_RE = /<[^>]+>/g;
-const DATE_RE =
-  /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.? (\d{1,2})(?:st|nd|rd|th)?(?:,)? (\d{4})\b/gi;
 const TZ_RE =
   /\b(PDT|PST|EDT|EST|CDT|CST|MDT|MST|AKDT|AKST|HST|UTC|GMT|CET|CEST|JST|AoE|PT|ET|CT|MT)\b|anywhere on (?:the )?(?:inhabited )?earth/gi;
 const ROUND_RE = /\bround\s*(\d+)\b/gi;
@@ -96,6 +94,48 @@ export interface PrimaryDeadline {
   round?: number;
 }
 
+interface ExtractedDate {
+  year: number;
+  month: number;
+  day: number;
+}
+
+function parsePrimaryDate(window: string): ExtractedDate | null {
+  // 1. Month Day Year: 'May 10, 2026', 'August 16th, 2026', 'Sept. 15, 2026'
+  let m =
+    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,)?\s+(\d{4})\b/i.exec(
+      window,
+    );
+  if (m) {
+    const month = MONTHS[m[1].toLowerCase().slice(0, 3)];
+    const day = Number(m[2]);
+    const year = Number(m[3]);
+    return { year, month, day };
+  }
+  // 2. Day Month Year: '15 May 2026', '16th August 2026', '1st October, 2026'
+  m =
+    /\b(\d{1,2})(?:st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?\s+(\d{4})\b/i.exec(
+      window,
+    );
+  if (m) {
+    const day = Number(m[1]);
+    const month = MONTHS[m[2].toLowerCase().slice(0, 3)];
+    const year = Number(m[3]);
+    return { year, month, day };
+  }
+  // 3. Numeric Year Month Day: '2026-05-10', '2026/05/10', '2026.05.10'
+  m = /\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(window);
+  if (m) {
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return { year, month, day };
+    }
+  }
+  return null;
+}
+
 export function extractDeadline(
   window: string,
   year: number,
@@ -103,13 +143,9 @@ export function extractDeadline(
 ): PrimaryDeadline | null {
   const low = window.toLowerCase();
   if (!low.includes("deadline") && !low.includes("due date")) return null;
-  // グローバル正規表現は lastIndex が残るので毎回リセット (Python の re.search 相当)
-  DATE_RE.lastIndex = 0;
-  const m = DATE_RE.exec(window);
-  if (!m) return null;
-  const month = MONTHS[m[1].toLowerCase().slice(0, 3)];
-  const day = Number(m[2]);
-  const extractedYear = Number(m[3]);
+  const parsed = parsePrimaryDate(window);
+  if (!parsed) return null;
+  const { year: extractedYear, month, day } = parsed;
   if (extractedYear !== year - 1 && extractedYear !== year) return null; // 過去版の残骸を拾わない
   const dt = new Date(Date.UTC(extractedYear, month - 1, day));
   if (dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) return null;
