@@ -74,6 +74,26 @@ describe("fetch-primary extraction", () => {
     expect(got?.tz).toBe("UTC");
   });
 
+  it.each([
+    ["Paper submission deadline: 15 May 2026", 2026, "2026-05-15"],
+    ["Submission due date: 16th August 2026 (AoE)", 2026, "2026-08-16"],
+    ["Abstract deadline: 1st October 2026", 2026, "2026-10-01"],
+    ["Paper deadline: 2026-05-10 23:59 UTC", 2026, "2026-05-10"],
+    ["Paper submission deadline: 2026/08/16", 2026, "2026-08-16"],
+  ])("extracts alternative date formats %j -> %s", (text, year, expectedDate) => {
+    const got = extractDeadline(text, year);
+    expect(got).not.toBeNull();
+    expect(got?.date).toBe(expectedDate);
+  });
+
+  it.each([
+    "Paper submission deadline: 31 April 2026",
+    "Paper submission deadline: 2026-02-30",
+    "Submission due date: February 29, 2026",
+  ])("invalid calendar dates fail closed %j", (text) => {
+    expect(extractDeadline(text, 2026)).toBeNull();
+  });
+
   it("loadYamlFile warns and returns {} on unparsable YAML", () => {
     spyStderr();
     const path = join(mkdtempSync(join(tmpdir(), "cfp-fp-")), "bad.yaml");
