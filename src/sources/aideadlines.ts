@@ -84,17 +84,18 @@ export function rankOf(rankings: unknown): Record<string, string> {
   return rank;
 }
 
-function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
+export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
   const out: Deadline[] = [];
+  const parentTz = String(raw.timezone ?? raw.tz ?? "");
   const entries = raw.deadlines;
   if (Array.isArray(entries)) {
     for (const entry of entries) {
       if (typeof entry !== "object" || entry === null) continue;
       const rec = entry as Record<string, unknown>;
-      const tzRaw = String(rec.timezone ?? "");
+      const tzRaw = String(rec.timezone ?? rec.tz ?? parentTz);
       const at = parseInstant(rec.date, tzRaw);
       if (at === null) continue;
-      const rawType = String(rec.type ?? "");
+      const rawType = String(rec.type ?? rec.kind ?? "");
       const label = String(rec.label ?? rawType);
       out.push({
         kind: kindOf(rawType),
@@ -104,17 +105,16 @@ function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
         // This schema has no round field; the label is the only place a round
         // is ever stated (SPEC.md 3.3).
         round: roundOf(label),
-        comment: null,
+        comment: rec.comment === null || rec.comment === undefined ? null : String(rec.comment),
       });
     }
     return out;
   }
 
-  const tzRaw = String(raw.timezone ?? "");
   for (const [kind, label, key] of LEGACY) {
-    const at = parseInstant(raw[key], tzRaw);
+    const at = parseInstant(raw[key], parentTz);
     if (at !== null) {
-      out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: 1, comment: null });
+      out.push({ kind, label, at_utc: at, tz_raw: parentTz, round: 1, comment: null });
     }
   }
   return out;

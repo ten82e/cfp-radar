@@ -13,7 +13,11 @@ import {
   warn,
   warningCounts,
 } from "../src/model.ts";
-import { editionOf, rankOf } from "../src/sources/aideadlines.ts";
+import {
+  deadlinesOf as aideadlinesDeadlinesOf,
+  editionOf,
+  rankOf,
+} from "../src/sources/aideadlines.ts";
 import {
   conferenceOf as ccfddlConferenceOf,
   deadlinesOf as ccfddlDeadlinesOf,
@@ -643,5 +647,32 @@ describe("local source parsing", () => {
     expect(ed?.event_start?.toISOString().slice(0, 10)).toBe("2026-09-14");
     expect(ed?.deadlines.length).toBe(1);
     expect(ed?.deadlines[0].kind).toBe("paper");
+  });
+});
+
+describe("aideadlines deadlinesOf parsing", () => {
+  it("inherits timezone from parent edition when deadline entry has no timezone", () => {
+    const raw = {
+      tz: "AoE",
+      deadlines: [{ date: "2026-05-15 23:59:00", kind: "paper", comment: "main track" }],
+    };
+    const dls = aideadlinesDeadlinesOf(raw);
+    expect(dls.length).toBe(1);
+    expect(dls[0].kind).toBe("paper");
+    expect(dls[0].tz_raw).toBe("AoE");
+    expect(dls[0].comment).toBe("main track");
+    expect(dls[0].at_utc.toISOString()).toBe("2026-05-16T11:59:00.000Z");
+  });
+
+  it("handles legacy top-level abstract_deadline and deadline with timezone/tz", () => {
+    const raw = {
+      tz: "UTC",
+      deadline: "2026-05-15 23:59:00",
+      abstract_deadline: "2026-05-01 23:59:00",
+    };
+    const dls = aideadlinesDeadlinesOf(raw);
+    expect(dls.length).toBe(2);
+    expect(dls[0].kind).toBe("abstract");
+    expect(dls[1].kind).toBe("paper");
   });
 });
