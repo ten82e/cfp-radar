@@ -13,7 +13,7 @@ import {
   warn,
   warningCounts,
 } from "../src/model.ts";
-import { editionOf } from "../src/sources/aideadlines.ts";
+import { editionOf, rankOf } from "../src/sources/aideadlines.ts";
 import { utc } from "./helpers.ts";
 
 describe("parse_instant", () => {
@@ -478,4 +478,36 @@ describe("roundOf", () => {
       expect(roundOf(label, fallback)).toBe(expected);
     },
   );
+});
+
+describe("aideadlines rankOf", () => {
+  it("parses comma-separated string", () => {
+    expect(rankOf("CCF: A, CORE: A*, THCPL: A")).toEqual({
+      ccf: "A",
+      core: "A*",
+      thcpl: "A",
+    });
+  });
+
+  it("parses object/map rankings from YAML", () => {
+    expect(rankOf({ CCF: "A", core: "A*", CORE: "A*" })).toEqual({
+      ccf: "A",
+      core: "A*",
+    });
+  });
+
+  it("parses array of strings and objects", () => {
+    expect(rankOf(["CCF: A", { core: "A*" }])).toEqual({
+      ccf: "A",
+      core: "A*",
+    });
+  });
+
+  it("handles null, undefined, empty, and malformed values", () => {
+    expect(rankOf(null)).toEqual({});
+    expect(rankOf(undefined)).toEqual({});
+    expect(rankOf("")).toEqual({});
+    expect(rankOf("no colon here, invalid")).toEqual({});
+    expect(rankOf({ ccf: null, core: "" })).toEqual({});
+  });
 });

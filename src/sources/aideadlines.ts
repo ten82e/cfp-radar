@@ -40,10 +40,39 @@ function liftStaleYear(dateText: string, year: number): string {
   return dateText;
 }
 
-/** 'CCF: A, CORE: A*, THCPL: A' -> {ccf: 'A', core: 'A*', ...}. */
-function rankOf(rankings: unknown): Record<string, string> {
+/** 'CCF: A, CORE: A*, THCPL: A' or { ccf: 'A', core: 'A*' } -> {ccf: 'A', core: 'A*', ...}. */
+export function rankOf(rankings: unknown): Record<string, string> {
   const rank: Record<string, string> = {};
   if (!rankings) return rank;
+
+  if (typeof rankings === "object") {
+    if (Array.isArray(rankings)) {
+      for (const item of rankings) {
+        if (typeof item === "string") {
+          const idx = item.indexOf(":");
+          if (idx >= 0) {
+            const name = item.slice(0, idx).trim();
+            const value = item.slice(idx + 1).trim();
+            if (name && value) rank[name.toLowerCase()] = value;
+          }
+        } else if (typeof item === "object" && item !== null) {
+          for (const [k, v] of Object.entries(item as Record<string, unknown>)) {
+            if (v !== null && v !== undefined && String(v).trim()) {
+              rank[k.toLowerCase().trim()] = String(v).trim();
+            }
+          }
+        }
+      }
+      return rank;
+    }
+    for (const [k, v] of Object.entries(rankings as Record<string, unknown>)) {
+      if (v !== null && v !== undefined && String(v).trim()) {
+        rank[k.toLowerCase().trim()] = String(v).trim();
+      }
+    }
+    return rank;
+  }
+
   for (const chunk of String(rankings).split(",")) {
     const idx = chunk.indexOf(":");
     if (idx >= 0) {
