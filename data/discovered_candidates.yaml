@@ -10114,21 +10114,6 @@ conferences:
         place: Parma, Italy
         date_text: Jul 20, 2026
         deadlines: []
-  - key: aq-uasim-v2
-    title: AQ²UASIM-v2
-    full_name: Advancing Quantitative and QUAlitative SIMulators for marine applications
-    link: https://easychair.org/cfp/aquasim_v2-2026
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: aq-uasim-v226
-        link: https://easychair.org/cfp/aquasim_v2-2026
-        place: Pittsburg, Pennsylvania, United States
-        date_text: Aug 18, 2026
-        deadlines: []
   - key: aila2027
     title: AILA2027
     full_name: >-
