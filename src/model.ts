@@ -396,10 +396,16 @@ function monthOf(word: string): number | null {
 }
 
 /** Pull the first month / day / year out of one side of a range. */
-function scan(part: string): { month: number | null; day: number | null; year: number | null } {
+function scan(part: string): {
+  month: number | null;
+  day: number | null;
+  year: number | null;
+  invalidDay: boolean;
+} {
   let month: number | null = null;
   let day: number | null = null;
   let year: number | null = null;
+  let invalidDay = false;
   for (const m of part.matchAll(TOKEN_RE)) {
     const word = m[1];
     const num = m[2];
@@ -411,10 +417,14 @@ function scan(part: string): { month: number | null; day: number | null; year: n
         if (year === null) year = n;
       } else if (n >= 1 && n <= 31 && day === null) {
         day = n;
+      } else if (day === null) {
+        // Explicit but impossible day (0, 32+, 3-digit): fail closed
+        // instead of degrading to a fabricated month-only span.
+        invalidDay = true;
       }
     }
   }
-  return { month, day, year };
+  return { month, day, year, invalidDay };
 }
 
 function mkdate(year: number, month: number, day: number): Date | null {
@@ -453,11 +463,13 @@ export function parseDateRange(
 
   const m1 = scan(parts[0]);
   if (parts.length === 1) {
-    if (m1.month === null) {
+    if (m1.month === null || m1.invalidDay) {
       // A standalone four-digit year is an intentional year-only value
       // (e.g. data/extra.yaml IPSJ/IEICE editions whose exact dates are
-      // not published): keep the null pair silently.
-      if (!/^\d{4}$/.test(s)) {
+      // not published): keep the null pair silently.  An impossible day
+      // (0, 32+, 3-digit) is not: fail closed instead of fabricating a
+      // month-only span.
+      if (!m1.invalidDay && !/^\d{4}$/.test(s)) {
         warn(`unparsable event date ${JSON.stringify(String(text))}`);
       }
       return [null, null];
@@ -474,7 +486,7 @@ export function parseDateRange(
   const m2 = scan(parts[1]);
   const m1m = m1.month ?? m2.month;
   const m2m = m2.month ?? m1m;
-  if (m1m === null || m2m === null) {
+  if (m1m === null || m2m === null || m1.invalidDay || m2.invalidDay) {
     warn(`unparsable event date ${JSON.stringify(String(text))}`);
     return [null, null];
   }

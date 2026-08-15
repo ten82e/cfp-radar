@@ -218,6 +218,17 @@ describe("parse_date_range", () => {
     expect(e3?.toISOString().slice(0, 10)).toBe("2025-10-16");
   });
 
+  it.each([
+    "September 32, 2026",
+    "September 0, 2026",
+    "Sept 99, 2026",
+    "March 32 - April, 2025",
+    "August 32 - September 2, 2026",
+  ])("impossible day %j fails closed to null pair", (text) => {
+    const fallbackYear = 2026;
+    expect(parseDateRange(text, fallbackYear)).toEqual([null, null]);
+  });
+
   it("month only spans the whole month", () => {
     const [s1, e1] = parseDateRange("November, 2026", 2026);
     expect(s1?.toISOString().slice(0, 10)).toBe("2026-11-01");
