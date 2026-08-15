@@ -23,37 +23,77 @@ export const REF = "main";
 export const NAME = "ccfddl";
 
 // 'abstract deadline' (with a space) exists once upstream.
-const ABSTRACT_KEYS = ["abstract_deadline", "abstract deadline"];
+const ABSTRACT_KEYS = ["abstract_deadline", "abstract deadline", "abstract"];
+const PAPER_KEYS = [
+  "deadline",
+  "paper_deadline",
+  "submission_deadline",
+  "paper deadline",
+  "submission deadline",
+];
 
-function deadlinesOf(timeline: unknown, tzRaw: string): Deadline[] {
+function extractCandidate(rec: Record<string, unknown>, keys: string[]): unknown {
+  for (const key of keys) {
+    if (rec[key] !== null && rec[key] !== undefined && String(rec[key]).trim() !== "") {
+      return rec[key];
+    }
+  }
+  return null;
+}
+
+export function deadlinesOf(
+  timeline: unknown,
+  tzRaw: string,
+  rawEdition?: Record<string, unknown>,
+): Deadline[] {
   const out: Deadline[] = [];
-  for (const [index, entry] of ((timeline as unknown[] | null) ?? []).entries()) {
-    if (typeof entry !== "object" || entry === null) continue;
-    const rec = entry as Record<string, unknown>;
-    const rnd = index + 1;
-    const comment = rec.comment === null || rec.comment === undefined ? null : String(rec.comment);
-    let rawAbstract: unknown = null;
-    for (const key of ABSTRACT_KEYS) {
-      if (rec[key] !== null && rec[key] !== undefined) {
-        rawAbstract = rec[key];
-        break;
+  if (Array.isArray(timeline) && timeline.length > 0) {
+    for (const [index, entry] of timeline.entries()) {
+      if (typeof entry !== "object" || entry === null) continue;
+      const rec = entry as Record<string, unknown>;
+      const rnd = index + 1;
+      const comment =
+        rec.comment === null || rec.comment === undefined ? null : String(rec.comment);
+      const rawAbstract = extractCandidate(rec, ABSTRACT_KEYS);
+      const rawPaper = extractCandidate(rec, PAPER_KEYS);
+      const candidates: Array<[DeadlineKind, string, unknown]> = [
+        ["abstract", "Abstract submission", rawAbstract],
+        ["paper", "Paper submission", rawPaper],
+      ];
+      for (const [kind, label, raw] of candidates) {
+        if (raw === null || raw === undefined) continue;
+        const at = parseInstant(raw, tzRaw);
+        if (at === null) continue;
+        out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: rnd, comment });
       }
     }
+    if (out.length > 0) return out;
+  }
+
+  // Fallback to top-level rawEdition properties if timeline is absent or yielded no deadlines
+  if (rawEdition && typeof rawEdition === "object") {
+    const comment =
+      rawEdition.comment === null || rawEdition.comment === undefined
+        ? null
+        : String(rawEdition.comment);
+    const rawAbstract = extractCandidate(rawEdition, ABSTRACT_KEYS);
+    const rawPaper = extractCandidate(rawEdition, PAPER_KEYS);
     const candidates: Array<[DeadlineKind, string, unknown]> = [
       ["abstract", "Abstract submission", rawAbstract],
-      ["paper", "Paper submission", rec.deadline],
+      ["paper", "Paper submission", rawPaper],
     ];
     for (const [kind, label, raw] of candidates) {
       if (raw === null || raw === undefined) continue;
       const at = parseInstant(raw, tzRaw);
       if (at === null) continue;
-      out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: rnd, comment });
+      out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: 1, comment });
     }
   }
+
   return out;
 }
 
-function editionOf(raw: Record<string, unknown>): Edition | null {
+export function editionOf(raw: Record<string, unknown>): Edition | null {
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`ccfddl edition without a usable year: ${JSON.stringify(raw.id)}`);
@@ -70,13 +110,13 @@ function editionOf(raw: Record<string, unknown>): Edition | null {
     date_text: dateText,
     event_start: start,
     event_end: end,
-    deadlines: deadlinesOf(raw.timeline, tzRaw),
+    deadlines: deadlinesOf(raw.timeline, tzRaw, raw),
     estimated: false,
     source: NAME,
   };
 }
 
-function conferenceOf(raw: Record<string, unknown>): Conference | null {
+export function conferenceOf(raw: Record<string, unknown>): Conference | null {
   const title = String(raw.title ?? "").trim();
   if (!title) return null;
   const editions = ((raw.confs as unknown[] | null) ?? [])
