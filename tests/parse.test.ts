@@ -229,6 +229,40 @@ describe("parse_date_range", () => {
     expect(parseDateRange(text, fallbackYear)).toEqual([null, null]);
   });
 
+  it.each(["September 31, 2026", "February 29, 2026", "April 31, 2026"])(
+    "impossible calendar date %j fails closed and warns",
+    (text) => {
+      resetWarnings();
+      expect(parseDateRange(text, 2026)).toEqual([null, null]);
+      expect(warningCounts()[`unparsable event date ${JSON.stringify(text)}`]).toBe(1);
+      resetWarnings();
+    },
+  );
+
+  it("valid single date parses without warning", () => {
+    resetWarnings();
+    const [start, end] = parseDateRange("September 30, 2026", 2026);
+    expect(start?.toISOString().slice(0, 10)).toBe("2026-09-30");
+    expect(end?.toISOString().slice(0, 10)).toBe("2026-09-30");
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
+
+  it("range with impossible start still warns", () => {
+    resetWarnings();
+    expect(parseDateRange("September 31 - October 2, 2026", 2026)).toEqual([null, null]);
+    expect(warningCounts()[`unparsable event date "September 31 - October 2, 2026"`]).toBe(1);
+    resetWarnings();
+  });
+
+  it("bare year and out-of-range day remain silent (regression #47/#48, #75)", () => {
+    resetWarnings();
+    expect(parseDateRange("2026", 2026)).toEqual([null, null]);
+    expect(parseDateRange("Sept 99, 2026", 2026)).toEqual([null, null]);
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
+
   it("month only spans the whole month", () => {
     const [s1, e1] = parseDateRange("November, 2026", 2026);
     expect(s1?.toISOString().slice(0, 10)).toBe("2026-11-01");
