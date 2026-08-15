@@ -3567,4 +3567,24 @@ conferences:
         date_text: '2026'
         deadlines: []
 
+  # ---------------- NAIIC6 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://www.ntnu.edu/norwai/norwai-innovate-2026 (2026-08-15 取得)
+  #   NorwAI Innovate 2026 は Trondheim で September 29-30, 2026 開催。
+  #   EasyChair CFP (https://easychair.org/cfp/NAIIC6) の Aug 16, 2026 は提出締切
+  #   だが、時刻・タイムゾーンの公式記載がないため deadlines は空のまま。
+  - key: naiic6
+    title: NAIIC6
+    full_name: NorwAI Innovate Conference - 2026
+    link: https://www.ntnu.edu/norwai/norwai-innovate-2026
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: naiic6-2026
+        link: https://www.ntnu.edu/norwai/norwai-innovate-2026
+        place: Trondheim, Norway
+        date_text: September 29-30, 2026
+        event_start: '2026-09-29'
+        event_end: '2026-09-30'
+        deadlines: []
+
 

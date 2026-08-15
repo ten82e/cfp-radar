@@ -9116,21 +9116,6 @@ conferences:
         place: Nanchang, China
         date_text: Dec 25, 2026
         deadlines: []
-  - key: naiic6
-    title: NAIIC6
-    full_name: NorwAI Innovate Conference - 2026
-    link: https://easychair.org/cfp/NAIIC6
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: naiic626
-        link: https://easychair.org/cfp/NAIIC6
-        place: Trondheim, Norway
-        date_text: Aug 16, 2026
-        deadlines: []
   - key: aissh-26
     title: AISSH-26
     full_name: Aligning AI for Safety, Sustainability, and Humanity
