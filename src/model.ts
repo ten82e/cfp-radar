@@ -304,25 +304,28 @@ interface Naive {
   h: number;
   min: number;
   s: number;
+  ms: number;
 }
 
-/** 'YYYY-MM-DD[ HH:MM[:SS]]' (after 'T' -> ' ' and trailing 'Z' stripping). */
+/** 'YYYY-MM-DD[ HH:MM[:SS[.sss]]]' (after 'T' -> ' ' and trailing 'Z' stripping). */
 function parseNaive(s: string): Naive | null {
-  let m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s);
+  let m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?$/.exec(s);
   if (m) {
+    const rawFrac = m[7] ?? "";
+    const ms = rawFrac ? Number(rawFrac.slice(0, 3).padEnd(3, "0")) : 0;
     return validTime(+m[4], +m[5], +m[6])
-      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: +m[6] }
+      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: +m[6], ms }
       : null;
   }
   m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(s);
   if (m) {
     return validTime(+m[4], +m[5], 0)
-      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: 0 }
+      ? { y: +m[1], m: +m[2], d: +m[3], h: +m[4], min: +m[5], s: 0, ms: 0 }
       : null;
   }
   m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (m) {
-    return { y: +m[1], m: +m[2], d: +m[3], h: 23, min: 59, s: 59 };
+    return { y: +m[1], m: +m[2], d: +m[3], h: 23, min: 59, s: 59, ms: 0 };
   }
   return null;
 }
@@ -333,7 +336,7 @@ function validTime(h: number, min: number, s: number): boolean {
 }
 
 function naiveToMs(n: Naive): number | null {
-  const ms = Date.UTC(n.y, n.m - 1, n.d, n.h, n.min, n.s);
+  const ms = Date.UTC(n.y, n.m - 1, n.d, n.h, n.min, n.s, n.ms);
   const check = new Date(ms);
   if (
     check.getUTCFullYear() !== n.y ||

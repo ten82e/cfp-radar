@@ -105,6 +105,29 @@ describe("parse_instant", () => {
     expect(parseInstant(text, "UTC")?.getTime()).toBe(expected);
   });
 
+  it.each([
+    ["2026-04-08T23:59:00.000Z", "UTC", "2026-04-08T23:59:00.000Z"],
+    ["2026-04-08T23:59:00.123Z", "UTC", "2026-04-08T23:59:00.123Z"],
+    ["2026-04-08T23:59:00.5Z", "UTC", "2026-04-08T23:59:00.500Z"],
+    ["2026-04-08 23:59:00.123", "UTC", "2026-04-08T23:59:00.123Z"],
+    ["2026-04-08 23:59:00.123456", "UTC", "2026-04-08T23:59:00.123Z"],
+    ["2026-04-08T23:59:00.000Z", "AoE", "2026-04-09T11:59:00.000Z"],
+  ] as Array<[string, string, string]>)(
+    "parses ISO timestamp with fractional seconds: %s %s -> %s",
+    (text, tz, expected) => {
+      expect(parseInstant(text, tz)?.toISOString()).toBe(expected);
+    },
+  );
+
+  it.each([
+    "2026-02-28 24:00:00.000",
+    "2026-02-28 12:60:00.000",
+    "2026-02-28 12:00:60.000",
+    "2026-02-30 12:00:00.000",
+  ])("invalid time with fractional seconds %j returns null", (text) => {
+    expect(parseInstant(text, "UTC")).toBeNull();
+  });
+
   // R37 (2026-08-12) の教訓: Interactive HPC (SC26) で「8/15 23:59Z = 8/14 AoE」と
   // 暗算したため収録値が 1 日遅れた。正しくは AoE 8/14 23:59 = 8/15T11:59Z。
   // 表示日比較（"14th" vs "14th"）では 12h ずれを検出できない — utc/aoe 両フィールド
