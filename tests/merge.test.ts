@@ -873,8 +873,23 @@ describe("select", () => {
         }),
       ],
     });
-    const kept = new Set(select([bare, linkOnly, dated], CONFIG).map((c) => c.key));
-    expect(kept).toEqual(new Set(["p4-workshop"]));
+    const endOnly = makeConference({
+      key: "end-only-conf",
+      title: "End Only Conf",
+      categories: ["networking"],
+      sources: ["local"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "eoc26",
+          event_start: null,
+          event_end: new Date(Date.UTC(2026, 9, 15)),
+          source: "local",
+        }),
+      ],
+    });
+    const kept = new Set(select([bare, linkOnly, dated, endOnly], CONFIG).map((c) => c.key));
+    expect(kept).toEqual(new Set(["p4-workshop", "end-only-conf"]));
   });
 
   it("keeps taxonomy venues despite low rank", () => {
@@ -1000,6 +1015,29 @@ describe("sanitize_editions", () => {
     expect(ed.event_start?.toISOString().slice(0, 10)).toBe("2026-08-17");
     expect(ed.event_end?.toISOString().slice(0, 10)).toBe("2026-08-21");
     expect(ed.deadlines.length).toBe(1);
+  });
+
+  it("drops paper after event start when event_end is null", () => {
+    const conf = makeConference({
+      key: "one-day-symposium",
+      title: "One Day Symposium",
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "ods26",
+          event_start: utc(2026, 5, 10, 0, 0, 0),
+          event_end: null,
+          deadlines: [
+            makeDeadline("paper", "Valid Paper Submission", utc(2026, 3, 1, 23, 59, 59)),
+            makeDeadline("paper", "Invalid Late Submission", utc(2026, 6, 1, 23, 59, 59)),
+            makeDeadline("notification", "Notification", utc(2026, 4, 1, 23, 59, 59)),
+          ],
+        }),
+      ],
+    });
+    const out = sanitizeEditions([conf])[0];
+    const deadlines = out.editions[0].deadlines;
+    expect(deadlines.map((d) => d.label)).toEqual(["Valid Paper Submission", "Notification"]);
   });
 });
 

@@ -437,16 +437,17 @@ export function applyOverrides(
   return out;
 }
 
-/** Drop paper/abstract deadlines that fall after the meeting ends. */
+/** Drop paper/abstract deadlines that fall after the meeting ends (or starts, if event_end is null). */
 export function sanitizeEditions(confs: Conference[]): Conference[] {
   return confs.map((conf) => ({
     ...conf,
     editions: conf.editions.map((edition) => {
-      if (edition.event_end === null || edition.deadlines.length === 0) return edition;
+      const meetingEnd = edition.event_end ?? edition.event_start;
+      if (meetingEnd === null || edition.deadlines.length === 0) return edition;
       const kept = edition.deadlines.filter(
         (d) =>
           !(d.kind === "paper" || d.kind === "abstract") ||
-          dateOnly(d.at_utc).getTime() <= dateOnly(edition.event_end!).getTime(),
+          dateOnly(d.at_utc).getTime() <= dateOnly(meetingEnd).getTime(),
       );
       if (kept.length === edition.deadlines.length) return edition;
       return { ...edition, deadlines: kept };
@@ -698,7 +699,9 @@ export function select(confs: Conference[], config: Record<string, unknown>): Co
 }
 
 function hasDates(conf: Conference): boolean {
-  return conf.editions.some((ed) => ed.deadlines.length > 0 || ed.event_start !== null);
+  return conf.editions.some(
+    (ed) => ed.deadlines.length > 0 || ed.event_start !== null || ed.event_end !== null,
+  );
 }
 
 function rankOk(
