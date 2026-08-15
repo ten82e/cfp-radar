@@ -12411,21 +12411,6 @@ conferences:
         place: Kitakyushu, Japan
         date_text: Jul 26, 2026
         deadlines: []
-  - key: icai-26
-    title: ICAI'26
-    full_name: IEEE International Conference Automatics and Informatics 2026
-    link: https://easychair.org/cfp/ICAI-26
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: icai-2626
-        link: https://easychair.org/cfp/ICAI-26
-        place: Varna, Bulgaria
-        date_text: Aug 16, 2026
-        deadlines: []
   - key: ieee-ica-2026
     title: IEEE ICA 2026
     full_name: 2026 IEEE International Conference on Agentic AI
