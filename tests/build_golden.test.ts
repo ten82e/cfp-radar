@@ -559,6 +559,52 @@ it("coincident deadlines get distinguishable titles", async () => {
   expect(upcoming).toContain("論文締切: Posters deadline");
 });
 
+it("title ending with the edition year is not duplicated in SUMMARY/upcoming", async () => {
+  const at = utc(2026, 12, 1, 22, 0, 0);
+  const confs = [
+    makeConference({
+      key: "canopie-hpc-2026",
+      title: "CANOPIE-HPC 2026",
+      categories: ["hpc"],
+      sources: ["aideadlines"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "canopie-hpc-2026-2026",
+          source: "aideadlines",
+          deadlines: [makeDeadline("paper", "Submission", at)],
+        }),
+      ],
+    }),
+    // タイトルに年が無い会議は従来どおり「タイトル + 年」
+    makeConference({
+      key: "plain-conf",
+      title: "PLAIN",
+      categories: ["hpc"],
+      sources: ["aideadlines"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "plain-conf-2026",
+          source: "aideadlines",
+          deadlines: [makeDeadline("paper", "Submission", utc(2026, 12, 2, 22, 0, 0))],
+        }),
+      ],
+    }),
+  ];
+  const outdir = mkdtempSync(join(tmpdir(), "cfp-yeardup-"));
+  await buildAll(confs, { categories: { hpc: "HPC" } }, outdir, NOW, { noEmbeddings: true });
+  const summaries = summariesOf(readFileSync(join(outdir, "all.ics"), "utf8"));
+  // 年が二重にならない（CANOPIE-HPC 2026 2026 は不可）、年なしタイトルは年が付く
+  expect(summaries.some((s) => s.startsWith("CANOPIE-HPC 2026 論文締切"))).toBe(true);
+  expect(summaries.some((s) => s.startsWith("CANOPIE-HPC 2026 2026"))).toBe(false);
+  expect(summaries.some((s) => s.startsWith("PLAIN 2026 論文締切"))).toBe(true);
+  const upcoming = readFileSync(join(outdir, "upcoming.md"), "utf8");
+  expect(upcoming).toContain("[CANOPIE-HPC 2026](http");
+  expect(upcoming).not.toContain("[CANOPIE-HPC 2026 2026]");
+  expect(upcoming).toContain("[PLAIN 2026](");
+});
+
 it("embeddingsStale はキー集合の一致で判定する（数比較の穴）", () => {
   // venuePapersHash は実データ依存のため、実ハッシュを入れてキー集合の
   // 比較だけを検証する（ハッシュ差分は R29 の別検証でカバー）。

@@ -677,6 +677,12 @@ footer a:hover { text-decoration: underline; }
     return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
   }
 
+  // タイトル + 開催年。タイトルが既にその年で終わっていれば年を二重に付けない (#93)。
+  function titleWithYear(title, year) {
+    var t = String(title || "").trim();
+    return year && !t.endsWith(String(year)) ? t + " " + year : t;
+  }
+
   // Toast Notify
   window.copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -732,7 +738,7 @@ footer a:hover { text-decoration: underline; }
   // Drawer Controls
   window.openDrawer = (r) => {
     $("drawerBackdrop").classList.add("active");
-    $("drawerTitle").textContent = (r.conf.title || r.conf.key) + " " + (r.ed.year || "");
+    $("drawerTitle").textContent = titleWithYear(r.conf.title || r.conf.key, r.ed.year);
     $("drawerFullName").textContent = r.conf.full_name || "";
 
     var html = '<div style="background: var(--chip); padding: 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px;">' +
@@ -1179,7 +1185,7 @@ footer a:hover { text-decoration: underline; }
     var c2 = td(tr, "会議");
     var head = document.createElement("div");
     head.className = "conf";
-    var name = (r.conf.title || r.conf.key || "") + " " + (r.ed.year || "");
+    var name = titleWithYear(r.conf.title || r.conf.key || "", r.ed.year);
     var href = r.ed.link || r.conf.link;
     if (href) {
       var a = document.createElement("a");
