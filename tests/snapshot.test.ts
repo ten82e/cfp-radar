@@ -14,7 +14,7 @@ import {
 import { join } from "node:path";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { type BuildArgs, cmdBuild, hooks, parseNow, setRoot } from "../src/cli.ts";
+import { type BuildArgs, cmdBuild, hooks, main, parseArgs, parseNow, setRoot } from "../src/cli.ts";
 import { fmtUTC } from "../src/model.ts";
 import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
 
@@ -67,6 +67,50 @@ describe("parseNow (CLI --now boundary)", () => {
 
   it.each(["2026-13-01T00:00:00Z", "not-a-date"])("garbage %s still throws", (text) => {
     expect(() => parseNow(text)).toThrow("unparsable --now");
+  });
+});
+
+describe("parseArgs (CLI flag parsing)", () => {
+  it("parses positional command and standard flags", () => {
+    const res = parseArgs(["build", "--out", "dist", "--config", "conf.yaml", "--offline"]);
+    expect(res.command).toBe("build");
+    expect(res.out).toBe("dist");
+    expect(res.config).toBe("conf.yaml");
+    expect(res.offline).toBe(true);
+  });
+
+  it("parses --flag=value equal-joined arguments", () => {
+    const res = parseArgs([
+      "build",
+      "--out=dist/public",
+      "--config=custom.yaml",
+      "--now=2026-08-09T00:00:00Z",
+      "--cache=.custom_cache",
+      "--categories=hpc,systems",
+      "--min-year=2027",
+    ]);
+    expect(res.command).toBe("build");
+    expect(res.out).toBe("dist/public");
+    expect(res.config).toBe("custom.yaml");
+    expect(res.now).toBe("2026-08-09T00:00:00Z");
+    expect(res.cache).toBe(".custom_cache");
+    expect(res.categories).toBe("hpc,systems");
+    expect(res.minYear).toBe(2027);
+  });
+
+  it.each([["--help"], ["-h"], ["help"]])("parses help forms %j", (arg) => {
+    expect(parseArgs([arg]).help).toBe(true);
+  });
+
+  it("throws on unknown flags", () => {
+    expect(() => parseArgs(["--invalid-option"])).toThrow("unknown option: --invalid-option");
+    expect(() => parseArgs(["--bad=value"])).toThrow("unknown option: --bad=value");
+  });
+
+  it("main returns 0 on help", async () => {
+    expect(await main(["node", "cli.ts", "--help"])).toBe(0);
+    expect(await main(["node", "cli.ts", "-h"])).toBe(0);
+    expect(await main(["node", "cli.ts", "help"])).toBe(0);
   });
 });
 
