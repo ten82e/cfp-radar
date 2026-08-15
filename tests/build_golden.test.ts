@@ -9,7 +9,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
-import { buildAll, embeddingsStale } from "../src/build.ts";
+import {
+  buildAll,
+  embeddingsStale,
+  recordsOf,
+  toCsv,
+  toJson,
+  toLlmsTxt,
+  toUpcomingMd,
+} from "../src/build.ts";
 import { venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
@@ -796,4 +804,43 @@ it("upcoming.md window honors config site.upcoming_days", async () => {
   // llms.txt の説明も設定値に一致する
   const llms = readFileSync(join(outdir, "llms.txt"), "utf8");
   expect(llms).toContain("直近 60 日の締切と開催の表");
+});
+
+it("toUpcomingMd formats sub-hour remaining times as minutes and sub-day as hours", () => {
+  const confs = [
+    makeConference({
+      key: "urgent",
+      title: "URGENT",
+      categories: ["systems"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "urgent26",
+          deadlines: [
+            makeDeadline("paper", "Paper", new Date(NOW.getTime() + 45 * 60_000)), // +45min
+            makeDeadline("abstract", "Abstract", new Date(NOW.getTime() + 3 * 3_600_000)), // +3h
+            makeDeadline("notification", "Notification", new Date(NOW.getTime() + 2 * 86_400_000)), // +2d
+          ],
+        }),
+      ],
+    }),
+  ];
+  const recs = recordsOf(confs);
+  const md = toUpcomingMd(recs, NOW, 30);
+  expect(md).toContain("| 45分 |");
+  expect(md).toContain("| 3時間 |");
+  expect(md).toContain("| 2日 |");
+});
+
+it("toUpcomingMd outputs fallback row when no upcoming deadlines match", () => {
+  const md = toUpcomingMd([], NOW, 30);
+  expect(md).toContain("| - | - | 該当なし | - | - | - | - |");
+});
+
+it("toLlmsTxt documents feeds and categories correctly", () => {
+  const text = toLlmsTxt("https://conf-deadlines.github.io", [["all.ics", "全フィード"]], {
+    categories: { systems: "Systems" },
+  });
+  expect(text).toContain("https://conf-deadlines.github.io/all.ics — 全フィード");
+  expect(text).toContain("実在値: systems");
 });
