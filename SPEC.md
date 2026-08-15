@@ -23,6 +23,11 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.6（upcoming.md の窓を設定可能に）。** `config.yaml` の `site.upcoming_days`
+（既定 180）を `upcoming.md` の窓として実際に読むようにした。宣言のみで読まれず
+常に 180 日で固定されていた契約バグ（#95）を解消し、`llms.txt` の説明も同じ値に
+合わせた（§4）。実装・テスト固定は `src/build.ts` と `tests/build_golden.test.ts`。
+
 **rev.5（UI 期間窓の契約整合）。** 「締切直近 (7日以内)」プリセットがラベルと
 裏腹に 30 日窓（`win=30d`）で動作していた不一致（`9bbeabf` 由来）を解消し、
 7 日窓（`win=7d`）を期間ドロップダウンに追加した（§7）。実装・テスト固定は
@@ -576,7 +581,7 @@ node --experimental-strip-types src/cli.ts build [--out public] [--config config
 | `hpc-estimated.ics` `networking-estimated.ics` `systems-estimated.ics` `ai-estimated.ics` `security-estimated.ics` `db-estimated.ics` `graphics-estimated.ics` `hci-estimated.ics` `theory-estimated.ics` | 推定締切のカテゴリ別 |
 | `data.json` | 正規化データ全体（機械可読の正）。**推定版も含む** |
 | `data.csv` | 1 行 1 締切のフラット表。**推定版も含み `estimated` 列で区別** |
-| `upcoming.md` | 直近 180 日の締切と開催の表。推定行は「推定」列で区別する |
+| `upcoming.md` | 直近 N 日の締切と開催の表（N は `config.yaml` の `site.upcoming_days`、既定 180）。推定行は「推定」列で区別する |
 | `llms.txt` | エージェント向け索引 |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
@@ -592,12 +597,14 @@ Euro-Par・CCGRID・ICS・PACT・SPAA・ICPADS は上流が次回版を持たず
 サイトに埋め込む JSON は `data.json` と同一（推定を含む）。
 §7 の「推定の表示切替」はサイト側の絞り込みで行う。
 
-**`upcoming.md` の行の選び方**: 締切行は `at_utc` が `now` から 180 日以内のもの。
-開催行は**開始日が 180 日以内**で、かつ**最終日をまだ過ぎていない**もの
-（開催は終了日 + 1 日で過去になる）。README が最初に
-案内する表なので、締切を持たない会議（HOTI・P4 Workshop・LPC・情報処理学会 HPC 研究会など）
-がここに現れないと事実上どこからも見えない。開催行の「残り」欄は
-開始前が日数、開始日が `本日開催`、会期中が `開催中(残りN日)`（当日を含めた残り日数）。
+**`upcoming.md` の行の選び方**: 締切行は `at_utc` が `now` から N 日以内のもの。
+開催行は**開始日が N 日以内**で、かつ**最終日をまだ過ぎていない**もの
+（開催は終了日 + 1 日で過去になる）。N は `config.yaml` の `site.upcoming_days`
+（既定 180）で、`upcoming.md` のヘッダと `llms.txt` の説明は N を表示する。
+README が最初に案内する表なので、締切を持たない会議（HOTI・P4 Workshop・LPC・
+情報処理学会 HPC 研究会など）がここに現れないと事実上どこからも見えない。開催行の
+「残り」欄は開始前が日数、開始日が `本日開催`、会期中が `開催中(残りN日)`
+（当日を含めた残り日数）。
 
 ### 4.1 ICS の要求（担当C）
 

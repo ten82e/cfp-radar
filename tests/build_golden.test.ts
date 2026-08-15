@@ -752,3 +752,45 @@ it("two meetings in one year get distinct event UIDs", () => {
   expect(uids.has("sigcomm-2026-event@conf-deadlines.github.io")).toBe(true);
   expect(uids.has("sigcomm-2026-event-1@conf-deadlines.github.io")).toBe(false);
 });
+
+it("upcoming.md window honors config site.upcoming_days", async () => {
+  const confs = [
+    makeConference({
+      key: "win60",
+      title: "WIN60",
+      categories: ["hpc"],
+      sources: ["local"],
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "win6026",
+          source: "local",
+          deadlines: [
+            makeDeadline("paper", "paper", utc(2026, 8, 20)), // +11d: inside a 60d window
+          ],
+        }),
+        makeEdition({
+          year: 2026,
+          edition_id: "win6026b",
+          source: "local",
+          deadlines: [
+            makeDeadline("paper", "paper", utc(2026, 11, 15)), // +98d: inside 180d, outside 60d
+          ],
+        }),
+      ],
+    }),
+  ];
+  const outdir = mkdtempSync(join(tmpdir(), "cfp-win-"));
+  await buildAll(confs, { categories: { hpc: "HPC" }, site: { upcoming_days: 60 } }, outdir, NOW, {
+    noEmbeddings: true,
+  });
+  const text = readFileSync(join(outdir, "upcoming.md"), "utf8");
+  // ヘッダは設定値を表示する
+  expect(text).toContain("# 直近 60 日の締切と開催");
+  // 60 日以内の締切は残り、60 日超は窓から落ちる
+  expect(text).toContain("WIN60");
+  expect(text).not.toContain("2026-11-15");
+  // llms.txt の説明も設定値に一致する
+  const llms = readFileSync(join(outdir, "llms.txt"), "utf8");
+  expect(llms).toContain("直近 60 日の締切と開催の表");
+});
