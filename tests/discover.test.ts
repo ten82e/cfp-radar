@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   cleanDbworldTitle,
   deadlineIsFuture,
+  easyChairEntriesFromRows,
   extractDeadlinesFromText,
   formatDiscoveredYaml,
   inDomain,
@@ -19,8 +20,9 @@ import {
   parseIeiceCfpHtml,
   parseIpsjCfpHtml,
   parseWikiCfpHtml,
+  toYamlDict,
 } from "../src/discover.ts";
-import { isPredatory, normTitle } from "../src/review-candidates.ts";
+import { isPredatory, normTitle, reviewDeadlineText } from "../src/review-candidates.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 const utcDate = (y: number, m: number, d: number): Date => new Date(Date.UTC(y, m - 1, d));
@@ -179,6 +181,90 @@ describe("parseEasyChairCfpHtml", () => {
     expect(items[0].topics).toEqual(["network"]);
     expect(items[0].url).toBe("https://easychair.org/cfp/medchiconnect2026");
     expect(items[1].start).toBe("Feb 21, 2027");
+  });
+});
+
+describe("EasyChair event date vs submission deadline", () => {
+  it("serializes the event date as edition date_text and keeps the deadline for review", () => {
+    const html = `<tbody>
+<tr><td><a href="/cfp/iceta2026">ICETA 2026</a></td><td>Int. Conf. on Secure Network Systems</td><td>Slovakia</td><td>Aug 16, 2026</td><td>Nov 9-11, 2026</td><td></td></tr>
+</tbody>`;
+    const rows = parseEasyChairCfpHtml(html);
+    expect(rows.length).toBe(1);
+    expect(rows[0].date_text).toBe("Aug 16, 2026"); // 4 列目: 提出締切
+    expect(rows[0].start).toBe("Nov 9-11, 2026"); // 5 列目: 開催日
+    const entries = easyChairEntriesFromRows(rows, 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].date_text).toBe("Nov 9-11, 2026");
+    expect(entries[0].submission_deadline_text).toBe("Aug 16, 2026");
+
+    const cand = makeCandidate({
+      key: String(entries[0].key),
+      title: String(entries[0].title),
+      full_name: String(entries[0].full_name),
+      link: String(entries[0].link),
+      categories: entries[0].categories as string[],
+      tags: ["niche", "easychair"],
+      source_type: String(entries[0].source_type),
+      date_text: String(entries[0].date_text),
+      submission_deadline_text: String(entries[0].submission_deadline_text),
+      place: String(entries[0].place),
+    });
+    const dict = toYamlDict(cand);
+    const editions = dict.editions as Array<Record<string, unknown>>;
+    expect(editions[0].date_text).toBe("Nov 9-11, 2026");
+    expect(dict.submission_deadline_text).toBe("Aug 16, 2026");
+    // 日付のみの値を構造化 deadline にでっち上げない
+    expect(editions[0].deadlines).toEqual([]);
+    // レビュー締切順は保持した提出締切を使う (開催日ではない)
+    expect(parseDeadlineText(reviewDeadlineText(cand as Record<string, any>))).toEqual(
+      utcDate(2026, 8, 16),
+    );
+    const text = formatDiscoveredYaml([cand]);
+    expect(text).toContain("Nov 9-11, 2026");
+    expect(text).toContain("Aug 16, 2026");
+  });
+
+  it("blank event-date cell stays a valid candidate ordered by the deadline", () => {
+    const html = `<tbody>
+<tr><td><a href="/cfp/nodate2026">NoDate 2026</a></td><td>Workshop on Secure Networks</td><td>Tokyo, Japan</td><td>Dec 10, 2026</td><td></td><td></td></tr>
+</tbody>`;
+    const entries = easyChairEntriesFromRows(parseEasyChairCfpHtml(html), 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].date_text).toBe("Dec 10, 2026");
+    expect(entries[0].submission_deadline_text).toBe("Dec 10, 2026");
+    const cand = makeCandidate({
+      key: String(entries[0].key),
+      title: String(entries[0].title),
+      full_name: String(entries[0].full_name),
+      link: String(entries[0].link),
+      categories: entries[0].categories as string[],
+      tags: ["niche", "easychair"],
+      source_type: String(entries[0].source_type),
+      date_text: String(entries[0].date_text),
+      submission_deadline_text: String(entries[0].submission_deadline_text),
+      place: String(entries[0].place),
+    });
+    expect(parseDeadlineText(reviewDeadlineText(cand as Record<string, any>))).toEqual(
+      utcDate(2026, 12, 10),
+    );
+  });
+
+  it("non-EasyChair serialization is unchanged", () => {
+    const cand = makeCandidate({
+      key: "nvmw",
+      title: "NVMW",
+      full_name: "Non-Volatile Memories Workshop",
+      link: "https://nvmw.ucsd.edu/",
+      categories: ["systems"],
+      date_text: "March 8-10, 2026",
+    });
+    const dict = toYamlDict(cand);
+    expect("submission_deadline_text" in dict).toBe(false);
+    expect((dict.editions as Array<Record<string, unknown>>)[0].date_text).toBe("March 8-10, 2026");
+    const text = formatDiscoveredYaml([cand]);
+    expect(text).toContain("date_text: March 8-10, 2026");
+    expect(text).not.toContain("submission_deadline_text");
   });
 });
 
