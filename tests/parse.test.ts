@@ -281,6 +281,31 @@ describe("parse_date_range", () => {
     expect(e?.toISOString().slice(0, 10)).toBe("2025-04-30");
   });
 
+  it("descending month range with year on second side crosses into previous year", () => {
+    resetWarnings();
+    const [s1, e1] = parseDateRange("October - February, 2026", 2026);
+    expect(s1?.toISOString().slice(0, 10)).toBe("2025-10-01");
+    expect(e1?.toISOString().slice(0, 10)).toBe("2026-02-28");
+    const [s2, e2] = parseDateRange("December - January, 2026", 2026);
+    expect(s2?.toISOString().slice(0, 10)).toBe("2025-12-01");
+    expect(e2?.toISOString().slice(0, 10)).toBe("2026-01-31");
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
+
+  it("ascending month range with year on second side stays in the same year", () => {
+    const [s, e] = parseDateRange("November - December, 2026", 2026);
+    expect(s?.toISOString().slice(0, 10)).toBe("2026-11-01");
+    expect(e?.toISOString().slice(0, 10)).toBe("2026-12-31");
+  });
+
+  it("descending month range with no year still fails closed with a warning", () => {
+    resetWarnings();
+    expect(parseDateRange("December - January", 2026)).toEqual([null, null]);
+    expect(warningCounts()[`unparsable event date "December - January"`]).toBe(1);
+    resetWarnings();
+  });
+
   it("month with TBD parenthetical: August 2027 (exact dates TBD)", () => {
     const [s, e] = parseDateRange("August 2027 (exact dates TBD)", 2027);
     expect(s?.toISOString().slice(0, 10)).toBe("2027-08-01");
