@@ -454,7 +454,12 @@ export function parseDateRange(
   const m1 = scan(parts[0]);
   if (parts.length === 1) {
     if (m1.month === null) {
-      warn(`unparsable event date ${JSON.stringify(String(text))}`);
+      // A standalone four-digit year is an intentional year-only value
+      // (e.g. data/extra.yaml IPSJ/IEICE editions whose exact dates are
+      // not published): keep the null pair silently.
+      if (!/^\d{4}$/.test(s)) {
+        warn(`unparsable event date ${JSON.stringify(String(text))}`);
+      }
       return [null, null];
     }
     const year = m1.year ?? fallbackYear;

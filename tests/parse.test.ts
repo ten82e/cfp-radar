@@ -185,6 +185,20 @@ describe("parse_date_range", () => {
     },
   );
 
+  it("bare year is a silent year-only value", () => {
+    resetWarnings();
+    expect(parseDateRange("2026", 2026)).toEqual([null, null]);
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
+
+  it("season-only text still warns as unparsable", () => {
+    resetWarnings();
+    expect(parseDateRange("Summer 2026", 2026)).toEqual([null, null]);
+    expect(warningCounts()['unparsable event date "Summer 2026"']).toBe(1);
+    resetWarnings();
+  });
+
   it("range end is not before start", () => {
     const [start, end] = parseDateRange("September 29 - October 3, 2025", 2025);
     expect(start).not.toBeNull();
