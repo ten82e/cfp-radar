@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
-import { warn } from "./model.ts";
+import { roundOf, warn } from "./model.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REGISTRY = join(ROOT, "data", "primary.yaml");
@@ -23,7 +23,6 @@ const BLOCK_RE =
 const TAG_RE = /<[^>]+>/g;
 const TZ_RE =
   /\b(PDT|PST|EDT|EST|CDT|CST|MDT|MST|AKDT|AKST|HST|UTC|GMT|CET|CEST|JST|AoE|PT|ET|CT|MT)\b|anywhere on (?:the )?(?:inhabited )?earth/gi;
-const ROUND_RE = /\bround\s*(\d+)\b/gi;
 const MONTHS: Record<string, number> = {
   jan: 1,
   feb: 2,
@@ -101,9 +100,9 @@ interface ExtractedDate {
 }
 
 function parsePrimaryDate(window: string): ExtractedDate | null {
-  // 1. Month Day Year: 'May 10, 2026', 'August 16th, 2026', 'Sept. 15, 2026'
+  // 1. Month Day Year: 'May 10, 2026', 'August 16th, 2026', 'Sept. 15, 2026', 'May-10-2026'
   let m =
-    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,)?\s+(\d{4})\b/i.exec(
+    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?[-/\s]+(\d{4})\b/i.exec(
       window,
     );
   if (m) {
@@ -112,9 +111,9 @@ function parsePrimaryDate(window: string): ExtractedDate | null {
     const year = Number(m[3]);
     return { year, month, day };
   }
-  // 2. Day Month Year: '15 May 2026', '16th August 2026', '1st October, 2026'
+  // 2. Day Month Year: '15 May 2026', '16th August 2026', '1st October, 2026', '15-May-2026', '15/May/2026'
   m =
-    /\b(\d{1,2})(?:st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?\s+(\d{4})\b/i.exec(
+    /\b(\d{1,2})(?:st|nd|rd|th)?[-/\s]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?[-/\s]+(\d{4})\b/i.exec(
       window,
     );
   if (m) {
@@ -150,9 +149,7 @@ export function extractDeadline(
   const dt = new Date(Date.UTC(extractedYear, month - 1, day));
   if (dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) return null;
   const kind = kindOf(kindHint || window);
-  ROUND_RE.lastIndex = 0;
-  const roundM = ROUND_RE.exec(window);
-  const roundNo = roundM ? Number(roundM[1]) : 1;
+  const roundNo = roundOf(window, 1);
   let label = LABELS[kind];
   if (roundNo > 1) label = `Round ${roundNo} ${label}`;
   let tz: string | undefined;

@@ -75,11 +75,27 @@ describe("fetch-primary extraction", () => {
   });
 
   it.each([
+    ["Cycle 2 Paper deadline: 15-May-2026", 2026, 2, "2026-05-15", "Round 2 Paper submission"],
+    ["2nd Round Paper deadline: 15/May/2026", 2026, 2, "2026-05-15", "Round 2 Paper submission"],
+    ["R2 Paper deadline: May-15-2026", 2026, 2, "2026-05-15", "Round 2 Paper submission"],
+    ["Cycle 1 Abstract deadline: 01-Apr-2026", 2026, 1, "2026-04-01", "Abstract submission"],
+  ])("extracts rounds and hyphen dates %j", (text, year, expRound, expDate, expLabel) => {
+    const got = extractDeadline(text, year);
+    expect(got).not.toBeNull();
+    expect(got?.round).toBe(expRound);
+    expect(got?.date).toBe(expDate);
+    expect(got?.label).toBe(expLabel);
+  });
+
+  it.each([
     ["Paper submission deadline: 15 May 2026", 2026, "2026-05-15"],
     ["Submission due date: 16th August 2026 (AoE)", 2026, "2026-08-16"],
     ["Abstract deadline: 1st October 2026", 2026, "2026-10-01"],
     ["Paper deadline: 2026-05-10 23:59 UTC", 2026, "2026-05-10"],
     ["Paper submission deadline: 2026/08/16", 2026, "2026-08-16"],
+    ["Paper submission deadline: 15-May-2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: 15/May/2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: May-15-2026", 2026, "2026-05-15"],
   ])("extracts alternative date formats %j -> %s", (text, year, expectedDate) => {
     const got = extractDeadline(text, year);
     expect(got).not.toBeNull();
