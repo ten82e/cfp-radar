@@ -10463,23 +10463,6 @@ conferences:
         place: Fukuoka, Japan
         date_text: Jul 19, 2026
         deadlines: []
-  - key: acm-sigcite-2026
-    title: ACM SIGCITE 2026
-    full_name: >-
-      27th Annual ACM Conference on Cybersecurity and Information Technology
-      Education
-    link: https://easychair.org/cfp/SIGCITE-26
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: acm-sigcite-202626
-        link: https://easychair.org/cfp/SIGCITE-26
-        place: Wilmington, North Carolina, United States
-        date_text: Aug 16, 2026
-        deadlines: []
   - key: nullcon-berlin-2026
     title: Nullcon Berlin 2026
     full_name: Call for Papers Nullcon Berlin 2026
