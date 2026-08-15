@@ -47,7 +47,7 @@ describe("NicheDiscoverer", () => {
     expect(discoverer.isAlreadyTracked("completely-unknown-fake-niche-venue-999")).toBe(false);
   });
 
-  it("classify category", () => {
+  it("classify category across taxonomy domains", () => {
     const hpc = discoverer.classifyCategory(
       "International Workshop on High Performance Computing Interconnects",
     );
@@ -56,6 +56,21 @@ describe("NicheDiscoverer", () => {
       "IEEE Workshop on System Security and Confidential Computing",
     );
     expect(sec.includes("security") || sec.includes("systems")).toBe(true);
+
+    const dbTheory = discoverer.classifyCategory("International Conference on Database Theory");
+    expect(dbTheory).toContain("db");
+    expect(dbTheory).toContain("theory");
+
+    const ai = discoverer.classifyCategory("Machine Learning and Computer Vision");
+    expect(ai).toContain("ai");
+
+    const hci = discoverer.classifyCategory(
+      "ACM Conference on Human Factors in Computing Systems and User Interface",
+    );
+    expect(hci).toContain("hci");
+
+    const graphics = discoverer.classifyCategory("IEEE Visualization and Virtual Reality");
+    expect(graphics).toContain("graphics");
   });
 
   it("run discovery returns candidates with required fields", async () => {
@@ -314,6 +329,9 @@ describe("parseDeadlineText", () => {
     expect(parseDeadlineText("2026-11-12")).toEqual(utcDate(2026, 11, 12)); // IEICE journals.php
     expect(parseDeadlineText("2026年12月4日（金）")).toEqual(utcDate(2026, 12, 4)); // IPSJ 特集論文募集
     expect(parseDeadlineText("1 October 2026")).toEqual(utcDate(2026, 10, 1));
+    expect(parseDeadlineText("15.08.2026")).toEqual(utcDate(2026, 8, 15)); // DD.MM.YYYY
+    expect(parseDeadlineText("31/12/2026")).toEqual(utcDate(2026, 12, 31)); // DD/MM/YYYY
+    expect(parseDeadlineText("15-05-2026")).toEqual(utcDate(2026, 5, 15)); // DD-MM-YYYY
     expect(parseDeadlineText("November, 2026")).toBeNull(); // 月のみはでっち上げない
     expect(parseDeadlineText("unknown")).toBeNull();
   });
