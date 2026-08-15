@@ -173,6 +173,8 @@ export interface Candidate {
   source_type: string; // 'conference' | 'journal' | 'special_issue'
   evidence_url: string;
   date_text: string;
+  /** レビュー締切順専用: EasyChair の生の提出締切テキスト (date_text が開催日のため)。 */
+  submission_deadline_text?: string;
   place: string;
   deadlines: Array<Record<string, unknown>>;
 }
@@ -207,6 +209,8 @@ export function toYamlDict(c: Candidate): Record<string, unknown> {
     categories: c.categories,
   };
   if (c.tags.length > 0) entry.tags = c.tags;
+  // EasyChair 候補は date_text が開催日。提出締切はレビュー順用に候補レベルで保持する。
+  if (c.submission_deadline_text) entry.submission_deadline_text = c.submission_deadline_text;
   const editions: unknown[] = [];
   if (c.date_text || c.place || c.deadlines.length > 0) {
     const m = /(20\d\d)/.exec(c.date_text);
@@ -580,14 +584,13 @@ export function inDomain(text: string): boolean {
   ].some((k) => t.includes(k));
 }
 
-/** EasyChair Smart CFP 一覧から締切登録済みの候補を抽出する。 */
-export async function discoverFromEasyChair(
+/** EasyChair の行を候補エントリに変換する (純関数)。 */
+export function easyChairEntriesFromRows(
+  rows: EasyChairRow[],
   minYear: number,
-): Promise<Array<Record<string, unknown>>> {
-  const url = "https://easychair.org/cfp/";
-  const html = await fetchText(url, DISCOVER_UA, 25_000);
+): Array<Record<string, unknown>> {
   const entries: Array<Record<string, unknown>> = [];
-  for (const e of parseEasyChairCfpHtml(html)) {
+  for (const e of rows) {
     if (!e.date_text) continue; // 締切未登録は候補にしない
     const dm = /(20\d\d)/.exec(e.date_text);
     if (dm && Number(dm[1]) < minYear) continue;
@@ -602,12 +605,23 @@ export async function discoverFromEasyChair(
       link: e.url,
       categories: [], // レビュー時付与
       source_type: "conference",
-      date_text: e.date_text,
+      // 4 列目は提出締切、5 列目は開催日。開催日が無い行は従来どおり締切を使う。
+      date_text: e.start || e.date_text,
+      submission_deadline_text: e.date_text,
       place: e.place,
       year,
     });
   }
   return entries;
+}
+
+/** EasyChair Smart CFP 一覧から締切登録済みの候補を抽出する。 */
+export async function discoverFromEasyChair(
+  minYear: number,
+): Promise<Array<Record<string, unknown>>> {
+  const url = "https://easychair.org/cfp/";
+  const html = await fetchText(url, DISCOVER_UA, 25_000);
+  return easyChairEntriesFromRows(parseEasyChairCfpHtml(html), minYear);
 }
 
 /** IEEE ComSoc CFP ページのテーブルからオープン特集号を抽出する (純関数)。 */
@@ -1096,6 +1110,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             evidence_url: "https://easychair.org/cfp/",
             date_text: String(entry.date_text),
+            submission_deadline_text: String(entry.submission_deadline_text ?? ""),
             place: String(entry.place),
           }),
         );

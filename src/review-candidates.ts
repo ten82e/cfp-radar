@@ -68,6 +68,18 @@ interface Enriched {
   tracked: boolean;
 }
 
+/**
+ * レビュー締切判定に使うテキスト。EasyChair 候補は edition date_text が開催日
+ * のため、候補レベルの submission_deadline_text (提出締切) を優先する。
+ */
+export function reviewDeadlineText(c: Record<string, any>): string {
+  const ed = (Array.isArray(c.editions) && c.editions.length > 0 ? c.editions : [{}])[0] as Record<
+    string,
+    any
+  >;
+  return String(c.submission_deadline_text ?? "") || String(ed.date_text ?? "");
+}
+
 export function runReviewCandidates(candidatesPath: string, limit: number, today: Date): void {
   const data = loadYaml(readFileSync(candidatesPath, "utf8")) as Record<string, any>;
   const cands = (data.conferences as unknown[] | null) ?? [];
@@ -75,13 +87,9 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
   const tracked = loadTrackedTitles();
   const enriched: Enriched[] = cands.map((raw) => {
     const c = raw as Record<string, any>;
-    const ed = (
-      Array.isArray(c.editions) && c.editions.length > 0 ? c.editions : [{}]
-    )[0] as Record<string, any>;
-    const dateText = String(ed.date_text ?? "");
     return {
       c,
-      dl: parseDeadlineText(dateText),
+      dl: parseDeadlineText(reviewDeadlineText(c)),
       pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
       tracked: tracked.has(normTitle(String(c.title ?? ""))),
     };
