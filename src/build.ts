@@ -90,16 +90,18 @@ export const UID_DOMAIN = "conf-deadlines.github.io";
 // --- ICS primitives ----------------------------------------------------------
 
 /** RFC 5545 TEXT escaping.  ':' is deliberately NOT escaped (breaks URLs). */
-export function escapeText(value: string): string {
-  let out = value.replace(/\\/g, "\\\\");
+export function escapeText(value: string | null | undefined): string {
+  if (!value) return "";
+  let out = String(value).replace(/\\/g, "\\\\");
   out = out.replace(/;/g, "\\;").replace(/,/g, "\\,");
   out = out.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n/g, "\\n");
   return out;
 }
 
 /** A URI property value: strip control characters, escape nothing else. */
-function uriValue(value: string): string {
-  return [...String(value)].filter((ch) => ch >= " " && ch !== "\u007f").join("");
+export function uriValue(value: string | null | undefined): string {
+  if (!value) return "";
+  return [...String(value).trim()].filter((ch) => ch > " " && ch !== "\u007f").join("");
 }
 
 /** Fold a content line at 75 octets, never splitting a UTF-8 sequence. */
@@ -524,9 +526,11 @@ function toJson(
   };
 }
 
-function csvField(value: string): string {
-  if (/[",\n\r]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
-  return value;
+export function csvField(value: string | number | boolean | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  const s = String(value);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
 }
 
 function toCsv(records: CalendarRecord[]): string {
@@ -547,20 +551,20 @@ function toCsv(records: CalendarRecord[]): string {
         ed.year,
         ed.edition_id,
         dl.kind,
-        dl.label,
+        dl.label ?? "",
         dl.round,
         fmtUTC(dl.at_utc, "%Y-%m-%dT%H:%M:%SZ"),
         aoeText(dl.at_utc),
-        dl.tz_raw,
+        dl.tz_raw ?? "",
         ed.event_start ? fmtDate(ed.event_start) : "",
         ed.event_end ? fmtDate(ed.event_end) : "",
-        ed.place,
-        ed.date_text,
+        ed.place ?? "",
+        ed.date_text ?? "",
         ed.estimated ? "true" : "false",
         conf.sources.join(";"),
-        ed.link || conf.link,
+        ed.link || conf.link || "",
       ]
-        .map((v) => csvField(String(v)))
+        .map((v) => csvField(v))
         .join(","),
     );
   }
