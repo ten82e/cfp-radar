@@ -100,6 +100,39 @@ describe("resolve_tz", () => {
     expect(offset(tz, SUMMER)).toBe(-4 * 60);
   });
 
+  it.each(["CT", "CST", "CDT"])("central alias %s observes DST", (raw) => {
+    const tz = resolveTz(raw);
+    expect(offset(tz, WINTER)).toBe(-6 * 60);
+    expect(offset(tz, SUMMER)).toBe(-5 * 60);
+  });
+
+  it.each(["MT", "MST", "MDT"])("mountain alias %s observes DST", (raw) => {
+    const tz = resolveTz(raw);
+    expect(offset(tz, WINTER)).toBe(-7 * 60);
+    expect(offset(tz, SUMMER)).toBe(-6 * 60);
+  });
+
+  it("BST alias observes DST", () => {
+    const tz = resolveTz("BST");
+    expect(offset(tz, WINTER)).toBe(0);
+    expect(offset(tz, SUMMER)).toBe(60);
+  });
+
+  it("JST and KST aliases resolve to UTC+9", () => {
+    expect(offset(resolveTz("JST"))).toBe(9 * 60);
+    expect(offset(resolveTz("jst"))).toBe(9 * 60);
+    expect(offset(resolveTz("KST"))).toBe(9 * 60);
+  });
+
+  it("IST alias resolves to UTC+5:30", () => {
+    expect(offset(resolveTz("IST"))).toBe(5 * 60 + 30);
+  });
+
+  it("SGT and HKT aliases resolve to UTC+8", () => {
+    expect(offset(resolveTz("SGT"))).toBe(8 * 60);
+    expect(offset(resolveTz("HKT"))).toBe(8 * 60);
+  });
+
   it("CET alias", () => {
     const tz = resolveTz("CET");
     expect(offset(tz, WINTER)).toBe(60);
