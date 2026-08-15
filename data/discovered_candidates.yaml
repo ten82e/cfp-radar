@@ -10114,23 +10114,6 @@ conferences:
         place: Parma, Italy
         date_text: Jul 20, 2026
         deadlines: []
-  - key: ambre-2026
-    title: AMBRE-2026
-    full_name: >-
-      Adaptive Manipulation: Bridging Rigid and Soft Robotics in Underwater
-      Environments
-    link: https://easychair.org/cfp/ambre-2026
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: ambre-202626
-        link: https://easychair.org/cfp/ambre-2026
-        place: Pittsburgh, Pennsylvania, United States
-        date_text: Aug 18, 2026
-        deadlines: []
   - key: aq-uasim-v2
     title: AQ²UASIM-v2
     full_name: Advancing Quantitative and QUAlitative SIMulators for marine applications
