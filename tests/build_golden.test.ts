@@ -476,6 +476,16 @@ it("index.html has no meeting rows", () => {
   }
 });
 
+it("index.html 7d preset uses a real 7-day window", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 「締切直近 (7日以内)」プリセットは 7 日窓で動作し、ドロップダウンに 7d がある
+  expect(html).toContain("applyPreset('7d')");
+  expect(html).toContain("if (type === '7d') state.win = \"7d\";");
+  expect(html).toContain('value="7d">直近 7 日以内</option>');
+  // 30 日窓への偽代入が残っていない（回帰防止）
+  expect(html).not.toContain("if (type === '7d') state.win = \"30d\";");
+});
+
 it("index.html has domestic filter and tag", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).toContain('id="domestic"');

@@ -520,6 +520,7 @@ footer a:hover { text-decoration: underline; }
         <span>期間</span>
         <select id="win">
           <option value="all">すべて</option>
+          <option value="7d">直近 7 日以内</option>
           <option value="30d">直近 30 日以内</option>
           <option value="90d">直近 90 日以内</option>
           <option value="180d">直近 180 日以内</option>
@@ -690,7 +691,7 @@ footer a:hover { text-decoration: underline; }
   // Quick Presets
   window.applyPreset = (type) => {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
-    if (type === '7d') state.win = "30d";
+    if (type === '7d') state.win = "7d";
     if (type === 'a_star') state.rank = "A*";
     if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
     if (type === 'domestic') state.domestic = true;
