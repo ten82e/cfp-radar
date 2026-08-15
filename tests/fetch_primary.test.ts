@@ -14,6 +14,7 @@ import {
   pageTitleYear,
   pageYear,
   pageYearMismatch,
+  runFetchPrimary,
   toLines,
 } from "../src/fetch-primary.ts";
 
@@ -141,6 +142,23 @@ describe("fetch-primary extraction", () => {
     expect(lines).toContain("Aug 16, 2026");
   });
 
+  it("to_lines decodes decimal and hex numeric character references and entities", () => {
+    const lines = toLines(
+      "<p>Paper submission deadline:&#160;May&#8211;June &#x2013; August 16th, 2026 &ndash; &mdash; &apos;quoted&apos;</p>",
+    );
+    expect(lines[0]).toContain(
+      "Paper submission deadline: May–June – August 16th, 2026 - - 'quoted'",
+    );
+  });
+
+  it("extractDeadline handles entities in deadline window", () => {
+    const lines = toLines("<p>Paper submission deadline:&#160;August&#160;16,&#160;2026 (AoE)</p>");
+    const got = extractDeadline(lines[0], 2026);
+    expect(got).not.toBeNull();
+    expect(got?.date).toBe("2026-08-16");
+    expect(got?.tz).toBe("AoE");
+  });
+
   it("extract_deadlines window", () => {
     const lines = [
       "All deadlines refer to AoE.",
@@ -195,5 +213,15 @@ describe("page-year diagnostics", () => {
   it("exposes only an unambiguous title year", () => {
     expect(pageTitleYear("<title>SETTA 2026</title>")).toBe(2026);
     expect(pageTitleYear("<title>SETTA 2025 / 2026</title>")).toBeNull();
+  });
+});
+
+describe("runFetchPrimary", () => {
+  it("returns 2 when registry has no conferences", async () => {
+    spyStderr();
+    const emptyRegistry = join(mkdtempSync(join(tmpdir(), "cfp-reg-")), "empty.yaml");
+    writeFileSync(emptyRegistry, "conferences: {}\n", "utf8");
+    const code = await runFetchPrimary(false, emptyRegistry);
+    expect(code).toBe(2);
   });
 });
