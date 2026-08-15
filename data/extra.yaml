@@ -3607,4 +3607,26 @@ conferences:
         event_end: '2026-10-30'
         deadlines: []
 
-
+  # ---------------- ACM SIGCITE 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://www.sigcite.org/sigcite-2026-riding-the-wave-of-information-technology-and-cybersecurity-education/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/SIGCITE-26
+  #   開催は Wilmington, North Carolina, United States で November 12-14, 2026。
+  #   EasyChair は提出締切を August 2, 2026 11:59 PM Anywhere on Earth と明記。
+  #   したがって date: '2026-08-02' + tz: AoE の paper deadline 1 件のみ（推測なし）。
+  - key: acm-sigcite-2026
+    title: ACM SIGCITE 2026
+    full_name: >-
+      27th Annual ACM Conference on Cybersecurity and Information Technology
+      Education
+    link: https://easychair.org/cfp/SIGCITE-26
+    categories: [security]
+    editions:
+      - year: 2026
+        id: acm-sigcite-202626
+        link: https://easychair.org/cfp/SIGCITE-26
+        place: Wilmington, North Carolina, United States
+        date_text: November 12-14, 2026
+        event_start: '2026-11-12'
+        event_end: '2026-11-14'
+        deadlines:
+          - {kind: paper, label: Submission deadline, date: '2026-08-02', tz: AoE}
