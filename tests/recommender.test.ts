@@ -443,7 +443,14 @@ describe("rankMatches", () => {
 describe("journalRows", () => {
   it("creates rows only for always-open journals", () => {
     const confs = [
-      { key: "j1", title: "Journal A", tags: ["journal"], editions: [] },
+      {
+        key: "j1",
+        title: "Journal A",
+        full_name: "Full Name of Journal A",
+        tags: ["journal"],
+        rank: { ccf: "A", core: "A*" },
+        editions: [],
+      },
       {
         key: "si",
         title: "Special Issue",
@@ -457,6 +464,30 @@ describe("journalRows", () => {
     expect(rows[0].kind).toBe("journal");
     expect(rows[0].t).toBe(NOW);
     expect(rows[0].dl.label).toBe("");
+    expect(rows[0].rankPairs).toEqual(["ccf:A", "core:A*"]);
+    expect(rows[0].hay).toContain("journal a");
+    expect(rows[0].hay).toContain("full name of journal a");
+    expect(rows[0].hay).toContain("j1");
+    expect(rows[0].hay).toContain("常時受付");
+  });
+
+  it("hay supports keyword search without throwing", () => {
+    const confs = [
+      {
+        key: "tocs",
+        title: "TOCS",
+        full_name: "ACM Transactions on Computer Systems",
+        tags: ["journal"],
+        rank: { ccf: "A" },
+        editions: [],
+      },
+    ];
+    const rows = R.journalRows(confs, NOW);
+    expect(rows[0].hay.indexOf("tocs") >= 0).toBe(true);
+    expect(rows[0].hay.indexOf("transactions") >= 0).toBe(true);
+    expect(rows[0].hay.indexOf("nonexistent") >= 0).toBe(false);
+    expect(R.rankMatches(rows[0].rankPairs, "A")).toBe(true);
+    expect(R.rankMatches(rows[0].rankPairs, "A*")).toBe(false);
   });
 
   it("journal with deadlines stays a deadline row", () => {

@@ -553,7 +553,7 @@
     return (rankPairs || []).some((p) => p.slice(p.indexOf(":") + 1) === grade);
   }
 
-  /* 論文モード用: 常時受付ジャーナル（tag: journal で締切なし）の行を合成する。
+  /* 論文モード・常時受付用: 常時受付ジャーナル（tag: journal で締切なし）の行を合成する。
    * 特集号（締切付き）は通常の締切行で扱うため除外する。 */
   function journalRows(confs, now) {
     var out = [];
@@ -561,6 +561,18 @@
       if (!conf || !Array.isArray(conf.tags) || conf.tags.indexOf("journal") === -1) return;
       var hasDl = (conf.editions || []).some((e) => (e.deadlines || []).length > 0);
       if (hasDl) return;
+      var pairs = [];
+      if (conf.rank) {
+        Object.keys(conf.rank).forEach((rk) => {
+          if (conf.rank[rk]) {
+            pairs.push(rk + ":" + conf.rank[rk]);
+          }
+        });
+      }
+      var baseHay = [conf.title, conf.full_name, conf.key]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       out.push({
         conf: conf,
         ed: { place: "", date_text: "" },
@@ -571,7 +583,8 @@
         tLast: now,
         cats: conf.categories || [],
         tags: conf.tags || [],
-        rankPairs: [],
+        rankPairs: pairs,
+        hay: baseHay + " journal 常時受付",
         name: conf.title,
         year: null,
       });
