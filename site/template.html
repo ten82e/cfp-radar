@@ -839,7 +839,11 @@ footer a:hover { text-decoration: underline; }
   var siteBase = ((DATA.site || {}).base_url || "").replace(/\/$/, "");
 
   FEEDS.forEach((f) => {
-    var url = (siteBase ? siteBase + "/" : "") + f.file;
+    var url = siteBase
+      ? siteBase + "/" + f.file
+      : typeof window !== "undefined" && window.location && window.location.href
+        ? new URL(f.file, window.location.href).href
+        : f.file;
     var div = document.createElement("div");
     div.className = "feed";
     div.innerHTML = '<strong>' + f.name + '</strong>' +
@@ -1420,11 +1424,13 @@ footer a:hover { text-decoration: underline; }
     var p = new URLSearchParams(window.location.search);
     state.q = p.get("q") || "";
     state.kind = KIND_LABEL[p.get("kind")] ? p.get("kind") : "";
-    state.rank = p.get("rank") || "";
-    state.win = p.get("win") || "all";
+    var rawRank = p.get("rank");
+    state.rank = ["A*", "A", "B", "C", "N"].indexOf(rawRank) >= 0 ? rawRank : "";
+    var rawWin = p.get("win");
+    state.win = ["all", "7d", "30d", "90d", "180d"].indexOf(rawWin) >= 0 ? rawWin : "all";
     state.est = p.get("est") === "1";
     state.domestic = p.get("domestic") === "1";
-    state.cats = (p.get("cats") || "").split(",").filter(Boolean);
+    state.cats = (p.get("cats") || "").split(",").filter((c) => Boolean(c) && Boolean(DATA.categories && DATA.categories[c]));
   }
 
   function writeUrl() {

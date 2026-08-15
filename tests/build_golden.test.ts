@@ -80,10 +80,13 @@ it("build is deterministic", () => {
 // --- data.json -------------------------------------------------------------
 
 it("data.json has the spec top-level shape", () => {
-  for (const key of ["generated_at", "sources", "categories", "conferences"]) {
+  for (const key of ["generated_at", "site", "sources", "categories", "conferences"]) {
     expect(key in data).toBe(true);
   }
   expect(data.generated_at).toBe("2026-08-09T00:00:00Z");
+  expect(typeof data.site).toBe("object");
+  expect(data.site?.domain).toBeDefined();
+  expect(data.site?.base_url).toBeDefined();
   expect(typeof data.categories).toBe("object");
   for (const cat of ["hpc", "networking", "systems", "ai", "security"]) {
     expect(cat in data.categories).toBe(true);
