@@ -144,7 +144,7 @@ function titleWithYear(title: string, year: number): string {
   return title.trim().endsWith(String(year)) ? title.trim() : `${title.trim()} ${year}`;
 }
 
-interface IcsEntry {
+export interface IcsEntry {
   uid: string;
   dtstamp?: Date;
   all_day?: boolean;
@@ -343,7 +343,7 @@ function eventSuffix(ordinal: number): string {
   return ordinal === 1 ? "" : `-${ordinal}`;
 }
 
-interface CalendarRecord {
+export interface CalendarRecord {
   type: "deadline" | "event";
   categories: string[];
   kind_label: string;
@@ -355,7 +355,7 @@ interface CalendarRecord {
 }
 
 /** Flatten conferences into calendar records (entry + routing metadata). */
-function recordsOf(confs: Conference[]): CalendarRecord[] {
+export function recordsOf(confs: Conference[]): CalendarRecord[] {
   const records: CalendarRecord[] = [];
   const usedUids = new Map<string, number>();
 
@@ -463,7 +463,7 @@ function sortKey(rec: CalendarRecord): [number, string] {
 
 // --- serialisation -----------------------------------------------------------
 
-function toJson(
+export function toJson(
   confs: Conference[],
   config: Record<string, unknown>,
   now: Date,
@@ -533,7 +533,7 @@ export function csvField(value: string | number | boolean | null | undefined): s
   return s;
 }
 
-function toCsv(records: CalendarRecord[]): string {
+export function toCsv(records: CalendarRecord[]): string {
   const lines: string[] = [];
   lines.push(CSV_COLUMNS.join(","));
   for (const rec of records) {
@@ -571,7 +571,7 @@ function toCsv(records: CalendarRecord[]): string {
   return `${lines.join("\n")}\n`;
 }
 
-function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string {
+export function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string {
   const horizon = addDays(now, days);
   const today = dateOnly(now);
   const rows: string[] = [];
@@ -587,8 +587,18 @@ function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string 
       if (now.getTime() > dl.at_utc.getTime() || dl.at_utc.getTime() > horizon.getTime()) continue;
       const remainMs = dl.at_utc.getTime() - now.getTime();
       const remainDays = Math.floor(remainMs / DAY_MS);
-      const left =
-        remainDays >= 1 ? `${remainDays}日` : `${Math.floor((remainMs % DAY_MS) / 3_600_000)}時間`;
+      let left: string;
+      if (remainDays >= 1) {
+        left = `${remainDays}日`;
+      } else {
+        const hours = Math.floor(remainMs / 3_600_000);
+        if (hours >= 1) {
+          left = `${hours}時間`;
+        } else {
+          const mins = Math.max(1, Math.floor(remainMs / 60_000));
+          left = `${mins}分`;
+        }
+      }
       const when = aoeText(dl.at_utc);
       const kindText = rec.kind_label;
       const roundText = `R${dl.round}`;
@@ -634,7 +644,7 @@ function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string 
   return `${[...head, ...rows].join("\n")}\n`;
 }
 
-function toLlmsTxt(
+export function toLlmsTxt(
   baseUrl: string,
   feeds: Array<[string, string]>,
   config: Record<string, unknown>,
