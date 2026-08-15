@@ -340,6 +340,39 @@ describe("parse_date_range", () => {
     expect(s?.toISOString().slice(0, 10)).toBe("2024-08-30");
     expect(e?.toISOString().slice(0, 10)).toBe("2024-09-01");
   });
+
+  it.each([
+    ["2026-08-17 - 2026-08-21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026-08-17 to 2026-08-21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026/08/17 - 2026/08/21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026.08.17 - 2026.08.21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026-08-17 - 08-21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026-08-17 - 21", 2026, "2026-08-17", "2026-08-21"],
+    ["2026-12-28 - 2027-01-03", 2026, "2026-12-28", "2027-01-03"],
+    ["2026-12-28 - 01-03", 2026, "2026-12-28", "2027-01-03"],
+    ["2026-08-17", 2026, "2026-08-17", "2026-08-17"],
+    ["2026/08/17", 2026, "2026-08-17", "2026-08-17"],
+  ] as Array<[string, number, string, string]>)(
+    "numeric date range %s -> [%s, %s]",
+    (text, fallbackYear, expectedStart, expectedEnd) => {
+      resetWarnings();
+      const [start, end] = parseDateRange(text, fallbackYear);
+      expect(start?.toISOString().slice(0, 10)).toBe(expectedStart);
+      expect(end?.toISOString().slice(0, 10)).toBe(expectedEnd);
+      expect(warningCounts()).toEqual({});
+      resetWarnings();
+    },
+  );
+
+  it.each(["2026-02-30", "2026-08-21 - 2026-08-17", "2026-04-31 - 2026-05-02"])(
+    "invalid numeric date %j fails closed and warns",
+    (text) => {
+      resetWarnings();
+      expect(parseDateRange(text, 2026)).toEqual([null, null]);
+      expect(warningCounts()[`unparsable event date ${JSON.stringify(text)}`]).toBe(1);
+      resetWarnings();
+    },
+  );
 });
 
 describe("slug", () => {
