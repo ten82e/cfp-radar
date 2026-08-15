@@ -231,7 +231,26 @@ export function toYamlDict(c: Candidate): Record<string, unknown> {
 /** Extract structured deadline dates from text if ISO or standard date formats appear. */
 export function extractDeadlinesFromText(text: string): Array<Record<string, unknown>> {
   const deadlines: Array<Record<string, unknown>> = [];
-  const matches = text.match(/\b202[6-9]-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\b/g) ?? [];
+  const matches: string[] = [];
+  const re = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/g;
+  let m: RegExpExecArray | null = null;
+  while (true) {
+    m = re.exec(text);
+    if (!m) break;
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    if (month < 1 || month > 12 || day < 1 || day > 31) continue;
+    const dt = new Date(Date.UTC(year, month - 1, day));
+    if (dt.getUTCFullYear() !== year || dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) {
+      continue;
+    }
+    const isoDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    if (!matches.includes(isoDate)) {
+      matches.push(isoDate);
+    }
+  }
+
   if (matches.length > 0) {
     deadlines.push({
       kind: "paper",
