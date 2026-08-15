@@ -9656,23 +9656,6 @@ conferences:
         place: Aarhus, Denmark
         date_text: Aug 17, 2026
         deadlines: []
-  - key: ictdse2026
-    title: ICTDSE2026
-    full_name: >-
-      The 8th International Workshop on Information and Communication Technology
-      for Disaster and Safety Education
-    link: https://easychair.org/cfp/ictdse2026
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: ictdse202626
-        link: https://easychair.org/cfp/ictdse2026
-        place: Christchurch, New Zealand
-        date_text: Aug 18, 2026
-        deadlines: []
   - key: ifaie2026
     title: IFAIE2026
     full_name: The 2026 International Forum on Artificial Intelligence in Education
