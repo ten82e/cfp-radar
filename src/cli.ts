@@ -290,7 +290,7 @@ function writeTextFile(path: string, text: string): void {
   writeFileSync(path, text, "utf8");
 }
 
-interface CliArgs {
+export interface CliArgs {
   command?: string;
   out?: string;
   config?: string;
@@ -302,9 +302,10 @@ interface CliArgs {
   dryRun?: boolean;
   append?: boolean;
   noEmbeddings?: boolean;
+  help?: boolean;
 }
 
-function usage(): string {
+export function usage(): string {
   return [
     "usage: node src/cli.ts <command> [options]",
     "",
@@ -322,33 +323,46 @@ function usage(): string {
     "    --min-year <n>    対象の最小年 (default: 2026)",
     "    --dry-run         ファイル出力せず結果をプレビュー表示",
     "    --append          既存 YAML に key 重複なしで追記",
+    "  help / --help / -h  使い方を表示する",
   ].join("\n");
 }
 
-function parseArgs(argv: string[]): CliArgs {
+export function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {};
   const positional: string[] = [];
   for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
-    const next = (): string | undefined => argv[i + 1];
-    if (a === "--out") {
-      args.out = next() ?? "public";
-      i += 1;
+    const raw = argv[i];
+    let a = raw;
+    let eqVal: string | undefined = undefined;
+    const eqIdx = raw.indexOf("=");
+    if (raw.startsWith("--") && eqIdx > 0) {
+      a = raw.slice(0, eqIdx);
+      eqVal = raw.slice(eqIdx + 1);
+    }
+    const nextVal = (): string | undefined => {
+      if (eqVal !== undefined) return eqVal;
+      const v = argv[i + 1];
+      if (v !== undefined && !v.startsWith("-")) {
+        i += 1;
+        return v;
+      }
+      return undefined;
+    };
+
+    if (a === "--help" || a === "-h" || a === "help") {
+      args.help = true;
+    } else if (a === "--out") {
+      args.out = nextVal() ?? "public";
     } else if (a === "--config") {
-      args.config = next() ?? "config.yaml";
-      i += 1;
+      args.config = nextVal() ?? "config.yaml";
     } else if (a === "--cache") {
-      args.cache = next() ?? ".cache";
-      i += 1;
+      args.cache = nextVal() ?? ".cache";
     } else if (a === "--now") {
-      args.now = next() ?? null;
-      i += 1;
+      args.now = nextVal() ?? null;
     } else if (a === "--categories") {
-      args.categories = next() ?? null;
-      i += 1;
+      args.categories = nextVal() ?? null;
     } else if (a === "--min-year") {
-      args.minYear = Number(next() ?? 2026);
-      i += 1;
+      args.minYear = Number(nextVal() ?? 2026);
     } else if (a === "--offline") {
       args.offline = true;
     } else if (a === "--no-embeddings") {
@@ -358,12 +372,16 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (a === "--append") {
       args.append = true;
     } else if (a.startsWith("-")) {
-      throw new Error(`unknown option: ${a}`);
+      throw new Error(`unknown option: ${raw}`);
     } else {
-      positional.push(a);
+      positional.push(raw);
     }
   }
-  args.command = positional[0];
+  if (positional[0] === "help") {
+    args.help = true;
+  } else {
+    args.command = positional[0];
+  }
   return args;
 }
 
@@ -374,6 +392,10 @@ export async function main(argv: string[]): Promise<number> {
   } catch (exc) {
     process.stderr.write(`error: ${String(exc)}\n\n${usage()}\n`);
     return 2;
+  }
+  if (args.help) {
+    console.log(usage());
+    return 0;
   }
   if (args.command === "build") {
     return cmdBuild({
