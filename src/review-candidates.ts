@@ -81,7 +81,14 @@ export function reviewDeadlineText(c: Record<string, any>): string {
 }
 
 export function runReviewCandidates(candidatesPath: string, limit: number, today: Date): void {
-  const data = loadYaml(readFileSync(candidatesPath, "utf8")) as Record<string, any>;
+  let text: string;
+  try {
+    text = readFileSync(candidatesPath, "utf8");
+  } catch (err) {
+    console.warn(`warning: cannot read candidates from ${candidatesPath} (${String(err)})`);
+    return;
+  }
+  const data = (loadYaml(text) as Record<string, any>) ?? {};
   const cands = (data.conferences as unknown[] | null) ?? [];
 
   const tracked = loadTrackedTitles();
@@ -139,21 +146,50 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
   console.log(`=== 締切不明 (${unknown.length} 件・公式サイト確認が必要) ===`);
 }
 
-function parseArgs(argv: string[]): { candidates: string; limit: number } {
+export interface ReviewArgs {
+  candidates: string;
+  limit: number;
+  now: Date;
+  help?: boolean;
+}
+
+export function parseArgs(argv: string[]): ReviewArgs {
   let candidates = join(ROOT, "data", "discovered_candidates.yaml");
   let limit = 60;
+  let now = new Date();
+  let help = false;
+
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--candidates" && argv[i + 1]) {
+    const a = argv[i];
+    if (a === "--help" || a === "-h" || a === "help") {
+      help = true;
+    } else if (a.startsWith("--candidates=")) {
+      candidates = a.slice("--candidates=".length);
+    } else if (a === "--candidates" && argv[i + 1]) {
       candidates = argv[++i];
-    } else if (argv[i] === "--limit" && argv[i + 1]) {
-      limit = Number(argv[++i]);
+    } else if (a.startsWith("--limit=")) {
+      limit = Number(a.slice("--limit=".length)) || 60;
+    } else if (a === "--limit" && argv[i + 1]) {
+      limit = Number(argv[++i]) || 60;
+    } else if (a.startsWith("--now=")) {
+      const parsed = new Date(a.slice("--now=".length));
+      if (!Number.isNaN(parsed.getTime())) now = parsed;
+    } else if (a === "--now" && argv[i + 1]) {
+      const parsed = new Date(argv[++i]);
+      if (!Number.isNaN(parsed.getTime())) now = parsed;
     }
   }
-  return { candidates, limit };
+  return { candidates, limit, now, help };
 }
 
 const isMain = process.argv[1]?.endsWith("review-candidates.ts");
 if (isMain) {
-  const { candidates, limit } = parseArgs(process.argv.slice(2));
-  runReviewCandidates(candidates, limit, new Date());
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    console.log(
+      "usage: node src/review-candidates.ts [--candidates <path>] [--limit <n>] [--now <iso>]",
+    );
+    process.exit(0);
+  }
+  runReviewCandidates(args.candidates, args.limit, args.now);
 }

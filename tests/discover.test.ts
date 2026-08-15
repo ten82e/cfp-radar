@@ -22,7 +22,13 @@ import {
   parseWikiCfpHtml,
   toYamlDict,
 } from "../src/discover.ts";
-import { isPredatory, normTitle, reviewDeadlineText } from "../src/review-candidates.ts";
+import {
+  isPredatory,
+  normTitle,
+  parseArgs as parseReviewArgs,
+  reviewDeadlineText,
+  runReviewCandidates,
+} from "../src/review-candidates.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 const utcDate = (y: number, m: number, d: number): Date => new Date(Date.UTC(y, m - 1, d));
@@ -409,6 +415,39 @@ describe("review helpers", () => {
     expect(isPredatory("PARMA-DITAM 2027 Glasgow")).toBe(false);
     expect(normTitle("SIGSPATIAL 2026")).toBe(normTitle("SIGSPATIAL 2027"));
     expect(normTitle("GeoAI'26")).toBe(normTitle("GeoAI 2026"));
+  });
+
+  it("parseReviewArgs handles flags, --help, and --now", () => {
+    const res1 = parseReviewArgs([
+      "--candidates=custom.yaml",
+      "--limit=25",
+      "--now=2026-08-09T00:00:00Z",
+    ]);
+    expect(res1.candidates).toBe("custom.yaml");
+    expect(res1.limit).toBe(25);
+    expect(res1.now.toISOString()).toBe("2026-08-09T00:00:00.000Z");
+    expect(res1.help).toBe(false);
+
+    const res2 = parseReviewArgs([
+      "--candidates",
+      "foo.yaml",
+      "--limit",
+      "10",
+      "--now",
+      "2026-09-01T12:00:00Z",
+    ]);
+    expect(res2.candidates).toBe("foo.yaml");
+    expect(res2.limit).toBe(10);
+    expect(res2.now.toISOString()).toBe("2026-09-01T12:00:00.000Z");
+
+    const res3 = parseReviewArgs(["--help"]);
+    expect(res3.help).toBe(true);
+  });
+
+  it("runReviewCandidates gracefully handles missing candidate files", () => {
+    expect(() => {
+      runReviewCandidates("/tmp/nonexistent-candidates-999.yaml", 60, new Date());
+    }).not.toThrow();
   });
 });
 
