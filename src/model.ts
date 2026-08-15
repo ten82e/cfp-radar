@@ -181,11 +181,23 @@ const TZ_NAMED: Record<string, string> = {
   pt: "America/Los_Angeles",
   pst: "America/Los_Angeles",
   pdt: "America/Los_Angeles",
+  mt: "America/Denver",
+  mst: "America/Denver",
+  mdt: "America/Denver",
+  ct: "America/Chicago",
+  cst: "America/Chicago",
+  cdt: "America/Chicago",
   et: "America/New_York",
   est: "America/New_York",
   edt: "America/New_York",
+  bst: "Europe/London",
   cet: "Europe/Paris",
   cest: "Europe/Paris",
+  jst: "Asia/Tokyo",
+  kst: "Asia/Seoul",
+  ist: "Asia/Kolkata",
+  sgt: "Asia/Singapore",
+  hkt: "Asia/Hong_Kong",
 };
 
 const TZ_OFFSET_RE = /^(?:utc|gmt)?\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?$/;
