@@ -7,7 +7,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { buildAll, UID_DOMAIN } from "../src/build.ts";
+import { buildAll, csvField, escapeText, UID_DOMAIN, uriValue } from "../src/build.ts";
 import type { Conference } from "../src/model.ts";
 import {
   icsPhysicalLines,
@@ -469,5 +469,39 @@ describe("determinism", () => {
     for (const name of names) {
       expect(read(first, name)).toEqual(read(second, name));
     }
+  });
+});
+
+describe("csvField and escaping safety", () => {
+  it.each([
+    [undefined, ""],
+    [null, ""],
+    ["", ""],
+    ["simple", "simple"],
+    ['has "quotes"', '"has ""quotes"""'],
+    ["has,comma", '"has,comma"'],
+    ["has\nnewline", '"has\nnewline"'],
+    [123, "123"],
+    [true, "true"],
+  ])("csvField(%j) -> %j", (input, expected) => {
+    expect(csvField(input)).toBe(expected);
+  });
+
+  it.each([
+    [undefined, ""],
+    [null, ""],
+    ["", ""],
+    ["hello, world; test \\ path\nnewline", "hello\\, world\\; test \\\\ path\\nnewline"],
+  ])("escapeText(%j) -> %j", (input, expected) => {
+    expect(escapeText(input)).toBe(expected);
+  });
+
+  it.each([
+    [undefined, ""],
+    [null, ""],
+    ["", ""],
+    ["  https://example.com/cfp?a=1&b=2  ", "https://example.com/cfp?a=1&b=2"],
+  ])("uriValue(%j) -> %j", (input, expected) => {
+    expect(uriValue(input)).toBe(expected);
   });
 });
