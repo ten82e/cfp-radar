@@ -19,6 +19,10 @@ import {
   deadlinesOf as ccfddlDeadlinesOf,
   editionOf as ccfddlEditionOf,
 } from "../src/sources/ccfddl.ts";
+import {
+  deadlinesOf as localDeadlinesOf,
+  editionOf as localEditionOf,
+} from "../src/sources/local.ts";
 import { utc } from "./helpers.ts";
 
 describe("parse_instant", () => {
@@ -596,5 +600,48 @@ describe("ccfddl parsing", () => {
     expect(conf?.link).toBe("https://conferences.sigcomm.org/sigcomm/2026/");
     expect(conf?.editions.length).toBe(1);
     expect(conf?.editions[0].deadlines.length).toBe(1);
+  });
+});
+
+describe("local source parsing", () => {
+  it("inherits timezone from parent edition when deadline entry has no timezone", () => {
+    const raw = {
+      tz: "AoE",
+      deadlines: [{ date: "2026-05-15 23:59:00", kind: "paper" }],
+    };
+    const dls = localDeadlinesOf(raw);
+    expect(dls.length).toBe(1);
+    expect(dls[0].tz_raw).toBe("AoE");
+    expect(dls[0].at_utc.toISOString()).toBe("2026-05-16T11:59:00.000Z");
+  });
+
+  it("falls back to top-level deadline/abstract_deadline when deadlines array is absent", () => {
+    const raw = {
+      timezone: "UTC",
+      paper_deadline: "2026-05-15 23:59:00",
+      abstract_deadline: "2026-05-01 23:59:00",
+    };
+    const dls = localDeadlinesOf(raw);
+    expect(dls.length).toBe(2);
+    expect(dls[0].kind).toBe("paper");
+    expect(dls[1].kind).toBe("abstract");
+  });
+
+  it("parses valid local edition", () => {
+    const rawEdition = {
+      year: 2026,
+      id: "resound26",
+      place: "Europe",
+      date_text: "September 14-16, 2026",
+      deadline: "2026-06-01 23:59:00",
+      tz: "AoE",
+    };
+    const ed = localEditionOf(rawEdition, "resound");
+    expect(ed).not.toBeNull();
+    expect(ed?.year).toBe(2026);
+    expect(ed?.edition_id).toBe("resound26");
+    expect(ed?.event_start?.toISOString().slice(0, 10)).toBe("2026-09-14");
+    expect(ed?.deadlines.length).toBe(1);
+    expect(ed?.deadlines[0].kind).toBe("paper");
   });
 });
