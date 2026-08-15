@@ -9,7 +9,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
-import { buildAll } from "../src/build.ts";
+import { buildAll, embeddingsStale } from "../src/build.ts";
+import { venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
   makeConference,
@@ -556,6 +557,25 @@ it("coincident deadlines get distinguishable titles", async () => {
   expect(new Set(summaries).size).toBe(summaries.length);
   const upcoming = readFileSync(join(outdir, "upcoming.md"), "utf8");
   expect(upcoming).toContain("論文締切: Posters deadline");
+});
+
+it("embeddingsStale はキー集合の一致で判定する（数比較の穴）", () => {
+  // venuePapersHash は実データ依存のため、実ハッシュを入れてキー集合の
+  // 比較だけを検証する（ハッシュ差分は R29 の別検証でカバー）。
+  const emb = (keys: string[]): Record<string, unknown> => ({
+    venuePapersHash: venuePapersHash(),
+    embeddings: Object.fromEntries(keys.map((k) => [k, [0.1]])),
+  });
+  // 同一キー集合 → stale でない
+  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b", "c"])).toBe(false);
+  // 数が同じでもキーが入れ替わったら stale（数比較だと見逃す）
+  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b", "d"])).toBe(true);
+  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "c", "b"])).toBe(false); // 順序は無関係
+  // 数が変わったら stale
+  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b"])).toBe(true);
+  expect(embeddingsStale(emb(["a", "b"]), ["a", "b", "c"])).toBe(true);
+  // embeddings が無い既存データ → stale
+  expect(embeddingsStale({}, ["a"])).toBe(true);
 });
 
 // --- upcoming.md carries meetings too (SPEC.md 4) --------------------------
