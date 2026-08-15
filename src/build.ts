@@ -762,6 +762,9 @@ export async function buildAll(
   const site = (config.site as Record<string, unknown>) ?? {};
   const domain = String(site.domain ?? "conf-deadlines");
   const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
+  // config.yaml の site.upcoming_days（既定 180）: upcoming.md の窓を決める。
+  // これまで宣言のみで読まれず 180 に固定されていた（#95）。
+  const upcomingDays = Number(site.upcoming_days ?? 180) || 180;
   const categories = (config.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
 
   const records = recordsOf(confs);
@@ -835,7 +838,7 @@ export async function buildAll(
   const jsonText = JSON.stringify(data, null, 2);
   write("data.json", `${jsonText}\n`);
   write("data.csv", toCsv(records));
-  write("upcoming.md", toUpcomingMd(records, nowUtc));
+  write("upcoming.md", toUpcomingMd(records, nowUtc, upcomingDays));
 
   // セマンティックレコメンド用の埋め込み（transformers.js が無ければスキップして語彙のみで動作）
   if (!opts.noEmbeddings) {
@@ -873,7 +876,7 @@ export async function buildAll(
         ...feeds.map((f) => [f[0], f[2]] as [string, string]),
         ["data.json", "正規化データ全体（機械可読の正）"],
         ["data.csv", "1 行 1 締切のフラット表"],
-        ["upcoming.md", "直近 180 日の締切と開催の表"],
+        ["upcoming.md", `直近 ${upcomingDays} 日の締切と開催の表`],
       ],
       config,
     ),
