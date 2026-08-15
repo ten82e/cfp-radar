@@ -1065,7 +1065,12 @@ footer a:hover { text-decoration: underline; }
       if (r.kind !== "abstract" && r.kind !== "paper" && !(pLines.length && r.kind === "journal")) { return false; }
       if (r.t > limit) { return false; }
       if (state.kind && r.kind !== state.kind) { return false; }
-      if (state.rank && r.rankPairs.indexOf(state.rank) < 0) { return false; }
+      // ランクはグレード厳密比較（indexOf の部分一致だと A が core:A* に誤マッチする）
+      if (state.rank) {
+        var rankHit = Rec ? Rec.rankMatches(r.rankPairs, state.rank)
+          : r.rankPairs.indexOf(state.rank) >= 0;
+        if (!rankHit) { return false; }
+      }
       if (cats.length) {
         var hit = false;
         for (var i = 0; i < cats.length; i++) {

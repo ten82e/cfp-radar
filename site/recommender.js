@@ -547,6 +547,12 @@
     return Math.round(avg * 0.6 + max * 0.4);
   }
 
+  /* ランクフィルタ: rankPairs ("ccf:A" 等) のグレードを厳密比較する。
+   * indexOf の部分一致だと "A" が "core:A*" に誤マッチする (A* は A ではない)。 */
+  function rankMatches(rankPairs, grade) {
+    return (rankPairs || []).some((p) => p.slice(p.indexOf(":") + 1) === grade);
+  }
+
   /* 論文モード用: 常時受付ジャーナル（tag: journal で締切なし）の行を合成する。
    * 特集号（締切付き）は通常の締切行で扱うため除外する。 */
   function journalRows(confs, now) {
@@ -1020,6 +1026,7 @@
     scorePapers: scorePapers,
     breakdown: breakdown,
     journalRows: journalRows,
+    rankMatches: rankMatches,
     pastRepresentatives: pastRepresentatives,
     pickRepresentative: pickRepresentative,
     comparePapers: comparePapers,
