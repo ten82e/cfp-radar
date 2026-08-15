@@ -14,6 +14,11 @@ import {
   warningCounts,
 } from "../src/model.ts";
 import { editionOf, rankOf } from "../src/sources/aideadlines.ts";
+import {
+  conferenceOf as ccfddlConferenceOf,
+  deadlinesOf as ccfddlDeadlinesOf,
+  editionOf as ccfddlEditionOf,
+} from "../src/sources/ccfddl.ts";
 import { utc } from "./helpers.ts";
 
 describe("parse_instant", () => {
@@ -509,5 +514,87 @@ describe("aideadlines rankOf", () => {
     expect(rankOf("")).toEqual({});
     expect(rankOf("no colon here, invalid")).toEqual({});
     expect(rankOf({ ccf: null, core: "" })).toEqual({});
+  });
+});
+
+describe("ccfddl parsing", () => {
+  it("parses timeline with multiple rounds and alternative key names", () => {
+    const timeline = [
+      {
+        abstract_deadline: "2026-01-15 23:59:59",
+        deadline: "2026-01-22 23:59:59",
+        comment: "Round 1",
+      },
+      {
+        "abstract deadline": "2026-06-15 23:59:59",
+        paper_deadline: "2026-06-22 23:59:59",
+        comment: "Round 2",
+      },
+      {
+        abstract: "2026-09-01 23:59:59",
+        submission_deadline: "2026-09-08 23:59:59",
+      },
+    ];
+    const dls = ccfddlDeadlinesOf(timeline, "AoE");
+    expect(dls.length).toBe(6);
+    expect(dls[0].kind).toBe("abstract");
+    expect(dls[0].round).toBe(1);
+    expect(dls[0].comment).toBe("Round 1");
+    expect(dls[1].kind).toBe("paper");
+    expect(dls[1].round).toBe(1);
+    expect(dls[2].kind).toBe("abstract");
+    expect(dls[2].round).toBe(2);
+    expect(dls[3].kind).toBe("paper");
+    expect(dls[3].round).toBe(2);
+    expect(dls[4].kind).toBe("abstract");
+    expect(dls[4].round).toBe(3);
+    expect(dls[5].kind).toBe("paper");
+    expect(dls[5].round).toBe(3);
+  });
+
+  it("falls back to top-level deadline if timeline is absent or empty", () => {
+    const rawEdition = {
+      year: 2026,
+      id: "sigcomm26",
+      timezone: "AoE",
+      date: "August 17-21, 2026",
+      abstract_deadline: "2026-01-31 23:59:59",
+      deadline: "2026-02-06 23:59:59",
+      place: "Denver, Colorado",
+    };
+    const ed = ccfddlEditionOf(rawEdition);
+    expect(ed).not.toBeNull();
+    expect(ed?.deadlines.length).toBe(2);
+    expect(ed?.deadlines[0].kind).toBe("abstract");
+    expect(ed?.deadlines[1].kind).toBe("paper");
+    expect(ed?.event_start?.toISOString().slice(0, 10)).toBe("2026-08-17");
+  });
+
+  it("parses conference object with rank and editions", () => {
+    const rawConf = {
+      title: "SIGCOMM",
+      description: "ACM SIGCOMM Conference",
+      sub: "NW",
+      rank: { ccf: "A", CORE: "A*" },
+      dblp: "conf/sigcomm",
+      confs: [
+        {
+          year: 2026,
+          id: "sigcomm26",
+          link: "https://conferences.sigcomm.org/sigcomm/2026/",
+          date: "August 17-21, 2026",
+          timeline: [{ deadline: "2026-02-06 23:59:59" }],
+        },
+      ],
+    };
+    const conf = ccfddlConferenceOf(rawConf);
+    expect(conf).not.toBeNull();
+    expect(conf?.key).toBe("sigcomm");
+    expect(conf?.title).toBe("SIGCOMM");
+    expect(conf?.full_name).toBe("ACM SIGCOMM Conference");
+    expect(conf?.rank).toEqual({ ccf: "A", core: "A*" });
+    expect(conf?.link).toBe("https://conferences.sigcomm.org/sigcomm/2026/");
+    expect(conf?.editions.length).toBe(1);
+    expect(conf?.editions[0].deadlines.length).toBe(1);
   });
 });
