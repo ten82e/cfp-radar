@@ -27,10 +27,11 @@ export const DEFAULT_PATH = join(ROOT, "data", "extra.yaml");
 
 export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
   const out: Deadline[] = [];
+  const parentTz = String(raw.tz ?? raw.timezone ?? "");
   for (const entry of (raw.deadlines as unknown[] | null) ?? []) {
     if (typeof entry !== "object" || entry === null) continue;
     const rec = entry as Record<string, unknown>;
-    const tzRaw = String(rec.tz ?? rec.timezone ?? "");
+    const tzRaw = String(rec.tz ?? rec.timezone ?? parentTz);
     const at = parseInstant(rec.date, tzRaw);
     if (at === null) continue;
     const kind = kindOf(String(rec.kind ?? rec.type ?? ""));
@@ -45,10 +46,50 @@ export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
       comment: rec.comment === null || rec.comment === undefined ? null : String(rec.comment),
     });
   }
+  if (out.length === 0) {
+    for (const key of ["deadline", "paper_deadline", "submission_deadline", "submission"]) {
+      const val = raw[key];
+      if (typeof val === "string" && val.trim()) {
+        const at = parseInstant(val, parentTz);
+        if (at !== null) {
+          const kind = "paper";
+          const label = "Paper submission";
+          out.push({
+            kind,
+            label,
+            at_utc: at,
+            tz_raw: parentTz,
+            round: roundOf(label, 1),
+            comment: null,
+          });
+          break;
+        }
+      }
+    }
+    for (const key of ["abstract_deadline", "abstract"]) {
+      const val = raw[key];
+      if (typeof val === "string" && val.trim()) {
+        const at = parseInstant(val, parentTz);
+        if (at !== null) {
+          const kind = "abstract";
+          const label = "Abstract submission";
+          out.push({
+            kind,
+            label,
+            at_utc: at,
+            tz_raw: parentTz,
+            round: roundOf(label, 1),
+            comment: null,
+          });
+          break;
+        }
+      }
+    }
+  }
   return out;
 }
 
-function editionOf(raw: Record<string, unknown>, key: string): Edition | null {
+export function editionOf(raw: Record<string, unknown>, key: string): Edition | null {
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`local edition without a usable year under ${JSON.stringify(key)}`);
