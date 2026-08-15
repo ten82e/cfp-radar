@@ -3675,3 +3675,25 @@ conferences:
         event_start: '2026-11-23'
         event_end: '2026-11-28'
         deadlines: []
+
+  # ---------------- ICETA 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://www.utpl.edu.ec/congreso-iceta/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/iceta2026
+  #   開催は Loja, Ecuador (hybrid) で November 9-11, 2026。
+  #   AI/ML/data science、software & IT、communications/networking 等のトラック。
+  #   ソースは提出日のみで時刻・タイムゾーンの記載がないため deadlines は空のまま
+  #   （推測しない）。
+  - key: iceta-2026
+    title: ICETA 2026
+    full_name: International Conference of Engineering, Technology and Architecture 2026
+    link: https://www.utpl.edu.ec/congreso-iceta/
+    categories: [ai, systems, networking]
+    editions:
+      - year: 2026
+        id: iceta-202626
+        link: https://www.utpl.edu.ec/congreso-iceta/
+        place: Loja, Ecuador (hybrid)
+        date_text: November 9-11, 2026
+        event_start: '2026-11-09'
+        event_end: '2026-11-11'
+        deadlines: []
