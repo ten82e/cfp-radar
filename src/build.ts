@@ -466,6 +466,9 @@ function toJson(
   config: Record<string, unknown>,
   now: Date,
 ): Record<string, unknown> {
+  const site = (config.site as Record<string, unknown>) ?? {};
+  const domain = String(site.domain ?? "conf-deadlines");
+  const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
   const categories = (config.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
   const sources = (config.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
   const outConfs: unknown[] = [];
@@ -511,6 +514,10 @@ function toJson(
   }
   return {
     generated_at: fmtUTC(now, "%Y-%m-%dT%H:%M:%SZ"),
+    site: {
+      domain,
+      base_url: baseUrl,
+    },
     sources,
     categories: { ...categories },
     conferences: outConfs,
