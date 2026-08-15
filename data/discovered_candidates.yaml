@@ -21423,3 +21423,18 @@ conferences:
         place: ''
         date_text: 1 February 2027
         deadlines: []
+  - key: >-
+      21st-international-conference-on-risks-and-security-of-internet-and-systems-crisis-2026
+    title: >-
+      21st International Conference on Risks and Security of Internet and
+      Systems (CRiSIS 2026)
+    full_name: >-
+      21st International Conference on Risks and Security of Internet and
+      Systems (CRiSIS 2026)
+    link: >-
+      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;7f4324f3.2608
+    categories: []
+    tags:
+      - niche
+      - dbworld
+    editions: []
