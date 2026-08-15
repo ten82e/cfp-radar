@@ -3697,3 +3697,27 @@ conferences:
         event_start: '2026-11-09'
         event_end: '2026-11-11'
         deadlines: []
+
+  # ---------------- KICSS 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://kicss-2026.aiat.or.th/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/KICSS2026
+  #   開催は Bangkok, Thailand で November 19-21, 2026。AI/knowledge/information
+  #   systems のトラック。提出締切は公式サイトが August 8、EasyChair が August 17 と
+  #   食い違っており、いずれも時刻・タイムゾーンの記載がないため deadlines は空のまま
+  #   （どちらも採用しない）。
+  - key: kicss2026
+    title: KICSS2026
+    full_name: >-
+      The 21st International Conference on Knowledge, Information and Creativity
+      Support Systems
+    link: https://kicss-2026.aiat.or.th/
+    categories: [ai, systems]
+    editions:
+      - year: 2026
+        id: kicss202626
+        link: https://kicss-2026.aiat.or.th/
+        place: Bangkok, Thailand
+        date_text: November 19-21, 2026
+        event_start: '2026-11-19'
+        event_end: '2026-11-21'
+        deadlines: []

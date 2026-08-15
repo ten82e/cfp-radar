@@ -10023,23 +10023,6 @@ conferences:
         place: Fribourg, Switzerland
         date_text: Jul 8, 2026
         deadlines: []
-  - key: kicss2026
-    title: KICSS2026
-    full_name: >-
-      The 21st International Conference on Knowledge, Information and Creativity
-      Support Systems
-    link: https://easychair.org/cfp/KICSS2026
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: kicss202626
-        link: https://easychair.org/cfp/KICSS2026
-        place: Bangkok, Thailand
-        date_text: Aug 17, 2026
-        deadlines: []
   - key: incis-2027
     title: InCIS 2027
     full_name: 3rd India Conference on Information Systems
