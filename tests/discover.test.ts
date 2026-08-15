@@ -440,10 +440,42 @@ describe("parseWikiCfpHtml", () => {
   });
 });
 
+describe("parseDeadlineText", () => {
+  it.each([
+    ["15-May-2026", 2026, 5, 15],
+    ["15/May/2026", 2026, 5, 15],
+    ["May-15-2026", 2026, 5, 15],
+    ["August 15th, 2026", 2026, 8, 15],
+    ["15th August, 2026", 2026, 8, 15],
+    ["aug 15, 2026", 2026, 8, 15],
+    ["AUG 15, 2026", 2026, 8, 15],
+    ["Submission deadline: 2026/08/20 (AoE)", 2026, 8, 20],
+    ["2026.05.15", 2026, 5, 15],
+    ["2026-05-15", 2026, 5, 15],
+    ["2026年5月15日", 2026, 5, 15],
+  ])("parses %j -> %d-%02d-%02d", (text, y, m, d) => {
+    const res = parseDeadlineText(text);
+    expect(res).not.toBeNull();
+    expect(res?.toISOString().slice(0, 10)).toBe(
+      `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+    );
+  });
+
+  it("returns null for unparsable or empty strings", () => {
+    expect(parseDeadlineText("")).toBeNull();
+    expect(parseDeadlineText("TBD")).toBeNull();
+    expect(parseDeadlineText("2026-02-30")).toBeNull();
+  });
+});
+
 describe("deadlineIsFuture", () => {
   it("compares against today", () => {
     const today = utcDate(2026, 8, 10);
     expect(deadlineIsFuture("Aug 14, 2026", today)).toBe(true);
+    expect(deadlineIsFuture("aug 14, 2026", today)).toBe(true);
+    expect(deadlineIsFuture("15-Sep-2026", today)).toBe(true);
+    expect(deadlineIsFuture("August 15th, 2026", today)).toBe(true);
+    expect(deadlineIsFuture("Submission deadline: 2026/08/20 (AoE)", today)).toBe(true);
     expect(deadlineIsFuture("Aug 9, 2026", today)).toBe(false);
     expect(deadlineIsFuture("Dec 1, 2026 (Nov 15, 2026)", today)).toBe(true);
     expect(deadlineIsFuture("Feb 1, 2026", today)).toBe(false);

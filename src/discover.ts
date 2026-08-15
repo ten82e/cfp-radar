@@ -356,35 +356,54 @@ function validUtcDate(year: number, month: number, day: number): Date | null {
   return d;
 }
 
-/** 'Aug 15, 2026 (Aug 1, 2026)' または '31 December 2026' 形式の締切を Date に変換。 */
+const MONTHS_MAP: Record<string, number> = {
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12,
+};
+
+/** 'Aug 15, 2026 (Aug 1, 2026)', '31 December 2026', '15-May-2026', '2026/08/20' 形式の締切を Date に変換。 */
 export function parseDeadlineText(dateText: string): Date | null {
-  const months: Record<string, number> = {
-    Jan: 1,
-    Feb: 2,
-    Mar: 3,
-    Apr: 4,
-    May: 5,
-    Jun: 6,
-    Jul: 7,
-    Aug: 8,
-    Sep: 9,
-    Oct: 10,
-    Nov: 11,
-    Dec: 12,
-  };
-  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(dateText);
+  if (!dateText) return null;
+
+  // 1. ISO / Numeric: 2026-05-15, 2026/05/15, 2026.05.15
+  let m = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(dateText);
   if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
+
+  // 2. Japanese date: 2026年5月15日
   m = /(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(dateText);
   if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
-  m = /(\d{1,2})\s+([A-Z][a-z]{2})\w*\s+(20\d\d)/.exec(dateText);
-  if (m && m[2] in months) {
-    return validUtcDate(Number(m[3]), months[m[2]], Number(m[1]));
+
+  // 3. Day Month Year: '15 May 2026', '15th August, 2026', '15-May-2026', '15/May/2026'
+  m = /\b(\d{1,2})(?:st|nd|rd|th)?[-/\s]+([a-zA-Z]{3,9})\.?(?:,)?[-/\s]+(20\d\d)\b/i.exec(dateText);
+  if (m) {
+    const moKey = m[2].toLowerCase().slice(0, 3);
+    if (moKey in MONTHS_MAP) {
+      return validUtcDate(Number(m[3]), MONTHS_MAP[moKey], Number(m[1]));
+    }
   }
-  m = /([A-Z][a-z]{2})\w*\s+(\d{1,2}),?\s*(20\d\d)?/.exec(dateText);
-  if (m && m[1] in months) {
-    const year = m[3] ? Number(m[3]) : new Date().getUTCFullYear();
-    return validUtcDate(year, months[m[1]], Number(m[2]));
+
+  // 4. Month Day Year: 'Aug 15, 2026', 'August 15th, 2026', 'Aug-15-2026', 'Aug 15'
+  m = /\b([a-zA-Z]{3,9})\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?(?:[-/\s]+(20\d\d))?\b/i.exec(
+    dateText,
+  );
+  if (m) {
+    const moKey = m[1].toLowerCase().slice(0, 3);
+    if (moKey in MONTHS_MAP) {
+      const year = m[3] ? Number(m[3]) : new Date().getUTCFullYear();
+      return validUtcDate(year, MONTHS_MAP[moKey], Number(m[2]));
+    }
   }
+
   return null;
 }
 
