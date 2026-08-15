@@ -132,6 +132,16 @@ function fmtDateIcs(d: Date): string {
   return fmtUTC(d, "%Y%m%d");
 }
 
+/**
+ * タイトル + 開催年を組み立てる。タイトルが既にその年で終わっている
+ * （例: `CANOPIE-HPC 2026`）場合は年を二重に付けない（#93）。
+ * タイトルが別の年で終わる edition は実データに無いため、末尾一致で
+ * 省くガードは必要な年を消さない。
+ */
+function titleWithYear(title: string, year: number): string {
+  return title.trim().endsWith(String(year)) ? title.trim() : `${title.trim()} ${year}`;
+}
+
 interface IcsEntry {
   uid: string;
   dtstamp?: Date;
@@ -396,7 +406,7 @@ function recordsOf(confs: Conference[]): CalendarRecord[] {
           deadline: dl,
           entry: {
             uid: uid(`${conf.key}-${ed.year}-${dl.kind}-${ord}@${UID_DOMAIN}`),
-            summary: `${conf.title} ${ed.year} ${labelJa}${ed.estimated ? "（推定）" : ""}`,
+            summary: `${titleWithYear(conf.title, ed.year)} ${labelJa}${ed.estimated ? "（推定）" : ""}`,
             description: desc.join("\n"),
             url: link,
             categories: [...cats, dl.kind],
@@ -426,7 +436,7 @@ function recordsOf(confs: Conference[]): CalendarRecord[] {
             uid: uid(
               `${conf.key}-${ed.year}-event${eventSuffix(eventOrds.get(edIndex) ?? 1)}@${UID_DOMAIN}`,
             ),
-            summary: `${conf.title} ${ed.year}`,
+            summary: titleWithYear(conf.title, ed.year),
             description: desc.join("\n"),
             url: link,
             categories: [...cats, "event"],
@@ -557,7 +567,9 @@ function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string 
   for (const rec of records) {
     const { conf, edition: ed } = rec;
     const link = ed.link || conf.link;
-    const name = link ? `[${conf.title} ${ed.year}](${link})` : `${conf.title} ${ed.year}`;
+    const name = link
+      ? `[${titleWithYear(conf.title, ed.year)}](${link})`
+      : titleWithYear(conf.title, ed.year);
     if (rec.type === "deadline") {
       const dl = rec.deadline;
       if (dl === null) continue;
