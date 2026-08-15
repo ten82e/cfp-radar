@@ -21412,21 +21412,6 @@ conferences:
         place: Dallas, Texas, United States
         date_text: Aug 15, 2026
         deadlines: []
-  - key: eocon26
-    title: EOCON26
-    full_name: EyesOpen Cybersecurity Conference - 7th edition
-    link: https://easychair.org/cfp/EOCON7
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: eocon2626
-        link: https://easychair.org/cfp/EOCON7
-        place: ''
-        date_text: Sep 30, 2026
-        deadlines: []
   - key: imbsa-2027
     title: IMBSA 2027
     full_name: 11th International Symposium on Model-Based Safety Assessment
