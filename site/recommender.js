@@ -1030,6 +1030,52 @@
     return (primary ? primary + " " : "") + joined;
   }
 
+  /* Google Calendar 追加用 URL 生成。
+   * - 終日イベント (kind === "event"): YYYYMMDD/YYYYMMDD (終了日は翌日の排他日)
+   * - 締切 (kind !== "event"): 締切時刻 (r.t) を終了日時とし、30分前を開始日時とする
+   */
+  function getGCalUrl(r, kindLabels) {
+    if (!r || !r.conf) return "";
+    var kl = kindLabels || {
+      abstract: "概要締切",
+      paper: "論文締切",
+      supplementary: "補足資料締切",
+      notification: "採否通知",
+      camera_ready: "カメラレディ締切",
+      rebuttal_start: "反論期間開始",
+      rebuttal_end: "反論期間終了",
+      review_release: "査読結果公開",
+      registration: "登録締切",
+      event: "開催",
+      other: "締切",
+    };
+    var label = kl[r.kind] || r.kind || "締切";
+    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key || "") + "] " + label);
+    var pad = function(n) { return (n < 10 ? "0" : "") + n; };
+    var dates = "";
+    if (r.kind === "event") {
+      var tStart = typeof r.t === "number" ? r.t : (r.t instanceof Date ? r.t.getTime() : 0);
+      var tEnd = typeof r.tLast === "number" ? r.tLast : (r.tLast instanceof Date ? r.tLast.getTime() : tStart);
+      var dStart = new Date(tStart);
+      var dEnd = new Date(tEnd + 86400000);
+      var fmtDateGCal = function(d) {
+        return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
+      };
+      dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
+    } else {
+      var t = typeof r.t === "number" ? r.t : (r.t instanceof Date ? r.t.getTime() : 0);
+      var dEnd = new Date(t);
+      var dStart = new Date(t - 1800000); // 30 分前
+      var isoStart = dStart.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      dates = isoStart + "/" + isoEnd;
+    }
+    var ed = r.ed || {};
+    var details = encodeURIComponent((r.conf.full_name || "") + "\nCFP Link: " + (ed.link || r.conf.link || ""));
+    var location = encodeURIComponent(ed.place || "");
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
+  }
+
   var api = {
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     STOPWORDS: STOPWORDS,
@@ -1060,6 +1106,7 @@
     expandJp: expandJp,
     setExpandEnabled: setExpandEnabled,
     queryText: queryText,
+    getGCalUrl: getGCalUrl,
   };
 
   if (typeof module !== "undefined" && module.exports) {
