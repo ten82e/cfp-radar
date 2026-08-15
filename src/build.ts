@@ -199,6 +199,26 @@ export function renderIcs(
   return lines.map((line) => `${foldLine(line)}\r\n`).join("");
 }
 
+/**
+ * 既存 embeddings.json と現在の会議キー集合から再生成要否を判定する。
+ * キー**数**だけでなく集合自体の一致を比較する（数比較だと同数の
+ * 入れ替え・改名で stale のまま残り、新規会議が semanticScore 0 になる）。
+ * R29 の VENUE_PAPERS ハッシュ比較も引き継ぐ。
+ */
+export function embeddingsStale(
+  existing: { embeddings?: Record<string, unknown>; venuePapersHash?: string },
+  confKeys: string[],
+): boolean {
+  const have = new Set(Object.keys(existing.embeddings ?? {}));
+  const want = new Set(confKeys);
+  if (existing.venuePapersHash !== venuePapersHash()) return true;
+  if (have.size !== want.size) return true;
+  for (const key of want) {
+    if (!have.has(key)) return true;
+  }
+  return false;
+}
+
 // --- record extraction -------------------------------------------------------
 
 /** Anywhere on Earth display: UTC-12 wall clock of `atUtc`. */
@@ -814,12 +834,10 @@ export async function buildAll(
         const existing = JSON.parse(readFileSync(embPath, "utf8")) as {
           embeddings?: Record<string, unknown>;
         };
-        const have = new Set(Object.keys(existing.embeddings ?? {}));
-        // 会議セットの変化に加え、VENUE_PAPERS の内容変化でも再生成する（R29:
-        // 会議数が同じでもプロファイル追加が embeddings に反映されないバグ修正）
-        const stalePapers =
-          (existing as { venuePapersHash?: string }).venuePapersHash !== venuePapersHash();
-        needEmb = stalePapers || have.size !== new Set(confs.map((c) => c.key)).size;
+        needEmb = embeddingsStale(
+          existing,
+          confs.map((c) => c.key),
+        );
       } catch {
         needEmb = true;
       }
