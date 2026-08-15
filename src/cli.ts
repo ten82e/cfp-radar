@@ -285,6 +285,21 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
   return 0;
 }
 
+export interface ReviewCliArgs {
+  candidates?: string;
+  limit?: number;
+  now?: string | null;
+}
+
+export async function cmdReview(args: ReviewCliArgs): Promise<number> {
+  const { runReviewCandidates } = await import("./review-candidates.ts");
+  const candidatesPath = args.candidates ?? join(ROOT, "data", "discovered_candidates.yaml");
+  const limit = args.limit ?? 60;
+  const now = args.now ? parseNow(args.now) : new Date();
+  runReviewCandidates(candidatesPath, limit, now);
+  return 0;
+}
+
 function writeTextFile(path: string, text: string): void {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, text, "utf8");
@@ -302,6 +317,8 @@ export interface CliArgs {
   dryRun?: boolean;
   append?: boolean;
   noEmbeddings?: boolean;
+  candidates?: string;
+  limit?: number;
   help?: boolean;
 }
 
@@ -323,6 +340,10 @@ export function usage(): string {
     "    --min-year <n>    対象の最小年 (default: 2026)",
     "    --dry-run         ファイル出力せず結果をプレビュー表示",
     "    --append          既存 YAML に key 重複なしで追記",
+    "  review   探索された候補のレビュー順・重複・predatory 疑いを一覧表示する",
+    "    --candidates <p>  候補 YAML パス (default: data/discovered_candidates.yaml)",
+    "    --limit <n>       表示上限件数 (default: 60)",
+    "    --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
     "  help / --help / -h  使い方を表示する",
   ].join("\n");
 }
@@ -371,6 +392,10 @@ export function parseArgs(argv: string[]): CliArgs {
       args.dryRun = true;
     } else if (a === "--append") {
       args.append = true;
+    } else if (a === "--candidates") {
+      args.candidates = nextVal() ?? join(ROOT, "data", "discovered_candidates.yaml");
+    } else if (a === "--limit") {
+      args.limit = Number(nextVal() ?? 60);
     } else if (a.startsWith("-")) {
       throw new Error(`unknown option: ${raw}`);
     } else {
@@ -414,6 +439,13 @@ export async function main(argv: string[]): Promise<number> {
       minYear: args.minYear ?? 2026,
       dryRun: Boolean(args.dryRun),
       append: Boolean(args.append),
+    });
+  }
+  if (args.command === "review") {
+    return cmdReview({
+      candidates: args.candidates,
+      limit: args.limit,
+      now: args.now,
     });
   }
   process.stderr.write(`${usage()}\n`);
