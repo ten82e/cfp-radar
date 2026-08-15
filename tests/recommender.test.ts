@@ -421,6 +421,25 @@ describe("pickRepresentative", () => {
   });
 });
 
+describe("rankMatches", () => {
+  it("matches the exact grade across schemes", () => {
+    expect(R.rankMatches(["ccf:A", "core:A*", "thcpl:A"], "A")).toBe(true);
+    expect(R.rankMatches(["ccf:B", "core:A*"], "B")).toBe(true);
+    expect(R.rankMatches(["core:A*"], "A*")).toBe(true);
+    expect(R.rankMatches(["ccf:N"], "N")).toBe(true);
+  });
+
+  it("A* is not A (regression: substring indexOf matched core:A*)", () => {
+    expect(R.rankMatches(["ccf:B", "core:A*"], "A")).toBe(false);
+    expect(R.rankMatches(["ccf:N", "core:A*", "thcpl:N"], "A")).toBe(false);
+  });
+
+  it("no pairs never match", () => {
+    expect(R.rankMatches([], "A")).toBe(false);
+    expect(R.rankMatches(undefined, "A")).toBe(false);
+  });
+});
+
 describe("journalRows", () => {
   it("creates rows only for always-open journals", () => {
     const confs = [
