@@ -3769,6 +3769,29 @@ conferences:
           - {kind: paper, label: Paper deadline (extended), date: '2026-08-20', tz: AoE}
           - {kind: camera_ready, label: Final version deadline, date: '2026-10-17', tz: AoE}
 
+  # ---------------- AQ²UASIM-v2 (2026-08-15 裏取り) ----------------
+  # 根拠: https://sites.google.com/view/aquasim-v2/home (2026-08-15 取得) + EasyChair CFP:
+  #   https://easychair.org/cfp/aquasim_v2-2026。IROS 2026 併設の workshop で、
+  #   開催は Pittsburgh, PA, USA の David L. Lawrence Convention Center で October 1, 2026。
+  #   EasyChair のヘッダは Submission deadline August 18 だが、本文のラウンドは
+  #   1st 10/07 / 2nd 03/08 (延長) と食い違っており、18/08 は通知日。
+  #   いずれも時刻・タイムゾーンの公式記載がないため deadlines は空（推測しない）。
+  - key: aq-uasim-v2
+    title: AQ²UASIM-v2
+    full_name: >-
+      Advancing Quantitative and QUAlitative SIMulators for marine applications
+    link: https://sites.google.com/view/aquasim-v2/home
+    categories: [ai, systems]
+    editions:
+      - year: 2026
+        id: aq-uasim-v226
+        link: https://sites.google.com/view/aquasim-v2/home
+        place: Pittsburgh, PA, USA
+        date_text: October 1, 2026
+        event_start: '2026-10-01'
+        event_end: '2026-10-01'
+        deadlines: []
+
   # ---------------- AMBRE-2026 (2026-08-15 裏取り) ----------------
   # 根拠: https://sites.google.com/view/uwambre/home (2026-08-15 取得) + EasyChair CFP:
   #   https://easychair.org/cfp/ambre-2026。IROS 2026 併設の full-day workshop で、
