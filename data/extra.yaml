@@ -3653,3 +3653,25 @@ conferences:
         event_start: '2026-10-16'
         event_end: '2026-10-19'
         deadlines: []
+
+  # ---------------- EOCON 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://eyesopensecurity.com/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/EOCON7
+  #   開催は Douala, Cameroon (online) で November 23-28, 2026。
+  #   cybersecurity talks / workshops / panels / EyesOpenCTF を含む。
+  #   公式ページの September 30 は call-for-speakers 締切だが、タイムゾーンや
+  #   正確な時刻の記載がないため deadlines は空のまま（推測しない）。
+  - key: eocon26
+    title: EOCON26
+    full_name: EyesOpen Cybersecurity Conference - 7th edition
+    link: https://eyesopensecurity.com/
+    categories: [security]
+    editions:
+      - year: 2026
+        id: eocon2626
+        link: https://eyesopensecurity.com/
+        place: Douala, Cameroon (online)
+        date_text: November 23-28, 2026
+        event_start: '2026-11-23'
+        event_end: '2026-11-28'
+        deadlines: []
