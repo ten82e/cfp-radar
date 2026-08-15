@@ -1052,13 +1052,15 @@ footer a:hover { text-decoration: underline; }
     // 掲載先タグの属するカテゴリ（例: RTSS タグ → systems）。同カテゴリの会議を僅かにブースト
     var venueCats = (pLines.length && Rec) ? Rec.venueCategories(pLines, rows) : [];
 
-    // 論文モードは網羅性を優先: 未来締切 + 常時受付ジャーナル + 未来締切の無い会議の過去代表行
+    // 論文モードおよび常時受付モード: 未来締切 + 常時受付ジャーナル + 未来締切の無い会議の過去代表行
     // （過去行は代表 1 行のみに限定し、全過去版で埋めない）
     var pool = rows;
     if (pLines.length && Rec) {
       pool = rows
         .filter((r) => r.t >= now)
         .concat(Rec.journalRows(DATA.conferences, now), Rec.pastRepresentatives(rows, now));
+    } else if (state.kind === "journal" && Rec) {
+      pool = rows.concat(Rec.journalRows(DATA.conferences, now));
     }
 
     var out = pool.filter((r) => {
@@ -1068,8 +1070,8 @@ footer a:hover { text-decoration: underline; }
       if (r.est && r.t < now) { return false; }
       // このサイトは「これから投稿できるところ」を探すもの。
       // 投稿締切（概要・論文）以外の種別（開催・採否通知等）は表示しない。
-      // 論文モードのみ常時受付ジャーナル（kind: journal）を許容する。
-      if (r.kind !== "abstract" && r.kind !== "paper" && !(pLines.length && r.kind === "journal")) { return false; }
+      // 論文モードまたは種別指定時のみ常時受付ジャーナル（kind: journal）を許容する。
+      if (r.kind !== "abstract" && r.kind !== "paper" && !((pLines.length || state.kind === "journal") && r.kind === "journal")) { return false; }
       if (r.t > limit) { return false; }
       if (state.kind && r.kind !== state.kind) { return false; }
       // ランクはグレード厳密比較（indexOf の部分一致だと A が core:A* に誤マッチする）
