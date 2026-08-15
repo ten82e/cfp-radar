@@ -67,9 +67,21 @@ export function toLines(htmlText: string): string[] {
     "&gt;": ">",
     "&quot;": '"',
     "&#39;": "'",
+    "&apos;": "'",
+    "&ndash;": "-",
+    "&mdash;": "-",
+    "&minus;": "-",
   };
-  text = text.replace(/&[a-zA-Z#0-9]+;/g, (m) => entities[m] ?? m);
-  text = text.replace(/[ \t\u00a0]+/g, " ");
+  text = text.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+    const code = Number.parseInt(hex, 16);
+    return Number.isFinite(code) && code > 0 ? String.fromCharCode(code) : "";
+  });
+  text = text.replace(/&#(\d+);/g, (_, dec) => {
+    const code = Number.parseInt(dec, 10);
+    return Number.isFinite(code) && code > 0 ? String.fromCharCode(code) : "";
+  });
+  text = text.replace(/&[a-zA-Z]+;/g, (m) => entities[m] ?? m);
+  text = text.replace(/[ \t\u00a0\u2000-\u200b]+/g, " ");
   return text
     .split("\n")
     .map((l) => l.trim())
@@ -220,11 +232,15 @@ export function loadYamlFile(path: string): Record<string, any> {
   }
 }
 
-export async function runFetchPrimary(apply: boolean): Promise<number> {
-  const registry = (loadYamlFile(REGISTRY).conferences as Record<string, any>) ?? {};
-  const previous = (loadYamlFile(OUT).conferences as Record<string, any>) ?? {};
+export async function runFetchPrimary(
+  apply: boolean,
+  registryPath = REGISTRY,
+  outPath = OUT,
+): Promise<number> {
+  const registry = (loadYamlFile(registryPath).conferences as Record<string, any>) ?? {};
+  const previous = (loadYamlFile(outPath).conferences as Record<string, any>) ?? {};
   if (Object.keys(registry).length === 0) {
-    process.stderr.write(`error: ${REGISTRY} に conferences が無い\n`);
+    process.stderr.write(`error: ${registryPath} に conferences が無い\n`);
     return 2;
   }
   const today = new Date().toISOString().slice(0, 10);
@@ -289,10 +305,10 @@ export async function runFetchPrimary(apply: boolean): Promise<number> {
   };
   const yamlText = dumpYaml(payload, { skipInvalid: true });
   if (apply) {
-    writeFileSync(OUT, yamlText, "utf8");
-    console.log(`wrote ${OUT} (${Object.keys(generated).length} conferences)`);
+    writeFileSync(outPath, yamlText, "utf8");
+    console.log(`wrote ${outPath} (${Object.keys(generated).length} conferences)`);
   } else {
-    console.log(`--- dry-run: ${OUT} (${Object.keys(generated).length} conferences) ---`);
+    console.log(`--- dry-run: ${outPath} (${Object.keys(generated).length} conferences) ---`);
     console.log(yamlText);
   }
   return 0;
@@ -300,7 +316,21 @@ export async function runFetchPrimary(apply: boolean): Promise<number> {
 
 const isMain = process.argv[1]?.endsWith("fetch-primary.ts");
 if (isMain) {
-  runFetchPrimary(process.argv.includes("--apply")).then(
+  const argv = process.argv.slice(2);
+  if (argv.includes("--help") || argv.includes("-h") || argv.includes("help")) {
+    console.log("usage: node src/fetch-primary.ts [--apply] [--registry <path>] [--out <path>]");
+    process.exit(0);
+  }
+  const apply = argv.includes("--apply");
+  let registryPath = REGISTRY;
+  let outPath = OUT;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--registry" && argv[i + 1]) registryPath = argv[++i];
+    else if (argv[i].startsWith("--registry=")) registryPath = argv[i].slice("--registry=".length);
+    else if (argv[i] === "--out" && argv[i + 1]) outPath = argv[++i];
+    else if (argv[i].startsWith("--out=")) outPath = argv[i].slice("--out=".length);
+  }
+  runFetchPrimary(apply, registryPath, outPath).then(
     (code) => {
       process.exitCode = code;
     },
