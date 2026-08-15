@@ -363,7 +363,7 @@ export const VENUE_PAPERS: Record<string, string[]> = {
  * 多言語モデル用（forMulti）は、日本語名の会議にカテゴリの日本語キーワードを付与して
  * 日本語クエリから検索可能にする。英語モデルは日本語キーワードがノイズになるため
  * 付与しない（言語別の埋め込みを実測で分離した設計）。 */
-function profileTexts(
+export function profileTexts(
   confs: Array<Record<string, unknown>>,
   catNames: Record<string, string>,
   forMulti: boolean,
@@ -550,10 +550,18 @@ export async function buildEmbeddings(
   return out;
 }
 
-async function main(argv: string[]): Promise<number> {
-  const args = argv.slice(2);
+export async function main(argv: string[]): Promise<number> {
+  const rawArgs = argv.slice(2);
+  if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
+    console.log("usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>");
+    return 0;
+  }
+  const force = rawArgs.includes("--force") || rawArgs.includes("-f");
+  const args = rawArgs.filter((a) => a !== "--force" && a !== "-f");
   if (args.length !== 2) {
-    process.stderr.write("usage: node src/embeddings.ts <data.json> <embeddings.json>\n");
+    process.stderr.write(
+      "usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>\n",
+    );
     return 2;
   }
   const dataPath = args[0];
@@ -568,16 +576,18 @@ async function main(argv: string[]): Promise<number> {
     process.stderr.write(`data not found: ${dataPath}\n`);
     return 1;
   }
-  let outExists = false;
-  try {
-    readFileSync(outPath);
-    outExists = true;
-  } catch {
-    outExists = false;
-  }
-  if (outExists) {
-    process.stderr.write(`embeddings already exist: ${outPath} (skip)\n`);
-    return 0;
+  if (!force) {
+    let outExists = false;
+    try {
+      readFileSync(outPath);
+      outExists = true;
+    } catch {
+      outExists = false;
+    }
+    if (outExists) {
+      process.stderr.write(`embeddings already exist: ${outPath} (skip)\n`);
+      return 0;
+    }
   }
   const out = await buildEmbeddings(dataPath, outPath);
   console.log(`embeddings written: ${Object.keys(out).length} conferences -> ${outPath}`);
