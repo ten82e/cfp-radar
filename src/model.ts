@@ -639,14 +639,21 @@ export function kindOf(rawTypeOrKey: string | null | undefined): DeadlineKind {
   return "other";
 }
 
-const ROUND_IN_LABEL = /\bround\s*([0-9]+)/i;
+const ROUND_PATTERNS = [
+  /\b(?:round|cycle)\s*#?\s*([0-9]+)\b/i,
+  /\b([0-9]+)(?:st|nd|rd|th)\s+(?:round|cycle)\b/i,
+  /\br([1-9][0-9]?)\b/i,
+];
 
 /** Submission round stated in a free-form label, else `default`. */
 export function roundOf(label: string | null | undefined, defaultRound = 1): number {
-  const match = ROUND_IN_LABEL.exec(String(label ?? ""));
-  if (match) {
-    const value = Number(match[1]);
-    if (value >= 1) return value;
+  const s = String(label ?? "");
+  for (const pattern of ROUND_PATTERNS) {
+    const match = pattern.exec(s);
+    if (match) {
+      const value = Number(match[1]);
+      if (value >= 1) return value;
+    }
   }
   return defaultRound;
 }

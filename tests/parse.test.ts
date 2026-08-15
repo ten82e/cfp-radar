@@ -8,6 +8,7 @@ import {
   parseDateRange,
   parseInstant,
   resetWarnings,
+  roundOf,
   slug,
   warn,
   warningCounts,
@@ -445,4 +446,36 @@ describe("warning counts", () => {
     resetWarnings();
     expect(warningCounts()).toEqual({});
   });
+});
+
+describe("roundOf", () => {
+  it.each([
+    ["Round 1 Paper Submission", 1, 1],
+    ["Round 2 Deadline", 1, 2],
+    ["Round #3", 1, 3],
+    ["Cycle 1 Submission", 1, 1],
+    ["Cycle 2 Deadline", 1, 2],
+    ["Cycle #3", 1, 3],
+    ["1st Round Paper", 1, 1],
+    ["2nd Round Paper", 1, 2],
+    ["3rd Cycle Submission", 1, 3],
+    ["4th round deadline", 1, 4],
+    ["R1 Paper Submission", 1, 1],
+    ["R2 Abstract", 1, 2],
+    ["(R3) Notification", 1, 3],
+    ["[R4] Submission", 1, 4],
+    ["R2: Paper deadline", 1, 2],
+    ["Regular Paper", 1, 1],
+    ["Paper Submission", 2, 2],
+    ["Summer 2026", 1, 1],
+    ["Round 0", 1, 1],
+    ["", 1, 1],
+    [null, 1, 1],
+    [undefined, 1, 1],
+  ] as Array<[string | null | undefined, number, number]>)(
+    "roundOf(%j, %d) -> %d",
+    (label, fallback, expected) => {
+      expect(roundOf(label, fallback)).toBe(expected);
+    },
+  );
 });
