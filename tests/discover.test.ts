@@ -92,6 +92,27 @@ describe("extractDeadlinesFromText", () => {
     expect(deadlines[1].kind).toBe("notification");
     expect(deadlines[1].date).toBe("2026-07-20 23:59:00");
   });
+
+  it("extracts year 2030+ and slash/dot formatted dates", () => {
+    const deadlines = extractDeadlinesFromText(
+      "Paper due 2030/01/15 and notification on 2030.03.20",
+    );
+    expect(deadlines.length).toBe(2);
+    expect(deadlines[0].date).toBe("2030-01-15 23:59:00");
+    expect(deadlines[1].date).toBe("2030-03-20 23:59:00");
+  });
+
+  it("normalizes single-digit month and day", () => {
+    const deadlines = extractDeadlinesFromText("Submission: 2026/5/9, Notification: 2026-7-1");
+    expect(deadlines.length).toBe(2);
+    expect(deadlines[0].date).toBe("2026-05-09 23:59:00");
+    expect(deadlines[1].date).toBe("2026-07-01 23:59:00");
+  });
+
+  it("discards invalid calendar dates", () => {
+    expect(extractDeadlinesFromText("Due: 2026-02-30")).toEqual([]);
+    expect(extractDeadlinesFromText("Due: 2026-04-31 and 2026-09-31")).toEqual([]);
+  });
 });
 
 describe("parseDbworldHtml", () => {
