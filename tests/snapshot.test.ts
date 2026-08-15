@@ -13,7 +13,7 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { type BuildArgs, cmdBuild, hooks, setRoot } from "../src/cli.ts";
+import { type BuildArgs, cmdBuild, hooks, parseNow, setRoot } from "../src/cli.ts";
 import { fmtUTC } from "../src/model.ts";
 import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
 
@@ -43,6 +43,31 @@ function args(outdir: string, cache?: string): BuildArgs {
     noEmbeddings: true,
   };
 }
+
+describe("parseNow (CLI --now boundary)", () => {
+  it.each([
+    "2026-02-30T00:00:00Z",
+    "2026-04-31T00:00:00Z",
+    "2026-06-31T00:00:00Z",
+    "2026-02-29T00:00:00Z",
+  ])("impossible calendar date %s is rejected", (text) => {
+    expect(() => parseNow(text)).toThrow("unparsable --now");
+  });
+
+  it("valid leap day is accepted", () => {
+    expect(parseNow("2028-02-29T00:00:00Z").toISOString()).toBe("2028-02-29T00:00:00.000Z");
+  });
+
+  it("valid forms are unchanged", () => {
+    expect(parseNow("2026-08-15T00:00:00Z").toISOString()).toBe("2026-08-15T00:00:00.000Z");
+    expect(parseNow("2026-08-15T00:00:00+09:00").toISOString()).toBe("2026-08-14T15:00:00.000Z");
+    expect(parseNow(null)).toBeInstanceOf(Date);
+  });
+
+  it.each(["2026-13-01T00:00:00Z", "not-a-date"])("garbage %s still throws", (text) => {
+    expect(() => parseNow(text)).toThrow("unparsable --now");
+  });
+});
 
 describe("snapshot fallback", () => {
   it("build recovers from the snapshot when every source fails", async () => {
