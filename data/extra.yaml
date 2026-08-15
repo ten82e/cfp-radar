@@ -3630,3 +3630,26 @@ conferences:
         event_end: '2026-11-14'
         deadlines:
           - {kind: paper, label: Submission deadline, date: '2026-08-02', tz: AoE}
+
+  # ---------------- IFoU 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://www.ifou2026.com/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/IFOU-26
+  #   開催は Beijing, China で October 16-19, 2026。テーマは urbanism & AI。
+  #   公式サイトは abstract/full-paper/registration の日程を挙げるが、タイムゾーンや
+  #   正確な締切時刻の記載がないため deadlines は空のまま（推測しない）。
+  - key: ifou2026
+    title: IFOU2026
+    full_name: >-
+      Urbanism & AI For Better Human Settlements: Reflection, Re-creation, and
+      Regeneration
+    link: https://www.ifou2026.com/
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: ifou202626
+        link: https://www.ifou2026.com/
+        place: Beijing, China
+        date_text: October 16-19, 2026
+        event_start: '2026-10-16'
+        event_end: '2026-10-19'
+        deadlines: []
