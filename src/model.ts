@@ -505,7 +505,11 @@ export function parseDateRange(
     if (y1 === null && y2 === null) {
       y1 = y2 = fallbackYear;
     } else if (y1 === null) {
-      y1 = y2 ?? fallbackYear;
+      // The stated year belongs to the second month: a descending range
+      // ('October - February, 2026') crosses into the previous year, same
+      // convention as the day-form branch below ('December 28 - January 3,
+      // 2026' -> 2025-12-28..2026-01-03).
+      y1 = (m1m > m2m ? (y2 ?? fallbackYear) - 1 : y2) ?? fallbackYear;
     } else if (y2 === null) {
       y2 = m2m < m1m ? y1 + 1 : y1;
     }
