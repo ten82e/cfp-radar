@@ -19,7 +19,7 @@ import { deadlinesOf } from "./sources/local.ts";
 export const DEFAULT_SOURCE_PRIORITY = ["local", "aideadlines", "ccfddl"];
 export const DEFAULT_ONE_TO_ONE_MAX_S = 604800; // 7 d
 export const DEFAULT_CROSS_SOURCE_TOLERANCE_S = 90000; // 25 h
-const ABSENT_RANKS = new Set(["N", "-", "none", "None"]);
+export const ABSENT_RANKS = new Set(["N", "-", "none", "None", "NONE", "null", "NULL", ""]);
 
 interface Windows {
   one_to_one: number;
@@ -704,19 +704,38 @@ function hasDates(conf: Conference): boolean {
   );
 }
 
-function rankOk(
+export function rankOk(
   conf: Conference,
   schemes: Record<string, unknown>,
   keepIfNoRank: boolean,
 ): boolean {
-  const names = Object.keys(schemes);
-  if (names.length === 0) return true;
+  const schemeEntries = Object.entries(schemes).map(
+    ([name, allowed]) =>
+      [
+        name.toLowerCase().trim(),
+        (Array.isArray(allowed) ? (allowed as string[]) : []).map((v) =>
+          String(v).trim().toUpperCase(),
+        ),
+      ] as const,
+  );
+  if (schemeEntries.length === 0) return true;
+
+  const confRank = new Map<string, string>();
+  for (const [k, v] of Object.entries(conf.rank ?? {})) {
+    if (v !== null && v !== undefined) {
+      confRank.set(k.toLowerCase().trim(), String(v).trim());
+    }
+  }
+
   let hasRank = false;
-  for (const scheme of names) {
-    const value = conf.rank?.[scheme];
-    if (!value || ABSENT_RANKS.has(value)) continue;
+  for (const [schemeName, allowedValues] of schemeEntries) {
+    const rawValue = confRank.get(schemeName);
+    if (!rawValue || ABSENT_RANKS.has(rawValue)) continue;
     hasRank = true;
-    if ((schemes[scheme] as string[]).includes(value)) return true;
+    const normValue = rawValue.toUpperCase();
+    if (allowedValues.includes(normValue) || allowedValues.includes(rawValue)) {
+      return true;
+    }
   }
   return keepIfNoRank && !hasRank;
 }

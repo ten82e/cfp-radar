@@ -13,6 +13,7 @@ import {
   classify,
   dedupDeadlinesAfterRollforward,
   mergeSources,
+  rankOk,
   rollforward,
   sanitizeEditions,
   select,
@@ -953,6 +954,38 @@ describe("select", () => {
     const kept = new Set(select(confs, CONFIG).map((c) => c.key));
     const missing = confs.map((c) => c.key).filter((k) => !kept.has(k));
     expect(missing).toEqual([]);
+  });
+});
+
+describe("rankOk", () => {
+  it("matches case-insensitively on scheme names and rank values", () => {
+    const conf1 = makeConference({
+      key: "sigcomm",
+      title: "SIGCOMM",
+      rank: { ccf: "a", core: "a*" },
+    });
+    expect(rankOk(conf1, { CCF: ["A", "B"] }, false)).toBe(true);
+    expect(rankOk(conf1, { CORE: ["A*"] }, false)).toBe(true);
+    expect(rankOk(conf1, { ccf: ["B"] }, false)).toBe(false);
+  });
+
+  it("handles whitespace and absent rank tokens correctly", () => {
+    const confNone = makeConference({
+      key: "fake",
+      title: "Fake",
+      rank: { ccf: " NONE ", core: " - " },
+    });
+    // With absent rank tokens, conference is treated as having no rank
+    expect(rankOk(confNone, { ccf: ["A"] }, true)).toBe(true);
+    expect(rankOk(confNone, { ccf: ["A"] }, false)).toBe(false);
+  });
+
+  it("returns true when schemes are empty", () => {
+    const conf = makeConference({
+      key: "any",
+      title: "Any",
+    });
+    expect(rankOk(conf, {}, false)).toBe(true);
   });
 });
 
