@@ -3721,3 +3721,26 @@ conferences:
         event_start: '2026-11-19'
         event_end: '2026-11-21'
         deadlines: []
+
+  # ---------------- ICTDSE2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://sites.google.com/view/ictdse/ (2026-08-15 取得)
+  #   ICCE 2026 公式サイト: https://icce2026.csse.canterbury.ac.nz/
+  #   8th International Workshop on Information and Communication Technology for
+  #   Disaster and Safety Education。ICCE 2026 に併設の半日ワークショップで、
+  #   開催日は November 30 or December 1, 2026（公式の代替日表記をそのまま保持）。
+  #   event_start/end は invent せず空のまま。提出締切は August 18, 2026 に延長と
+  #   あるが、時刻・タイムゾーンの記載がないため deadlines は空（推測しない）。
+  - key: ictdse2026
+    title: ICTDSE2026
+    full_name: >-
+      The 8th International Workshop on Information and Communication Technology
+      for Disaster and Safety Education
+    link: https://sites.google.com/view/ictdse/
+    categories: [ai, networking, systems, security]
+    editions:
+      - year: 2026
+        id: ictdse202626
+        link: https://sites.google.com/view/ictdse/
+        place: Christchurch, New Zealand
+        date_text: November 30 or December 1, 2026
+        deadlines: []
