@@ -9765,21 +9765,6 @@ conferences:
         place: Lisboa, Portugal
         date_text: Jul 17, 2026
         deadlines: []
-  - key: icies-2026
-    title: ICIES 2026
-    full_name: International Conference on Intelligent Enterprise Systems
-    link: https://easychair.org/cfp/icies2026
-    categories: []
-    tags:
-      - niche
-      - easychair
-    editions:
-      - year: 2026
-        id: icies-202626
-        link: https://easychair.org/cfp/icies2026
-        place: Budapest, Hungary
-        date_text: Aug 16, 2026
-        deadlines: []
   - key: aixas-2026
     title: AIxAS 2026
     full_name: 5th Italian Workshop on Artificial Intelligence for an Ageing Society
