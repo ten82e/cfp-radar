@@ -200,6 +200,7 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
       confs = applyOverrides(confs, overrides);
       confs = applyOverrides(confs, primary);
       confs = sanitizeEditions(confs);
+      confs = select(confs, config);
     } else {
       process.stderr.write(
         `error: 上流 ${[...failed].sort().join(",")} が取得できず、退避に使える ${snapshot} も無い（${confs.length} 会議）。縮退した内容を配信しないため中断する\n`,

@@ -12,6 +12,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+import { dump as dumpYaml, load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
 import { type BuildArgs, cmdBuild, hooks, parseNow, setRoot } from "../src/cli.ts";
 import { fmtUTC } from "../src/model.ts";
@@ -147,7 +148,7 @@ describe("snapshot fallback", () => {
             dblp: null,
             upstream_sub: null,
             tags: [],
-            categories: [],
+            categories: ["networking"],
             editions: [
               {
                 year: 2027,
@@ -328,6 +329,38 @@ describe("snapshot fallback", () => {
     expect(data.conferences.find((c) => c.key === "ghost-local-conf")).toBeUndefined();
     // 削除されていない local 会議（satml）は従来通り残る
     expect(data.conferences.find((c) => c.key === "satml")).toBeDefined();
+  });
+
+  it("degraded builds respect config.exclude and select() rules", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    const snapshot = JSON.parse(readFileSync(join(REPO_ROOT, "data", "snapshot.json"), "utf8")) as {
+      conferences: unknown[];
+    };
+    writeFileSync(join(root, "data", "snapshot.json"), JSON.stringify(snapshot), "utf8");
+
+    // config.yaml に exclude: [sigcomm] を安全に追記して上流障害時も exclude が適用されるか検証
+    const conf = loadYaml(readFileSync(join(root, "config.yaml"), "utf8")) as Record<
+      string,
+      unknown
+    >;
+    const excl = Array.isArray(conf.exclude) ? [...conf.exclude] : [];
+    excl.push("sigcomm");
+    conf.exclude = excl;
+    writeFileSync(join(root, "config.yaml"), dumpYaml(conf), "utf8");
+
+    allUpstreamsDown();
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-ex-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{ key: string }>;
+    };
+    // snapshot に存在した sigcomm が config.exclude により除外されること
+    expect(data.conferences.find((c) => c.key === "sigcomm")).toBeUndefined();
+    // 他の会議は正常に残ること
+    expect(data.conferences.find((c) => c.key === "sc")).toBeDefined();
   });
 
   it("build aborts instead of publishing a gutted calendar", async () => {
