@@ -38,6 +38,18 @@ export function parseNow(text: string | null | undefined): Date {
     value = `${value.slice(0, -1)}+00:00`;
   }
   const normalized = value.replace(" ", "T");
+  // Date は '2026-02-30' 等の不可能な暦日を黙って翌月へ繰り上げる
+  // (parseInstant / asDate と同じ round-trip の流儀で拒否する)。
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(normalized);
+  if (m) {
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    const chk = new Date(Date.UTC(y, mo - 1, d));
+    if (chk.getUTCFullYear() !== y || chk.getUTCMonth() !== mo - 1 || chk.getUTCDate() !== d) {
+      throw new Error(`unparsable --now: ${JSON.stringify(text)}`);
+    }
+  }
   const dt = new Date(normalized);
   if (Number.isNaN(dt.getTime())) {
     throw new Error(`unparsable --now: ${JSON.stringify(text)}`);
