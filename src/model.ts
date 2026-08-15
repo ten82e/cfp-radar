@@ -444,6 +444,54 @@ function monthSpan(year: number, month: number): [Date | null, Date | null] {
   return [mkdate(year, month, 1), mkdate(year, month, last)];
 }
 
+/** Parse numeric date forms: 'YYYY-MM-DD - YYYY-MM-DD', 'YYYY-MM-DD to YYYY-MM-DD', 'YYYY/MM/DD', 'YYYY-MM-DD', etc. */
+function parseNumericRange(s: string): { matched: boolean; range: [Date | null, Date | null] } {
+  // YYYY-MM-DD - YYYY-MM-DD or YYYY/MM/DD - YYYY/MM/DD or YYYY.MM.DD - YYYY.MM.DD
+  // Also supports YYYY-MM-DD - MM-DD
+  let m =
+    /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\s*(?:[-–—~]|to|through|until)\s*(?:(\d{4})[-/.])?(\d{1,2})[-/.](\d{1,2})$/i.exec(
+      s,
+    );
+  if (m) {
+    const y1 = Number(m[1]);
+    const m1 = Number(m[2]);
+    const d1 = Number(m[3]);
+    const y2 = m[4] ? Number(m[4]) : m1 > Number(m[5]) ? y1 + 1 : y1;
+    const m2 = Number(m[5]);
+    const d2 = Number(m[6]);
+    const start = mkdate(y1, m1, d1);
+    const end = mkdate(y2, m2, d2);
+    if (start && end && start <= end) {
+      return { matched: true, range: [start, end] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+  // YYYY-MM-DD - DD
+  m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\s*(?:[-–—~]|to|through|until)\s*(\d{1,2})$/i.exec(s);
+  if (m) {
+    const y1 = Number(m[1]);
+    const m1 = Number(m[2]);
+    const d1 = Number(m[3]);
+    const d2 = Number(m[4]);
+    const start = mkdate(y1, m1, d1);
+    const end = mkdate(y1, m1, d2);
+    if (start && end && start <= end) {
+      return { matched: true, range: [start, end] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+  // Single YYYY-MM-DD or YYYY/MM/DD or YYYY.MM.DD
+  m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(s);
+  if (m) {
+    const d = mkdate(Number(m[1]), Number(m[2]), Number(m[3]));
+    if (d) {
+      return { matched: true, range: [d, d] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+  return { matched: false, range: [null, null] };
+}
+
 /**
  * Parse free-form event dates such as 'September 29 - October 3, 2025'.
  * Also accepts month-only forms: 'November, 2026', 'March-April, 2025',
@@ -459,6 +507,16 @@ export function parseDateRange(
   s = s.replace(/\s+/g, " ").trim();
   // Drop trailing notes that only say the day is unknown.
   s = s.replace(/\s*\([^)]*\bTBD\b[^)]*\)\s*$/i, "").trim();
+
+  const num = parseNumericRange(s);
+  if (num.matched) {
+    if (num.range[0] === null || num.range[1] === null) {
+      warn(`unparsable event date ${JSON.stringify(String(text))}`);
+      return [null, null];
+    }
+    return num.range;
+  }
+
   // 'September 29 to October 2, 2026' spells the range in words.
   s = s.replace(/\s+(?:to|through|until)\s+/gi, "-");
   const [left, right] = s.split("-", 2);
