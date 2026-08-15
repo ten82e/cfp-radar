@@ -98,6 +98,24 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(res.minYear).toBe(2027);
   });
 
+  it("parses review subcommand and options", () => {
+    const res1 = parseArgs([
+      "review",
+      "--limit=20",
+      "--candidates=data/custom_cands.yaml",
+      "--now=2026-08-09T00:00:00Z",
+    ]);
+    expect(res1.command).toBe("review");
+    expect(res1.limit).toBe(20);
+    expect(res1.candidates).toBe("data/custom_cands.yaml");
+    expect(res1.now).toBe("2026-08-09T00:00:00Z");
+
+    const res2 = parseArgs(["review", "--limit", "15", "--candidates", "data/cand.yaml"]);
+    expect(res2.command).toBe("review");
+    expect(res2.limit).toBe(15);
+    expect(res2.candidates).toBe("data/cand.yaml");
+  });
+
   it.each([["--help"], ["-h"], ["help"]])("parses help forms %j", (arg) => {
     expect(parseArgs([arg]).help).toBe(true);
   });
@@ -111,6 +129,18 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(await main(["node", "cli.ts", "--help"])).toBe(0);
     expect(await main(["node", "cli.ts", "-h"])).toBe(0);
     expect(await main(["node", "cli.ts", "help"])).toBe(0);
+  });
+
+  it("main executes review subcommand successfully", async () => {
+    expect(
+      await main([
+        "node",
+        "cli.ts",
+        "review",
+        "--now=2026-08-09T00:00:00Z",
+        "--candidates=data/discovered_candidates.yaml",
+      ]),
+    ).toBe(0);
   });
 });
 
