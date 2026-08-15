@@ -328,6 +328,19 @@ describe("snapshot fallback", () => {
     expect(existsSync(join(outdir, "all.ics"))).toBe(false);
   });
 
+  it("build aborts when hand-edited data/extra.yaml is unparsable", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(
+      join(root, "data", "extra.yaml"),
+      "conferences:\n  fmas-2026: [unclosed\n",
+      "utf8",
+    );
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-out7-"), "out");
+    await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*extra\.yaml/);
+    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+  });
+
   it("build aborts when hand-edited config.yaml is unparsable", async () => {
     const root = isolatedRepo();
     setRoot(root);

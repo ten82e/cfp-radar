@@ -128,6 +128,10 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   // 自動生成のため従来どおり警告続行（2026-08-12 whpc の趣旨）。
   const overrides = loadYamlFile(join(ROOT, "data", "overrides.yaml"), { strict: true });
   const primary = loadYamlFile(join(ROOT, "data", "primary_overrides.yaml"));
+  // data/extra.yaml も手編集入力（#19/#20 の対象外だった）。破損時に
+  // local 会議 ~169 件が消えた縮退サイトを配信してしまうため、overrides と
+  // 同格に strict 検証して中断する（2026-08-15 実証: 349 vs 518 会議・exit 0）。
+  loadYamlFile(join(ROOT, "data", "extra.yaml"), { strict: true });
   const offline = Boolean(args.offline);
 
   const snapshot = join(ROOT, "data", "snapshot.json");
