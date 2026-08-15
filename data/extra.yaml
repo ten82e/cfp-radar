@@ -3587,4 +3587,24 @@ conferences:
         event_end: '2026-09-30'
         deadlines: []
 
+  # ---------------- ICIES 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://icies-conf.inf.elte.hu/ (2026-08-15 取得)
+  #   EasyChair CFP: https://easychair.org/cfp/icies2026
+  #   開催は Budapest, Hungary で October 30, 2026。EasyChair の Aug 16, 2026 は
+  #   提出締切だが、時刻・タイムゾーンの公式記載がないため deadlines は空のまま。
+  - key: icies-2026
+    title: ICIES 2026
+    full_name: International Conference on Intelligent Enterprise Systems
+    link: https://easychair.org/cfp/icies2026
+    categories: [ai]
+    editions:
+      - year: 2026
+        id: icies-202626
+        link: https://easychair.org/cfp/icies2026
+        place: Budapest, Hungary
+        date_text: October 30, 2026
+        event_start: '2026-10-30'
+        event_end: '2026-10-30'
+        deadlines: []
+
 
