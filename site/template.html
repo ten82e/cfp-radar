@@ -719,14 +719,29 @@ footer a:hover { text-decoration: underline; }
 
   // Google Calendar URL Generator
   function getGCalUrl(r) {
+    if (window.Recommender && window.Recommender.getGCalUrl) {
+      return window.Recommender.getGCalUrl(r, KIND_LABEL);
+    }
     var title = encodeURIComponent("[" + (r.conf.title || r.conf.key) + "] " + (KIND_LABEL[r.kind] || r.kind));
-    var d = new Date(r.t);
-    var dEnd = new Date(r.t + 3600000);
-    var isoStart = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    var pad = function(n) { return (n < 10 ? "0" : "") + n; };
+    var dates = "";
+    if (r.kind === "event") {
+      var dStart = new Date(r.t);
+      var dEnd = new Date((r.tLast || r.t) + 86400000);
+      var fmtDateGCal = function(d) {
+        return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
+      };
+      dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
+    } else {
+      var dEnd = new Date(r.t);
+      var dStart = new Date(r.t - 1800000);
+      var isoStart = dStart.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
+      dates = isoStart + "/" + isoEnd;
+    }
     var details = encodeURIComponent((r.conf.full_name || "") + "\nCFP Link: " + (r.ed.link || r.conf.link || ""));
     var location = encodeURIComponent(r.ed.place || "");
-    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + isoStart + "/" + isoEnd + "&details=" + details + "&location=" + location;
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
   }
 
   // Copy Markdown Reference

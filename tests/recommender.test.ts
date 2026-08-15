@@ -1194,3 +1194,55 @@ describe("GOLDEN_EN と VENUE_PAPERS のリークなし設計 (R12–R17)", () =
     expect(embSrc).toMatch(/SKIP_EMB_KEYS\.has\(key\)/);
   });
 });
+
+describe("getGCalUrl", () => {
+  it("generates correct all-day date range for events", () => {
+    const r = {
+      conf: {
+        key: "sigcomm",
+        title: "SIGCOMM",
+        full_name: "ACM SIGCOMM Conference",
+        link: "https://example.com/sigcomm",
+      },
+      ed: {
+        place: "Denver, USA",
+        link: "https://example.com/sigcomm26",
+      },
+      kind: "event",
+      t: new Date(Date.UTC(2026, 7, 17)).getTime(),
+      tLast: new Date(Date.UTC(2026, 7, 21)).getTime(),
+    };
+    const url = R.getGCalUrl(r);
+    expect(url).toContain("action=TEMPLATE");
+    expect(url).toContain("text=%5BSIGCOMM%5D%20%E9%96%8B%E5%82%AC");
+    expect(url).toContain("dates=20260817/20260822");
+    expect(url).toContain("location=Denver%2C%20USA");
+    expect(url).toContain("CFP%20Link%3A%20https%3A%2F%2Fexample.com%2Fsigcomm26");
+  });
+
+  it("generates correct 30-min window ending at deadline for paper deadlines", () => {
+    const deadlineUtc = new Date(Date.UTC(2026, 1, 7, 11, 59, 59));
+    const r = {
+      conf: {
+        key: "sigcomm",
+        title: "SIGCOMM",
+        full_name: "ACM SIGCOMM Conference",
+      },
+      ed: {
+        place: "Denver, USA",
+        link: "https://example.com/sigcomm26",
+      },
+      kind: "paper",
+      t: deadlineUtc.getTime(),
+    };
+    const url = R.getGCalUrl(r);
+    expect(url).toContain("dates=20260207T112959Z/20260207T115959Z");
+    expect(url).toContain("text=%5BSIGCOMM%5D%20%E8%AB%96%E6%96%87%E7%B7%A0%E5%88%87");
+  });
+
+  it("handles null and empty records gracefully", () => {
+    expect(R.getGCalUrl(null)).toBe("");
+    expect(R.getGCalUrl(undefined)).toBe("");
+    expect(R.getGCalUrl({})).toBe("");
+  });
+});
