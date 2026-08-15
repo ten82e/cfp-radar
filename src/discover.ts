@@ -53,14 +53,19 @@ export const DOMAIN_KEYWORDS: Record<string, string[]> = {
     "optical networking",
   ],
   ai: [
-    "machine learning systems",
+    "machine learning",
+    "artificial intelligence",
+    "deep learning",
+    "neural network",
     "sysml",
     "graph neural networks",
     "ai systems",
-    "deep learning systems",
     "efficient ai",
-    "neural networks",
-    "robotics systems",
+    "robotics",
+    "computer vision",
+    "natural language",
+    "llm",
+    "nlp",
   ],
   security: [
     "system security",
@@ -71,6 +76,42 @@ export const DOMAIN_KEYWORDS: Record<string, string[]> = {
     "binary analysis",
     "confidential computing",
     "trustworthy ai",
+    "cybersecurity",
+  ],
+  db: [
+    "database",
+    "data mining",
+    "data management",
+    "information retrieval",
+    "big data",
+    "knowledge discovery",
+    "query processing",
+  ],
+  graphics: [
+    "computer graphics",
+    "multimedia",
+    "visualization",
+    "virtual reality",
+    "augmented reality",
+    "rendering",
+    "animation",
+  ],
+  hci: [
+    "human-computer interaction",
+    "user interface",
+    "ubiquitous computing",
+    "interactive systems",
+    "human factors",
+  ],
+  theory: [
+    "theory",
+    "theoretical",
+    "algorithms",
+    "computational complexity",
+    "formal methods",
+    "theoretical computer science",
+    "discrete mathematics",
+    "optimization",
   ],
 };
 
@@ -375,7 +416,7 @@ const MONTHS_MAP: Record<string, number> = {
 export function parseDeadlineText(dateText: string): Date | null {
   if (!dateText) return null;
 
-  // 1. ISO / Numeric: 2026-05-15, 2026/05/15, 2026.05.15
+  // 1. ISO / Numeric Year First: 2026-05-15, 2026/05/15, 2026.05.15
   let m = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(dateText);
   if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
 
@@ -401,6 +442,17 @@ export function parseDeadlineText(dateText: string): Date | null {
     if (moKey in MONTHS_MAP) {
       const year = m[3] ? Number(m[3]) : new Date().getUTCFullYear();
       return validUtcDate(year, MONTHS_MAP[moKey], Number(m[2]));
+    }
+  }
+
+  // 5. Day Month Year Numeric: '15.08.2026', '15/08/2026', '15-08-2026'
+  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d\d)\b/.exec(dateText);
+  if (m) {
+    const day = Number(m[1]);
+    const month = Number(m[2]);
+    const year = Number(m[3]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return validUtcDate(year, month, day);
     }
   }
 
