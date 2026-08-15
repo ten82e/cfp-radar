@@ -4581,24 +4581,6 @@ conferences:
         place: Zhengzhou, China
         date_text: Aug 17, 2026
         deadlines: []
-  - key: fmas-2026
-    title: FMAS 2026
-    full_name: 8th International Workshop on Formal Methods for Autonomous Systems
-    link: >-
-      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195390&copyownerid=173668
-    categories:
-      - robotics
-    tags:
-      - niche
-      - wikicfp
-    editions:
-      - year: 2026
-        id: fmas-202626
-        link: >-
-          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=195390&copyownerid=173668
-        place: Southampton, UK
-        date_text: Aug 17, 2026 (Aug 14, 2026)
-        deadlines: []
   - key: naome-2026
     title: NAOME 2026
     full_name: >-

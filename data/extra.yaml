@@ -3744,3 +3744,27 @@ conferences:
         place: Christchurch, New Zealand
         date_text: November 30 or December 1, 2026
         deadlines: []
+
+  # ---------------- FMAS 2026 (2026-08-15 裏取り) ----------------
+  # 根拠: https://fmasworkshop.github.io/FMAS2026/ (2026-08-15 取得)
+  #   8th International Workshop on Formal Methods for Autonomous Systems。
+  #   開催は Southampton, UK で November 17-18, 2026。提出締切は Anywhere on Earth。
+  #   abstract 8/14、paper は 8/17 から 8/20 へ公式延長、final version 10/17（全て AoE）。
+  #   旧 8/17 は採用しない。
+  - key: fmas-2026
+    title: FMAS 2026
+    full_name: 8th International Workshop on Formal Methods for Autonomous Systems
+    link: https://fmasworkshop.github.io/FMAS2026/
+    categories: [ai, systems]
+    editions:
+      - year: 2026
+        id: fmas-202626
+        link: https://fmasworkshop.github.io/FMAS2026/
+        place: Southampton, UK
+        date_text: November 17-18, 2026
+        event_start: '2026-11-17'
+        event_end: '2026-11-18'
+        deadlines:
+          - {kind: abstract, label: Abstract deadline, date: '2026-08-14', tz: AoE}
+          - {kind: paper, label: Paper deadline (extended), date: '2026-08-20', tz: AoE}
+          - {kind: camera_ready, label: Final version deadline, date: '2026-10-17', tz: AoE}
