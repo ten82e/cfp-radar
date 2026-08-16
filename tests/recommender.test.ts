@@ -1529,6 +1529,24 @@ describe("bench-recommender argument parsing and helper utilities", () => {
         ed: { year: 2026, date_text: "November 15-20, 2026" },
       });
       expect(ref2).toBe("[SC '26] November 15-20, 2026 https://sc26.org");
+
+      const ref3 = R.formatMarkdownRef({
+        conf: { title: "EuroSys ’26", link: "https://2026.eurosys.org" },
+        ed: { year: 2026, date_text: "April 20-23, 2026" },
+      });
+      expect(ref3).toBe("[EuroSys ’26] April 20-23, 2026 https://2026.eurosys.org");
+
+      const ref4 = R.formatMarkdownRef({
+        conf: { title: "CAIS'26" },
+        ed: { year: 2026 },
+      });
+      expect(ref4).toBe("[CAIS'26]");
+
+      const ref5 = R.formatMarkdownRef({
+        conf: { title: "SC26" },
+        ed: { year: 2026 },
+      });
+      expect(ref5).toBe("[SC26]");
     });
 
     it("handles missing year without trailing apostrophe", () => {

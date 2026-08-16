@@ -1584,7 +1584,7 @@ footer a:hover { text-decoration: underline; }
     var rawRank = p.get("rank");
     state.rank = ["A*", "A", "B", "C", "N"].indexOf(rawRank) >= 0 ? rawRank : "";
     var rawWin = p.get("win");
-    state.win = ["all", "7d", "30d", "90d", "180d"].indexOf(rawWin) >= 0 ? rawWin : "all";
+    state.win = ["all", "7d", "30d", "90d", "180d", "future"].indexOf(rawWin) >= 0 ? rawWin : "all";
     state.est = p.get("est") === "1";
     state.domestic = p.get("domestic") === "1";
     state.past = p.get("past") === "1";
