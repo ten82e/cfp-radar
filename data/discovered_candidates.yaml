@@ -21438,3 +21438,203 @@ conferences:
       - niche
       - dbworld
     editions: []
+  - key: acis-international-journal-of-computer-information-science
+    title: ACIS International Journal of Computer & Information Science
+    full_name: ACIS International Journal of Computer & Information Science
+    link: https://dblp.org/db/journals/acisj/
+    categories:
+      - systems
+    tags:
+      - niche
+      - journal
+    editions: []
+  - key: alcs-2026
+    title: ALCS 2026
+    full_name: The 4th international workshop on Artificial Learning for Cyber Security
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202702&copyownerid=88612
+    categories:
+      - cybersecurity
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: alcs-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202702&copyownerid=88612
+        place: Sharjah, UAE
+        date_text: Aug 20, 2026
+        deadlines: []
+  - key: ccgrid2027
+    title: CCGrid2027
+    full_name: IEEE International Symposium on Cluster, Cloud, and Internet Computing
+    link: https://easychair.org/cfp/ccgrid27
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Dec 1, 2026
+    editions:
+      - year: 2027
+        id: ccgrid202727
+        link: https://easychair.org/cfp/ccgrid27
+        place: Dallas Fort-Worth, Texas, United States
+        date_text: May 24, 2027
+        deadlines: []
+  - key: hyper-2026
+    title: HyPeR 2026
+    full_name: >-
+      Second International Workshop on Hybrid AI for Human-Centric
+      Personalization and Recommendation
+    link: https://easychair.org/cfp/hyper2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Aug 24, 2026
+    editions:
+      - year: 2026
+        id: hyper-202626
+        link: https://easychair.org/cfp/hyper2026
+        place: Rome, Italy
+        date_text: Nov 8, 2026
+        deadlines: []
+  - key: iccta-2027
+    title: ICCTA 2027
+    full_name: The 13th International Conference on Computer Technology Applications
+    link: https://easychair.org/cfp/ICCTA2027
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Jan 5, 2027
+    editions:
+      - year: 2027
+        id: iccta-202727
+        link: https://easychair.org/cfp/ICCTA2027
+        place: Vienna, Australia
+        date_text: Jun 2, 2027
+        deadlines: []
+  - key: icccbda-2027
+    title: ICCCBDA 2027
+    full_name: >-
+      2027 the 12th International Conference on Cloud Computing and Big Data
+      Analytics
+    link: https://easychair.org/cfp/ICCCBDA2027
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Dec 5, 2026
+    editions:
+      - year: 2027
+        id: icccbda-202727
+        link: https://easychair.org/cfp/ICCCBDA2027
+        place: Chengdu, China
+        date_text: Apr 23, 2027
+        deadlines: []
+  - key: icaibd-2027
+    title: ICAIBD 2027
+    full_name: >-
+      2027 The 10th International Conference on Artificial Intelligence and Big
+      Data
+    link: https://easychair.org/cfp/ICAIBD2027
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Nov 30, 2026
+    editions:
+      - year: 2027
+        id: icaibd-202727
+        link: https://easychair.org/cfp/ICAIBD2027
+        place: Chengdu, China
+        date_text: May 28, 2027
+        deadlines: []
+  - key: gcetai26
+    title: GCETAI26
+    full_name: >-
+      Global Conference on Emerging Trends in Artificial Intelligence:
+      Comparative Approaches of Legal Governance
+    link: https://easychair.org/cfp/GCETAI26
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Aug 31, 2026
+    editions:
+      - year: 2026
+        id: gcetai2626
+        link: https://easychair.org/cfp/GCETAI26
+        place: Raipur, India
+        date_text: Nov 20, 2026
+        deadlines: []
+  - key: 2026dtall
+    title: 2026DTALL
+    full_name: >-
+      Academic Session on the Integrated Development of an AI-Empowered Smart
+      Learning Ecosystem
+    link: https://easychair.org/cfp/2026dtall
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Sep 10, 2026
+    editions:
+      - year: 2026
+        id: 2026dtall26
+        link: https://easychair.org/cfp/2026dtall
+        place: 上海, China
+        date_text: Oct 16, 2026
+        deadlines: []
+  - key: ich-2026
+    title: ICH 2026
+    full_name: 'InterHeritage: Interfaces for Construction Heritage'
+    link: https://easychair.org/cfp/ich2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Oct 9, 2026
+    editions:
+      - year: 2026
+        id: ich-202626
+        link: https://easychair.org/cfp/ich2026
+        place: Turin, Italy
+        date_text: Oct 9, 2026
+        deadlines: []
+  - key: slice-2026
+    title: SLICE-2026
+    full_name: >-
+      The 8th International Workshop on Smart Living with IoT, Cloud, and Edge
+      Computing 20
+    link: https://easychair.org/cfp/slice2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Aug 31, 2026
+    editions:
+      - year: 2026
+        id: slice-202626
+        link: https://easychair.org/cfp/slice2026
+        place: Hung Hom, Hong Kong
+        date_text: Oct 21, 2026
+        deadlines: []
+  - key: icosin-2026
+    title: ICOSIN 2026
+    full_name: International Conference on Smart Informatics
+    link: https://easychair.org/cfp/icosin-2026
+    categories: []
+    tags:
+      - niche
+      - easychair
+    submission_deadline_text: Aug 30, 2026
+    editions:
+      - year: 2026
+        id: icosin-202626
+        link: https://easychair.org/cfp/icosin-2026
+        place: Pontianak, Indonesia
+        date_text: Sep 12, 2026
+        deadlines: []
