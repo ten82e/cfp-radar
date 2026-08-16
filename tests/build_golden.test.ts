@@ -472,6 +472,29 @@ it("README documents every build CLI flag (--no-embeddings regression)", () => {
   }
 });
 
+it("README documents every discover CLI flag (--categories/--min-year regression)", () => {
+  // #247: usage() の discover セクションは 5 つのオプション（--out / --categories /
+  // --min-year / --dry-run / --append）を定義するが、README の探索セクションは
+  // --dry-run / --out / --append しか記載しておらず、--categories と --min-year が
+  // 未記載だった（update.yml は --min-year 2026 を実際に使っている）。
+  // ここでは discover セクションの全 --flag が README に現れることを検証する
+  // （#239 の build 版テストと同じパターンの discover 版）。
+  const lines = usage().split("\n");
+  const discStart = lines.findIndex((l) => l.trim().startsWith("discover "));
+  const discEnd = lines.findIndex((l, i) => i > discStart && l.trim().startsWith("review "));
+  expect(discStart).toBeGreaterThanOrEqual(0);
+  expect(discEnd).toBeGreaterThan(discStart);
+  const flags = [
+    ...new Set(lines.slice(discStart, discEnd).flatMap((l) => l.match(/--[a-z][a-z0-9-]*/g) ?? [])),
+  ];
+  expect(flags).toContain("--categories");
+  expect(flags).toContain("--min-year");
+  const readme = readFileSync(join(REPO_ROOT, "README.md"), "utf8");
+  for (const flag of flags) {
+    expect(readme, `README must document the discover flag ${flag}`).toContain(flag);
+  }
+});
+
 it("README documents every CLI command (review command regression)", () => {
   // #243: usage() は build / discover / review の 3 機能コマンドを定義するが、
   // README は build と discover しか記載しておらず、候補を締切昇順・重複・
