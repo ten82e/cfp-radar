@@ -1110,3 +1110,24 @@ it("toLlmsTxt documents feeds and categories correctly", () => {
   expect(text).toContain("https://conf-deadlines.github.io/all.ics — 全フィード");
   expect(text).toContain("実在値: systems");
 });
+
+it("site template statUpcoming counts confirmed submission deadlines only", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  // statUpcoming の計算が投稿締切 (abstract/paper) かつ非推定 (!r.est) のみに限定されていること
+  expect(template).toContain(
+    'rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est',
+  );
+});
+
+it("site template localized shortcuts label and preset button active sync", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  // SPEC §7: 日本語 UI。Shortcuts: ではなく ショートカット:
+  expect(template).toContain("ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択");
+  expect(template).not.toContain("Shortcuts: <kbd>j</kbd>");
+  // クイック抽出プリセットボタンが data-preset を持ち、updatePresetActive で同期されること
+  expect(template).toContain('data-preset="7d"');
+  expect(template).toContain('data-preset="a_star"');
+  expect(template).toContain('data-preset="hpc_sys"');
+  expect(template).toContain('data-preset="domestic"');
+  expect(template).toContain("function updatePresetActive()");
+});
