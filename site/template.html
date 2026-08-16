@@ -608,7 +608,7 @@ footer a:hover { text-decoration: underline; }
   <!-- Items Counter & Keyboard Shortcuts Hint -->
   <div class="count">
     <span id="count"></span>
-    <span style="font-family: var(--font-mono); font-size: 0.75rem;">ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>/</kbd> 検索</span>
+    <span style="font-family: var(--font-mono); font-size: 0.75rem;">ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>d</kbd> 詳細 | <kbd>Esc</kbd> 閉じる | <kbd>/</kbd> 検索</span>
   </div>
 
   <!-- Table Container -->
@@ -641,10 +641,10 @@ footer a:hover { text-decoration: underline; }
 
 <!-- Conference Details Drawer Modal -->
 <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer(event)">
-  <div class="drawer" id="drawer">
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
       <h2 id="drawerTitle" style="font-size: 1.4rem; font-weight: 700; color: var(--fg);"></h2>
-      <button onclick="closeDrawer()" style="background: transparent; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+      <button id="drawerClose" onclick="closeDrawer()" aria-label="閉じる" style="background: transparent; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer;">✕</button>
     </div>
     <p id="drawerFullName" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 20px;"></p>
     <div id="drawerBody"></div>
@@ -870,7 +870,9 @@ footer a:hover { text-decoration: underline; }
   };
 
   // Drawer Controls
-  window.openDrawer = (r) => {
+  function openDrawer(r) {
+    // フォーカス管理: 開く直前の要素を保存し、ドロワー内（閉じるボタン）へフォーカスを移す（#218）。
+    window._prevFocus = document.activeElement;
     $("drawerBackdrop").classList.add("active");
     $("drawerTitle").textContent = titleWithYear(r.conf.title || r.conf.key, r.ed.year);
     $("drawerFullName").textContent = r.conf.full_name || "";
@@ -905,19 +907,26 @@ footer a:hover { text-decoration: underline; }
 
     window._activeRef = r;
     $("drawerBody").innerHTML = html;
-  };
+    var closeBtn = $("drawerClose");
+    if (closeBtn) closeBtn.focus();
+  }
+  window.openDrawer = openDrawer;
 
   // 閉じるのは ✕ ボタン（自前 onclick 経由、引数なし）とバックドロップの直接クリックのみ。
   // ドロワー内の button（Markdown 参照コピー等）がバブルしても閉じない（#207）。
   function closeDrawer(e) {
     if (!e || e.target === $("drawerBackdrop")) {
       $("drawerBackdrop").classList.remove("active");
+      // フォーカスを開く直前の要素へ戻す（#218）。
+      var prev = window._prevFocus;
+      window._prevFocus = null;
+      if (prev && prev.focus) prev.focus();
     }
   }
   window.closeDrawer = closeDrawer;
 
   // Keyboard Navigation (j/k/Enter/Esc//)
-  window.addEventListener("keydown", (e) => {
+  function onKeydown(e) {
     if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
       if (e.key === "Escape") { e.target.blur(); }
       return;
@@ -925,6 +934,13 @@ footer a:hover { text-decoration: underline; }
     if (e.key === "/") {
       e.preventDefault();
       $("q").focus();
+    } else if (e.key === "d" && selectedIndex >= 0 && selectedIndex < shown.length) {
+      // キーボードで詳細ドロワーを開く（#218）。行にフォーカスしてから開き、
+      // openDrawer が _prevFocus として保存する。
+      e.preventDefault();
+      var dtrs = Array.prototype.filter.call($("tbody").querySelectorAll("tr"), (t) => !t.classList.contains("detail-row"));
+      if (dtrs[selectedIndex]) dtrs[selectedIndex].focus();
+      openDrawer(shown[selectedIndex]);
     } else if (e.key === "j" || e.key === "ArrowDown") {
       e.preventDefault();
       if (selectedIndex < shown.length - 1) {
@@ -944,7 +960,8 @@ footer a:hover { text-decoration: underline; }
     } else if (e.key === "Escape") {
       closeDrawer();
     }
-  });
+  }
+  window.addEventListener("keydown", onKeydown);
 
   function updateRowSelection() {
     // 展開用 detail-row を除外し、shown[] の行と 1:1 対応を保つ
@@ -1303,6 +1320,7 @@ footer a:hover { text-decoration: underline; }
 
   function makeRow(r) {
     var tr = document.createElement("tr");
+    tr.tabIndex = -1; // スクリプトからのフォーカス受付（#218: ドロワー開閉時のフォーカス復元先）
     tr.onclick = (e) => {
       if (e.target.classList && e.target.classList.contains("match-trigger")) {
         toggleDetail(r, tr);
