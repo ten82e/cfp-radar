@@ -902,6 +902,38 @@ it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () =>
   expect(lum(darkVars["--bg"])).toBeLessThan(lum(darkVars["--fg"]));
 });
 
+it("drawer closes only on ✕ / backdrop click, not on inner buttons", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: BUTTON 判定の除去と名前付き関数化がビルド成果に反映されている
+  expect(html).toContain("function closeDrawer(e)");
+  expect(html).not.toContain('e.target.tagName === "BUTTON"');
+  const src = jsFunction(html, "closeDrawer");
+  // 実行検証: fake DOM で閉じる / 閉じないの 4 経路を確認する
+  const script = [
+    "const removals = [];",
+    "const backdrop = { classList: { remove: () => removals.push(1) } };",
+    "const document = { getElementById: (id) => (id === 'drawerBackdrop' ? backdrop : null) };",
+    "function $(id) { return document.getElementById(id); }",
+    `const closeDrawer = ${src};`,
+    // 1. ✕ の自前 onclick 経路（引数なし）→ 閉じる
+    "closeDrawer();",
+    "const r1 = removals.length;",
+    // 2. バックドロップの直接クリック → 閉じる
+    "closeDrawer({ target: backdrop });",
+    "const r2 = removals.length;",
+    // 3. ドロワー内の button（Markdown 参照コピー）→ 閉じない（#207 回帰）
+    "closeDrawer({ target: { tagName: 'BUTTON' } });",
+    "const r3 = removals.length;",
+    // 4. ドロワー内の通常クリック → 閉じない
+    "closeDrawer({ target: { tagName: 'DIV' } });",
+    "const r4 = removals.length;",
+    "console.log(r1 + '|' + r2 + '|' + r3 + '|' + r4);",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe("1|2|2|2");
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
