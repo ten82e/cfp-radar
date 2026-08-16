@@ -100,15 +100,19 @@ describe("embeddings CLI main", () => {
     expect(await main(["node", "embeddings.ts", "help"])).toBe(0);
   });
 
-  it("returns 2 for wrong number of arguments", async () => {
+  it("returns 2 for wrong number of arguments and handles null/undefined safely", async () => {
+    expect(await main(null)).toBe(2);
+    expect(await main(undefined)).toBe(2);
     expect(await main(["node", "embeddings.ts"])).toBe(2);
     expect(await main(["node", "embeddings.ts", "one"])).toBe(2);
     expect(await main(["node", "embeddings.ts", "one", "two", "three"])).toBe(2);
+    expect(await main(["only-one"])).toBe(2);
   });
 
   it("returns 1 when data file does not exist", async () => {
     expect(
       await main(["node", "embeddings.ts", "/tmp/nonexistent-data-12345.json", "/tmp/out.json"]),
     ).toBe(1);
+    expect(await main(["/tmp/nonexistent-data-12345.json", "/tmp/out.json"])).toBe(1);
   });
 });
