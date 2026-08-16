@@ -269,29 +269,112 @@ export function toYamlDict(c: Candidate): Record<string, unknown> {
   return entry;
 }
 
+/** Date.UTC は不正な年月日を繰り上げてしまうため、暦の妥当性を検証してから返す。 */
+function validUtcDate(year: number, month: number, day: number): Date | null {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
+    return null;
+  }
+  return d;
+}
+
+const MONTHS_MAP: Record<string, number> = {
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12,
+};
+
+interface FoundDate {
+  index: number;
+  isoDate: string;
+}
+
 /** Extract structured deadline dates from text if ISO or standard date formats appear. */
 export function extractDeadlinesFromText(text: string): Array<Record<string, unknown>> {
-  const deadlines: Array<Record<string, unknown>> = [];
-  const matches: string[] = [];
-  const re = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/g;
+  if (!text) return [];
+  const found: FoundDate[] = [];
+
+  const recordDate = (idx: number, y: number, m: number, d: number) => {
+    const dt = validUtcDate(y, m, d);
+    if (!dt) return;
+    const isoDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    found.push({ index: idx, isoDate });
+  };
+
+  // 1. Japanese format: 2026年5月15日
+  const reJp = /(\d{4})年(\d{1,2})月(\d{1,2})日/g;
   let m: RegExpExecArray | null = null;
   while (true) {
-    m = re.exec(text);
+    m = reJp.exec(text);
     if (!m) break;
-    const year = Number(m[1]);
-    const month = Number(m[2]);
-    const day = Number(m[3]);
-    if (month < 1 || month > 12 || day < 1 || day > 31) continue;
-    const dt = new Date(Date.UTC(year, month - 1, day));
-    if (dt.getUTCFullYear() !== year || dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) {
-      continue;
-    }
-    const isoDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    if (!matches.includes(isoDate)) {
-      matches.push(isoDate);
+    recordDate(m.index, Number(m[1]), Number(m[2]), Number(m[3]));
+  }
+
+  // 2. ISO / Numeric Year First: 2026-05-15, 2026/05/15, 2026.05.15
+  const reIso = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/g;
+  while (true) {
+    m = reIso.exec(text);
+    if (!m) break;
+    recordDate(m.index, Number(m[1]), Number(m[2]), Number(m[3]));
+  }
+
+  // 3. Month Day Year: 'May 15, 2026', 'August 16th, 2026', 'Sept. 15, 2026', 'May-15-2026'
+  const reMdy = /\b([a-zA-Z]{3,9})\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?[-/\s]+(20\d\d)\b/gi;
+  while (true) {
+    m = reMdy.exec(text);
+    if (!m) break;
+    const moKey = m[1].toLowerCase().slice(0, 3);
+    if (moKey in MONTHS_MAP) {
+      recordDate(m.index, Number(m[3]), MONTHS_MAP[moKey], Number(m[2]));
     }
   }
 
+  // 4. Day Month Year: '15 May 2026', '16th August, 2026', '15th of May 2026', '15-May-2026', '15/May/2026'
+  const reDmy =
+    /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)([a-zA-Z]{3,9})\.?(?:,)?[-/\s]+(20\d\d)\b/gi;
+  while (true) {
+    m = reDmy.exec(text);
+    if (!m) break;
+    const moKey = m[2].toLowerCase().slice(0, 3);
+    if (moKey in MONTHS_MAP) {
+      recordDate(m.index, Number(m[3]), MONTHS_MAP[moKey], Number(m[1]));
+    }
+  }
+
+  // 5. European Numeric Day Month Year: '15.05.2026', '15/05/2026', '15-05-2026'
+  const reEu = /\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d\d)\b/g;
+  while (true) {
+    m = reEu.exec(text);
+    if (!m) break;
+    const d = Number(m[1]);
+    const mo = Number(m[2]);
+    const y = Number(m[3]);
+    if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) {
+      recordDate(m.index, y, mo, d);
+    }
+  }
+
+  // Sort by appearance index in text
+  found.sort((a, b) => a.index - b.index);
+
+  // Deduplicate
+  const matches: string[] = [];
+  for (const item of found) {
+    if (!matches.includes(item.isoDate)) {
+      matches.push(item.isoDate);
+    }
+  }
+
+  const deadlines: Array<Record<string, unknown>> = [];
   if (matches.length > 0) {
     deadlines.push({
       kind: "paper",
@@ -387,30 +470,6 @@ export function parseWikiCfpHtml(
   }
   return entries;
 }
-
-/** Date.UTC は不正な年月日を繰り上げてしまうため、暦の妥当性を検証してから返す。 */
-function validUtcDate(year: number, month: number, day: number): Date | null {
-  const d = new Date(Date.UTC(year, month - 1, day));
-  if (d.getUTCFullYear() !== year || d.getUTCMonth() !== month - 1 || d.getUTCDate() !== day) {
-    return null;
-  }
-  return d;
-}
-
-const MONTHS_MAP: Record<string, number> = {
-  jan: 1,
-  feb: 2,
-  mar: 3,
-  apr: 4,
-  may: 5,
-  jun: 6,
-  jul: 7,
-  aug: 8,
-  sep: 9,
-  oct: 10,
-  nov: 11,
-  dec: 12,
-};
 
 /** 'Aug 15, 2026 (Aug 1, 2026)', '31 December 2026', '15-May-2026', '2026/08/20' 形式の締切を Date に変換。 */
 export function parseDeadlineText(dateText: string): Date | null {
