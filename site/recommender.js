@@ -826,19 +826,32 @@
   /* 会議名・代表論文の語がクエリテキストに語境界で現れるか（R19）。
    * 部分文字列一致（indexOf）だと、会議名の略語 trans/syst がクエリの
    * Transcompiling/Systems に誤マッチする（QiMeng→ieice 46 点の実測原因）。
-   * 単複形（bandit/bandits, system/systems）は正当なマッチなので末尾 s を許容
-   * （純粋な語境界だと Batched Dueling Bandits が icml の bandit 語彙に
-   * マッチしなくなり top10 が -7.2pt 回帰した — 実測）。語は normKey 済み
-   * （英数字のみ）なのでエスケープ不要。
+   * 単複形・活用形（bandit/bandits, process/processes, memory/memories, search/searches）は
+   * 正当なマッチなので双方向に対称照合する。
    */
   function wordInText(hay, w) {
     if (!hay || !w) return false;
-    var safeW = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    // 単複形は双方向とも正当なマッチ（R19 の意図）。単数形語は末尾 s を任意化し
-    // （bandit→bandits）、複数形語（communications 等）も語尾 s を外して任意化する
-    // ことで単数形クエリ（communication）にも一致させる。
-    var re = safeW.endsWith("s") ? safeW.slice(0, -1) + "s?" : safeW + "s?";
-    return new RegExp("\\b" + re + "\\b").test(String(hay));
+    var safeW = String(w).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!safeW) return false;
+    var re;
+    if (safeW.endsWith("ies") && safeW.length > 4) {
+      re = safeW.slice(0, -3) + "(?:y|ies)";
+    } else if (safeW.endsWith("y") && safeW.length > 3 && !/[aeiou]y$/.test(safeW)) {
+      re = safeW.slice(0, -1) + "(?:y|ies)";
+    } else if (safeW.endsWith("sses") && safeW.length > 5) {
+      re = safeW.slice(0, -2) + "(?:es)?";
+    } else if (safeW.endsWith("ss")) {
+      re = safeW + "(?:es)?";
+    } else if (/(?:ches|shes|xes|zes)$/.test(safeW) && safeW.length > 4) {
+      re = safeW.slice(0, -2) + "(?:es)?";
+    } else if (/(?:ch|sh|x|z)$/.test(safeW)) {
+      re = safeW + "(?:es)?";
+    } else if (safeW.endsWith("s")) {
+      re = safeW.slice(0, -1) + "s?";
+    } else {
+      re = safeW + "s?";
+    }
+    return new RegExp("\\b" + re + "\\b", "i").test(String(hay));
   }
 
   /* クエリの内容語数（英語）。ブレンドの語彙重みの適応に使う。
