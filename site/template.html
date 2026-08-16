@@ -864,11 +864,14 @@ footer a:hover { text-decoration: underline; }
     $("drawerBody").innerHTML = html;
   };
 
-  window.closeDrawer = (e) => {
-    if (!e || e.target === $("drawerBackdrop") || e.target.tagName === "BUTTON") {
+  // 閉じるのは ✕ ボタン（自前 onclick 経由、引数なし）とバックドロップの直接クリックのみ。
+  // ドロワー内の button（Markdown 参照コピー等）がバブルしても閉じない（#207）。
+  function closeDrawer(e) {
+    if (!e || e.target === $("drawerBackdrop")) {
       $("drawerBackdrop").classList.remove("active");
     }
-  };
+  }
+  window.closeDrawer = closeDrawer;
 
   // Keyboard Navigation (j/k/Enter/Esc//)
   window.addEventListener("keydown", (e) => {
