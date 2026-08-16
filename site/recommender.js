@@ -301,7 +301,9 @@
   function setSigWeights(w) {
     if (!w) return;
     Object.keys(SIG_WEIGHTS).forEach((k) => {
-      if (typeof w[k] === "number") SIG_WEIGHTS[k] = w[k];
+      // nameOnce は boolean フラグ（先頭 1 語固定加点）なので boolean も適用する。
+      // SIG_WEIGHTS の他キーは全て数値で、boolean を許可しても混入しない。
+      if (typeof w[k] === "number" || typeof w[k] === "boolean") SIG_WEIGHTS[k] = w[k];
     });
   }
 
