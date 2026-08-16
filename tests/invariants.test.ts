@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
 import { REPO_ROOT } from "./helpers.js";
 
@@ -110,5 +111,54 @@ conferences:
 `;
     const hits = findUnmarkedEventOnlyBlocks(raw);
     expect(hits).toEqual([{ key: "dummy-conf", year: 2027 }]);
+  });
+});
+
+describe("invariants", () => {
+  it("I4: 手編集データのカテゴリは全て config.yaml に存在する (#269)", () => {
+    // 経緯: hpc-fabrics-2026 が categories: [hpc, networks]（typo）を持ち、
+    // classify の既知カテゴリへのフィルタが networks を黙って落として
+    // networking フィードから欠落した（#269）。未知カテゴリは無警告で
+    // 消えるため、手編集データ側で存在チェックして fail-closed にする。
+    const config =
+      (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) as Record<string, any>) ?? {};
+    const known = new Set(Object.keys((config.categories as Record<string, unknown>) ?? {}));
+    expect(known.size).toBeGreaterThan(0);
+
+    const referenced: Array<[string, string]> = [];
+    const addConfs = (confs: unknown[], source: string): void => {
+      for (const c of confs) {
+        if (typeof c !== "object" || c === null) continue;
+        const rec = c as Record<string, unknown>;
+        const key = String(rec.key ?? rec.title ?? "?");
+        for (const cat of (rec.categories as unknown[] | null) ?? []) {
+          referenced.push([`${source}:${key}`, String(cat)]);
+        }
+      }
+    };
+    // data/extra.yaml（会議配列）
+    const extra =
+      (loadYaml(readFileSync(join(REPO_ROOT, "data", "extra.yaml"), "utf8")) as Record<
+        string,
+        any
+      >) ?? {};
+    addConfs((extra.conferences as unknown[] | null) ?? [], "extra.yaml");
+    // data/overrides.yaml（key → patch の map）
+    const overrides =
+      (loadYaml(readFileSync(join(REPO_ROOT, "data", "overrides.yaml"), "utf8")) as Record<
+        string,
+        any
+      >) ?? {};
+    const patches = (overrides.conferences as Record<string, unknown>) ?? {};
+    for (const [key, patch] of Object.entries(patches)) {
+      if (typeof patch !== "object" || patch === null) continue;
+      const rec = patch as Record<string, unknown>;
+      for (const cat of (rec.categories as unknown[] | null) ?? []) {
+        referenced.push([`overrides.yaml:${key}`, String(cat)]);
+      }
+    }
+
+    const unknown = referenced.filter(([, cat]) => !known.has(cat));
+    expect(unknown).toEqual([]);
   });
 });
