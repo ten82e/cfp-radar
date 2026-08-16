@@ -23,6 +23,19 @@ export function isPredatory(text: string | null | undefined): boolean {
   return PREDATORY_HINTS.some((h) => t.includes(h));
 }
 
+export function tagSource(tags: unknown): string {
+  if (Array.isArray(tags)) {
+    const last = tags[tags.length - 1];
+    return last !== undefined && last !== null && String(last).trim() !== ""
+      ? String(last).trim()
+      : "?";
+  }
+  if (typeof tags === "string" && tags.trim() !== "") {
+    return tags.trim();
+  }
+  return "?";
+}
+
 export function normTitle(title: string | null | undefined): string {
   /** 年・記号を落とした正規化タイトル (重複グループ検出用)。Unicode/日本語文字を保持。 */
   if (!title) return "";
@@ -178,7 +191,7 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
     .sort((a, b) => b[1].length - a[1].length);
   console.log(`\n=== 重複グループ (${dups.length} 組) ===`);
   for (const [k, v] of dups.slice(0, 20)) {
-    const srcs = v.map((e) => `${e.c.title}@${(e.c.tags ?? ["?"]).slice(-1)[0]}`);
+    const srcs = v.map((e) => `${e.c.title}@${tagSource(e.c.tags)}`);
     console.log(`- ${k}: ${srcs.join(", ")}`);
   }
 
@@ -190,7 +203,7 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
 
   console.log(`\n=== 収録済みと重複 (${already.length} 件・レビュー不要) ===`);
   for (const e of already.slice(0, 15)) {
-    console.log(`- ${String(e.c.title).slice(0, 50)}  (${(e.c.tags ?? ["?"]).slice(-1)[0]})`);
+    console.log(`- ${String(e.c.title).slice(0, 50)}  (${tagSource(e.c.tags)})`);
   }
 
   console.log(`\n=== 過去締切のみ (${past.length} 件・レビュー不要/削除候補) ===`);
