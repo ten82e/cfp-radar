@@ -45,6 +45,29 @@
   }
 }
 
+/* SPEC §7: 狭い画面ではカード表示に落とす。td() が付与する data-label を列名に使う。 */
+@media (max-width: 640px) {
+  thead { display: none; }
+  tbody tr {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+  }
+  tbody tr td {
+    display: block;
+    border: none;
+    padding: 2px 0;
+  }
+  tbody tr td::before {
+    content: attr(data-label) "：";
+    font-weight: 600;
+    color: var(--muted);
+  }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { max-width: 100%; overflow-x: hidden; }
 body {
@@ -1270,7 +1293,7 @@ footer a:hover { text-decoration: underline; }
     // 常時受付ジャーナルは締切の概念がないため「本日終了」等の誤解を与えない表示にする
     if (r.kind === "journal") { rem = { text: "常時受付", cls: "" }; }
 
-    var c0 = td(tr, "", "c-deadline");
+    var c0 = td(tr, "残り", "c-deadline");
     line(c0, rem.text, "left " + rem.cls);
 
     var c1 = td(tr, "日時");

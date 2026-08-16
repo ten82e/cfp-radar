@@ -934,6 +934,19 @@ it("drawer closes only on ✕ / backdrop click, not on inner buttons", () => {
   expect(proc.stdout.trim()).toBe("1|2|2|2");
 });
 
+it("narrow screens fall back to card layout (SPEC §7)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 狭幅向けメディアクエリが存在し、ブレークポイントが 640px 以下
+  const mq = html.match(/@media \(max-width: (\d+)px\) \{/);
+  expect(mq, "@media (max-width: ...) が存在しない").not.toBeNull();
+  expect(Number(mq![1])).toBeLessThanOrEqual(640);
+  // カード化の要: ヘッダ行非表示・行のブロック化・既存 data-label による列名表示
+  expect(html).toContain("thead { display: none; }");
+  expect(html).toContain("attr(data-label)");
+  // 残り時間セルにも data-label が付き、カード内で列名が表示される
+  expect(html).toContain('td(tr, "残り", "c-deadline")');
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
