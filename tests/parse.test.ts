@@ -22,6 +22,7 @@ import {
   conferenceOf as ccfddlConferenceOf,
   deadlinesOf as ccfddlDeadlinesOf,
   editionOf as ccfddlEditionOf,
+  parseTree as ccfddlParseTree,
 } from "../src/sources/ccfddl.ts";
 import {
   deadlinesOf as localDeadlinesOf,
@@ -666,6 +667,35 @@ describe("ccfddl parsing", () => {
     expect(ed).not.toBeNull();
     expect(ed?.deadlines[0].tz_raw).toBe("AoE");
     expect(ed?.deadlines[0].at_utc.toISOString()).toBe("2026-05-16T11:59:59.000Z");
+  });
+
+  it("extracts notification and camera_ready from timeline and top-level fallback", () => {
+    const timeline = [
+      {
+        abstract_deadline: "2026-05-01 23:59:59",
+        deadline: "2026-05-15 23:59:59",
+        notification_deadline: "2026-07-01 23:59:59",
+        camera_ready_deadline: "2026-07-20 23:59:59",
+        tz: "UTC",
+      },
+    ];
+    const dls = ccfddlDeadlinesOf(timeline, "UTC");
+    expect(dls.length).toBe(4);
+    expect(dls.map((d) => d.kind)).toEqual(["abstract", "paper", "notification", "camera_ready"]);
+
+    const fallbackEdition = {
+      year: 2026,
+      timezone: "UTC",
+      notification: "2026-08-01 23:59:59",
+      camera_ready: "2026-08-20 23:59:59",
+    };
+    const fallbackDls = ccfddlDeadlinesOf([], "UTC", fallbackEdition);
+    expect(fallbackDls.length).toBe(2);
+    expect(fallbackDls.map((d) => d.kind)).toEqual(["notification", "camera_ready"]);
+  });
+
+  it("parseTree gracefully returns empty array for non-existent directory", () => {
+    expect(ccfddlParseTree("/tmp/nonexistent-ccfddl-tree-12345")).toEqual([]);
   });
 });
 

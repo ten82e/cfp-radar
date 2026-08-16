@@ -31,6 +31,13 @@ const PAPER_KEYS = [
   "paper deadline",
   "submission deadline",
 ];
+const NOTIFICATION_KEYS = ["notification_deadline", "notification deadline", "notification"];
+const CAMERA_READY_KEYS = [
+  "camera_ready_deadline",
+  "camera ready deadline",
+  "camera_ready",
+  "final_deadline",
+];
 
 function extractCandidate(rec: Record<string, unknown>, keys: string[]): unknown {
   for (const key of keys) {
@@ -57,9 +64,13 @@ export function deadlinesOf(
         rec.comment === null || rec.comment === undefined ? null : String(rec.comment);
       const rawAbstract = extractCandidate(rec, ABSTRACT_KEYS);
       const rawPaper = extractCandidate(rec, PAPER_KEYS);
+      const rawNotification = extractCandidate(rec, NOTIFICATION_KEYS);
+      const rawCameraReady = extractCandidate(rec, CAMERA_READY_KEYS);
       const candidates: Array<[DeadlineKind, string, unknown]> = [
         ["abstract", "Abstract submission", rawAbstract],
         ["paper", "Paper submission", rawPaper],
+        ["notification", "Notification", rawNotification],
+        ["camera_ready", "Camera-ready", rawCameraReady],
       ];
       for (const [kind, label, raw] of candidates) {
         if (raw === null || raw === undefined) continue;
@@ -80,9 +91,13 @@ export function deadlinesOf(
         : String(rawEdition.comment);
     const rawAbstract = extractCandidate(rawEdition, ABSTRACT_KEYS);
     const rawPaper = extractCandidate(rawEdition, PAPER_KEYS);
+    const rawNotification = extractCandidate(rawEdition, NOTIFICATION_KEYS);
+    const rawCameraReady = extractCandidate(rawEdition, CAMERA_READY_KEYS);
     const candidates: Array<[DeadlineKind, string, unknown]> = [
       ["abstract", "Abstract submission", rawAbstract],
       ["paper", "Paper submission", rawPaper],
+      ["notification", "Notification", rawNotification],
+      ["camera_ready", "Camera-ready", rawCameraReady],
     ];
     for (const [kind, label, raw] of candidates) {
       if (raw === null || raw === undefined) continue;
@@ -164,12 +179,26 @@ export function parseTree(conferenceDir: string): Conference[] {
   while (stack.length > 0) {
     const cur = stack.pop();
     if (cur === undefined) break;
-    for (const name of readdirSync(cur)) {
+    let entries: string[];
+    try {
+      entries = readdirSync(cur);
+    } catch {
+      continue;
+    }
+    for (const name of entries) {
       const p = join(cur, name);
-      if (statSync(p).isDirectory()) {
-        stack.push(p);
-      } else if (name.endsWith(".yml") && name !== "types.yml") {
-        files.push(p);
+      try {
+        if (statSync(p).isDirectory()) {
+          stack.push(p);
+        } else if (
+          (name.endsWith(".yml") || name.endsWith(".yaml")) &&
+          name !== "types.yml" &&
+          name !== "types.yaml"
+        ) {
+          files.push(p);
+        }
+      } catch {
+        continue;
       }
     }
   }
