@@ -50,6 +50,13 @@ export interface BenchArgs {
   paperMax: boolean;
 }
 
+// 不正な数値（負・非整数・非数値）を既定値へフォールバック。
+// --topk=-3 等（イコール構文）は下流の `rank > args.topK` が全会議を失敗扱いにするのを防ぐ (#302 の続編)。
+function toPosInt(raw: string | undefined, fallback: number): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
+}
+
 export function parseBenchArgs(argv: string[]): BenchArgs {
   const args: BenchArgs = {
     data: "public/data.json",
@@ -94,9 +101,9 @@ export function parseBenchArgs(argv: string[]): BenchArgs {
 
     if (a === "--data" || a === "-d") args.data = nextVal() ?? args.data;
     else if (a === "--emb" || a === "-e") args.emb = nextVal() ?? args.emb;
-    else if (a === "--samples" || a === "-s") args.samples = Number(nextVal()) || 0;
-    else if (a === "--failures" || a === "-f") args.failures = Number(nextVal()) || 0;
-    else if (a === "--topk" || a === "-k") args.topK = Number(nextVal()) || 5;
+    else if (a === "--samples" || a === "-s") args.samples = toPosInt(nextVal(), 0);
+    else if (a === "--failures" || a === "-f") args.failures = toPosInt(nextVal(), 0);
+    else if (a === "--topk" || a === "-k") args.topK = toPosInt(nextVal(), 5);
     else if (a === "--lang" || a === "-l") {
       const v = nextVal();
       if (v === "jp") args.lang = "jp";
