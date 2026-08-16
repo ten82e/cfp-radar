@@ -159,6 +159,15 @@ node src/cli.ts discover --out data/discovered_candidates.yaml
 `.github/workflows/update.yml` の `discover-candidates` ジョブが毎日これを実行し、
 `data/discovered_candidates.yaml` に候補を溜めていく。
 
+溜まった候補を締切昇順・重複・predatory 疑い付きで一覧するには `review` を使う。
+
+```sh
+node src/cli.ts review
+```
+
+`--limit` で表示件数を絞り、`--candidates` で候補 YAML の場所を変えられる。
+候補の昇格（下記）の前に、ここで重複や怪しい候補を確認する。
+
 **候補の昇格手順**（収録の裏取り原則: 締切は公式サイトで HTTP 確認できたもののみ）:
 
 1. `data/discovered_candidates.yaml` から気になる候補を選ぶ

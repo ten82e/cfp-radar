@@ -453,6 +453,26 @@ it("README documents every build CLI flag (--no-embeddings regression)", () => {
   }
 });
 
+it("README documents every CLI command (review command regression)", () => {
+  // #243: usage() は build / discover / review の 3 機能コマンドを定義するが、
+  // README は build と discover しか記載しておらず、候補を締切昇順・重複・
+  // predatory 疑い付きで一覧する review コマンドが完全に未記載だった
+  // （README の「候補の昇格手順」は候補を選ぶ手順を書くのに一覧手段を案内していない）。
+  // ここでは usage() の全コマンド（help を除く）が README に現れることを検証し、
+  // 将来のコマンド追加・削除の乖離を検出する（#239 のフラグ版テストのコマンド版）。
+  const commands = usage()
+    .split("\n")
+    .map((l) => /^ {2}([a-z][a-z0-9-]*) /.exec(l)?.[1])
+    .filter((c): c is string => Boolean(c) && c !== "help");
+  expect(commands).toContain("build");
+  expect(commands).toContain("discover");
+  expect(commands).toContain("review");
+  const readme = readFileSync(join(REPO_ROOT, "README.md"), "utf8");
+  for (const cmd of commands) {
+    expect(readme, `README must document the CLI command ${cmd}`).toContain(cmd);
+  }
+});
+
 it("SPEC §4 documents every file a standard build generates (embeddings.json/recommender.js regression)", () => {
   // #241: SPEC §4 の生成物一覧が embeddings.json と recommender.js を記載しておらず、
   // 標準 build（node src/cli.ts build --out public）が生成する 2 ファイルが目録から
