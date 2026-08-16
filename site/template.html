@@ -715,6 +715,13 @@ footer a:hover { text-decoration: underline; }
       pad(jst.getUTCHours()) + ":" + pad(jst.getUTCMinutes()) + " JST";
   }
 
+  // Anywhere on Earth (UTC-12)。SPEC §7: 締切表示に AoE 表記を併記する。
+  function fmtAoE(d) {
+    var aoe = new Date(d.getTime() - 12 * 3600000);
+    return aoe.getUTCFullYear() + "-" + pad(aoe.getUTCMonth() + 1) + "-" + pad(aoe.getUTCDate()) + " " +
+      pad(aoe.getUTCHours()) + ":" + pad(aoe.getUTCMinutes()) + " AoE";
+  }
+
   function catLabel(key) {
     return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
   }
@@ -860,7 +867,7 @@ footer a:hover { text-decoration: underline; }
       '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
       (r.kind === "journal"
         ? '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">随時受付（締切なし）</div>'
-        : '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ')</div>') +
+        : '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ' / ' + fmtAoE(new Date(r.t)) + ')</div>') +
       '</div>';
 
     var actionRow = '';
@@ -1303,6 +1310,7 @@ footer a:hover { text-decoration: underline; }
       var d = new Date(r.t);
       line(c1, fmtDate(d) + " UTC", "nowrap");
       line(c1, fmtJst(d), "sub nowrap");
+      line(c1, fmtAoE(d), "sub nowrap");
     }
 
     var c2 = td(tr, "会議");
