@@ -142,6 +142,17 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(res2.command).toBe("review");
     expect(res2.limit).toBe(15);
     expect(res2.candidates).toBe("data/cand.yaml");
+
+    const res3 = parseArgs(["review", "-l", "30", "-C", "data/cands.yaml"]);
+    expect(res3.command).toBe("review");
+    expect(res3.limit).toBe(30);
+    expect(res3.candidates).toBe("data/cands.yaml");
+
+    const res4 = parseArgs(["discover", "-d", "-a", "-y", "2027"]);
+    expect(res4.command).toBe("discover");
+    expect(res4.dryRun).toBe(true);
+    expect(res4.append).toBe(true);
+    expect(res4.minYear).toBe(2027);
   });
 
   it.each([["--help"], ["-h"], ["help"]])("parses help forms %j", (arg) => {
