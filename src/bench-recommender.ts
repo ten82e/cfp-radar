@@ -31,7 +31,7 @@ const Recommender = (globalThis as { Recommender?: unknown }).Recommender as any
 const STOP = Recommender.STOPWORDS as Set<string>;
 const GEN_PAPER = (Recommender.GENERIC_PAPER_WORDS ?? new Set<string>()) as Set<string>;
 
-function parseArgs(argv: string[]): {
+export interface BenchArgs {
   data: string;
   emb: string;
   samples: number;
@@ -48,25 +48,10 @@ function parseArgs(argv: string[]): {
   sw: string | null;
   goldenEn: boolean;
   paperMax: boolean;
-} {
-  const args: {
-    data: string;
-    emb: string;
-    samples: number;
-    failures: number;
-    topK: number;
-    lang: "en" | "jp";
-    jpw: number;
-    byLen: boolean;
-    adaptive: boolean;
-    wGiven: boolean;
-    penalty: boolean;
-    prf: boolean;
-    idf: boolean;
-    sw: string | null;
-    goldenEn: boolean;
-    paperMax: boolean;
-  } = {
+}
+
+export function parseBenchArgs(argv: string[]): BenchArgs {
+  const args: BenchArgs = {
     data: "public/data.json",
     emb: "public/embeddings.json",
     samples: 0,
@@ -89,17 +74,34 @@ function parseArgs(argv: string[]): {
   };
   const rest = argv.slice(2);
   for (let i = 0; i < rest.length; i++) {
-    const a = rest[i];
-    if (a === "--data") args.data = rest[++i] ?? args.data;
-    else if (a === "--emb") args.emb = rest[++i] ?? args.emb;
-    else if (a === "--samples") args.samples = Number(rest[++i]) || 0;
-    else if (a === "--failures") args.failures = Number(rest[++i]) || 0;
-    else if (a === "--topk") args.topK = Number(rest[++i]) || 5;
-    else if (a === "--lang") {
-      const v = rest[++i];
+    const raw = rest[i];
+    let a = raw;
+    let eqVal: string | undefined;
+    const eqIdx = raw.indexOf("=");
+    if (raw.startsWith("--") && eqIdx > 0) {
+      a = raw.slice(0, eqIdx);
+      eqVal = raw.slice(eqIdx + 1);
+    }
+    const nextVal = (): string | undefined => {
+      if (eqVal !== undefined) return eqVal;
+      const v = rest[i + 1];
+      if (v !== undefined && !v.startsWith("-")) {
+        i += 1;
+        return v;
+      }
+      return undefined;
+    };
+
+    if (a === "--data" || a === "-d") args.data = nextVal() ?? args.data;
+    else if (a === "--emb" || a === "-e") args.emb = nextVal() ?? args.emb;
+    else if (a === "--samples" || a === "-s") args.samples = Number(nextVal()) || 0;
+    else if (a === "--failures" || a === "-f") args.failures = Number(nextVal()) || 0;
+    else if (a === "--topk" || a === "-k") args.topK = Number(nextVal()) || 5;
+    else if (a === "--lang" || a === "-l") {
+      const v = nextVal();
       if (v === "jp") args.lang = "jp";
     } else if (a === "--jpw" || a === "--w") {
-      args.jpw = Number(rest[++i]) || 0.5;
+      args.jpw = Number(nextVal()) || 0.5;
       args.wGiven = true;
     } else if (a === "--by-len") args.byLen = true;
     else if (a === "--adaptive") args.adaptive = true;
@@ -111,7 +113,7 @@ function parseArgs(argv: string[]): {
     else if (a === "--paper-max") args.paperMax = true;
     else if (a === "--no-paper-max") args.paperMax = false;
     else if (a === "--sw") {
-      args.sw = rest[++i] ?? null;
+      args.sw = nextVal() ?? null;
       // 例: "name=25,venue=80,domain=0,tags=0" または "nameOnce"（会議名一致を先頭 1 語のみ）
       for (const kv of (args.sw || "").split(",")) {
         const [k, v] = kv.split("=");
@@ -131,7 +133,7 @@ function parseArgs(argv: string[]): {
   return args;
 }
 
-interface Conf {
+export interface Conf {
   key: string;
   title: string;
   full_name: string;
@@ -140,7 +142,7 @@ interface Conf {
 }
 
 /** ベンチのクエリ単位（合成・golden で形状が異なる） */
-interface BenchQuery {
+export interface BenchQuery {
   key: string;
   tw: string[];
   conf?: Conf;
@@ -148,14 +150,14 @@ interface BenchQuery {
   golden?: boolean;
 }
 
-function norm(s: string): string {
+export function norm(s: string | null | undefined): string {
   return String(s ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
 
-function contentWords(s: string): string[] {
+export function contentWords(s: string | null | undefined): string[] {
   return norm(s)
     .split(" ")
     .filter((w) => w.length > 3 && !STOP.has(w));
@@ -164,7 +166,7 @@ function contentWords(s: string): string[] {
 /** メタデータタグ（本文語彙として検索されない属性語）。R11 でスコアリング側の
  * GENERIC_TAGS 除外と対にした — 合成クエリが workshop/journal を含むと、
  * 自己マッチの +10 で「除外がマイナス」という artifact が出るため、クエリ側も除く。 */
-const GENERIC_TAGS = new Set([
+export const GENERIC_TAGS = new Set([
   "niche",
   "workshop",
   "domestic-jp",
@@ -174,7 +176,8 @@ const GENERIC_TAGS = new Set([
 ]);
 
 /** 会議のトピック語（実論文が使う語彙を模す）: トピックタグ + カテゴリ正式名の内容語 + full_name の内容語 */
-function topicWords(c: Conf, catFull: Record<string, string>): string[] {
+export function topicWords(c: Conf | null | undefined, catFull: Record<string, string>): string[] {
+  if (!c || typeof c !== "object") return [];
   const words: string[] = [];
   const seen = new Set<string>();
   const add = (w: string): void => {
@@ -793,7 +796,7 @@ function jpChunks(s: string): string[] {
 }
 
 async function main(): Promise<void> {
-  const args = parseArgs(process.argv);
+  const args = parseBenchArgs(process.argv);
   const data = JSON.parse(readFileSync(args.data, "utf8")) as {
     conferences: Conf[];
     categories?: Record<string, string>;
@@ -1130,4 +1133,7 @@ async function main(): Promise<void> {
   }
 }
 
-await main();
+const isMain = process.argv[1]?.endsWith("bench-recommender.ts");
+if (isMain) {
+  await main();
+}

@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 // recommender.js は UMD（module.exports あり、DOM 非依存）。型宣言なしのプレーン JS。
 // @ts-expect-error - no declaration file for plain-JS recommender.js
 import recommender from "../site/recommender.js";
+import { contentWords, norm, parseBenchArgs, topicWords } from "../src/bench-recommender.ts";
 import { venuePapersHash } from "../src/embeddings.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
@@ -1293,5 +1294,106 @@ describe("getGCalUrl", () => {
     expect(url).toContain("%20(R2)");
     expect(url).toContain("%E5%82%99%E8%80%83%3A%20Fall%20deadline"); // 備考: Fall deadline
     expect(url).toContain("%E3%83%A9%E3%82%A6%E3%83%B3%E3%83%89%3A%20Round%202"); // ラウンド: Round 2
+  });
+});
+
+describe("bench-recommender argument parsing and helper utilities", () => {
+  it("parseBenchArgs parses flags and equal-joined options", () => {
+    const args = parseBenchArgs([
+      "node",
+      "bench-recommender.ts",
+      "--data=public/custom_data.json",
+      "--emb=public/custom_emb.json",
+      "--samples=20",
+      "--failures=3",
+      "--topk=10",
+      "--lang=jp",
+      "--jpw=0.4",
+      "--by-len",
+      "--adaptive",
+      "--penalty",
+      "--prf",
+      "--no-idf",
+      "--golden-en",
+      "--no-paper-max",
+      "--sw=name=30,venue=70",
+    ]);
+    expect(args.data).toBe("public/custom_data.json");
+    expect(args.emb).toBe("public/custom_emb.json");
+    expect(args.samples).toBe(20);
+    expect(args.failures).toBe(3);
+    expect(args.topK).toBe(10);
+    expect(args.lang).toBe("jp");
+    expect(args.jpw).toBe(0.4);
+    expect(args.wGiven).toBe(true);
+    expect(args.byLen).toBe(true);
+    expect(args.adaptive).toBe(true);
+    expect(args.penalty).toBe(true);
+    expect(args.prf).toBe(true);
+    expect(args.idf).toBe(false);
+    expect(args.goldenEn).toBe(true);
+    expect(args.paperMax).toBe(false);
+    expect(args.sw).toBe("name=30,venue=70");
+  });
+
+  it("parseBenchArgs parses short options", () => {
+    const args = parseBenchArgs([
+      "node",
+      "bench-recommender.ts",
+      "-d",
+      "data.json",
+      "-e",
+      "emb.json",
+      "-s",
+      "50",
+      "-f",
+      "5",
+      "-k",
+      "3",
+      "-l",
+      "en",
+      "--w",
+      "0.6",
+    ]);
+    expect(args.data).toBe("data.json");
+    expect(args.emb).toBe("emb.json");
+    expect(args.samples).toBe(50);
+    expect(args.failures).toBe(5);
+    expect(args.topK).toBe(3);
+    expect(args.lang).toBe("en");
+    expect(args.jpw).toBe(0.6);
+  });
+
+  it("norm and contentWords handle null, undefined, empty, and stopwords", () => {
+    expect(norm(null)).toBe("");
+    expect(norm(undefined)).toBe("");
+    expect(norm("  High-Performance Computing!  ")).toBe("high performance computing");
+
+    expect(contentWords(null)).toEqual([]);
+    expect(contentWords(undefined)).toEqual([]);
+    expect(contentWords("the of and for distributed")).toEqual(["distributed"]);
+  });
+
+  it("topicWords filters generic tags and aggregates categories and titles", () => {
+    expect(topicWords(null, {})).toEqual([]);
+    expect(topicWords(undefined, {})).toEqual([]);
+
+    const conf = {
+      key: "sc",
+      title: "SC",
+      full_name:
+        "International Conference for High Performance Computing, Networking, Storage and Analysis",
+      categories: ["hpc", "networking"],
+      tags: ["hpc", "supercomputing", "niche", "workshop"],
+    };
+    const catFull = {
+      hpc: "High Performance Computing",
+      networking: "Networking",
+    };
+    const words = topicWords(conf, catFull);
+    expect(words).toContain("supercomputing");
+    expect(words).toContain("performance");
+    expect(words).not.toContain("niche");
+    expect(words).not.toContain("workshop");
   });
 });
