@@ -82,7 +82,6 @@ describe("NicheDiscoverer", () => {
       expect(c.link).toBeTruthy();
     }
   }, 120_000);
-
   it("discoverFromDblp decodes HTML entities and trims leading whitespace", async () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async () =>
@@ -92,17 +91,18 @@ describe("NicheDiscoverer", () => {
             hits: {
               hit: [
                 {
+                  // DBLP venue API は先頭空白付きで &quot; / &apos; を含む名前を返す。
                   info: {
-                    venue:
-                      " &quot;I Can&apos;t Believe It&apos;s Not Better!&quot; Workshop Series (ICBINB)",
-                    acronym: "ICBINB",
-                    url: "https://dblp.org/db/conf/icbinb/",
+                    venue: " &quot;Fake&apos;s &amp; Foes&quot; Workshop Series (FAKEWS)",
+                    acronym: "FAKEWS",
+                    url: "https://dblp.org/db/conf/fakews/",
                   },
                 },
                 {
+                  // acronym 無し (journal) は venue 名が title/key にそのまま入る。
                   info: {
-                    venue: "ACIS International Journal of Computer &amp; Information Science",
-                    url: "https://dblp.org/db/journals/acisj/",
+                    venue: "Synthetic Journal of Computer &amp; Information Science",
+                    url: "https://dblp.org/db/journals/synthj/",
                   },
                 },
               ],
@@ -112,19 +112,22 @@ describe("NicheDiscoverer", () => {
         { status: 200 },
       )) as typeof fetch;
     try {
-      const cands = await discoverer.discoverFromDblp("workshop", 10);
-      const icbinb = cands.find((c) => c.key === "icbinb");
-      expect(icbinb).toBeDefined();
-      expect(icbinb?.full_name).toBe(
-        "\"I Can't Believe It's Not Better!\" Workshop Series (ICBINB)",
-      );
-      expect(icbinb?.full_name?.startsWith(" ")).toBe(false);
+      // 共有インスタンスは直前の live 実行 (run discovery) で knownKeys が
+      // 実 DBLP データで汚染され得るため、分離インスタンスで検証する。
+      const isolated = new NicheDiscoverer(REPO_ROOT);
+      const cands = await isolated.discoverFromDblp("workshop", 10);
 
-      const acis = cands.find((c) => c.key.startsWith("acis-international"));
-      expect(acis).toBeDefined();
-      expect(acis?.title).toBe("ACIS International Journal of Computer & Information Science");
-      expect(acis?.key).toBe("acis-international-journal-of-computer-information-science");
-      expect(acis?.key).not.toContain("amp");
+      const fakews = cands.find((c) => c.key === "fakews");
+      expect(fakews).toBeDefined();
+      expect(fakews?.full_name).toBe('"Fake\'s & Foes" Workshop Series (FAKEWS)');
+      expect(fakews?.full_name?.startsWith(" ")).toBe(false);
+      expect(fakews?.title).toBe("FAKEWS");
+
+      const journal = cands.find((c) => c.key.startsWith("synthetic-journal"));
+      expect(journal).toBeDefined();
+      expect(journal?.title).toBe("Synthetic Journal of Computer & Information Science");
+      expect(journal?.key).toBe("synthetic-journal-of-computer-information-science");
+      expect(journal?.key).not.toContain("amp");
     } finally {
       globalThis.fetch = realFetch;
     }
