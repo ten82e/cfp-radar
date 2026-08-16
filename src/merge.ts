@@ -467,6 +467,7 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
     patchedYears.add(edition.year);
     if (patch.drop) continue;
     const next: Edition = { ...edition, deadlines: [...edition.deadlines] };
+    if ("id" in patch) next.edition_id = String(patch.id);
     for (const field of ["link", "place", "date_text"] as const) {
       if (field in patch) next[field] = String(patch[field]);
     }
@@ -477,9 +478,14 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
       // 推定版 (rollforward 生成) を実版へ昇格 / 降格させるための上書き。
       next.estimated = Boolean(patch.estimated);
     }
-    if ("deadlines" in patch) {
+    if (
+      "deadlines" in patch ||
+      "deadline" in patch ||
+      "paper_deadline" in patch ||
+      "abstract_deadline" in patch
+    ) {
       // 置換 (延長・訂正): 上流の古い締切を残さず差し替える (SPEC.md 3.5)。
-      next.deadlines = deadlinesOf({ deadlines: patch.deadlines });
+      next.deadlines = deadlinesOf(patch);
     }
     kept.push(next);
   }
@@ -493,14 +499,14 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
     if (rec.drop) continue;
     const edition: Edition = {
       year,
-      edition_id: `override-${year}`,
+      edition_id: rec.id ? String(rec.id) : `override-${year}`,
       link: "",
       place: "",
       date_text: "",
       event_start: null,
       event_end: null,
-      deadlines: deadlinesOf({ deadlines: rec.deadlines ?? [] }),
-      estimated: false,
+      deadlines: deadlinesOf(rec),
+      estimated: Boolean(rec.estimated),
       source: "override",
     };
     for (const field of ["link", "place", "date_text"] as const) {
