@@ -1113,9 +1113,9 @@ export class NicheDiscoverer {
       const hits = data.result?.hits?.hit ?? [];
       for (const hit of hits) {
         const info = hit.info ?? {};
-        const venueTitle = String(info.venue ?? info.acronym ?? "");
+        const venueTitle = decode(String(info.venue ?? info.acronym ?? "")).trim();
         const venueUrl = String(info.url ?? "");
-        const venueName = String(info.acronym ?? venueTitle);
+        const venueName = decode(String(info.acronym ?? venueTitle)).trim();
 
         if (!venueTitle || this.isAlreadyTracked(venueTitle)) continue;
 
