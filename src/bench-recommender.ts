@@ -78,7 +78,7 @@ export function parseBenchArgs(argv: string[]): BenchArgs {
     let a = raw;
     let eqVal: string | undefined;
     const eqIdx = raw.indexOf("=");
-    if (raw.startsWith("--") && eqIdx > 0) {
+    if (raw.startsWith("-") && eqIdx > 0) {
       a = raw.slice(0, eqIdx);
       eqVal = raw.slice(eqIdx + 1);
     }
