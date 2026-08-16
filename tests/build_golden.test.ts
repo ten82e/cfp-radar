@@ -15,6 +15,7 @@ import {
   embeddingsStale,
   escapeMdCell,
   recordsOf,
+  titleWithYear,
   toLlmsTxt,
   toUpcomingMd,
 } from "../src/build.ts";
@@ -1447,4 +1448,17 @@ it("toUpcomingMd escapes pipe characters in title and place preserving 7-column 
     const unescapedPipes = row.split(/(?<!\\)\|/g).length - 1;
     expect(unescapedPipes).toBe(8);
   }
+});
+
+it("titleWithYear avoids duplicate short-year appending and handles missing years (#276)", () => {
+  expect(titleWithYear("CANOPIE-HPC 2026", 2026)).toBe("CANOPIE-HPC 2026");
+  expect(titleWithYear("SC '26", 2026)).toBe("SC '26");
+  expect(titleWithYear("SC ’26", 2026)).toBe("SC ’26");
+  expect(titleWithYear("GeoAI'26", 2026)).toBe("GeoAI'26");
+  expect(titleWithYear("SIGCOMM", 2026)).toBe("SIGCOMM 2026");
+  expect(titleWithYear("IPSJ", 0)).toBe("IPSJ");
+  expect(titleWithYear("IPSJ", null)).toBe("IPSJ");
+  expect(titleWithYear("IPSJ", undefined)).toBe("IPSJ");
+  expect(titleWithYear(null, 2026)).toBe("");
+  expect(titleWithYear(undefined, 2026)).toBe("");
 });

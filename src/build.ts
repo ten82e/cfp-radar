@@ -139,13 +139,24 @@ function fmtDateIcs(d: Date): string {
 }
 
 /**
- * タイトル + 開催年を組み立てる。タイトルが既にその年で終わっている
- * （例: `CANOPIE-HPC 2026`）場合は年を二重に付けない（#93）。
- * タイトルが別の年で終わる edition は実データに無いため、末尾一致で
- * 省くガードは必要な年を消さない。
+ * タイトル + 開催年を組み立てる。タイトルが既にその年（例: `CANOPIE-HPC 2026`）
+ * または短縮年（例: `SC '26`, `SC ’26`）で終わっている場合は年を二重に付けない（#93, #276）。
+ * year が 0 / 未指定の場合はタイトルのみを返す。
  */
-function titleWithYear(title: string, year: number): string {
-  return title.trim().endsWith(String(year)) ? title.trim() : `${title.trim()} ${year}`;
+export function titleWithYear(
+  title: string | null | undefined,
+  year: number | null | undefined,
+): string {
+  const t = String(title ?? "").trim();
+  if (!t) return "";
+  if (!year) return t;
+  const yStr = String(year);
+  const short1 = `'${yStr.slice(-2)}`;
+  const short2 = `’${yStr.slice(-2)}`;
+  if (t.endsWith(yStr) || t.endsWith(short1) || t.endsWith(short2)) {
+    return t;
+  }
+  return `${t} ${year}`;
 }
 
 export interface IcsEntry {
