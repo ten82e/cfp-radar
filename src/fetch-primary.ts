@@ -60,8 +60,9 @@ export async function fetchPage(url: string, timeout = 30_000): Promise<string> 
   return await res.text();
 }
 
-export function toLines(htmlText: string): string[] {
-  let text = htmlText.replace(BLOCK_RE, "\n").replace(TAG_RE, "");
+export function toLines(htmlText: string | null | undefined): string[] {
+  if (!htmlText) return [];
+  let text = String(htmlText).replace(BLOCK_RE, "\n").replace(TAG_RE, "");
   const entities: Record<string, string> = {
     "&nbsp;": " ",
     "&amp;": "&",
@@ -90,8 +91,8 @@ export function toLines(htmlText: string): string[] {
     .filter(Boolean);
 }
 
-function kindOf(window: string): string {
-  const low = window.toLowerCase();
+function kindOf(window: string | null | undefined): string {
+  const low = String(window ?? "").toLowerCase();
   if (low.includes("abstract")) return "abstract";
   if (low.includes("camera")) return "camera_ready";
   if (low.includes("notification")) return "notification";
@@ -168,11 +169,12 @@ function parsePrimaryDate(window: string): ExtractedDate | null {
 }
 
 export function extractDeadline(
-  window: string,
+  window: string | null | undefined,
   year: number,
   kindHint = "",
 ): PrimaryDeadline | null {
-  const low = window.toLowerCase();
+  if (!window) return null;
+  const low = String(window).toLowerCase();
   if (!low.includes("deadline") && !low.includes("due date")) return null;
   const parsed = parsePrimaryDate(window);
   if (!parsed) return null;
@@ -204,7 +206,8 @@ export function extractDeadline(
   return out;
 }
 
-export function pageTitleYear(htmlText: string): number | null {
+export function pageTitleYear(htmlText: string | null | undefined): number | null {
+  if (!htmlText) return null;
   const m = /<title[^>]*>(.*?)<\/title>/is.exec(htmlText);
   if (!m) return null;
   const title = m[1].replace(
@@ -334,23 +337,46 @@ export async function runFetchPrimary(
   return 0;
 }
 
+export interface PrimaryArgs {
+  apply: boolean;
+  registryPath: string;
+  outPath: string;
+  help: boolean;
+}
+
+export function parsePrimaryArgs(argv: string[]): PrimaryArgs {
+  let apply = false;
+  let registryPath = REGISTRY;
+  let outPath = OUT;
+  let help = false;
+
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--help" || a === "-h" || a === "help") {
+      help = true;
+    } else if (a === "--apply" || a === "-a") {
+      apply = true;
+    } else if (a.startsWith("--registry=")) {
+      registryPath = a.slice("--registry=".length);
+    } else if ((a === "--registry" || a === "-r") && argv[i + 1]) {
+      registryPath = argv[++i];
+    } else if (a.startsWith("--out=")) {
+      outPath = a.slice("--out=".length);
+    } else if ((a === "--out" || a === "-o") && argv[i + 1]) {
+      outPath = argv[++i];
+    }
+  }
+  return { apply, registryPath, outPath, help };
+}
+
 const isMain = process.argv[1]?.endsWith("fetch-primary.ts");
 if (isMain) {
-  const argv = process.argv.slice(2);
-  if (argv.includes("--help") || argv.includes("-h") || argv.includes("help")) {
+  const args = parsePrimaryArgs(process.argv.slice(2));
+  if (args.help) {
     console.log("usage: node src/fetch-primary.ts [--apply] [--registry <path>] [--out <path>]");
     process.exit(0);
   }
-  const apply = argv.includes("--apply");
-  let registryPath = REGISTRY;
-  let outPath = OUT;
-  for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--registry" && argv[i + 1]) registryPath = argv[++i];
-    else if (argv[i].startsWith("--registry=")) registryPath = argv[i].slice("--registry=".length);
-    else if (argv[i] === "--out" && argv[i + 1]) outPath = argv[++i];
-    else if (argv[i].startsWith("--out=")) outPath = argv[i].slice("--out=".length);
-  }
-  runFetchPrimary(apply, registryPath, outPath).then(
+  runFetchPrimary(args.apply, args.registryPath, args.outPath).then(
     (code) => {
       process.exitCode = code;
     },

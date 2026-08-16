@@ -14,6 +14,7 @@ import {
   pageTitleYear,
   pageYear,
   pageYearMismatch,
+  parsePrimaryArgs,
   runFetchPrimary,
   toLines,
 } from "../src/fetch-primary.ts";
@@ -242,5 +243,38 @@ describe("runFetchPrimary", () => {
     writeFileSync(emptyRegistry, "conferences: {}\n", "utf8");
     const code = await runFetchPrimary(false, emptyRegistry);
     expect(code).toBe(2);
+  });
+});
+
+describe("parsePrimaryArgs and null safety", () => {
+  it("handles short flags -a, -r, -o, -h and -- flags", () => {
+    const res = parsePrimaryArgs([
+      "-a",
+      "-r",
+      "/tmp/custom-reg.yaml",
+      "-o",
+      "/tmp/custom-out.yaml",
+    ]);
+    expect(res.apply).toBe(true);
+    expect(res.registryPath).toBe("/tmp/custom-reg.yaml");
+    expect(res.outPath).toBe("/tmp/custom-out.yaml");
+    expect(res.help).toBe(false);
+
+    const helpRes = parsePrimaryArgs(["-h"]);
+    expect(helpRes.help).toBe(true);
+  });
+
+  it("toLines, extractDeadline, and pageTitleYear handle null/undefined defensively", () => {
+    expect(toLines(null)).toEqual([]);
+    expect(toLines(undefined)).toEqual([]);
+    expect(toLines("")).toEqual([]);
+
+    expect(extractDeadline(null, 2026)).toBeNull();
+    expect(extractDeadline(undefined, 2026)).toBeNull();
+    expect(extractDeadline("", 2026)).toBeNull();
+
+    expect(pageTitleYear(null)).toBeNull();
+    expect(pageTitleYear(undefined)).toBeNull();
+    expect(pageTitleYear("")).toBeNull();
   });
 });
