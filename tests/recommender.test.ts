@@ -1607,3 +1607,17 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     });
   });
 });
+
+describe("parseBenchArgs 不正数値のフォールバック (#302 続編)", () => {
+  it("イコール構文の負・非整数・非数値を既定値へ (topk/samples/failures)", () => {
+    // --topk=-3 等が下流 `rank > args.topK` で全会議を失敗扱いにするのを防ぐ。
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=-3"]).topK).toBe(5);
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "-s=-1"]).samples).toBe(0);
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "--failures=-5"]).failures).toBe(0);
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=abc"]).topK).toBe(5);
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=1.5"]).topK).toBe(5);
+    // 正整数・ゼロ既定の正当入力・既定値は従来どおり
+    expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=10"]).topK).toBe(10);
+    expect(parseBenchArgs(["node", "bench-recommender.ts"]).topK).toBe(5);
+  });
+});
