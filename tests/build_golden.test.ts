@@ -809,6 +809,69 @@ it("sortable headers are keyboard-operable and expose sort state (aria-sort)", (
   expect(JSON.parse(r3)).toEqual(["none", "descending", "none", "none"]);
 });
 
+it("copy button falls back to selectable text when clipboard is unavailable (SPEC §7)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: SPEC §7 のフォールバック文言と名前付き関数がビルド成果に残る
+  expect(html).toContain("コピーできません — URL を選択しました");
+  expect(html).toContain("function copyToClipboard(text)");
+  const src = jsFunction(html, "copyToClipboard");
+  // 実行検証: fake navigator（undefined / reject / resolve）でフォールバックの有無を確認する。
+  // フォールバックは一時 textarea を body に append するので、append された要素で観測する。
+  // node -e のグローバル navigator は上書き不可のため、new Function のパラメータとして環境を
+  // 注入し、シナリオごとにブロックスコープで独立させる（async 発火が後続シナリオへ漏れない）。
+  const fakeEl = "{ value: '', setAttribute() {}, select() {}, setSelectionRange() {}, style: {} }";
+  const script = [
+    "const realSetTimeout = setTimeout;",
+    `const src = ${JSON.stringify(src)};`,
+    "const mk = new Function('navigator', 'document', '$', 'setTimeout', src + '\\nreturn copyToClipboard;');",
+    "const obs = { A: [], B: [], C: [], toast: [] };",
+    // A: navigator.clipboard が無い環境（file:// 等）→ 同期フォールバック、例外なし
+    "{",
+    "  const navigator = {};",
+    "  const document = {",
+    `    createElement: () => (${fakeEl}),`,
+    "    body: { appendChild: (el) => { obs.A.push(el); } },",
+    "    getElementById: () => null,",
+    "  };",
+    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), realSetTimeout);",
+    "  copyToClipboard('https://x/y.ics');",
+    "}",
+    // B: writeText が reject → 同じフォールバックへ分岐（マイクロタスクで発火）
+    "{",
+    "  const navigator = { clipboard: { writeText: () => Promise.reject(new Error('denied')) } };",
+    "  const document = {",
+    `    createElement: () => (${fakeEl}),`,
+    "    body: { appendChild: (el) => { obs.B.push(el); } },",
+    "    getElementById: () => null,",
+    "  };",
+    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), realSetTimeout);",
+    "  copyToClipboard('https://x/b.ics');",
+    "}",
+    // C: writeText が resolve → トーストのみ、フォールバックを出さない
+    "{",
+    "  const navigator = { clipboard: { writeText: () => Promise.resolve() } };",
+    "  const document = {",
+    `    createElement: () => (${fakeEl}),`,
+    "    body: { appendChild: (el) => { obs.C.push(el); } },",
+    "    getElementById: (id) => id === 'toast' ?",
+    "      { textContent: '', classList: { add: (c) => obs.toast.push(c), remove() {} } } : null,",
+    "  };",
+    // 成功時のトースト消去 2 秒タイマーはスキップしてプロセスを速やかに終わらせる
+    "  const setTimeout = (fn, ms) => { if (ms >= 1000) { return; } realSetTimeout(fn, ms); };",
+    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), setTimeout);",
+    "  copyToClipboard('https://x/c.ics');",
+    "}",
+    // マイクロタスク（B の reject / C の resolve）の実行後にまとめて検証する
+    "realSetTimeout(() => {",
+    "  const val = (a) => (a[0] ? a[0].value : 'none');",
+    "  console.log('A:' + obs.A.length + ':' + val(obs.A) + '|B:' + obs.B.length + ':' + val(obs.B) + '|C:' + obs.C.length + ':' + obs.toast.join(','));",
+    "}, 50);",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe("A:1:https://x/y.ics|B:1:https://x/b.ics|C:0:show");
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
