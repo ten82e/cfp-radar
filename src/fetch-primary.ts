@@ -91,17 +91,65 @@ export function toLines(htmlText: string | null | undefined): string[] {
     .filter(Boolean);
 }
 
+export function isDeadlineLine(text: string | null | undefined): boolean {
+  const low = String(text ?? "").toLowerCase();
+  return (
+    low.includes("deadline") ||
+    low.includes("due date") ||
+    low.includes("due") ||
+    low.includes("締切") ||
+    low.includes("締め切り") ||
+    low.includes("期限") ||
+    low.includes("期日") ||
+    low.includes("採否") ||
+    low.includes("通知日")
+  );
+}
+
 function kindOf(window: string | null | undefined): string {
   const low = String(window ?? "").toLowerCase();
-  if (low.includes("abstract")) return "abstract";
-  if (low.includes("camera")) return "camera_ready";
-  if (low.includes("notification")) return "notification";
-  if (low.includes("registration")) return "registration";
-  if (low.includes("supplementary") || low.includes("appendix")) return "supplementary";
+  if (
+    low.includes("abstract") ||
+    low.includes("概要") ||
+    low.includes("アブストラクト") ||
+    low.includes("題目")
+  ) {
+    return "abstract";
+  }
+  if (
+    low.includes("camera") ||
+    low.includes("カメラレディ") ||
+    low.includes("最終原稿") ||
+    low.includes("採択原稿")
+  ) {
+    return "camera_ready";
+  }
+  if (
+    low.includes("notification") ||
+    low.includes("採否") ||
+    low.includes("査読結果") ||
+    low.includes("判定通知") ||
+    low.includes("通知")
+  ) {
+    return "notification";
+  }
+  if (low.includes("registration") || low.includes("参加登録") || low.includes("事前登録")) {
+    return "registration";
+  }
+  if (
+    low.includes("supplementary") ||
+    low.includes("appendix") ||
+    low.includes("補足資料") ||
+    low.includes("付録")
+  ) {
+    return "supplementary";
+  }
   if (
     low.includes("rebuttal") ||
     low.includes("author response") ||
-    low.includes("author_response")
+    low.includes("author_response") ||
+    low.includes("反論") ||
+    low.includes("リバッタル")
   ) {
     return "rebuttal_end";
   }
@@ -122,31 +170,10 @@ interface ExtractedDate {
   day: number;
 }
 
-function parsePrimaryDate(window: string): ExtractedDate | null {
-  // 1. Month Day Year: 'May 10, 2026', 'August 16th, 2026', 'Sept. 15, 2026', 'May-10-2026'
-  let m =
-    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?[-/\s]+(\d{4})\b/i.exec(
-      window,
-    );
-  if (m) {
-    const month = MONTHS[m[1].toLowerCase().slice(0, 3)];
-    const day = Number(m[2]);
-    const year = Number(m[3]);
-    return { year, month, day };
-  }
-  // 2. Day Month Year: '15 May 2026', '16th August 2026', '15th of May 2026', '1st October, 2026', '15-May-2026', '15/May/2026'
-  m =
-    /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?[-/\s]+(\d{4})\b/i.exec(
-      window,
-    );
-  if (m) {
-    const day = Number(m[1]);
-    const month = MONTHS[m[2].toLowerCase().slice(0, 3)];
-    const year = Number(m[3]);
-    return { year, month, day };
-  }
-  // 3. Numeric Year Month Day: '2026-05-10', '2026/05/10', '2026.05.10'
-  m = /\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(window);
+export function parsePrimaryDate(window: string): ExtractedDate | null {
+  const norm = window.normalize("NFKC");
+  // 1. Japanese format: '2026年5月10日', '2026年05月10日'
+  let m = /\b(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(norm);
   if (m) {
     const year = Number(m[1]);
     const month = Number(m[2]);
@@ -155,8 +182,40 @@ function parsePrimaryDate(window: string): ExtractedDate | null {
       return { year, month, day };
     }
   }
-  // 4. European Numeric Day Month Year: '15.05.2026', '15/05/2026', '15-05-2026'
-  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b/.exec(window);
+  // 2. Month Day Year: 'May 10, 2026', 'August 16th, 2026', 'Sept. 15, 2026', 'May-10-2026'
+  m =
+    /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?[-/\s]+(\d{4})\b/i.exec(
+      norm,
+    );
+  if (m) {
+    const month = MONTHS[m[1].toLowerCase().slice(0, 3)];
+    const day = Number(m[2]);
+    const year = Number(m[3]);
+    return { year, month, day };
+  }
+  // 3. Day Month Year: '15 May 2026', '16th August 2026', '15th of May 2026', '1st October, 2026', '15-May-2026', '15/May/2026'
+  m =
+    /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?[-/\s]+(\d{4})\b/i.exec(
+      norm,
+    );
+  if (m) {
+    const day = Number(m[1]);
+    const month = MONTHS[m[2].toLowerCase().slice(0, 3)];
+    const year = Number(m[3]);
+    return { year, month, day };
+  }
+  // 4. Numeric Year Month Day: '2026-05-10', '2026/05/10', '2026.05.10'
+  m = /\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(norm);
+  if (m) {
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return { year, month, day };
+    }
+  }
+  // 5. European Numeric Day Month Year: '15.05.2026', '15/05/2026', '15-05-2026'
+  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b/.exec(norm);
   if (m) {
     const day = Number(m[1]);
     const month = Number(m[2]);
@@ -174,12 +233,12 @@ export function extractDeadline(
   kindHint = "",
 ): PrimaryDeadline | null {
   if (!window) return null;
-  const low = String(window).toLowerCase();
-  if (!low.includes("deadline") && !low.includes("due date")) return null;
-  const parsed = parsePrimaryDate(window);
+  if (!isDeadlineLine(window) && !isDeadlineLine(kindHint)) return null;
+  // 対象行 (kindHint) に日付が含まれている場合は隣接行の誤検出を避けるため優先
+  const parsed = (kindHint ? parsePrimaryDate(kindHint) : null) || parsePrimaryDate(window);
   if (!parsed) return null;
   const { year: extractedYear, month, day } = parsed;
-  if (extractedYear !== year - 1 && extractedYear !== year) return null; // 過去版の残骸を拾わない
+  if (extractedYear < year - 1 || extractedYear > year + 1) return null; // 過去版の残骸を拾わない
   const dt = new Date(Date.UTC(extractedYear, month - 1, day));
   if (dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) return null;
   const kind = kindOf(kindHint || window);
@@ -232,8 +291,7 @@ export function extractDeadlines(lines: string[], year: number): PrimaryDeadline
   const out: PrimaryDeadline[] = [];
   for (let i = 0; i < lines.length; i++) {
     const ln = lines[i];
-    const low = ln.toLowerCase();
-    if (!low.includes("deadline") && !low.includes("due date")) continue;
+    if (!isDeadlineLine(ln)) continue;
     const lo = Math.max(0, i - 1);
     const hi = Math.min(lines.length, i + 2);
     const window = lines.slice(lo, hi).join(" ");
