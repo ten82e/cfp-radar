@@ -1193,3 +1193,14 @@ it("site template localized shortcuts label and preset button active sync", () =
   expect(template).toContain('data-preset="domestic"');
   expect(template).toContain("function updatePresetActive()");
 });
+
+it("site template does not include external Google Fonts per SPEC §7 (#223)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  // SPEC §7: 単一ファイル。外部 CDN・Web フォントを使わない
+  expect(template).not.toContain("fonts.googleapis.com");
+  expect(template).not.toContain("fonts.gstatic.com");
+  expect(template).not.toContain("family=Inter");
+  expect(template).not.toContain("family=JetBrains+Mono");
+  expect(template).toContain("--font-sans: system-ui,");
+  expect(template).toContain("--font-mono: ui-monospace,");
+});
