@@ -404,6 +404,31 @@ it("llms.txt title follows config site.title (not a stale hard-coded name)", () 
   expect(custom.split("\n")[0]).toBe("# custom-feed");
 });
 
+it("llms.txt schema summary documents every key data.json actually emits (site/papers/url)", () => {
+  // #237: data.json は site（トップレベル）・papers（会議ごと）・sources[].url を
+  // 出力しており、golden test も data.site の存在を検証しているが、llms.txt の
+  // スキーマ要約（と SPEC §4.2）はこれらを記載していなかった。
+  // エージェントは llms.txt を「最初に読む索引」として使うため、実出力との
+  // 乖離をここで回帰検査する。
+  const text = readFileSync(join(site, "llms.txt"), "utf8");
+  const summary = text.slice(text.indexOf("## data.json のスキーマ要約"));
+  // トップレベル site キー（base_url がフィード絶対 URL の基準）
+  expect(summary).toMatch(/- site: object — \{domain: string, base_url: string\}/);
+  expect(summary).toMatch(/base_url/);
+  // 出典の url キー
+  expect(summary).toMatch(/- sources: array of \{name, repo, license, url\}/);
+  // 会議ごとの papers キー
+  expect(summary).toMatch(/ {2}- papers: array of string/);
+  // 実出力との整合: トップレベルキーは全て要約に現れる
+  for (const key of Object.keys(data)) {
+    expect(summary).toContain(key);
+  }
+  // 会議レベルのキーは全て要約に現れる
+  for (const key of Object.keys(data.conferences[0] ?? {})) {
+    expect(summary).toContain(key);
+  }
+});
+
 it("index.html has the data injected", () => {
   const text = readFileSync(join(site, "index.html"), "utf8");
   expect(text).not.toContain("/*__DATA__*/null");
