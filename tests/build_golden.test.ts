@@ -11,6 +11,7 @@ import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
 import {
   buildAll,
+  DEFAULT_CATEGORIES,
   embeddingsStale,
   recordsOf,
   toCsv,
@@ -633,6 +634,25 @@ it("embeddingsStale はキー集合の一致で判定する（数比較の穴）
   expect(embeddingsStale(emb(["a", "b"]), ["a", "b", "c"])).toBe(true);
   // embeddings が無い既存データ → stale
   expect(embeddingsStale({}, ["a"])).toBe(true);
+  expect(embeddingsStale(null, ["a"])).toBe(true);
+  expect(embeddingsStale(undefined, ["a"])).toBe(true);
+});
+
+it("DEFAULT_CATEGORIES contains all 9 taxonomy domains", () => {
+  const expectedDomains = [
+    "hpc",
+    "networking",
+    "systems",
+    "ai",
+    "security",
+    "db",
+    "graphics",
+    "hci",
+    "theory",
+  ];
+  for (const domain of expectedDomains) {
+    expect(DEFAULT_CATEGORIES[domain]).toBeTruthy();
+  }
 });
 
 // --- upcoming.md carries meetings too (SPEC.md 4) --------------------------
