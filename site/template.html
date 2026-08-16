@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --bg: #f7f7f8;
   --panel: #ffffff;
   --panel-hover: #f1f1f3;
@@ -25,6 +25,24 @@
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* SPEC §7: ライト/ダーク両対応。全色が var() 経由なので変数の上書きだけで全体が切り替わる。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181b;
+    --panel: #1f1f23;
+    --panel-hover: #26262b;
+    --border: #2e2e33;
+    --border-subtle: #26262b;
+    --fg: #e4e4e7;
+    --muted: #9d9da6;
+    --accent: #8ab4f8;
+    --accent-subtle: rgba(138, 180, 248, 0.12);
+    --warn: #f28b82;
+    --soon: #e5c07b;
+    --chip: #26262b;
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

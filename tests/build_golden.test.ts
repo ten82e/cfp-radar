@@ -872,6 +872,36 @@ it("copy button falls back to selectable text when clipboard is unavailable (SPE
   expect(proc.stdout.trim()).toBe("A:1:https://x/y.ics|B:1:https://x/b.ics|C:0:show");
 });
 
+it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+  expect(style).toContain("color-scheme: light dark");
+  const root = style.match(/:root\s*\{([^}]*)\}/)?.[1] ?? "";
+  const dark =
+    style.match(
+      /@media\s*\(prefers-color-scheme:\s*dark\)\s*\{[^{}]*:root\s*\{([^}]*)\}\s*\}/,
+    )?.[1] ?? "";
+  expect(dark, "@media (prefers-color-scheme: dark) が存在しない").not.toBe("");
+  const varsOf = (block: string) =>
+    Object.fromEntries(
+      [...block.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
+    );
+  const light = varsOf(root);
+  const darkVars = varsOf(dark);
+  const lum = (hex: string) => {
+    const m = /^#([0-9a-f]{6})$/i.exec(hex);
+    if (!m) throw new Error(`hex でない: ${hex}`);
+    const n = parseInt(m[1], 16);
+    return 0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255);
+  };
+  // ダーク値はライト値と異なり、背景が暗く・文字が明るく上書きされている
+  expect(darkVars["--bg"]).not.toBe(light["--bg"]);
+  expect(darkVars["--fg"]).not.toBe(light["--fg"]);
+  expect(lum(darkVars["--bg"])).toBeLessThan(lum(light["--bg"]));
+  expect(lum(darkVars["--fg"])).toBeGreaterThan(lum(light["--fg"]));
+  expect(lum(darkVars["--bg"])).toBeLessThan(lum(darkVars["--fg"]));
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
