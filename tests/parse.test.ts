@@ -15,9 +15,11 @@ import {
 } from "../src/model.ts";
 import {
   deadlinesOf as aideadlinesDeadlinesOf,
+  parseTree as aideadlinesParseTree,
   editionOf,
   rankOf,
 } from "../src/sources/aideadlines.ts";
+import { cacheSlot, extractedRoot } from "../src/sources/base.ts";
 import {
   conferenceOf as ccfddlConferenceOf,
   deadlinesOf as ccfddlDeadlinesOf,
@@ -538,6 +540,34 @@ describe("aideadlines rankOf", () => {
     expect(rankOf("")).toEqual({});
     expect(rankOf("no colon here, invalid")).toEqual({});
     expect(rankOf({ ccf: null, core: "" })).toEqual({});
+  });
+
+  it("extracts legacy deadline fields including paper_deadline, notification, and camera_ready", () => {
+    const raw = {
+      timezone: "UTC",
+      paper_deadline: "2026-05-15 23:59:59",
+      notification: "2026-07-01 23:59:59",
+      camera_ready: "2026-07-20 23:59:59",
+    };
+    const dls = aideadlinesDeadlinesOf(raw);
+    expect(dls.length).toBe(3);
+    expect(dls.map((d) => d.kind)).toEqual(["paper", "notification", "camera_ready"]);
+  });
+
+  it("parseTree gracefully returns empty array for non-existent directory", () => {
+    expect(aideadlinesParseTree("/tmp/nonexistent-aideadlines-12345")).toEqual([]);
+  });
+});
+
+describe("base source utilities", () => {
+  it("cacheSlot replaces slashes in repo and ref", () => {
+    expect(cacheSlot("/tmp/cache", "org/sub/repo", "refs/heads/feature/test")).toBe(
+      "/tmp/cache/org__sub__repo__refs__heads__feature__test",
+    );
+  });
+
+  it("extractedRoot returns null on non-existent path or non-directory", () => {
+    expect(extractedRoot("/tmp/nonexistent-slot-12345")).toBeNull();
   });
 });
 

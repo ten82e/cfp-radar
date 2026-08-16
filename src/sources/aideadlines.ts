@@ -29,6 +29,11 @@ export const NAME = "aideadlines";
 const LEGACY: Array<[DeadlineKind, string, string]> = [
   ["abstract", "Abstract submission", "abstract_deadline"],
   ["paper", "Paper submission", "deadline"],
+  ["paper", "Paper submission", "paper_deadline"],
+  ["notification", "Notification", "notification_deadline"],
+  ["notification", "Notification", "notification"],
+  ["camera_ready", "Camera-ready submission", "camera_ready_deadline"],
+  ["camera_ready", "Camera-ready submission", "camera_ready"],
 ];
 
 /** Rewrite a lone previous-year token in free text to the edition year. */
@@ -165,9 +170,13 @@ export function editionOf(raw: Record<string, unknown>): Edition | null {
 /** Read `src/data/conferences/*.yml`; each item is one edition. */
 export function parseTree(conferencesDir: string): Conference[] {
   const byKey = new Map<string, Conference>();
-  for (const path of readdirSync(conferencesDir)
-    .filter((n) => n.endsWith(".yml"))
-    .sort()) {
+  let fileList: string[];
+  try {
+    fileList = readdirSync(conferencesDir);
+  } catch {
+    return [];
+  }
+  for (const path of fileList.filter((n) => n.endsWith(".yml") || n.endsWith(".yaml")).sort()) {
     let loaded: unknown;
     try {
       loaded = loadYaml(readFileSync(join(conferencesDir, path), "utf8"));

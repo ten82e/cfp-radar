@@ -354,7 +354,7 @@ export function parseArgs(argv: string[]): CliArgs {
   for (let i = 0; i < argv.length; i++) {
     const raw = argv[i];
     let a = raw;
-    let eqVal: string | undefined = undefined;
+    let eqVal: string | undefined;
     const eqIdx = raw.indexOf("=");
     if (raw.startsWith("--") && eqIdx > 0) {
       a = raw.slice(0, eqIdx);
