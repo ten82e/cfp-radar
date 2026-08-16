@@ -481,17 +481,21 @@ export function parseWikiCfpHtml(
 /** 'Aug 15, 2026 (Aug 1, 2026)', '31 December 2026', '15-May-2026', '2026/08/20' 形式の締切を Date に変換。 */
 export function parseDeadlineText(dateText: string): Date | null {
   if (!dateText) return null;
+  const norm = String(dateText).normalize("NFKC").trim();
 
   // 1. ISO / Numeric Year First: 2026-05-15, 2026/05/15, 2026.05.15
-  let m = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(dateText);
+  let m = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(norm);
   if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
 
-  // 2. Japanese date: 2026年5月15日
-  m = /(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(dateText);
+  // 2. Japanese date: 2026年5月15日, 2026年05月15日
+  m = /(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(norm);
   if (m) return validUtcDate(Number(m[1]), Number(m[2]), Number(m[3]));
 
-  // 3. Day Month Year: '15 May 2026', '15th August, 2026', '15-May-2026', '15/May/2026'
-  m = /\b(\d{1,2})(?:st|nd|rd|th)?[-/\s]+([a-zA-Z]{3,9})\.?(?:,)?[-/\s]+(20\d\d)\b/i.exec(dateText);
+  // 3. Day Month Year: '15 May 2026', '15th of May, 2026', '15th of May 2026', '15th August, 2026', '15-May-2026', '15/May/2026'
+  m =
+    /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)([a-zA-Z]{3,9})\.?(?:,)?[-/\s]+(20\d\d)\b/i.exec(
+      norm,
+    );
   if (m) {
     const moKey = m[2].toLowerCase().slice(0, 3);
     if (moKey in MONTHS_MAP) {
@@ -501,7 +505,7 @@ export function parseDeadlineText(dateText: string): Date | null {
 
   // 4. Month Day Year: 'Aug 15, 2026', 'August 15th, 2026', 'Aug-15-2026', 'Aug 15'
   m = /\b([a-zA-Z]{3,9})\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?(?:[-/\s]+(20\d\d))?\b/i.exec(
-    dateText,
+    norm,
   );
   if (m) {
     const moKey = m[1].toLowerCase().slice(0, 3);
@@ -512,7 +516,7 @@ export function parseDeadlineText(dateText: string): Date | null {
   }
 
   // 5. Day Month Year Numeric: '15.08.2026', '15/08/2026', '15-08-2026'
-  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d\d)\b/.exec(dateText);
+  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d\d)\b/.exec(norm);
   if (m) {
     const day = Number(m[1]);
     const month = Number(m[2]);
