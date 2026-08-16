@@ -540,10 +540,10 @@ footer a:hover { text-decoration: underline; }
   <div class="panel">
     <div class="presets-bar">
       <span style="font-size: 0.78rem; color: var(--muted); align-self: center; margin-right: 4px;">クイック抽出:</span>
-      <button class="preset-btn" onclick="applyPreset('7d')">締切直近 (7日以内)</button>
-      <button class="preset-btn" onclick="applyPreset('a_star')">Top Tier (A*)</button>
-      <button class="preset-btn" onclick="applyPreset('hpc_sys')">HPC &amp; Systems</button>
-      <button class="preset-btn" onclick="applyPreset('domestic')">国内研究会</button>
+      <button class="preset-btn" data-preset="7d" onclick="applyPreset('7d')">締切直近 (7日以内)</button>
+      <button class="preset-btn" data-preset="a_star" onclick="applyPreset('a_star')">Top Tier (A*)</button>
+      <button class="preset-btn" data-preset="hpc_sys" onclick="applyPreset('hpc_sys')">HPC &amp; Systems</button>
+      <button class="preset-btn" data-preset="domestic" onclick="applyPreset('domestic')">国内研究会</button>
     </div>
 
     <div class="row" style="margin-bottom: 14px;">
@@ -608,7 +608,7 @@ footer a:hover { text-decoration: underline; }
   <!-- Items Counter & Keyboard Shortcuts Hint -->
   <div class="count">
     <span id="count"></span>
-    <span style="font-family: var(--font-mono); font-size: 0.75rem;">Shortcuts: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>/</kbd> 検索</span>
+    <span style="font-family: var(--font-mono); font-size: 0.75rem;">ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>/</kbd> 検索</span>
   </div>
 
   <!-- Table Container -->
@@ -767,6 +767,18 @@ footer a:hover { text-decoration: underline; }
   window.copyToClipboard = copyToClipboard;
 
   // Quick Presets
+  function updatePresetActive() {
+    var p7d = state.win === "7d" && !state.q && !state.cats.length && !state.kind && !state.rank && !state.est && !state.domestic && !state.past;
+    var paStar = state.rank === "A*" && !state.q && !state.cats.length && !state.kind && state.win === "all" && !state.est && !state.domestic && !state.past;
+    var pHpcSys = state.cats.length === 2 && state.cats.indexOf("hpc") >= 0 && state.cats.indexOf("systems") >= 0 && !state.q && !state.kind && !state.rank && state.win === "all" && !state.est && !state.domestic && !state.past;
+    var pDom = state.domestic && !state.q && !state.cats.length && !state.kind && !state.rank && state.win === "all" && !state.est && !state.past;
+    var map = { '7d': p7d, 'a_star': paStar, 'hpc_sys': pHpcSys, 'domestic': pDom };
+    Array.prototype.forEach.call(document.querySelectorAll(".preset-btn"), (btn) => {
+      var p = btn.getAttribute("data-preset");
+      btn.classList.toggle("active", !!map[p]);
+    });
+  }
+
   window.applyPreset = (type) => {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     if (type === '7d') state.win = "7d";
@@ -1044,7 +1056,7 @@ footer a:hover { text-decoration: underline; }
   // Update Summary Dashboard Stats
   $("statConfs").textContent = (DATA.conferences || []).length;
   var nowMs = Date.now();
-  var next30 = rows.filter((r) => r.t >= nowMs && (r.t - nowMs) <= 30*DAY).length;
+  var next30 = rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est && r.t >= nowMs && (r.t - nowMs) <= 30*DAY).length;
   $("statUpcoming").textContent = next30;
   var nicheCount = (DATA.conferences || []).filter((c) => (c.tags || []).indexOf("niche") !== -1).length;
   $("statNiche").textContent = nicheCount;
@@ -1545,6 +1557,7 @@ footer a:hover { text-decoration: underline; }
       $("empty").hidden = shown.length > 0;
     }
     drawMore();
+    updatePresetActive();
   }
 
   function readUrl() {
@@ -1586,6 +1599,7 @@ footer a:hover { text-decoration: underline; }
     Array.prototype.forEach.call(catsBox.querySelectorAll("input"), (chk) => {
       chk.checked = state.cats.indexOf(chk.value) >= 0;
     });
+    updatePresetActive();
   }
 
   function fromForm() {
