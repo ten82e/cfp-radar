@@ -166,21 +166,24 @@ export interface IcsEntry {
  * No `METHOD` is emitted (SPEC.md 4.1).
  */
 export function renderIcs(
-  entries: IcsEntry[],
-  options: { calname: string; caldesc: string },
+  entries: IcsEntry[] | null | undefined,
+  options?: { calname?: string; caldesc?: string } | null,
 ): string {
+  const calname = options?.calname ?? "";
+  const caldesc = options?.caldesc ?? "";
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//conf-deadlines//conf-deadlines//EN",
     "CALSCALE:GREGORIAN",
-    `X-WR-CALNAME:${escapeText(options.calname)}`,
-    `X-WR-CALDESC:${escapeText(options.caldesc)}`,
+    `X-WR-CALNAME:${escapeText(calname)}`,
+    `X-WR-CALDESC:${escapeText(caldesc)}`,
     "X-WR-TIMEZONE:UTC",
     "REFRESH-INTERVAL;VALUE=DURATION:PT12H",
     "X-PUBLISHED-TTL:PT12H",
   ];
-  for (const entry of entries) {
+  for (const entry of entries ?? []) {
+    if (!entry || typeof entry !== "object") continue;
     lines.push("BEGIN:VEVENT");
     lines.push(`UID:${escapeText(entry.uid)}`);
     lines.push(`DTSTAMP:${fmtUtc(entry.dtstamp ?? new Date(0))}`);
@@ -360,7 +363,8 @@ export interface CalendarRecord {
 }
 
 /** Flatten conferences into calendar records (entry + routing metadata). */
-export function recordsOf(confs: Conference[]): CalendarRecord[] {
+export function recordsOf(confs: Conference[] | null | undefined): CalendarRecord[] {
+  if (!confs || !Array.isArray(confs)) return [];
   const records: CalendarRecord[] = [];
   const usedUids = new Map<string, number>();
 
@@ -374,12 +378,15 @@ export function recordsOf(confs: Conference[]): CalendarRecord[] {
     return `${local}-${n}${dom}`;
   };
 
-  for (const conf of [...confs].sort((a, b) => cmpStr(a.key, b.key))) {
-    const cats = [...conf.categories];
-    const rank = rankText(conf.rank);
-    const editions = [...conf.editions].sort(
-      (a, b) => a.year - b.year || cmpStr(a.edition_id, b.edition_id),
-    );
+  for (const conf of [...confs].sort((a, b) => cmpStr(a?.key ?? "", b?.key ?? ""))) {
+    if (!conf || typeof conf !== "object") continue;
+    const cats = Array.isArray(conf.categories) ? [...conf.categories] : [];
+    const rank = rankText(conf.rank ?? {});
+    const editions = (Array.isArray(conf.editions) ? [...conf.editions] : [])
+      .filter((e) => e && typeof e === "object")
+      .sort(
+        (a, b) => (a.year ?? 0) - (b.year ?? 0) || cmpStr(a.edition_id ?? "", b.edition_id ?? ""),
+      );
     const ordinals = deadlineOrdinals(editions);
     const eventOrds = eventOrdinals(editions);
     const collides = collisions(editions);
@@ -469,20 +476,22 @@ function sortKey(rec: CalendarRecord): [number, string] {
 // --- serialisation -----------------------------------------------------------
 
 export function toJson(
-  confs: Conference[],
-  config: Record<string, unknown>,
+  confs: Conference[] | null | undefined,
+  config: Record<string, unknown> | null | undefined,
   now: Date,
 ): Record<string, unknown> {
-  const site = (config.site as Record<string, unknown>) ?? {};
+  const safeConfig = config ?? {};
+  const site = (safeConfig.site as Record<string, unknown>) ?? {};
   const domain = String(site.domain ?? "conf-deadlines");
   const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
-  const categories = (config.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
-  const sources = (config.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
+  const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
+  const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
   const outConfs: unknown[] = [];
-  for (const conf of [...confs].sort((a, b) => cmpStr(a.key, b.key))) {
+  for (const conf of [...(confs ?? [])].sort((a, b) => cmpStr(a?.key ?? "", b?.key ?? ""))) {
+    if (!conf || typeof conf !== "object") continue;
     const editions: unknown[] = [];
-    for (const ed of [...conf.editions].sort(
-      (a, b) => a.year - b.year || cmpStr(a.edition_id, b.edition_id),
+    for (const ed of [...(conf.editions ?? [])].sort(
+      (a, b) => (a.year ?? 0) - (b.year ?? 0) || cmpStr(a.edition_id ?? "", b.edition_id ?? ""),
     )) {
       editions.push({
         year: ed.year,
@@ -538,13 +547,13 @@ export function csvField(value: string | number | boolean | null | undefined): s
   return s;
 }
 
-export function toCsv(records: CalendarRecord[]): string {
+export function toCsv(records: CalendarRecord[] | null | undefined): string {
   const lines: string[] = [];
   lines.push(CSV_COLUMNS.join(","));
-  for (const rec of records) {
-    if (rec.type !== "deadline") continue;
+  for (const rec of records ?? []) {
+    if (!rec || typeof rec !== "object" || rec.type !== "deadline") continue;
     const { conf, edition: ed, deadline: dl } = rec;
-    if (dl === null) continue;
+    if (!conf || !ed || dl === null || dl === undefined) continue;
     lines.push(
       [
         conf.key,
@@ -576,12 +585,18 @@ export function toCsv(records: CalendarRecord[]): string {
   return `${lines.join("\n")}\n`;
 }
 
-export function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): string {
+export function toUpcomingMd(
+  records: CalendarRecord[] | null | undefined,
+  now: Date,
+  days = 180,
+): string {
   const horizon = addDays(now, days);
   const today = dateOnly(now);
   const rows: string[] = [];
-  for (const rec of records) {
+  for (const rec of records ?? []) {
+    if (!rec || typeof rec !== "object") continue;
     const { conf, edition: ed } = rec;
+    if (!conf || !ed) continue;
     const link = ed.link || conf.link;
     const name = link
       ? `[${titleWithYear(conf.title, ed.year)}](${link})`
@@ -651,11 +666,12 @@ export function toUpcomingMd(records: CalendarRecord[], now: Date, days = 180): 
 
 export function toLlmsTxt(
   baseUrl: string,
-  feeds: Array<[string, string]>,
-  config: Record<string, unknown>,
+  feeds: Array<[string, string]> | null | undefined,
+  config: Record<string, unknown> | null | undefined,
 ): string {
-  const categories = (config.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
-  const sources = (config.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
+  const safeConfig = config ?? {};
+  const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
+  const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
   const lines = [
     "# conf-deadlines",
     "",
@@ -671,7 +687,7 @@ export function toLlmsTxt(
     "## フィード一覧（絶対 URL）",
     "",
   ];
-  for (const [name, meaning] of feeds) {
+  for (const [name, meaning] of feeds ?? []) {
     lines.push(`- ${baseUrl}/${name} — ${meaning}`);
   }
   lines.push(

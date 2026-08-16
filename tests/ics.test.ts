@@ -7,7 +7,19 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { buildAll, csvField, escapeText, UID_DOMAIN, uriValue } from "../src/build.ts";
+import {
+  buildAll,
+  csvField,
+  escapeText,
+  recordsOf,
+  renderIcs,
+  toCsv,
+  toJson,
+  toLlmsTxt,
+  toUpcomingMd,
+  UID_DOMAIN,
+  uriValue,
+} from "../src/build.ts";
 import type { Conference } from "../src/model.ts";
 import {
   icsPhysicalLines,
@@ -503,5 +515,58 @@ describe("csvField and escaping safety", () => {
     ["  https://example.com/cfp?a=1&b=2  ", "https://example.com/cfp?a=1&b=2"],
   ])("uriValue(%j) -> %j", (input, expected) => {
     expect(uriValue(input)).toBe(expected);
+  });
+});
+
+describe("build output generator boundary handling", () => {
+  it("renderIcs handles null, undefined, and non-object entries safely", () => {
+    const emptyIcs = renderIcs(null, null);
+    expect(emptyIcs).toContain("BEGIN:VCALENDAR");
+    expect(emptyIcs).toContain("END:VCALENDAR");
+
+    const guardedIcs = renderIcs([null as any, undefined as any], {
+      calname: "Test",
+      caldesc: "Description",
+    });
+    expect(guardedIcs).toContain("X-WR-CALNAME:Test");
+    expect(guardedIcs).toContain("X-WR-CALDESC:Description");
+  });
+
+  it("recordsOf handles null, undefined, and corrupted conference objects", () => {
+    expect(recordsOf(null)).toEqual([]);
+    expect(recordsOf(undefined)).toEqual([]);
+    expect(recordsOf([null as any, undefined as any, {} as any])).toEqual([]);
+
+    const clean = recordsOf([
+      makeConference({
+        key: "sc",
+        title: "SC",
+        categories: ["hpc"],
+        editions: [
+          null as any,
+          makeEdition({
+            year: 2026,
+            deadlines: [makeDeadline("paper", "Paper", new Date(Date.UTC(2026, 3, 1)))],
+          }),
+        ],
+      }),
+    ]);
+    expect(clean.length).toBeGreaterThan(0);
+    expect(clean[0].conf.key).toBe("sc");
+  });
+
+  it("toJson, toCsv, toUpcomingMd, and toLlmsTxt handle null/undefined inputs", () => {
+    const jsonRes = toJson(null, null, NOW);
+    expect(jsonRes.conferences).toEqual([]);
+    expect(jsonRes.site).toBeDefined();
+
+    const csvRes = toCsv(null);
+    expect(csvRes.startsWith("key,title,full_name")).toBe(true);
+
+    const mdRes = toUpcomingMd(null, NOW);
+    expect(mdRes).toContain("該当なし");
+
+    const llmsRes = toLlmsTxt("https://example.com", null, null);
+    expect(llmsRes).toContain("# conf-deadlines");
   });
 });
