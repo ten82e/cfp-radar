@@ -722,4 +722,28 @@ describe("aideadlines deadlinesOf parsing", () => {
     expect(dls[0].kind).toBe("abstract");
     expect(dls[1].kind).toBe("paper");
   });
+
+  it("falls back to legacy top-level deadlines when deadlines array is empty", () => {
+    const raw = {
+      tz: "AoE",
+      deadlines: [],
+      deadline: "2026-06-01 23:59:00",
+    };
+    const dls = aideadlinesDeadlinesOf(raw);
+    expect(dls.length).toBe(1);
+    expect(dls[0].kind).toBe("paper");
+    expect(dls[0].tz_raw).toBe("AoE");
+    expect(dls[0].at_utc.toISOString()).toBe("2026-06-02T11:59:00.000Z");
+  });
+
+  it("falls back edition_id to String(year) when raw.id is omitted", () => {
+    const raw = {
+      year: 2026,
+      link: "https://example.com/2026",
+    };
+    const ed = editionOf(raw);
+    expect(ed).not.toBeNull();
+    expect(ed?.year).toBe(2026);
+    expect(ed?.edition_id).toBe("2026");
+  });
 });

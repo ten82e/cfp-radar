@@ -108,7 +108,7 @@ export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
         comment: rec.comment === null || rec.comment === undefined ? null : String(rec.comment),
       });
     }
-    return out;
+    if (out.length > 0) return out;
   }
 
   for (const [kind, label, key] of LEGACY) {
@@ -150,7 +150,7 @@ export function editionOf(raw: Record<string, unknown>): Edition | null {
     .join(", ");
   return {
     year,
-    edition_id: String(raw.id ?? ""),
+    edition_id: String(raw.id ?? (year ? String(year) : "")),
     link: String(raw.link ?? ""),
     place,
     date_text: dateText,
