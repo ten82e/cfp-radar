@@ -583,6 +583,8 @@ node --experimental-strip-types src/cli.ts build [--out public] [--config config
 | `data.csv` | 1 行 1 締切のフラット表。**推定版も含み `estimated` 列で区別** |
 | `upcoming.md` | 直近 N 日の締切と開催の表（N は `config.yaml` の `site.upcoming_days`、既定 180）。推定行は「推定」列で区別する |
 | `llms.txt` | エージェント向け索引 |
+| `embeddings.json` | 会議スコープのセマンティック埋め込み（§10）。`--no-embeddings` で省略可 |
+| `recommender.js` | サイトの推薦ロジック（`site/template.html` から同梱） |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
 確定フィード（`all.ics` とカテゴリ別 9 本、`deadlines.ics`、`events.ics`）に
