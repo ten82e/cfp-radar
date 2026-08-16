@@ -45,9 +45,13 @@ export const KIND_LABEL_JA: Record<string, string> = {
 export const DEFAULT_CATEGORIES: Record<string, string> = {
   hpc: "High Performance Computing",
   networking: "Networking",
-  systems: "Systems",
-  ai: "Artificial Intelligence / Machine Learning",
-  security: "Security",
+  systems: "Systems, Architecture and Storage",
+  ai: "AI and Machine Learning",
+  security: "Security and Privacy",
+  db: "Database and Data Mining",
+  graphics: "Graphics and Multimedia",
+  hci: "Human-Computer Interaction",
+  theory: "Theory and Algorithms",
 };
 
 export const DEFAULT_SOURCES = [
@@ -218,9 +222,10 @@ export function renderIcs(
  * R29 の VENUE_PAPERS ハッシュ比較も引き継ぐ。
  */
 export function embeddingsStale(
-  existing: { embeddings?: Record<string, unknown>; venuePapersHash?: string },
+  existing: { embeddings?: Record<string, unknown>; venuePapersHash?: string } | null | undefined,
   confKeys: string[],
 ): boolean {
+  if (!existing || typeof existing !== "object") return true;
   const have = new Set(Object.keys(existing.embeddings ?? {}));
   const want = new Set(confKeys);
   if (existing.venuePapersHash !== venuePapersHash()) return true;
@@ -880,8 +885,8 @@ export async function buildAll(
       if (needEmb) {
         const { buildEmbeddings } = await import("./embeddings.ts");
         await buildEmbeddings(join(outdir, "data.json"), embPath);
-        written.push("embeddings.json");
       }
+      written.push("embeddings.json");
     } catch (exc) {
       console.warn(
         `warning: embeddings を生成しなかった（${(exc as Error).constructor.name}: ${String(exc)}）`,
