@@ -947,6 +947,25 @@ it("narrow screens fall back to card layout (SPEC §7)", () => {
   expect(html).toContain('td(tr, "残り", "c-deadline")');
 });
 
+it("deadline display includes AoE notation (SPEC §7)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: 表の日時セルとドロワーの両方に AoE 併記がある
+  expect(html).toContain('line(c1, fmtAoE(d), "sub nowrap")');
+  expect(html).toContain("fmtAoE(new Date(r.t))");
+  // 実行検証: fmtAoE は UTC-12 の壁時計を返す（例: 12:00 UTC → 00:00 AoE）
+  const src = jsFunction(html, "fmtAoE");
+  const script = [
+    "function pad(n) { return (n < 10 ? '0' : '') + n; }",
+    `const fmtAoE = ${src};`,
+    "const d = new Date(Date.UTC(2026, 8, 1, 12, 0));",
+    "const e = new Date(Date.UTC(2026, 8, 2, 0, 30));",
+    "console.log(fmtAoE(d) + '|' + fmtAoE(e));",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe("2026-09-01 00:00 AoE|2026-09-01 12:30 AoE");
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
