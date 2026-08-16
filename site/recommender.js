@@ -349,7 +349,7 @@
 
   /* 会議側の照合文字列（key / title / full_name / tags / 日本語表記 / 代表論文語彙） */
   function confHay(r) {
-    var c = r.conf || {};
+    var c = (r && r.conf) || {};
     return {
       key: normKey(c.key),
       title: normKey(c.title),
@@ -534,7 +534,7 @@
   /* 全行のスコア: 平均と最大の加重平均（0.6×平均 + 0.4×最大）。
    * タグ付き論文 1 本の強シグナルが多数行の平均で薄まらないようにする。 */
   function scorePapers(r, lines) {
-    if (!lines || !lines.length) return 0;
+    if (!r || !lines || !lines.length) return 0;
     var conf = confHay(r);
     var sum = 0,
       max = 0;
@@ -686,6 +686,13 @@
   }
 
   function breakdown(r, lines) {
+    if (!r)
+      return {
+        score: 0,
+        venueHit: false,
+        perLine: [],
+        agg: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
+      };
     var conf = confHay(r);
     var perLine = [];
     var venueHitAny = false;
@@ -823,8 +830,10 @@
    * （英数字のみ）なのでエスケープ不要。
    */
   function wordInText(hay, w) {
-    var re = w.endsWith("s") ? w : w + "s?";
-    return new RegExp("\\b" + re + "\\b").test(hay);
+    if (!hay || !w) return false;
+    var safeW = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = safeW.endsWith("s") ? safeW : safeW + "s?";
+    return new RegExp("\\b" + re + "\\b").test(String(hay));
   }
 
   /* クエリの内容語数（英語）。ブレンドの語彙重みの適応に使う。
@@ -1127,6 +1136,7 @@
     setExpandEnabled: setExpandEnabled,
     queryText: queryText,
     getGCalUrl: getGCalUrl,
+    wordInText: wordInText,
   };
 
   if (typeof module !== "undefined" && module.exports) {
