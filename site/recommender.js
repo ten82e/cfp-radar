@@ -1036,6 +1036,8 @@
    */
   function getGCalUrl(r, kindLabels) {
     if (!r || !r.conf) return "";
+    var t = typeof r.t === "number" && !isNaN(r.t) ? r.t : (r.t instanceof Date && !isNaN(r.t.getTime()) ? r.t.getTime() : 0);
+    if (!t) return "";
     var kl = kindLabels || {
       abstract: "概要締切",
       paper: "論文締切",
@@ -1054,8 +1056,8 @@
     var pad = function(n) { return (n < 10 ? "0" : "") + n; };
     var dates = "";
     if (r.kind === "event") {
-      var tStart = typeof r.t === "number" ? r.t : (r.t instanceof Date ? r.t.getTime() : 0);
-      var tEnd = typeof r.tLast === "number" ? r.tLast : (r.tLast instanceof Date ? r.tLast.getTime() : tStart);
+      var tStart = t;
+      var tEnd = typeof r.tLast === "number" && !isNaN(r.tLast) ? r.tLast : (r.tLast instanceof Date && !isNaN(r.tLast.getTime()) ? r.tLast.getTime() : tStart);
       var dStart = new Date(tStart);
       var dEnd = new Date(tEnd + 86400000);
       var fmtDateGCal = function(d) {
@@ -1063,7 +1065,6 @@
       };
       dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
     } else {
-      var t = typeof r.t === "number" ? r.t : (r.t instanceof Date ? r.t.getTime() : 0);
       var dEnd = new Date(t);
       var dStart = new Date(t - 1800000); // 30 分前
       var isoStart = dStart.toISOString().replace(/-|:|\.\d\d\d/g, "");
@@ -1071,7 +1072,18 @@
       dates = isoStart + "/" + isoEnd;
     }
     var ed = r.ed || {};
-    var details = encodeURIComponent((r.conf.full_name || "") + "\nCFP Link: " + (ed.link || r.conf.link || ""));
+    var descParts = [];
+    if (r.conf.full_name || r.conf.title) {
+      descParts.push(r.conf.full_name || r.conf.title);
+    }
+    if (r.comment) {
+      descParts.push("備考: " + r.comment);
+    }
+    var cfpLink = ed.link || r.conf.link || "";
+    if (cfpLink) {
+      descParts.push("CFP Link: " + cfpLink);
+    }
+    var details = encodeURIComponent(descParts.join("\n"));
     var location = encodeURIComponent(ed.place || "");
     return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
   }

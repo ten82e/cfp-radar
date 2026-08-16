@@ -1240,9 +1240,33 @@ describe("getGCalUrl", () => {
     expect(url).toContain("text=%5BSIGCOMM%5D%20%E8%AB%96%E6%96%87%E7%B7%A0%E5%88%87");
   });
 
-  it("handles null and empty records gracefully", () => {
+  it("handles null, empty, and invalid records gracefully", () => {
     expect(R.getGCalUrl(null)).toBe("");
     expect(R.getGCalUrl(undefined)).toBe("");
     expect(R.getGCalUrl({})).toBe("");
+    expect(R.getGCalUrl({ conf: { key: "sigcomm" }, t: NaN })).toBe("");
+    expect(R.getGCalUrl({ conf: { key: "sigcomm" }, t: new Date("invalid") })).toBe("");
+  });
+
+  it("includes comments and falls back to conf title when full_name is empty", () => {
+    const r = {
+      conf: {
+        key: "niche-conf",
+        title: "NICHE-CONF",
+        full_name: "",
+        link: "https://example.com/niche",
+      },
+      ed: {
+        place: "Tokyo, Japan",
+        link: "https://example.com/niche26",
+      },
+      kind: "paper",
+      comment: "Round 2 Submission",
+      t: new Date(Date.UTC(2026, 5, 1, 12, 0, 0)).getTime(),
+    };
+    const url = R.getGCalUrl(r);
+    expect(url).toContain("NICHE-CONF");
+    expect(url).toContain("%E5%82%99%E8%80%83%3A%20Round%202%20Submission"); // 備考: Round 2 Submission
+    expect(url).toContain("CFP%20Link%3A%20https%3A%2F%2Fexample.com%2Fniche26");
   });
 });
