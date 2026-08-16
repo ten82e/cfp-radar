@@ -215,7 +215,8 @@ export function pageTitleYear(htmlText: string | null | undefined): number | nul
     (x) => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'" })[x] ?? x,
   );
   const years = [...title.matchAll(/\b(20\d{2})\b/g)].map((x) => Number(x[1]));
-  return years.length === 1 ? years[0] : null;
+  const uniqueYears = [...new Set(years)];
+  return uniqueYears.length === 1 ? uniqueYears[0] : null;
 }
 
 export function pageYearMismatch(htmlText: string, registryYear: number): number | null {
