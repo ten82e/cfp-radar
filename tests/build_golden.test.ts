@@ -4,7 +4,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
@@ -1564,4 +1564,26 @@ it("parseCliArgs parses short flags with equals syntax (-o=dist, -c=config.yaml,
   expect(res3.minYear).toBe(2027);
   expect(res3.dryRun).toBe(true);
   expect(res3.append).toBe(true);
+});
+
+it("buildAll falls back to site/recommender.js when custom template is in separate directory (#306)", async () => {
+  const tmpDir = mkdtempSync(join(tmpdir(), "cfp-custom-tmpl-"));
+  const customTmpl = join(tmpDir, "custom_template.html");
+  writeFileSync(customTmpl, "<html><body>/*__DATA__*/null</body></html>", "utf8");
+
+  const outDir = join(tmpDir, "out");
+  const stats = await buildAll(
+    [],
+    { template: customTmpl },
+    outDir,
+    new Date("2026-08-09T00:00:00Z"),
+    {
+      noEmbeddings: true,
+    },
+  );
+
+  expect(stats.conferences).toBe(0);
+  expect(existsSync(join(outDir, "index.html"))).toBe(true);
+  expect(existsSync(join(outDir, "recommender.js"))).toBe(true);
+  expect(readFileSync(join(outDir, "recommender.js"), "utf8")).toContain("Recommender");
 });

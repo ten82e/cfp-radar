@@ -986,12 +986,20 @@ export async function buildAll(
       templateText = templateText.replace(TEMPLATE_MARKER, embedJson(pyJsonCompact(data)));
     }
     write("index.html", templateText);
-    // recommender.js をテンプレートと同じ場所から同梱（ブラウザから src 参照）
+    // recommender.js をテンプレートと同じ場所から同梱（ブラウザから src 参照。無ければ site/recommender.js へフォールバック）
     const rec = join(dirname(templatePath), "recommender.js");
+    let recContent: string | null = null;
     try {
-      write("recommender.js", readFileSync(rec, "utf8"));
+      recContent = readFileSync(rec, "utf8");
     } catch {
-      console.warn(`warning: ${rec} が無い。index.html の src 参照が 404 になる`);
+      try {
+        recContent = readFileSync(join(ROOT, "site", "recommender.js"), "utf8");
+      } catch {
+        console.warn(`warning: recommender.js が無い。index.html の src 参照が 404 になる`);
+      }
+    }
+    if (recContent !== null) {
+      write("recommender.js", recContent);
     }
   } else {
     console.warn(`warning: ${templatePath} が無いので index.html を生成しない`);
