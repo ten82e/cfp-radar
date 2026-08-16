@@ -737,6 +737,40 @@ describe("ccfddl parsing", () => {
     expect(ed?.deadlines[0].at_utc.toISOString()).toBe("2026-05-16T11:59:59.000Z");
   });
 
+  it("extracts camera ready deadlines from final paper/submission variants", () => {
+    const raw1 = {
+      year: 2026,
+      timezone: "UTC",
+      "final paper": "2026-07-01 23:59:59",
+    };
+    const ed1 = ccfddlEditionOf(raw1);
+    expect(ed1?.deadlines).toHaveLength(1);
+    expect(ed1?.deadlines[0].kind).toBe("camera_ready");
+
+    const raw2 = {
+      year: 2026,
+      timezone: "UTC",
+      final_submission: "2026-07-15 23:59:59",
+    };
+    const ed2 = ccfddlEditionOf(raw2);
+    expect(ed2?.deadlines).toHaveLength(1);
+    expect(ed2?.deadlines[0].kind).toBe("camera_ready");
+  });
+
+  it("handles null, undefined, and invalid arguments defensively", () => {
+    expect(ccfddlEditionOf(null)).toBeNull();
+    expect(ccfddlEditionOf(undefined)).toBeNull();
+    expect(ccfddlEditionOf({ year: "invalid" })).toBeNull();
+
+    expect(ccfddlConferenceOf(null)).toBeNull();
+    expect(ccfddlConferenceOf(undefined)).toBeNull();
+    expect(ccfddlConferenceOf({ title: "" })).toBeNull();
+
+    expect(ccfddlParseTree(null)).toEqual([]);
+    expect(ccfddlParseTree(undefined)).toEqual([]);
+    expect(ccfddlParseTree("/tmp/nonexistent-ccfddl-12345")).toEqual([]);
+  });
+
   it("extracts notification and camera_ready from timeline and top-level fallback", () => {
     const timeline = [
       {
