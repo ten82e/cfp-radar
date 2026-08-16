@@ -671,14 +671,24 @@ describe("local source parsing", () => {
       timezone: "UTC",
       paper_deadline: "2026-05-15 23:59:00",
       abstract_deadline: "2026-05-01 23:59:00",
+      notification: "2026-07-01 23:59:00",
+      camera_ready: "2026-07-15 23:59:00",
+      rebuttal_end: "2026-06-15 23:59:00",
+      registration: "2026-08-01 23:59:00",
     };
     const dls = localDeadlinesOf(raw);
-    expect(dls.length).toBe(2);
-    expect(dls[0].kind).toBe("paper");
-    expect(dls[1].kind).toBe("abstract");
+    expect(dls.length).toBe(6);
+    expect(dls.map((d) => d.kind)).toEqual([
+      "abstract",
+      "paper",
+      "notification",
+      "camera_ready",
+      "rebuttal_end",
+      "registration",
+    ]);
   });
 
-  it("parses valid local edition", () => {
+  it("parses valid local edition and propagates estimated flag", () => {
     const rawEdition = {
       year: 2026,
       id: "resound26",
@@ -686,6 +696,7 @@ describe("local source parsing", () => {
       date_text: "September 14-16, 2026",
       deadline: "2026-06-01 23:59:00",
       tz: "AoE",
+      estimated: true,
     };
     const ed = localEditionOf(rawEdition, "resound");
     expect(ed).not.toBeNull();
@@ -694,6 +705,7 @@ describe("local source parsing", () => {
     expect(ed?.event_start?.toISOString().slice(0, 10)).toBe("2026-09-14");
     expect(ed?.deadlines.length).toBe(1);
     expect(ed?.deadlines[0].kind).toBe("paper");
+    expect(ed?.estimated).toBe(true);
   });
 });
 
