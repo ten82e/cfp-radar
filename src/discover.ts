@@ -426,8 +426,7 @@ export function parseWikiCfpHtml(
     const tds = row.match(/<td[^>]*>([\s\S]*?)<\/td>/g) ?? [];
     let fullName = "";
     for (const td of tds.slice(1)) {
-      const txt = td
-        .replace(/<[^>]+>/g, " ")
+      const txt = decode(td.replace(/<[^>]+>/g, " "))
         .replace(/\s+/g, " ")
         .trim();
       if (txt && !txt.includes("checkbox")) {
@@ -793,10 +792,12 @@ export function parseComsocCfpHtml(
   for (const row of rows.slice(1)) {
     // ヘッダ行をスキップ
     const cells = (row.match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g) ?? []).map((c) =>
-      c
-        .replace(/<[^>]+>/g, "")
-        .replace(/\s+/g, " ")
-        .trim(),
+      decode(
+        c
+          .replace(/<[^>]+>/g, "")
+          .replace(/\s+/g, " ")
+          .trim(),
+      ),
     );
     if (cells.length < 3 || !cells[0] || !cells[2]) continue;
     const [topic, , deadline] = cells;
@@ -926,7 +927,7 @@ export function parseIpsjCfpHtml(
     const dm = /投稿締切[:：]\s*(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(inner);
     if (!dm) continue;
     const deadline = `${Number(dm[1]).toString().padStart(4, "0")}-${Number(dm[2]).toString().padStart(2, "0")}-${Number(dm[3]).toString().padStart(2, "0")}`;
-    const title = `${sm[1]}（IPSJ 論文誌 特集号）`;
+    const title = `${decode(sm[1])}（IPSJ 論文誌 特集号）`;
     // key は CFP ファイル名由来 (ipsj-27-p) で一意化。
     const fname = url.split("/").pop()?.split(".")[0]?.toLowerCase() ?? "cfp";
     entries.push({

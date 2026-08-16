@@ -434,6 +434,19 @@ describe("parseComsocCfpHtml", () => {
     expect(es[0].source_type).toBe("special_issue");
     expect(es[0].link).toBe("https://example.com/cfp");
   });
+
+  it("decodes HTML entities in the topic (title / full_name / key)", () => {
+    const html =
+      "<table><tr><th>Paper Topic</th><th>Publication Date</th>" +
+      "<th>Manuscript Submission Deadline</th></tr>" +
+      "<tr><td>AI &amp; Networking for 6G</td><td>September 2027</td><td>31 December 2026</td></tr>" +
+      "</table>";
+    const es = parseComsocCfpHtml(html, "IEEE Network", "https://example.com/cfp");
+    expect(es.length).toBe(1);
+    expect(es[0].title).toBe("AI & Networking for 6G（IEEE Network 特集号）");
+    expect(es[0].full_name).toBe("AI & Networking for 6G（IEEE Network 特集号）");
+    expect(es[0].key).toBe("ai-networking-for-6g-ieee-network"); // slug に amp が混入しない
+  });
 });
 
 describe("parseIeiceCfpHtml", () => {
@@ -475,6 +488,16 @@ describe("parseIpsjCfpHtml", () => {
     expect(es[0].date_text).toBe("2026-12-04");
     expect(es[0].year).toBe(2026);
     expect(es[0].link).toBe("https://www.ipsj.or.jp/journal/cfp/27-P.html");
+  });
+
+  it("decodes HTML entities in the journal name", () => {
+    const html =
+      '<a href="cfp/27-Q.html">' +
+      "<article><h3>論文誌「情報処理 &amp; システム」特集 論文募集</h3>" +
+      "<p>投稿締切：2026年5月15日（金）</p></article></a>";
+    const es = parseIpsjCfpHtml(html, "https://www.ipsj.or.jp/journal/index.html");
+    expect(es.length).toBe(1);
+    expect(es[0].title).toBe("情報処理 & システム（IPSJ 論文誌 特集号）");
   });
 });
 
@@ -621,6 +644,18 @@ describe("parseWikiCfpHtml", () => {
     expect(e.date_text).toBe("Feb 1, 2026");
     expect(e.place).toBe("Tokyo, Japan");
     expect(e.year).toBe(2026);
+  });
+
+  it("decodes HTML entities in the full_name cell", () => {
+    const html =
+      "<table>" +
+      '<tr><td><a href="/cfp/servlet/event.showcfp?eventid=99&amp;copyownerid=1">XYZ 2026</a></td>' +
+      "<td>International Conference on Computing &amp; Systems</td></tr>" +
+      "<tr><td>Mar 1, 2026 - Mar 3, 2026</td><td>Tokyo, Japan</td><td>Feb 1, 2026</td></tr>" +
+      "</table></body></html>";
+    const entries = parseWikiCfpHtml(html, ["systems"], 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].full_name).toBe("International Conference on Computing & Systems");
   });
 });
 
