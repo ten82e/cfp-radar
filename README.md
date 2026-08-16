@@ -158,6 +158,8 @@ node src/cli.ts discover --out data/discovered_candidates.yaml
 `--append` を付けると既存の候補を保持したまま key 重複なしで追記する。
 `.github/workflows/update.yml` の `discover-candidates` ジョブが毎日これを実行し、
 `data/discovered_candidates.yaml` に候補を溜めていく。
+探索対象を分野や年で絞るには `--categories`（例: `hpc,systems`）と
+`--min-year`（既定 2026）を使う。
 
 溜まった候補を締切昇順・重複・predatory 疑い付きで一覧するには `review` を使う。
 
