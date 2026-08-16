@@ -14,6 +14,7 @@ import {
   DEFAULT_CATEGORIES,
   embeddingsStale,
   escapeMdCell,
+  escapeMdUrl,
   recordsOf,
   titleWithYear,
   toLlmsTxt,
@@ -1461,4 +1462,77 @@ it("titleWithYear avoids duplicate short-year appending and handles missing year
   expect(titleWithYear("IPSJ", undefined)).toBe("IPSJ");
   expect(titleWithYear(null, 2026)).toBe("");
   expect(titleWithYear(undefined, 2026)).toBe("");
+});
+
+it("escapeMdUrl sanitizes pipes, spaces, newlines, and parentheses (#284)", () => {
+  expect(escapeMdUrl("https://example.com/test?a=1|b=2")).toBe(
+    "https://example.com/test?a=1%7Cb=2",
+  );
+  expect(escapeMdUrl("https://example.com/path (2026)/cfp.html")).toBe(
+    "https://example.com/path%20%282026%29/cfp.html",
+  );
+  expect(escapeMdUrl("https://example.com/cfp with space/")).toBe(
+    "https://example.com/cfp%20with%20space/",
+  );
+  expect(escapeMdUrl("https://example.com/path\r\n/cfp.html")).toBe(
+    "https://example.com/path/cfp.html",
+  );
+  expect(escapeMdUrl("https://example.com/normal")).toBe("https://example.com/normal");
+  expect(escapeMdUrl("")).toBe("");
+  expect(escapeMdUrl(null)).toBe("");
+  expect(escapeMdUrl(undefined)).toBe("");
+});
+
+it("toUpcomingMd escapes pipe characters in URLs and preserves 7 table columns (#284)", () => {
+  const records = [
+    {
+      type: "deadline" as const,
+      categories: ["networking"],
+      kind_label: "論文締切",
+      estimated: false,
+      conf: makeConference({
+        key: "test-pipe-url",
+        title: "PipeUrlConf",
+        full_name: "Conference with Pipe in URL",
+        categories: ["networking"],
+        link: "https://example.com/cfp?track=main|poster",
+      }),
+      edition: makeEdition({
+        year: 2026,
+        edition_id: "pipe-url-2026",
+        link: "https://example.com/cfp?track=main|poster",
+        place: "Tokyo, Japan",
+        date_text: "August 17-21, 2026",
+        event_start: new Date("2026-08-17T00:00:00Z"),
+        event_end: new Date("2026-08-21T00:00:00Z"),
+      }),
+      deadline: {
+        kind: "paper" as const,
+        label: "Full Paper",
+        at_utc: new Date("2026-08-20T23:59:59Z"),
+        tz_raw: "AoE",
+        round: 1,
+        comment: null,
+      },
+      entry: {
+        uid: "pipe-url-2026-paper-1@conf-deadlines.github.io",
+        summary: "PipeUrlConf 2026 論文締切",
+        description: "description",
+        url: "https://example.com/cfp?track=main|poster",
+        categories: ["networking", "paper"],
+        all_day: false,
+        start: new Date("2026-08-20T23:29:59Z"),
+        end: new Date("2026-08-20T23:59:59Z"),
+        alarms: [],
+      },
+    },
+  ];
+  const md = toUpcomingMd(records, new Date("2026-08-10T00:00:00Z"));
+  expect(md).toContain("[PipeUrlConf 2026](https://example.com/cfp?track=main%7Cposter)");
+
+  const tableRows = md.split("\n").filter((l) => l.startsWith("|") && !l.includes("---"));
+  for (const row of tableRows) {
+    const unescapedPipes = row.split(/(?<!\\)\|/g).length - 1;
+    expect(unescapedPipes).toBe(8); // 8 pipes = 7 columns
+  }
 });

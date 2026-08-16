@@ -604,6 +604,18 @@ export function escapeMdCell(s: string | null | undefined): string {
     .trim();
 }
 
+/** Sanitize a URL embedded in a Markdown link [text](url) inside table cells. */
+export function escapeMdUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  let u = String(url)
+    .trim()
+    .replace(/[\r\n]+/g, "");
+  u = u.replace(/\|/g, "%7C");
+  u = u.replace(/\s+/g, "%20");
+  u = u.replace(/\(/g, "%28").replace(/\)/g, "%29");
+  return u;
+}
+
 export function toUpcomingMd(
   records: CalendarRecord[] | null | undefined,
   now: Date,
@@ -616,7 +628,8 @@ export function toUpcomingMd(
     if (!rec || typeof rec !== "object") continue;
     const { conf, edition: ed } = rec;
     if (!conf || !ed) continue;
-    const link = ed.link || conf.link;
+    const rawLink = ed.link || conf.link;
+    const link = rawLink ? escapeMdUrl(rawLink) : "";
     const titleEscaped = escapeMdCell(titleWithYear(conf.title, ed.year));
     const name = link ? `[${titleEscaped}](${link})` : titleEscaped;
     const placeEscaped = escapeMdCell(ed.place);
