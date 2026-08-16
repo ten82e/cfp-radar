@@ -688,6 +688,76 @@ describe("apply_overrides", () => {
     expect(added.deadlines[0].at_utc.getTime()).toBe(utc(2026, 5, 10, 23, 59, 59).getTime());
     expect(editions[2025].deadlines[0].at_utc.getTime()).toBe(utc(2025, 8, 20).getTime());
   });
+
+  it("override adds missing edition with custom id, estimated: true, and top-level deadline keys", () => {
+    const confs = [
+      makeConference({
+        key: "testconf",
+        title: "TESTCONF",
+        editions: [],
+      }),
+    ];
+    const overrides = {
+      conferences: {
+        testconf: {
+          editions: {
+            2027: {
+              id: "testconf27-custom",
+              estimated: true,
+              link: "https://testconf.org/2027",
+              place: "Tokyo, Japan",
+              deadline: "2027-02-15 23:59:00",
+              notification: "2027-04-15 23:59:00",
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    expect(out[0].editions.length).toBe(1);
+    const ed = out[0].editions[0];
+    expect(ed.edition_id).toBe("testconf27-custom");
+    expect(ed.estimated).toBe(true);
+    expect(ed.link).toBe("https://testconf.org/2027");
+    expect(ed.place).toBe("Tokyo, Japan");
+    expect(ed.deadlines.length).toBe(2);
+    expect(ed.deadlines[0].kind).toBe("paper");
+    expect(ed.deadlines[1].kind).toBe("notification");
+  });
+
+  it("override updates existing edition id and top-level deadline keys", () => {
+    const confs = [
+      makeConference({
+        key: "testconf",
+        title: "TESTCONF",
+        editions: [
+          makeEdition({
+            year: 2026,
+            edition_id: "testconf26-old",
+            deadlines: [makeDeadline("paper", "Old deadline", utc(2026, 1, 1), "UTC")],
+          }),
+        ],
+      }),
+    ];
+    const overrides = {
+      conferences: {
+        testconf: {
+          editions: {
+            2026: {
+              id: "testconf26-new",
+              paper_deadline: "2026-03-01 23:59:00",
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    const ed = out[0].editions[0];
+    expect(ed.edition_id).toBe("testconf26-new");
+    expect(ed.deadlines.length).toBe(1);
+    expect(ed.deadlines[0].kind).toBe("paper");
+    expect(ed.deadlines[0].at_utc.toISOString()).toBe("2026-03-01T23:59:00.000Z");
+  });
 });
 
 describe("rollforward", () => {
