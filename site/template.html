@@ -685,15 +685,37 @@ footer a:hover { text-decoration: underline; }
   }
 
   // Toast Notify
-  window.copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
+  // SPEC §7: クリップボード API が使えない環境（file://・非 HTTPS）や拒否時は、
+  // URL を選択状態の一時 textarea に置き、手動コピーできるようにフォールバックする。
+  function copyToClipboard(text) {
+    var done = () => {
       var t = $("toast");
       if (t) {
         t.classList.add("show");
         setTimeout(() => { t.classList.remove("show"); }, 2000);
       }
-    });
-  };
+    };
+    var fallback = () => {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      var t = $("toast");
+      if (t) {
+        t.textContent = "コピーできません — URL を選択しました";
+        t.classList.add("show");
+        setTimeout(() => { t.classList.remove("show"); }, 4000);
+      }
+    };
+    var cb = navigator.clipboard;
+    if (!cb || typeof cb.writeText !== "function") { fallback(); return; }
+    cb.writeText(text).then(done, fallback);
+  }
+  window.copyToClipboard = copyToClipboard;
 
   // Quick Presets
   window.applyPreset = (type) => {
