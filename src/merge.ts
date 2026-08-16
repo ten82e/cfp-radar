@@ -419,15 +419,16 @@ export function applyOverrides(
       }
     }
     if ("rank" in patch) {
-      next.rank = {
-        ...next.rank,
-        ...Object.fromEntries(
-          Object.entries((patch.rank as Record<string, unknown>) ?? {}).map(([k, v]) => [
-            k,
-            String(v),
-          ]),
-        ),
-      };
+      const updatedRank = { ...next.rank };
+      for (const [k, v] of Object.entries((patch.rank as Record<string, unknown>) ?? {})) {
+        const normK = String(k).toLowerCase().trim();
+        if (v === null || v === undefined || String(v).trim() === "") {
+          delete updatedRank[normK];
+        } else {
+          updatedRank[normK] = String(v).trim();
+        }
+      }
+      next.rank = updatedRank;
     }
     for (const field of ["tags", "categories"] as const) {
       if (field in patch) {
