@@ -29,6 +29,7 @@ import {
 import {
   deadlinesOf as localDeadlinesOf,
   editionOf as localEditionOf,
+  parseFile as localParseFile,
 } from "../src/sources/local.ts";
 import { utc } from "./helpers.ts";
 
@@ -556,6 +557,43 @@ describe("aideadlines rankOf", () => {
 
   it("parseTree gracefully returns empty array for non-existent directory", () => {
     expect(aideadlinesParseTree("/tmp/nonexistent-aideadlines-12345")).toEqual([]);
+  });
+});
+
+describe("local source utilities and defensive parsing", () => {
+  it("deadlinesOf handles null, undefined, and non-object inputs safely", () => {
+    expect(localDeadlinesOf(null)).toEqual([]);
+    expect(localDeadlinesOf(undefined)).toEqual([]);
+    expect(localDeadlinesOf({} as any)).toEqual([]);
+    expect(localDeadlinesOf({ deadlines: [null, undefined, "invalid"] } as any)).toEqual([]);
+  });
+
+  it("deadlinesOf extracts legacy camera_ready fields (final_paper, final_submission)", () => {
+    const raw1 = {
+      timezone: "UTC",
+      final_paper: "2026-06-01 23:59:59",
+    };
+    const dls1 = localDeadlinesOf(raw1);
+    expect(dls1).toHaveLength(1);
+    expect(dls1[0].kind).toBe("camera_ready");
+
+    const raw2 = {
+      timezone: "UTC",
+      final_submission: "2026-06-15 23:59:59",
+    };
+    const dls2 = localDeadlinesOf(raw2);
+    expect(dls2).toHaveLength(1);
+    expect(dls2[0].kind).toBe("camera_ready");
+  });
+
+  it("editionOf and parseFile handle null/undefined/invalid arguments defensively", () => {
+    expect(localEditionOf(null, "test")).toBeNull();
+    expect(localEditionOf(undefined, "test")).toBeNull();
+    expect(localEditionOf({ year: "invalid" }, "test")).toBeNull();
+
+    expect(localParseFile(null)).toEqual([]);
+    expect(localParseFile(undefined)).toEqual([]);
+    expect(localParseFile("/tmp/nonexistent-extra-12345.yaml")).toEqual([]);
   });
 });
 

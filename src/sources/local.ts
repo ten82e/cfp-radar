@@ -34,13 +34,18 @@ const LEGACY_KIND_KEYS: Array<[DeadlineKind, string, string[]]> = [
     ["deadline", "paper_deadline", "submission_deadline", "submission"],
   ],
   ["notification", "Notification", ["notification_deadline", "notification"]],
-  ["camera_ready", "Camera-ready", ["camera_ready_deadline", "camera_ready", "final_deadline"]],
+  [
+    "camera_ready",
+    "Camera-ready",
+    ["camera_ready_deadline", "camera_ready", "final_deadline", "final_paper", "final_submission"],
+  ],
   ["rebuttal_start", "Rebuttal start", ["rebuttal_start", "rebuttal_start_deadline"]],
   ["rebuttal_end", "Rebuttal end", ["rebuttal_end", "rebuttal_deadline", "rebuttal_end_deadline"]],
   ["registration", "Registration", ["registration_deadline", "registration"]],
 ];
 
-export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
+export function deadlinesOf(raw: Record<string, unknown> | null | undefined): Deadline[] {
+  if (!raw || typeof raw !== "object") return [];
   const out: Deadline[] = [];
   const parentTz = String(raw.tz ?? raw.timezone ?? "");
   for (const entry of (raw.deadlines as unknown[] | null) ?? []) {
@@ -85,7 +90,11 @@ export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
   return out;
 }
 
-export function editionOf(raw: Record<string, unknown>, key: string): Edition | null {
+export function editionOf(
+  raw: Record<string, unknown> | null | undefined,
+  key: string,
+): Edition | null {
+  if (!raw || typeof raw !== "object") return null;
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`local edition without a usable year under ${JSON.stringify(key)}`);
@@ -114,7 +123,8 @@ export function editionOf(raw: Record<string, unknown>, key: string): Edition | 
 }
 
 /** Read data/extra.yaml.  A missing file yields an empty list. */
-export function parseFile(path: string): Conference[] {
+export function parseFile(path: string | null | undefined): Conference[] {
+  if (!path) return [];
   let loaded: unknown;
   try {
     loaded = loadYaml(readFileSync(path, "utf8")) ?? {};
