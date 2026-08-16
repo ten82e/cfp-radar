@@ -72,6 +72,25 @@ describe("profileTexts", () => {
     // Papers are excluded in multi mode for language separation
     expect(multi.texts[3]).not.toContain("Pesto: Cooking up High Performance BFT Queries");
   });
+
+  it("handles null, undefined, invalid entries, and empty keys defensively", () => {
+    expect(profileTexts(null)).toEqual({ keys: [], texts: [] });
+    expect(profileTexts(undefined)).toEqual({ keys: [], texts: [] });
+    expect(profileTexts([], null)).toEqual({ keys: [], texts: [] });
+
+    const mixed = [
+      null as any,
+      undefined as any,
+      {},
+      { key: "" },
+      { key: "   " },
+      { key: "clean-conf", title: "Clean Conf", categories: ["hpc"] },
+    ];
+    const res = profileTexts(mixed, null);
+    expect(res.keys).toEqual(["clean-conf"]);
+    expect(res.texts[0]).toContain("Clean Conf");
+    expect(res.texts[0]).toContain("hpc");
+  });
 });
 
 describe("embeddings CLI main", () => {
