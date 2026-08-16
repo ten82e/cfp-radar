@@ -75,6 +75,20 @@ describe("fetch-primary extraction", () => {
     expect(got?.tz).toBe("UTC");
   });
 
+  it("supplementary material and rebuttal deadlines", () => {
+    const supp = extractDeadline("Supplementary material deadline: June 1, 2026", 2026);
+    expect(supp).not.toBeNull();
+    expect(supp?.kind).toBe("supplementary");
+    expect(supp?.label).toBe("Supplementary material");
+    expect(supp?.date).toBe("2026-06-01");
+
+    const rebuttal = extractDeadline("Author response deadline: July 15, 2026", 2026);
+    expect(rebuttal).not.toBeNull();
+    expect(rebuttal?.kind).toBe("rebuttal_end");
+    expect(rebuttal?.label).toBe("Rebuttal deadline");
+    expect(rebuttal?.date).toBe("2026-07-15");
+  });
+
   it.each([
     ["Cycle 2 Paper deadline: 15-May-2026", 2026, 2, "2026-05-15", "Round 2 Paper submission"],
     ["2nd Round Paper deadline: 15/May/2026", 2026, 2, "2026-05-15", "Round 2 Paper submission"],
@@ -91,12 +105,17 @@ describe("fetch-primary extraction", () => {
   it.each([
     ["Paper submission deadline: 15 May 2026", 2026, "2026-05-15"],
     ["Submission due date: 16th August 2026 (AoE)", 2026, "2026-08-16"],
+    ["Paper submission deadline: 15th of May, 2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: 15 of May 2026", 2026, "2026-05-15"],
     ["Abstract deadline: 1st October 2026", 2026, "2026-10-01"],
     ["Paper deadline: 2026-05-10 23:59 UTC", 2026, "2026-05-10"],
     ["Paper submission deadline: 2026/08/16", 2026, "2026-08-16"],
     ["Paper submission deadline: 15-May-2026", 2026, "2026-05-15"],
     ["Paper submission deadline: 15/May/2026", 2026, "2026-05-15"],
     ["Paper submission deadline: May-15-2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: 15.05.2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: 15/05/2026", 2026, "2026-05-15"],
+    ["Paper submission deadline: 15-05-2026", 2026, "2026-05-15"],
   ])("extracts alternative date formats %j -> %s", (text, year, expectedDate) => {
     const got = extractDeadline(text, year);
     expect(got).not.toBeNull();
