@@ -504,10 +504,80 @@ function parseNumericRange(s: string): { matched: boolean; range: [Date | null, 
   return { matched: false, range: [null, null] };
 }
 
+function parseJapaneseRange(
+  s: string,
+  fallbackYear: number,
+): { matched: boolean; range: [Date | null, Date | null] } {
+  // 全角数字・記号を正規化 (２０２６ -> 2026, ～ -> 〜)
+  const norm = s.normalize("NFKC").replace(/\s+/g, "");
+
+  // 1. 日付範囲: YYYY年M月D日[〜-]YYYY年M月D日 / YYYY年M月D日[〜-]M月D日 / YYYY年M月D日[〜-]D日
+  let m =
+    /^(\d{4})年(\d{1,2})月(\d{1,2})日\s*(?:[〜~～\-–—]|から|to)\s*(?:(\d{4})年)?(?:(\d{1,2})月)?(\d{1,2})日$/i.exec(
+      norm,
+    );
+  if (m) {
+    const y1 = Number(m[1]);
+    const m1 = Number(m[2]);
+    const d1 = Number(m[3]);
+    const m2 = m[5] ? Number(m[5]) : m1;
+    const y2 = m[4] ? Number(m[4]) : m1 > m2 ? y1 + 1 : y1;
+    const d2 = Number(m[6]);
+    const start = mkdate(y1, m1, d1);
+    const end = mkdate(y2, m2, d2);
+    if (start && end && start <= end) {
+      return { matched: true, range: [start, end] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+
+  // 2. 月度範囲: YYYY年M月[〜-]YYYY年M月 / YYYY年M月[〜-]M月
+  m = /^(\d{4})年(\d{1,2})月\s*(?:[〜~～\-–—]|から|to)\s*(?:(\d{4})年)?(\d{1,2})月$/i.exec(norm);
+  if (m) {
+    const y1 = Number(m[1]);
+    const m1 = Number(m[2]);
+    const m2 = Number(m[4]);
+    const y2 = m[3] ? Number(m[3]) : m1 > m2 ? y1 + 1 : y1;
+    const [start] = monthSpan(y1, m1);
+    const [, end] = monthSpan(y2, m2);
+    if (start && end && start <= end) {
+      return { matched: true, range: [start, end] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+
+  // 3. 単一日付: YYYY年M月D日 / M月D日
+  m = /^(?:(\d{4})年)?(\d{1,2})月(\d{1,2})日$/.exec(norm);
+  if (m) {
+    const y = m[1] ? Number(m[1]) : fallbackYear;
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    const one = mkdate(y, mo, d);
+    if (one) {
+      return { matched: true, range: [one, one] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+
+  // 4. 単一月: YYYY年M月 / M月
+  m = /^(?:(\d{4})年)?(\d{1,2})月$/.exec(norm);
+  if (m) {
+    const y = m[1] ? Number(m[1]) : fallbackYear;
+    const mo = Number(m[2]);
+    const [start, end] = monthSpan(y, mo);
+    if (start && end) {
+      return { matched: true, range: [start, end] };
+    }
+    return { matched: true, range: [null, null] };
+  }
+
+  return { matched: false, range: [null, null] };
+}
+
 /**
  * Parse free-form event dates such as 'September 29 - October 3, 2025'.
  * Also accepts month-only forms: 'November, 2026', 'March-April, 2025',
- * 'August 2027 (exact dates TBD)'.
+ * 'August 2027 (exact dates TBD)', and Japanese formats ('2026年8月17日〜21日').
  */
 export function parseDateRange(
   text: string | null | undefined,
@@ -527,6 +597,15 @@ export function parseDateRange(
       return [null, null];
     }
     return num.range;
+  }
+
+  const jp = parseJapaneseRange(s, fallbackYear);
+  if (jp.matched) {
+    if (jp.range[0] === null || jp.range[1] === null) {
+      warn(`unparsable event date ${JSON.stringify(String(text))}`);
+      return [null, null];
+    }
+    return jp.range;
   }
 
   // 'September 29 to October 2, 2026' spells the range in words.

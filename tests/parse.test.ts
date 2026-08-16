@@ -382,8 +382,32 @@ describe("parse_date_range", () => {
     },
   );
 
-  it.each(["2026-02-30", "2026-08-21 - 2026-08-17", "2026-04-31 - 2026-05-02"])(
-    "invalid numeric date %j fails closed and warns",
+  it.each([
+    ["2026年8月17日 - 2026年8月21日", 2026, "2026-08-17", "2026-08-21"],
+    ["2026年8月17日〜21日", 2026, "2026-08-17", "2026-08-21"],
+    ["2026年8月17日〜8月21日", 2026, "2026-08-17", "2026-08-21"],
+    ["2026年8月30日〜9月2日", 2026, "2026-08-30", "2026-09-02"],
+    ["2026年12月28日〜2027年1月3日", 2026, "2026-12-28", "2027-01-03"],
+    ["2026年12月28日〜1月3日", 2026, "2026-12-28", "2027-01-03"],
+    ["2026年8月17日", 2026, "2026-08-17", "2026-08-17"],
+    ["8月17日", 2026, "2026-08-17", "2026-08-17"],
+    ["2026年8月", 2026, "2026-08-01", "2026-08-31"],
+    ["2026年8月〜9月", 2026, "2026-08-01", "2026-09-30"],
+    ["２０２６年８月１７日〜２１日", 2026, "2026-08-17", "2026-08-21"],
+  ] as Array<[string, number, string, string]>)(
+    "japanese date range %s -> [%s, %s]",
+    (text, fallbackYear, expectedStart, expectedEnd) => {
+      resetWarnings();
+      const [start, end] = parseDateRange(text, fallbackYear);
+      expect(start?.toISOString().slice(0, 10)).toBe(expectedStart);
+      expect(end?.toISOString().slice(0, 10)).toBe(expectedEnd);
+      expect(warningCounts()).toEqual({});
+      resetWarnings();
+    },
+  );
+
+  it.each(["2026年2月30日", "2026年8月25日〜20日", "2026年9月31日", "2026年8月32日〜9月2日"])(
+    "invalid japanese date %j fails closed and warns",
     (text) => {
       resetWarnings();
       expect(parseDateRange(text, 2026)).toEqual([null, null]);
