@@ -694,6 +694,20 @@ describe("review helpers", () => {
       "2026-08-15",
     );
   });
+
+  it("extractDeadlinesFromText handles NFKC full-width numbers and dates (#298)", () => {
+    const res1 = extractDeadlinesFromText("Paper submission: ２０２６年５月１５日");
+    expect(res1.length).toBe(1);
+    expect(res1[0].date).toBe("2026-05-15 23:59:00");
+
+    const res2 = extractDeadlinesFromText("Submission: ２０２６/０８/２０");
+    expect(res2.length).toBe(1);
+    expect(res2[0].date).toBe("2026-08-20 23:59:00");
+
+    expect(extractDeadlinesFromText(null)).toEqual([]);
+    expect(extractDeadlinesFromText(undefined)).toEqual([]);
+    expect(extractDeadlinesFromText("")).toEqual([]);
+  });
 });
 
 const WIKICFP_SAMPLE = `<html><body>

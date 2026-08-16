@@ -305,8 +305,11 @@ interface FoundDate {
 }
 
 /** Extract structured deadline dates from text if ISO or standard date formats appear. */
-export function extractDeadlinesFromText(text: string): Array<Record<string, unknown>> {
+export function extractDeadlinesFromText(
+  text: string | null | undefined,
+): Array<Record<string, unknown>> {
   if (!text) return [];
+  const norm = String(text).normalize("NFKC");
   const found: FoundDate[] = [];
 
   const recordDate = (idx: number, y: number, m: number, d: number) => {
@@ -320,7 +323,7 @@ export function extractDeadlinesFromText(text: string): Array<Record<string, unk
   const reJp = /(\d{4})年(\d{1,2})月(\d{1,2})日/g;
   let m: RegExpExecArray | null = null;
   while (true) {
-    m = reJp.exec(text);
+    m = reJp.exec(norm);
     if (!m) break;
     recordDate(m.index, Number(m[1]), Number(m[2]), Number(m[3]));
   }
@@ -328,7 +331,7 @@ export function extractDeadlinesFromText(text: string): Array<Record<string, unk
   // 2. ISO / Numeric Year First: 2026-05-15, 2026/05/15, 2026.05.15
   const reIso = /\b(20\d\d)[-/.](\d{1,2})[-/.](\d{1,2})\b/g;
   while (true) {
-    m = reIso.exec(text);
+    m = reIso.exec(norm);
     if (!m) break;
     recordDate(m.index, Number(m[1]), Number(m[2]), Number(m[3]));
   }
@@ -336,7 +339,7 @@ export function extractDeadlinesFromText(text: string): Array<Record<string, unk
   // 3. Month Day Year: 'May 15, 2026', 'August 16th, 2026', 'Sept. 15, 2026', 'May-15-2026'
   const reMdy = /\b([a-zA-Z]{3,9})\.?[-/\s]+(\d{1,2})(?:st|nd|rd|th)?(?:,)?[-/\s]+(20\d\d)\b/gi;
   while (true) {
-    m = reMdy.exec(text);
+    m = reMdy.exec(norm);
     if (!m) break;
     const moKey = m[1].toLowerCase().slice(0, 3);
     if (moKey in MONTHS_MAP) {
@@ -348,7 +351,7 @@ export function extractDeadlinesFromText(text: string): Array<Record<string, unk
   const reDmy =
     /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)([a-zA-Z]{3,9})\.?(?:,)?[-/\s]+(20\d\d)\b/gi;
   while (true) {
-    m = reDmy.exec(text);
+    m = reDmy.exec(norm);
     if (!m) break;
     const moKey = m[2].toLowerCase().slice(0, 3);
     if (moKey in MONTHS_MAP) {
@@ -359,7 +362,7 @@ export function extractDeadlinesFromText(text: string): Array<Record<string, unk
   // 5. European Numeric Day Month Year: '15.05.2026', '15/05/2026', '15-05-2026'
   const reEu = /\b(\d{1,2})[-/.](\d{1,2})[-/.](20\d\d)\b/g;
   while (true) {
-    m = reEu.exec(text);
+    m = reEu.exec(norm);
     if (!m) break;
     const d = Number(m[1]);
     const mo = Number(m[2]);

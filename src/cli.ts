@@ -292,7 +292,7 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
 
   if (action === "append") {
     // 既存 YAML の conferences に、key が被らない候補だけ追記する。
-    const outPath = args.out!;
+    const outPath = isAbsolute(args.out!) ? args.out! : join(ROOT, args.out!);
     const existing = loadYamlFile(outPath) as Record<string, unknown>;
     const existingConfs = (existing.conferences as Array<Record<string, unknown>> | null) ?? [];
     const seen = new Set(existingConfs.map((c) => c.key));
@@ -306,8 +306,9 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
     console.log("\n--- Dry Run Output (extra.yaml format) ---");
     console.log(yamlText.slice(0, 1000) + (yamlText.length > 1000 ? "..." : ""));
   } else if (action === "write") {
-    writeTextFile(args.out!, yamlText);
-    console.log(`\nSaved candidates YAML to ${args.out}`);
+    const outPath = isAbsolute(args.out!) ? args.out! : join(ROOT, args.out!);
+    writeTextFile(outPath, yamlText);
+    console.log(`\nSaved candidates YAML to ${outPath}`);
   }
   return 0;
 }
@@ -320,7 +321,8 @@ export interface ReviewCliArgs {
 
 export async function cmdReview(args: ReviewCliArgs): Promise<number> {
   const { runReviewCandidates } = await import("./review-candidates.ts");
-  const candidatesPath = args.candidates ?? join(ROOT, "data", "discovered_candidates.yaml");
+  const rawPath = args.candidates ?? join(ROOT, "data", "discovered_candidates.yaml");
+  const candidatesPath = isAbsolute(rawPath) ? rawPath : join(ROOT, rawPath);
   const limit = args.limit ?? 60;
   const now = args.now ? parseNow(args.now) : new Date();
   runReviewCandidates(candidatesPath, limit, now);
