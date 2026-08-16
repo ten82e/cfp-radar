@@ -453,6 +453,21 @@ it("README documents every build CLI flag (--no-embeddings regression)", () => {
   }
 });
 
+it("SPEC §4 documents every file a standard build generates (embeddings.json/recommender.js regression)", () => {
+  // #241: SPEC §4 の生成物一覧が embeddings.json と recommender.js を記載しておらず、
+  // 標準 build（node src/cli.ts build --out public）が生成する 2 ファイルが目録から
+  // 欠落していた。SPEC は実装の正であり、§4 の表は生成物の正準目録なので、
+  // 生成される全ファイルが §4 節に現れることをここで回帰検査する。
+  // （buildAll が書く .nojekyll は PUBLIC_FILES に含まれないが、§4 には既に記載済み。）
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section4 = spec.slice(spec.indexOf("## 4. 生成物"), spec.indexOf("### 4.1 ICS の要求"));
+  expect(section4.length).toBeGreaterThan(0);
+  const generated = [...PUBLIC_FILES, "embeddings.json", "recommender.js"];
+  for (const name of generated) {
+    expect(section4, `SPEC §4 must document the generated file ${name}`).toContain(name);
+  }
+});
+
 it("index.html has the data injected", () => {
   const text = readFileSync(join(site, "index.html"), "utf8");
   expect(text).not.toContain("/*__DATA__*/null");
