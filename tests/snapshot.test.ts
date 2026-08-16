@@ -14,7 +14,16 @@ import {
 import { join } from "node:path";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { type BuildArgs, cmdBuild, hooks, main, parseArgs, parseNow, setRoot } from "../src/cli.ts";
+import {
+  type BuildArgs,
+  cmdBuild,
+  discoverWriteAction,
+  hooks,
+  main,
+  parseArgs,
+  parseNow,
+  setRoot,
+} from "../src/cli.ts";
 import { type Conference, fmtUTC } from "../src/model.ts";
 import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
 
@@ -153,6 +162,19 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(res4.dryRun).toBe(true);
     expect(res4.append).toBe(true);
     expect(res4.minYear).toBe(2027);
+  });
+
+  it("discoverWriteAction: --append 候補 0 件は何もしない (none) — #267 回帰", () => {
+    // 候補 0 件 + --append --out: 素通し上書きに落ちず既存ファイルを維持する
+    expect(discoverWriteAction(0, true, "data/discovered_candidates.yaml", false)).toBe("none");
+    // 候補 > 0 件 + --append --out: 従来どおり追記
+    expect(discoverWriteAction(3, true, "data/discovered_candidates.yaml", false)).toBe("append");
+    // dry-run / out 単体の従来挙動は不変
+    expect(discoverWriteAction(0, false, null, true)).toBe("dry-run");
+    expect(discoverWriteAction(5, false, "out.yaml", false)).toBe("write");
+    expect(discoverWriteAction(0, false, null, false)).toBe("none");
+    // --append だが out 無し: 追記先が無いので何もしない
+    expect(discoverWriteAction(2, true, null, false)).toBe("none");
   });
 
   it.each([["--help"], ["-h"], ["help"]])("parses help forms %j", (arg) => {
