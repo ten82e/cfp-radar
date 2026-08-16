@@ -662,11 +662,13 @@ README に「12 時間ごとに更新される」と書かない。
 ```json
 {
   "generated_at": "2026-08-09T00:00:00Z",
-  "sources": [{"name": "ccfddl", "repo": "...", "license": "MIT"}],
+  "site": {"domain": "ten82e.github.io", "base_url": "https://ten82e.github.io/cfp-radar"},
+  "sources": [{"name": "ccfddl", "repo": "...", "license": "MIT", "url": "..."}],
   "categories": {"hpc": "High Performance Computing", "...": "..."},
   "conferences": [
     {"key":"sigcomm","title":"SIGCOMM","full_name":"...","categories":["networking"],
      "rank":{"ccf":"A","core":"A*"},"link":"...","sources":["ccfddl"],"tags":[],
+     "papers":["..."],
      "editions":[{"year":2026,"id":"sigcomm26","place":"...","link":"...",
        "event_start":"2026-08-17","event_end":"2026-08-21","estimated":false,
        "deadlines":[{"kind":"paper","label":"...","utc":"2026-02-06T23:59:59Z",
