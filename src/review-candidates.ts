@@ -105,7 +105,10 @@ export function reviewDeadlineText(c: Record<string, any> | null | undefined): s
         ? ed.deadlines
         : []
   ) as Array<Record<string, any>>;
-  if (dls.length > 0 && dls[0]?.date) return String(dls[0].date);
+  if (dls.length > 0) {
+    const raw = dls[0]?.date || dls[0]?.utc || dls[0]?.deadline;
+    if (raw) return String(raw);
+  }
   return "";
 }
 

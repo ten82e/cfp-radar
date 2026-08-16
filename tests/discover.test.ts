@@ -489,12 +489,22 @@ describe("review helpers", () => {
       }),
     ).toBe("2026-06-01");
 
-    // 4. deadlines array fallback
+    // 4. deadlines array fallback (.date, .utc, .deadline)
     expect(
       reviewDeadlineText({
         deadlines: [{ date: "2026-08-15 23:59:00" }],
       }),
     ).toBe("2026-08-15 23:59:00");
+    expect(
+      reviewDeadlineText({
+        deadlines: [{ utc: "2026-08-15T23:59:00Z" }],
+      }),
+    ).toBe("2026-08-15T23:59:00Z");
+    expect(
+      reviewDeadlineText({
+        editions: [{ deadlines: [{ deadline: "2026-09-01" }] }],
+      }),
+    ).toBe("2026-09-01");
   });
 
   it("loadTrackedTitles tracks titles, full names, keys, and overrides", () => {
