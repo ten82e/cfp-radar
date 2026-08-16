@@ -114,7 +114,7 @@ iOS と iPadOS の場合。
 | `https://ten82e.github.io/cfp-radar/llms.txt` | 各フィードの URL と意味、データの形を 1 枚にまとめた索引。まずここを読む |
 | `https://ten82e.github.io/cfp-radar/data.json` | 正規化済みの全データ。会議・版・締切の三層構造。締切時刻は UTC と AoE 表記を併記 |
 
-他に、1 行 1 締切の平坦な表 `data.csv` と、直近 180 日の締切と開催の表 `upcoming.md` がある。
+他に、1 行 1 締切の平坦な表 [`data.csv`](https://ten82e.github.io/cfp-radar/data.csv) と、直近 180 日の締切と開催の表 `upcoming.md` がある。
 
 ## サイトの使い方（投稿先レコメンド）
 

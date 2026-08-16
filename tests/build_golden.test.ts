@@ -360,6 +360,25 @@ it("llms.txt indexes the feeds", () => {
   }
 });
 
+it("README links every machine-readable output file (data.csv regression)", () => {
+  // #245: README「機械可読の出力」の案内で data.csv だけが URL 無しだった。
+  // llms.txt / data.json / upcoming.md / 全 ICS フィードはリンクがある一方、
+  // data.csv は README 全体で URL が 1 箇所も無かった。
+  // この節の対象読者は「エージェントや自作の道具」— まさに URL を必要とする層。
+  const config = (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) ?? {}) as Record<
+    string,
+    any
+  >;
+  const base = String(config.site?.base_url ?? "").replace(/\/+$/, "");
+  expect(base).toBeTruthy();
+  const readme = readFileSync(join(REPO_ROOT, "README.md"), "utf8");
+  for (const name of ["data.json", "data.csv", "upcoming.md", "llms.txt"]) {
+    expect(readme, `README must link the machine-readable output ${name}`).toContain(
+      `${base}/${name}`,
+    );
+  }
+});
+
 it("llms.txt URLs match the published site", () => {
   const config = (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) ?? {}) as Record<
     string,
