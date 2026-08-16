@@ -1136,7 +1136,13 @@
     var shortYear = year ? "'" + year.slice(-2) : "";
     var titleWithRef;
     if (shortYear) {
-      if (title.endsWith(shortYear) || (year && title.endsWith(year))) {
+      var normT = title.normalize ? title.normalize("NFKC").trim() : title;
+      var yy = year.slice(-2);
+      var hasYear =
+        (year && normT.endsWith(year)) ||
+        normT.endsWith(shortYear) ||
+        (yy && new RegExp("(?:20" + yy + "|['’]?" + yy + ")$").test(normT));
+      if (hasYear) {
         titleWithRef = title;
       } else {
         titleWithRef = title + " " + shortYear;
