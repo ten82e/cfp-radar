@@ -29,6 +29,7 @@ import {
   parseArgs as parseReviewArgs,
   reviewDeadlineText,
   runReviewCandidates,
+  tagSource,
 } from "../src/review-candidates.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
@@ -669,6 +670,16 @@ describe("review helpers", () => {
     expect(reviewDeadlineText(null)).toBe("");
     expect(reviewDeadlineText(undefined)).toBe("");
     expect(reviewDeadlineText({})).toBe("");
+  });
+
+  it("tagSource extracts source string from arrays and strings defensively (#296)", () => {
+    expect(tagSource(["niche", "wikicfp"])).toBe("wikicfp");
+    expect(tagSource("wikicfp")).toBe("wikicfp");
+    expect(tagSource(["dbworld"])).toBe("dbworld");
+    expect(tagSource(null)).toBe("?");
+    expect(tagSource(undefined)).toBe("?");
+    expect(tagSource([])).toBe("?");
+    expect(tagSource([""])).toBe("?");
   });
 
   it("parseDeadlineText parses NFKC full-width dates and 'of' prepositions (#280)", () => {
