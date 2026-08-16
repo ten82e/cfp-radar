@@ -385,6 +385,25 @@ it("llms.txt URLs match the published site", () => {
   }
 });
 
+it("llms.txt title follows config site.title (not a stale hard-coded name)", () => {
+  // ビルド成果の先頭行が config.yaml の site.title と一致する（旧名 conf-deadlines ではない）
+  const config = (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) ?? {}) as Record<
+    string,
+    any
+  >;
+  const title = String(config.site?.title ?? "");
+  expect(title).toBeTruthy();
+  const text = readFileSync(join(site, "llms.txt"), "utf8");
+  expect(text.split("\n")[0]).toBe(`# ${title}`);
+  expect(text).not.toContain("# conf-deadlines");
+  // デッドコンフィグ再発防止: カスタム site.title が toLlmsTxt の出力に反映される
+  const custom = toLlmsTxt("https://example.com", null, {
+    site: { title: "custom-feed" },
+    categories: {},
+  });
+  expect(custom.split("\n")[0]).toBe("# custom-feed");
+});
+
 it("index.html has the data injected", () => {
   const text = readFileSync(join(site, "index.html"), "utf8");
   expect(text).not.toContain("/*__DATA__*/null");

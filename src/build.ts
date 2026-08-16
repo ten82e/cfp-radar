@@ -672,8 +672,10 @@ export function toLlmsTxt(
   const safeConfig = config ?? {};
   const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
   const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
+  // config.yaml の site.title をタイトル行に反映する（旧名 conf-deadlines のハードコードを廃止）。
+  const siteTitle = String(((safeConfig.site as Record<string, unknown> | null) ?? {}).title ?? "cfp-radar");
   const lines = [
-    "# conf-deadlines",
+    `# ${siteTitle}`,
     "",
     "HPC・ネットワーク・システム・AI 系の国際会議の投稿締切と開催日を、",
     "上流の公開データから日次で正規化して配信する静的フィード集である。",
