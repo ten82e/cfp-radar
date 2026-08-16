@@ -377,6 +377,14 @@ export function usage(): string {
   ].join("\n");
 }
 
+// 有限正整数の文字列のみ数値化し、不正値・非数値は既定値にフォールバックする。
+// Number("abc") = NaN になり、下流の `?? default` が NaN を拾わないため、
+// 非数値入力が cand.year >= NaN（常に false）へ伝播して discover が 0 件になるのを防ぐ (#312)。
+function toPosInt(raw: string | undefined, fallback: number): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
+}
+
 export function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {};
   const positional: string[] = [];
@@ -417,7 +425,7 @@ export function parseArgs(argv: string[]): CliArgs {
     } else if (a === "--categories") {
       args.categories = nextVal() ?? null;
     } else if (a === "--min-year" || a === "-y") {
-      args.minYear = Number(nextVal() ?? 2026);
+      args.minYear = toPosInt(nextVal(), 2026);
     } else if (a === "--offline") {
       args.offline = boolVal();
     } else if (a === "--no-embeddings") {
@@ -429,7 +437,7 @@ export function parseArgs(argv: string[]): CliArgs {
     } else if (a === "--candidates" || a === "-C") {
       args.candidates = nextVal() ?? join(ROOT, "data", "discovered_candidates.yaml");
     } else if (a === "--limit" || a === "-l") {
-      args.limit = Number(nextVal() ?? 60);
+      args.limit = toPosInt(nextVal(), 60);
     } else if (a.startsWith("-")) {
       throw new Error(`unknown option: ${raw}`);
     } else {
