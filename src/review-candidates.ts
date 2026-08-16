@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
+import { parseNow } from "./cli.ts";
 import { parseDeadlineText } from "./discover.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -206,11 +207,9 @@ export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
     } else if ((a === "--limit" || a === "-l") && argv![i + 1]) {
       limit = Number(argv![++i]) || 60;
     } else if (a.startsWith("--now=")) {
-      const parsed = new Date(a.slice("--now=".length));
-      if (!Number.isNaN(parsed.getTime())) now = parsed;
+      now = parseNow(a.slice("--now=".length));
     } else if ((a === "--now" || a === "-n") && argv![i + 1]) {
-      const parsed = new Date(argv![++i]);
-      if (!Number.isNaN(parsed.getTime())) now = parsed;
+      now = parseNow(argv![++i]);
     }
   }
   return { candidates, limit, now, help };
