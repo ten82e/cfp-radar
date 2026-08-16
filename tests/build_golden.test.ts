@@ -320,6 +320,19 @@ it("category feeds partition all", () => {
   }
 });
 
+it("hpc-fabrics-2026 は networking カテゴリで配信される (#269 回帰)", () => {
+  // extra.yaml のカテゴリ typo（networks → networking 修正前）は classify の
+  // 既知カテゴリフィルタで黙って落ち、networking フィードから欠落していた。
+  const conf = data.conferences.find((c: any) => c.key === "hpc-fabrics-2026");
+  expect(conf).toBeTruthy();
+  expect(conf.categories).toContain("networking");
+  const uids = new Set(events("networking.ics").map((e) => e.UID));
+  expect(
+    [...uids].some((u) => String(u).startsWith("hpc-fabrics-2026-")),
+    "hpc-fabrics-2026 missing from networking.ics",
+  ).toBe(true);
+});
+
 it("feeds use CRLF and fold at 75 octets", () => {
   for (const name of ICS_FEEDS) {
     const raw = readFileSync(join(site, name));

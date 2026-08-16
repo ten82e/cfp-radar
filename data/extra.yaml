@@ -2922,7 +2922,7 @@ conferences:
     title: Fabrics for AI and HPC 2026
     full_name: "Workshop on High Performance Fabrics for AI and HPC (SC26)"
     link: https://sites.google.com/view/hpc-fabrics-for-ai
-    categories: [hpc, networks]
+    categories: [hpc, networking]
     tags: [workshop]
     editions:
       - year: 2026
