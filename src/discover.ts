@@ -241,20 +241,21 @@ export function makeCandidate(
 }
 
 /** Convert a candidate into data/extra.yaml format. */
-export function toYamlDict(c: Candidate): Record<string, unknown> {
+export function toYamlDict(c: Candidate | null | undefined): Record<string, unknown> {
+  if (!c || typeof c !== "object") return {};
   const entry: Record<string, unknown> = {
     key: c.key,
     title: c.title,
     full_name: c.full_name,
     link: c.link,
-    categories: c.categories,
+    categories: Array.isArray(c.categories) ? c.categories : [],
   };
-  if (c.tags.length > 0) entry.tags = c.tags;
+  if (Array.isArray(c.tags) && c.tags.length > 0) entry.tags = c.tags;
   // EasyChair 候補は date_text が開催日。提出締切はレビュー順用に候補レベルで保持する。
   if (c.submission_deadline_text) entry.submission_deadline_text = c.submission_deadline_text;
   const editions: unknown[] = [];
-  if (c.date_text || c.place || c.deadlines.length > 0) {
-    const m = /(20\d\d)/.exec(c.date_text);
+  if (c.date_text || c.place || (Array.isArray(c.deadlines) && c.deadlines.length > 0)) {
+    const m = /(20\d\d)/.exec(c.date_text || "");
     const year = m ? Number(m[1]) : 2026;
     editions.push({
       year,
@@ -262,7 +263,7 @@ export function toYamlDict(c: Candidate): Record<string, unknown> {
       link: c.link,
       place: c.place || "",
       date_text: c.date_text || "",
-      deadlines: c.deadlines,
+      deadlines: Array.isArray(c.deadlines) ? c.deadlines : [],
     });
   }
   entry.editions = editions;
@@ -407,10 +408,12 @@ interface WikiCfpEntry {
 
 /** wikiCFP カテゴリページをパースしてエントリ dict のリストを返す。 */
 export function parseWikiCfpHtml(
-  html: string,
-  categories: string[],
+  html: string | null | undefined,
+  categories: string[] | null | undefined,
   minYear: number,
 ): WikiCfpEntry[] {
+  if (!html) return [];
+  const cats = Array.isArray(categories) ? categories : [];
   const rows = html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? [];
   const entries: WikiCfpEntry[] = [];
   for (let i = 0; i < rows.length; i++) {
@@ -462,7 +465,7 @@ export function parseWikiCfpHtml(
       title,
       full_name: fullName,
       link: `https://www.wikicfp.com${href}`,
-      categories: [...categories],
+      categories: [...cats],
       date_text: deadline,
       place: where !== "" && where !== "N/A" ? where : "",
       year,
@@ -574,7 +577,8 @@ interface DbworldRow {
 }
 
 /** DBWorld アーカイブのメッセージ一覧から CFP 関連の (subject, URL) を返す。 */
-export function parseDbworldHtml(html: string): DbworldRow[] {
+export function parseDbworldHtml(html: string | null | undefined): DbworldRow[] {
+  if (!html) return [];
   const out: DbworldRow[] = [];
   for (const row of html.match(/<TR VALIGN=TOP>[\s\S]*?<\/TR>/g) ?? []) {
     const m = /<A HREF=([^>]+)>([^<]+)<\/A>/.exec(row);
@@ -591,7 +595,8 @@ export function parseDbworldHtml(html: string): DbworldRow[] {
 }
 
 /** DBWorld subject から会議名を抽出し、(会議名, source_type) を返す。 */
-export function cleanDbworldTitle(subject: string): [string, string] {
+export function cleanDbworldTitle(subject: string | null | undefined): [string, string] {
+  if (!subject) return ["", "conference"];
   let t = subject.trim();
   t = t.replace(/^(\[[^\]]*\]\s*)+/, ""); // [DEADLINE EXTENDED] 等 (複数)
   t = t.replace(/^(?:Last\s+)?(?:Call for Papers?|CfP|CFP)\s*:?\s*/i, "");
@@ -652,7 +657,8 @@ interface EasyChairRow {
 }
 
 /** EasyChair Smart CFP 一覧 (easychair.org/cfp/) のテーブル行をパースする。 */
-export function parseEasyChairCfpHtml(html: string): EasyChairRow[] {
+export function parseEasyChairCfpHtml(html: string | null | undefined): EasyChairRow[] {
+  if (!html) return [];
   const out: EasyChairRow[] = [];
   for (const tbody of html.match(/<tbody>([\s\S]*?)<\/tbody>/g) ?? []) {
     for (const tr of tbody.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? []) {
@@ -682,7 +688,8 @@ export function parseEasyChairCfpHtml(html: string): EasyChairRow[] {
 }
 
 /** EasyChair 候補がユーザー分野に属するか簡易判定する。 */
-export function inDomain(text: string): boolean {
+export function inDomain(text: string | null | undefined): boolean {
+  if (!text) return false;
   const t = ` ${text.toLowerCase()} `;
   return [
     "network",
@@ -735,9 +742,10 @@ export function inDomain(text: string): boolean {
 
 /** EasyChair の行を候補エントリに変換する (純関数)。 */
 export function easyChairEntriesFromRows(
-  rows: EasyChairRow[],
+  rows: EasyChairRow[] | null | undefined,
   minYear: number,
 ): Array<Record<string, unknown>> {
+  if (!rows || !Array.isArray(rows)) return [];
   const entries: Array<Record<string, unknown>> = [];
   for (const e of rows) {
     if (!e.date_text) continue; // 締切未登録は候補にしない
@@ -775,10 +783,11 @@ export async function discoverFromEasyChair(
 
 /** IEEE ComSoc CFP ページのテーブルからオープン特集号を抽出する (純関数)。 */
 export function parseComsocCfpHtml(
-  html: string,
+  html: string | null | undefined,
   journalName: string,
   pageUrl: string,
 ): Array<Record<string, unknown>> {
+  if (!html) return [];
   const rows = html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? [];
   const entries: Array<Record<string, unknown>> = [];
   for (const row of rows.slice(1)) {
@@ -846,7 +855,11 @@ export async function discoverFromComsocCfps(
 }
 
 /** IEICE 特集号 CFP 一覧 (journals.php) から締切付き特集号を抽出する (純関数)。 */
-export function parseIeiceCfpHtml(html: string, pageUrl: string): Array<Record<string, unknown>> {
+export function parseIeiceCfpHtml(
+  html: string | null | undefined,
+  pageUrl: string,
+): Array<Record<string, unknown>> {
+  if (!html) return [];
   const rows = html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) ?? [];
   const entries: Array<Record<string, unknown>> = [];
   for (const row of rows.slice(1)) {
@@ -899,7 +912,11 @@ export async function discoverFromIeiceCfps(
 }
 
 /** IPSJ 論文誌ジャーナルの特集論文募集リンクから締切付き特集号を抽出する (純関数)。 */
-export function parseIpsjCfpHtml(html: string, pageUrl: string): Array<Record<string, unknown>> {
+export function parseIpsjCfpHtml(
+  html: string | null | undefined,
+  pageUrl: string,
+): Array<Record<string, unknown>> {
+  if (!html) return [];
   const entries: Array<Record<string, unknown>> = [];
   for (const m of html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
     const url = m[1];
@@ -1417,6 +1434,7 @@ export class NicheDiscoverer {
 }
 
 /** Format discovered candidates into YAML string compatible with extra.yaml. */
-export function formatDiscoveredYaml(candidates: Candidate[]): string {
-  return dumpYaml({ conferences: candidates.map(toYamlDict) }, { skipInvalid: true }) as string;
+export function formatDiscoveredYaml(candidates: Candidate[] | null | undefined): string {
+  const safeCandidates = Array.isArray(candidates) ? candidates : [];
+  return dumpYaml({ conferences: safeCandidates.map(toYamlDict) }, { skipInvalid: true }) as string;
 }

@@ -659,3 +659,37 @@ describe("deadlineIsFuture", () => {
     expect(deadlineIsFuture("Feb 29, 2025", today)).toBe(false);
   });
 });
+
+describe("discover and review boundary handling", () => {
+  it("toYamlDict and formatDiscoveredYaml handle null/undefined arguments safely", () => {
+    expect(toYamlDict(null)).toEqual({});
+    expect(toYamlDict(undefined)).toEqual({});
+    expect(formatDiscoveredYaml(null)).toContain("conferences: []");
+    expect(formatDiscoveredYaml(undefined)).toContain("conferences: []");
+  });
+
+  it("all discover HTML parsers handle null/undefined inputs defensively", () => {
+    expect(parseWikiCfpHtml(null, null, 2026)).toEqual([]);
+    expect(parseWikiCfpHtml(undefined, undefined, 2026)).toEqual([]);
+    expect(parseDbworldHtml(null)).toEqual([]);
+    expect(parseDbworldHtml(undefined)).toEqual([]);
+    expect(cleanDbworldTitle(null)).toEqual(["", "conference"]);
+    expect(cleanDbworldTitle(undefined)).toEqual(["", "conference"]);
+    expect(parseEasyChairCfpHtml(null)).toEqual([]);
+    expect(parseEasyChairCfpHtml(undefined)).toEqual([]);
+    expect(inDomain(null)).toBe(false);
+    expect(inDomain(undefined)).toBe(false);
+    expect(easyChairEntriesFromRows(null, 2026)).toEqual([]);
+    expect(easyChairEntriesFromRows(undefined, 2026)).toEqual([]);
+    expect(parseComsocCfpHtml(null, "Test", "https://example.com")).toEqual([]);
+    expect(parseIeiceCfpHtml(null, "https://example.com")).toEqual([]);
+    expect(parseIpsjCfpHtml(null, "https://example.com")).toEqual([]);
+  });
+
+  it("parseReviewArgs handles null/undefined arguments safely", () => {
+    const res = parseReviewArgs(null);
+    expect(res.candidates).toBeDefined();
+    expect(res.limit).toBe(60);
+    expect(res.help).toBe(false);
+  });
+});

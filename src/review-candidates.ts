@@ -184,29 +184,29 @@ export interface ReviewArgs {
   help?: boolean;
 }
 
-export function parseArgs(argv: string[]): ReviewArgs {
+export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
   let candidates = join(ROOT, "data", "discovered_candidates.yaml");
   let limit = 60;
   let now = new Date();
   let help = false;
 
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
+  for (let i = 0; i < (argv ?? []).length; i++) {
+    const a = argv![i];
     if (a === "--help" || a === "-h" || a === "help") {
       help = true;
     } else if (a.startsWith("--candidates=")) {
       candidates = a.slice("--candidates=".length);
-    } else if ((a === "--candidates" || a === "-c") && argv[i + 1]) {
-      candidates = argv[++i];
+    } else if ((a === "--candidates" || a === "-c") && argv![i + 1]) {
+      candidates = argv![++i];
     } else if (a.startsWith("--limit=")) {
       limit = Number(a.slice("--limit=".length)) || 60;
-    } else if ((a === "--limit" || a === "-l") && argv[i + 1]) {
-      limit = Number(argv[++i]) || 60;
+    } else if ((a === "--limit" || a === "-l") && argv![i + 1]) {
+      limit = Number(argv![++i]) || 60;
     } else if (a.startsWith("--now=")) {
       const parsed = new Date(a.slice("--now=".length));
       if (!Number.isNaN(parsed.getTime())) now = parsed;
-    } else if ((a === "--now" || a === "-n") && argv[i + 1]) {
-      const parsed = new Date(argv[++i]);
+    } else if ((a === "--now" || a === "-n") && argv![i + 1]) {
+      const parsed = new Date(argv![++i]);
       if (!Number.isNaN(parsed.getTime())) now = parsed;
     }
   }
