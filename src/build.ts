@@ -673,7 +673,9 @@ export function toLlmsTxt(
   const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
   const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
   // config.yaml の site.title をタイトル行に反映する（旧名 conf-deadlines のハードコードを廃止）。
-  const siteTitle = String(((safeConfig.site as Record<string, unknown> | null) ?? {}).title ?? "cfp-radar");
+  const siteTitle = String(
+    (safeConfig.site as Record<string, unknown> | null)?.title ?? "cfp-radar",
+  );
   const lines = [
     `# ${siteTitle}`,
     "",
