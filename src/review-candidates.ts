@@ -31,10 +31,12 @@ export function normTitle(title: string): string {
 }
 
 export function loadTrackedTitles(): Set<string> {
-  /** 収録済み (snapshot.json + data/extra.yaml) の正規化タイトル集合。 */
+  /** 収録済み (snapshot.json + data/extra.yaml + data/overrides.yaml) の正規化タイトル・フルネーム・キー集合。 */
   const tracked = new Set<string>();
-  const add = (title: unknown): void => {
-    if (typeof title === "string" && title) tracked.add(normTitle(title));
+  const add = (c: Record<string, unknown>): void => {
+    if (typeof c.title === "string" && c.title) tracked.add(normTitle(c.title));
+    if (typeof c.full_name === "string" && c.full_name) tracked.add(normTitle(c.full_name));
+    if (typeof c.key === "string" && c.key) tracked.add(normTitle(c.key));
   };
   try {
     const snap = JSON.parse(readFileSync(join(ROOT, "data", "snapshot.json"), "utf8")) as Record<
@@ -42,7 +44,7 @@ export function loadTrackedTitles(): Set<string> {
       any
     >;
     for (const c of (snap.conferences as unknown[] | null) ?? []) {
-      if (typeof c === "object" && c !== null) add((c as Record<string, unknown>).title);
+      if (typeof c === "object" && c !== null) add(c as Record<string, unknown>);
     }
   } catch {
     // snapshot が無い/壊れている場合も extra.yaml 側で拾う
@@ -53,10 +55,23 @@ export function loadTrackedTitles(): Set<string> {
       any
     >;
     for (const c of (extra.conferences as unknown[] | null) ?? []) {
-      if (typeof c === "object" && c !== null) add((c as Record<string, unknown>).title);
+      if (typeof c === "object" && c !== null) add(c as Record<string, unknown>);
     }
   } catch {
     // extra.yaml が無い場合
+  }
+  try {
+    const overrides = loadYaml(
+      readFileSync(join(ROOT, "data", "overrides.yaml"), "utf8"),
+    ) as Record<string, any>;
+    for (const [key, val] of Object.entries(
+      (overrides?.conferences as Record<string, unknown>) ?? {},
+    )) {
+      tracked.add(normTitle(key));
+      if (typeof val === "object" && val !== null) add(val as Record<string, unknown>);
+    }
+  } catch {
+    // overrides.yaml が無い場合
   }
   return tracked;
 }
@@ -73,11 +88,22 @@ interface Enriched {
  * のため、候補レベルの submission_deadline_text (提出締切) を優先する。
  */
 export function reviewDeadlineText(c: Record<string, any>): string {
-  const ed = (Array.isArray(c.editions) && c.editions.length > 0 ? c.editions : [{}])[0] as Record<
+  if (c.submission_deadline_text) return String(c.submission_deadline_text);
+  const ed = (Array.isArray(c.editions) && c.editions.length > 0 ? c.editions[0] : {}) as Record<
     string,
     any
   >;
-  return String(c.submission_deadline_text ?? "") || String(ed.date_text ?? "");
+  if (ed.date_text) return String(ed.date_text);
+  if (c.date_text) return String(c.date_text);
+  const dls = (
+    Array.isArray(c.deadlines) && c.deadlines.length > 0
+      ? c.deadlines
+      : Array.isArray(ed.deadlines) && ed.deadlines.length > 0
+        ? ed.deadlines
+        : []
+  ) as Array<Record<string, any>>;
+  if (dls.length > 0 && dls[0]?.date) return String(dls[0].date);
+  return "";
 }
 
 export function runReviewCandidates(candidatesPath: string, limit: number, today: Date): void {
@@ -98,7 +124,10 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
       c,
       dl: parseDeadlineText(reviewDeadlineText(c)),
       pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
-      tracked: tracked.has(normTitle(String(c.title ?? ""))),
+      tracked:
+        tracked.has(normTitle(String(c.title ?? ""))) ||
+        tracked.has(normTitle(String(c.full_name ?? ""))) ||
+        tracked.has(normTitle(String(c.key ?? ""))),
     };
   });
 
