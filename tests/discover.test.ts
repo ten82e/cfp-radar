@@ -666,6 +666,54 @@ describe("parseWikiCfpHtml", () => {
     expect(entries.length).toBe(1);
     expect(entries[0].full_name).toBe("International Conference on Computing & Systems");
   });
+
+  it("toYamlDict は開催年 (entry.year) を優先し、締切日 (date_text) の年で上書きしない", () => {
+    // DASFAA 2026: タイトルが開催年 2026、締切が前年 (Oct 27, 2025)
+    const html =
+      "<table>" +
+      '<tr><td><a href="/cfp/servlet/event.showcfp?eventid=1&copyownerid=2">DASFAA 2026</a></td>' +
+      "<td>The 31st International Conference on Database Systems for Advanced Application</td></tr>" +
+      "<tr><td>Jeju, South Korea</td><td>Oct 27, 2025</td><td>Oct 27, 2025 (Oct 20, 2025)</td></tr>" +
+      "</table></body></html>";
+    const entries = parseWikiCfpHtml(html, ["databases"], 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].year).toBe(2026);
+    const cand = makeCandidate({
+      key: entries[0].key,
+      title: entries[0].title,
+      full_name: entries[0].full_name,
+      link: entries[0].link,
+      categories: entries[0].categories,
+      tags: ["niche", "wikicfp"],
+      source_type: "conference",
+      evidence_url: "https://www.wikicfp.com",
+      date_text: entries[0].date_text,
+      place: entries[0].place,
+      year: entries[0].year,
+    });
+    const dict = toYamlDict(cand);
+    const edition = (dict.editions as Array<Record<string, unknown>>)[0];
+    // 開催年 2026 が締切年 2025 に上書きされない（回帰: dasfaa-202625 の誤り）
+    expect(edition.year).toBe(2026);
+    expect(edition.id).toBe("dasfaa-202626");
+    // 締切日そのものは date_text として保持される
+    expect(edition.date_text).toBe("Oct 27, 2025 (Oct 20, 2025)");
+  });
+
+  it("toYamlDict は year が無い候補で date_text から年を導出する (従来動作)", () => {
+    const cand = makeCandidate({
+      key: "tconf",
+      title: "Test Conf",
+      full_name: "Test Conference",
+      link: "https://example.org",
+      categories: ["systems"],
+      date_text: "May 10, 2027",
+    });
+    const dict = toYamlDict(cand);
+    const edition = (dict.editions as Array<Record<string, unknown>>)[0];
+    expect(edition.year).toBe(2027);
+    expect(edition.id).toBe("tconf27");
+  });
 });
 
 describe("extractDeadlinesFromText", () => {

@@ -214,6 +214,9 @@ export interface Candidate {
   source_type: string; // 'conference' | 'journal' | 'special_issue'
   evidence_url: string;
   date_text: string;
+  /** 開催年。パース時にタイトル等から判明した正しい年 (date_text は締切日で開催年と
+   * 1 年ずれうるため、toYamlDict はこれを優先する)。無ければ date_text から導出。 */
+  year?: number;
   /** レビュー締切順専用: EasyChair の生の提出締切テキスト (date_text が開催日のため)。 */
   submission_deadline_text?: string;
   place: string;
@@ -256,7 +259,9 @@ export function toYamlDict(c: Candidate | null | undefined): Record<string, unkn
   const editions: unknown[] = [];
   if (c.date_text || c.place || (Array.isArray(c.deadlines) && c.deadlines.length > 0)) {
     const m = /(20\d\d)/.exec(c.date_text || "");
-    const year = m ? Number(m[1]) : 2026;
+    // 開催年がパース時に判明している場合は date_text（締切日）より優先する。
+    // 締切が開催年の前年（秋締切等）だと date_text 由来の年が 1 年前にずれるため。
+    const year = c.year && c.year >= 2020 ? c.year : m ? Number(m[1]) : 2026;
     editions.push({
       year,
       id: `${c.key}${year % 100}`,
@@ -1228,6 +1233,7 @@ export class NicheDiscoverer {
             evidence_url: "https://www.wikicfp.com",
             date_text: entry.date_text,
             place: entry.place,
+            year: entry.year,
           }),
         );
         this.knownKeys.add(candKey);
@@ -1252,6 +1258,7 @@ export class NicheDiscoverer {
             evidence_url: "https://dbworld.sigmod.org/browse.html",
             date_text: String(entry.date_text),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1279,6 +1286,7 @@ export class NicheDiscoverer {
             date_text: String(entry.date_text),
             submission_deadline_text: String(entry.submission_deadline_text ?? ""),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1304,6 +1312,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1329,6 +1338,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1354,6 +1364,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1379,6 +1390,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
+            year: Number(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
