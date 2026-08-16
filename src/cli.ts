@@ -254,6 +254,25 @@ interface DiscoverArgs {
   append: boolean;
 }
 
+export type DiscoverWriteAction = "append" | "dry-run" | "write" | "none";
+
+/**
+ * cmdDiscover の出力分岐を決める（純関数。テスト可能）。
+ * `--append` 指定時に候補が 0 件でも「何もしない」を返し、素通し上書きで
+ * 蓄積ファイルが空になる事故（#267）を防ぐ。
+ */
+export function discoverWriteAction(
+  count: number,
+  append: boolean,
+  out: string | null,
+  dryRun: boolean,
+): DiscoverWriteAction {
+  if (append && out) return count > 0 ? "append" : "none";
+  if (dryRun) return "dry-run";
+  if (out) return "write";
+  return "none";
+}
+
 export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
   const { NicheDiscoverer, formatDiscoveredYaml } = await import("./discover.ts");
   const categories = args.categories ? args.categories.split(",").map((c) => c.trim()) : null;
@@ -269,10 +288,11 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
   }
 
   const yamlText = formatDiscoveredYaml(candidates);
+  const action = discoverWriteAction(candidates.length, args.append, args.out, args.dryRun);
 
-  if (args.append && args.out && candidates.length > 0) {
+  if (action === "append") {
     // 既存 YAML の conferences に、key が被らない候補だけ追記する。
-    const outPath = args.out;
+    const outPath = args.out!;
     const existing = loadYamlFile(outPath) as Record<string, unknown>;
     const existingConfs = (existing.conferences as Array<Record<string, unknown>> | null) ?? [];
     const seen = new Set(existingConfs.map((c) => c.key));
@@ -282,11 +302,11 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
     const { dump } = await import("js-yaml");
     writeTextFile(outPath, dump(existing, { skipInvalid: true }));
     console.log(`\nAppended ${newConfs.length} candidates to ${outPath}`);
-  } else if (args.dryRun) {
+  } else if (action === "dry-run") {
     console.log("\n--- Dry Run Output (extra.yaml format) ---");
     console.log(yamlText.slice(0, 1000) + (yamlText.length > 1000 ? "..." : ""));
-  } else if (args.out) {
-    writeTextFile(args.out, yamlText);
+  } else if (action === "write") {
+    writeTextFile(args.out!, yamlText);
     console.log(`\nSaved candidates YAML to ${args.out}`);
   }
   return 0;
