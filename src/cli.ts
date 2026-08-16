@@ -218,8 +218,15 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   stats.merged = degraded ? 0 : confs.reduce((n, c) => n + (byKey[c.key] ?? 0), 0);
 
   // 縮退したまま書き戻すと退避データそのものを壊すので、健全なときだけ更新する。
+  // SPEC.md 3.5: snapshot は data.json のコピーだが「generated_at を含まない」。
+  // 素コピーだと --now 指定の検証ビルドが架空の generated_at を退避データに焼き込む。
   if (!degraded && !offline && existsSync(join(outdir, "data.json"))) {
-    copyFileSync(join(outdir, "data.json"), snapshot);
+    const payload = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as Record<
+      string,
+      unknown
+    >;
+    delete payload.generated_at;
+    writeFileSync(snapshot, JSON.stringify(payload), "utf8");
   }
 
   console.log(
