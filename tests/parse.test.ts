@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  monthOf,
   parseDateRange,
   parseInstant,
   resetWarnings,
@@ -415,6 +416,30 @@ describe("parse_date_range", () => {
       resetWarnings();
     },
   );
+
+  it("monthOf parses month names, standard abbreviations, and known typos without matching city names (#278)", () => {
+    expect(monthOf("August")).toBe(8);
+    expect(monthOf("Aug")).toBe(8);
+    expect(monthOf("Sept")).toBe(9);
+    expect(monthOf("September")).toBe(9);
+    expect(monthOf("Septemper")).toBe(9); // APWeb-WAIM 2024 typo
+    expect(monthOf("January")).toBe(1);
+    expect(monthOf("Jan")).toBe(1);
+    expect(monthOf("Augusta")).toBeNull(); // City name is not August
+    expect(monthOf("Marcus")).toBeNull();
+    expect(monthOf("Novella")).toBeNull();
+    expect(monthOf("Apricot")).toBeNull();
+    expect(monthOf("Janina")).toBeNull();
+  });
+
+  it("parseDateRange parses event dates without false positive month matching on city names (#278)", () => {
+    resetWarnings();
+    const [start, end] = parseDateRange("March 10-12, 2026, Augusta, GA", 2026);
+    expect(start?.toISOString().slice(0, 10)).toBe("2026-03-10");
+    expect(end?.toISOString().slice(0, 10)).toBe("2026-03-12");
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
 });
 
 describe("slug", () => {
