@@ -1525,6 +1525,32 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(b.agg).toEqual({ domain: 0, name: 0, jp: 0, tags: 0, venue: 0 });
   });
 
+  it("autoDetectCats and breakdown do not inject 'undefined' into matching when properties are omitted (#304)", () => {
+    // 1. autoDetectCats with missing keywords property
+    const cats = R.autoDetectCats([{ title: "Deep Neural Network for Graph Theory" }]);
+    expect(cats).toContain("ai");
+    expect(cats).toContain("theory");
+
+    // 2. breakdown does not match "Undefined" in conference name when paper has no keywords
+    const rowWithUndefinedConf = {
+      cats: [],
+      conf: {
+        key: "wub",
+        title: "WUB",
+        full_name: "International Workshop on Undefined Behavior",
+        tags: [],
+        papers: [],
+      },
+    };
+    const b = R.breakdown(rowWithUndefinedConf, [{ title: "Completely Unrelated Title" }]);
+    expect(b.score).toBe(0);
+    expect(b.perLine[0].details.name).toBe(0);
+
+    // 3. handles null and undefined elements in paper line safely
+    const bNull = R.breakdown(rowWithUndefinedConf, [null as any, undefined as any]);
+    expect(bNull.score).toBe(0);
+  });
+
   describe("formatMarkdownRef", () => {
     it("formats standard conference references with 'YY", () => {
       const ref = R.formatMarkdownRef({

@@ -368,7 +368,8 @@
   function autoDetectCats(lines) {
     if (!lines || !lines.length) return [];
     var text = lines
-      .map((p) => p.title + " " + p.keywords)
+      .map((p) => (((p && p.title) || "") + " " + ((p && p.keywords) || "")).trim())
+      .filter(Boolean)
       .join(" ")
       .toLowerCase();
     var hits = [];
@@ -383,8 +384,14 @@
 
   /* 1行ぶんのスコア (0..100)。venueHit は掲載先タグ一致なら true */
   function scoreLine(r, p, conf) {
-    var pt = (p.title + " " + p.keywords).toLowerCase();
-    if (!pt.trim())
+    if (!p)
+      return {
+        score: 0,
+        venueHit: false,
+        details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
+      };
+    var pt = (((p.title || "") + " " + (p.keywords || "")).trim()).toLowerCase();
+    if (!pt)
       return {
         score: 0,
         venueHit: false,
