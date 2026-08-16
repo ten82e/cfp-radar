@@ -337,12 +337,12 @@ export function usage(): string {
     "  discover 穴場の会議・ジャーナルを自律探索する",
     "    -o, --out <path>      出力YAMLパス（未指定時は標準出力表示）",
     "    --categories <s>      カンマ区切りの対象カテゴリ（例: hpc,systems）",
-    "    --min-year <n>        対象の最小年 (default: 2026)",
-    "    --dry-run             ファイル出力せず結果をプレビュー表示",
-    "    --append              既存 YAML に key 重複なしで追記",
+    "    -y, --min-year <n>    対象の最小年 (default: 2026)",
+    "    -d, --dry-run         ファイル出力せず結果をプレビュー表示",
+    "    -a, --append          既存 YAML に key 重複なしで追記",
     "  review   探索された候補のレビュー順・重複・predatory 疑いを一覧表示する",
-    "    --candidates <p>      候補 YAML パス (default: data/discovered_candidates.yaml)",
-    "    --limit <n>           表示上限件数 (default: 60)",
+    "    -C, --candidates <p>  候補 YAML パス (default: data/discovered_candidates.yaml)",
+    "    -l, --limit <n>       表示上限件数 (default: 60)",
     "    -n, --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
     "  help / --help / -h      使い方を表示する",
   ].join("\n");
@@ -387,19 +387,19 @@ export function parseArgs(argv: string[]): CliArgs {
       args.now = nextVal() ?? null;
     } else if (a === "--categories") {
       args.categories = nextVal() ?? null;
-    } else if (a === "--min-year") {
+    } else if (a === "--min-year" || a === "-y") {
       args.minYear = Number(nextVal() ?? 2026);
     } else if (a === "--offline") {
       args.offline = boolVal();
     } else if (a === "--no-embeddings") {
       args.noEmbeddings = boolVal();
-    } else if (a === "--dry-run") {
+    } else if (a === "--dry-run" || a === "-d") {
       args.dryRun = boolVal();
-    } else if (a === "--append") {
+    } else if (a === "--append" || a === "-a") {
       args.append = boolVal();
-    } else if (a === "--candidates") {
+    } else if (a === "--candidates" || a === "-C") {
       args.candidates = nextVal() ?? join(ROOT, "data", "discovered_candidates.yaml");
-    } else if (a === "--limit") {
+    } else if (a === "--limit" || a === "-l") {
       args.limit = Number(nextVal() ?? 60);
     } else if (a.startsWith("-")) {
       throw new Error(`unknown option: ${raw}`);
