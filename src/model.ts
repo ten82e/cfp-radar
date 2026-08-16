@@ -397,18 +397,22 @@ const MONTHS = [
   "december",
 ];
 
-const TOKEN_RE = /([A-Za-z]+)|(\d{1,4})/g;
+const KNOWN_MONTH_TYPOS: Record<string, number> = {
+  // Upstream typos such as 'Septemper' (APWeb-WAIM 2024).
+  septemper: 9,
+};
 
-function monthOf(word: string): number | null {
+export function monthOf(word: string): number | null {
   const w = word.toLowerCase();
   if (w.length < 3) return null;
+  if (w in KNOWN_MONTH_TYPOS) return KNOWN_MONTH_TYPOS[w];
   for (let i = 0; i < MONTHS.length; i++) {
     if (MONTHS[i].startsWith(w)) return i + 1;
-    // Upstream typos such as 'Septemper' (APWeb-WAIM 2024).
-    if (w.length >= 4 && MONTHS[i].startsWith(w.slice(0, 4))) return i + 1;
   }
   return null;
 }
+
+const TOKEN_RE = /([A-Za-z]+)|(\d{1,4})/g;
 
 /** Pull the first month / day / year out of one side of a range. */
 function scan(part: string): {
