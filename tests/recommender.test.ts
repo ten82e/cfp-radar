@@ -1396,4 +1396,33 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(words).not.toContain("niche");
     expect(words).not.toContain("workshop");
   });
+
+  it("wordInText safely handles special characters, null, and plurals", () => {
+    expect(R.wordInText(null, "test")).toBe(false);
+    expect(R.wordInText("test text", null)).toBe(false);
+    expect(R.wordInText(undefined, undefined)).toBe(false);
+    expect(R.wordInText("", "")).toBe(false);
+
+    // Regular matching with plural s?
+    expect(R.wordInText("system architecture", "system")).toBe(true);
+    expect(R.wordInText("systems architecture", "system")).toBe(true);
+    expect(R.wordInText("systems architecture", "systems")).toBe(true);
+
+    // Regex special characters do not throw or cause syntax errors
+    expect(R.wordInText("os/2 operating system", "os/2")).toBe(true);
+    expect(R.wordInText("c++ programming language", "c++")).toBe(false); // word boundary around non-word +
+    expect(R.wordInText("network (tsn) protocol", "(tsn)")).toBe(false); // word boundary around non-word (
+  });
+
+  it("scorePapers and breakdown defensively handle null/undefined inputs", () => {
+    expect(R.scorePapers(null, [{ title: "Test", keywords: "kw" }])).toBe(0);
+    expect(R.scorePapers({ conf: { key: "test" } }, null)).toBe(0);
+    expect(R.scorePapers(null, null)).toBe(0);
+
+    const b = R.breakdown(null, [{ title: "Test", keywords: "kw" }]);
+    expect(b.score).toBe(0);
+    expect(b.venueHit).toBe(false);
+    expect(b.perLine).toEqual([]);
+    expect(b.agg).toEqual({ domain: 0, name: 0, jp: 0, tags: 0, venue: 0 });
+  });
 });
