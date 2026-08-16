@@ -1424,6 +1424,11 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(R.wordInText("systems architecture", "system")).toBe(true);
     expect(R.wordInText("systems architecture", "systems")).toBe(true);
 
+    // 複数形の会議名語（communications 等）は単数形クエリにも一致する（双方向の単複形吸収）
+    expect(R.wordInText("wireless communication system", "communications")).toBe(true);
+    expect(R.wordInText("distributed database design", "databases")).toBe(true);
+    expect(R.wordInText("scalable architecture for edge computing", "architectures")).toBe(true);
+
     // Regex special characters do not throw or cause syntax errors
     expect(R.wordInText("os/2 operating system", "os/2")).toBe(true);
     expect(R.wordInText("c++ programming language", "c++")).toBe(false); // word boundary around non-word +

@@ -832,7 +832,10 @@
   function wordInText(hay, w) {
     if (!hay || !w) return false;
     var safeW = String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    var re = safeW.endsWith("s") ? safeW : safeW + "s?";
+    // 単複形は双方向とも正当なマッチ（R19 の意図）。単数形語は末尾 s を任意化し
+    // （bandit→bandits）、複数形語（communications 等）も語尾 s を外して任意化する
+    // ことで単数形クエリ（communication）にも一致させる。
+    var re = safeW.endsWith("s") ? safeW.slice(0, -1) + "s?" : safeW + "s?";
     return new RegExp("\\b" + re + "\\b").test(String(hay));
   }
 
