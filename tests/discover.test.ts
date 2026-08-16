@@ -509,6 +509,31 @@ describe("review helpers", () => {
       runReviewCandidates("/tmp/nonexistent-candidates-999.yaml", 60, new Date());
     }).not.toThrow();
   });
+
+  it("parseReviewArgs handles short flags -c, -l, -n and --flags", () => {
+    const res = parseReviewArgs([
+      "-c",
+      "/tmp/custom-candidates.yaml",
+      "-l",
+      "25",
+      "-n",
+      "2026-09-01T00:00:00Z",
+    ]);
+    expect(res.candidates).toBe("/tmp/custom-candidates.yaml");
+    expect(res.limit).toBe(25);
+    expect(res.now.toISOString()).toBe("2026-09-01T00:00:00.000Z");
+    expect(res.help).toBe(false);
+  });
+
+  it("normTitle, isPredatory, and reviewDeadlineText handle null/undefined defensively", () => {
+    expect(normTitle(null)).toBe("");
+    expect(normTitle(undefined)).toBe("");
+    expect(isPredatory(null)).toBe(false);
+    expect(isPredatory(undefined)).toBe(false);
+    expect(reviewDeadlineText(null)).toBe("");
+    expect(reviewDeadlineText(undefined)).toBe("");
+    expect(reviewDeadlineText({})).toBe("");
+  });
 });
 
 const WIKICFP_SAMPLE = `<html><body>
