@@ -318,6 +318,35 @@ describe("EasyChair event date vs submission deadline", () => {
     expect(text).toContain("Aug 16, 2026");
   });
 
+  it("keeps next-year conferences whose fall deadline falls in the previous year (#261)", () => {
+    // DASFAA 2026 の実締切 Oct 27, 2025 — タイトル年 (2026) が締切年 (2025) より優先されるべき
+    const html = `<tbody>
+<tr><td><a href="/cfp/dasfaa2026">DASFAA 2026</a></td><td>Int. Conf. on Database Systems for Advanced Applications</td><td>China</td><td>Oct 27, 2025</td><td>May 2026</td><td></td></tr>
+</tbody>`;
+    const entries = easyChairEntriesFromRows(parseEasyChairCfpHtml(html), 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].key).toBe("dasfaa-2026");
+    expect(entries[0].year).toBe(2026);
+    expect(entries[0].submission_deadline_text).toBe("Oct 27, 2025");
+  });
+
+  it("falls back to the deadline year when the title has no year (#261)", () => {
+    const html = `<tbody>
+<tr><td><a href="/cfp/x2026">Workshop on Data Systems</a></td><td>Int. Workshop on Data Systems</td><td>Japan</td><td>Mar 10, 2026</td><td>Aug 2026</td><td></td></tr>
+</tbody>`;
+    const entries = easyChairEntriesFromRows(parseEasyChairCfpHtml(html), 2026);
+    expect(entries.length).toBe(1);
+    expect(entries[0].year).toBe(2026);
+  });
+
+  it("still drops candidates whose title and deadline years are below minYear (#261)", () => {
+    const html = `<tbody>
+<tr><td><a href="/cfp/old2024">OldConf 2024</a></td><td>Int. Conf. on Old Systems</td><td>US</td><td>Dec 15, 2023</td><td>May 2024</td><td></td></tr>
+</tbody>`;
+    const entries = easyChairEntriesFromRows(parseEasyChairCfpHtml(html), 2026);
+    expect(entries.length).toBe(0);
+  });
+
   it("blank event-date cell stays a valid candidate ordered by the deadline", () => {
     const html = `<tbody>
 <tr><td><a href="/cfp/nodate2026">NoDate 2026</a></td><td>Workshop on Secure Networks</td><td>Tokyo, Japan</td><td>Dec 10, 2026</td><td></td><td></td></tr>
