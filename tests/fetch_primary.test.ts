@@ -232,7 +232,14 @@ describe("page-year diagnostics", () => {
 
   it("exposes only an unambiguous title year", () => {
     expect(pageTitleYear("<title>SETTA 2026</title>")).toBe(2026);
+    expect(pageTitleYear("<title>ICDCS 2026 - 46th IEEE ICDCS 2026</title>")).toBe(2026);
+    expect(pageTitleYear("<title>ACM SIGCOMM 2026 (SIGCOMM 2026) Conference 2026</title>")).toBe(
+      2026,
+    );
     expect(pageTitleYear("<title>SETTA 2025 / 2026</title>")).toBeNull();
+    expect(pageTitleYear("<title>Annual Symposium on Systems</title>")).toBeNull();
+    expect(pageYearMismatch("<title>ICDCS 2026 - 46th IEEE ICDCS 2026</title>", 2025)).toBe(2026);
+    expect(pageYearMismatch("<title>ICDCS 2026 - 46th IEEE ICDCS 2026</title>", 2026)).toBeNull();
   });
 });
 
