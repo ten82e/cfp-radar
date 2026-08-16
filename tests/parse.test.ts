@@ -605,6 +605,53 @@ describe("ccfddl parsing", () => {
     expect(conf?.editions.length).toBe(1);
     expect(conf?.editions[0].deadlines.length).toBe(1);
   });
+
+  it("inherits parent timezone and falls back edition_id to year when omitted", () => {
+    const rawConf = {
+      title: "FAST",
+      tz: "AoE",
+      confs: [
+        {
+          year: 2027,
+          date: "February 23-25, 2027",
+          timeline: [{ deadline: "2026-09-24 23:59:59" }],
+        },
+      ],
+    };
+    const conf = ccfddlConferenceOf(rawConf);
+    expect(conf).not.toBeNull();
+    expect(conf?.editions.length).toBe(1);
+    const ed = conf!.editions[0];
+    expect(ed.edition_id).toBe("2027");
+    expect(ed.deadlines.length).toBe(1);
+    expect(ed.deadlines[0].tz_raw).toBe("AoE");
+    expect(ed.deadlines[0].at_utc.toISOString()).toBe("2026-09-25T11:59:59.000Z");
+  });
+
+  it("timeline entry specific timezone overrides edition timezone", () => {
+    const timeline = [
+      { deadline: "2026-04-01 23:59:59", tz: "UTC" },
+      { deadline: "2026-04-01 23:59:59", tz: "AoE" },
+    ];
+    const dls = ccfddlDeadlinesOf(timeline, "UTC-8");
+    expect(dls.length).toBe(2);
+    expect(dls[0].tz_raw).toBe("UTC");
+    expect(dls[0].at_utc.toISOString()).toBe("2026-04-01T23:59:59.000Z");
+    expect(dls[1].tz_raw).toBe("AoE");
+    expect(dls[1].at_utc.toISOString()).toBe("2026-04-02T11:59:59.000Z");
+  });
+
+  it("parses edition with tz alias instead of timezone", () => {
+    const rawEdition = {
+      year: 2026,
+      tz: "AoE",
+      deadline: "2026-05-15 23:59:59",
+    };
+    const ed = ccfddlEditionOf(rawEdition);
+    expect(ed).not.toBeNull();
+    expect(ed?.deadlines[0].tz_raw).toBe("AoE");
+    expect(ed?.deadlines[0].at_utc.toISOString()).toBe("2026-05-16T11:59:59.000Z");
+  });
 });
 
 describe("local source parsing", () => {
