@@ -1364,6 +1364,22 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(args.jpw).toBe(0.6);
   });
 
+  it("--jpw 0 keeps zero as a valid sweep endpoint instead of coercing to 0.5", () => {
+    const a = parseBenchArgs(["node", "bench-recommender.ts", "--jpw", "0"]);
+    expect(a.jpw).toBe(0);
+    expect(a.wGiven).toBe(true);
+
+    const b = parseBenchArgs(["node", "bench-recommender.ts", "--w", "0"]);
+    expect(b.jpw).toBe(0);
+    expect(b.wGiven).toBe(true);
+
+    // 非数値・欠落は従来どおり既定値 0.5 へフォールバックする。
+    const c = parseBenchArgs(["node", "bench-recommender.ts", "--jpw", "abc"]);
+    expect(c.jpw).toBe(0.5);
+    const d = parseBenchArgs(["node", "bench-recommender.ts", "--jpw"]);
+    expect(d.jpw).toBe(0.5);
+  });
+
   it("norm and contentWords handle null, undefined, empty, and stopwords", () => {
     expect(norm(null)).toBe("");
     expect(norm(undefined)).toBe("");

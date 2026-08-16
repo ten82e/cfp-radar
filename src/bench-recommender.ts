@@ -101,7 +101,10 @@ export function parseBenchArgs(argv: string[]): BenchArgs {
       const v = nextVal();
       if (v === "jp") args.lang = "jp";
     } else if (a === "--jpw" || a === "--w") {
-      args.jpw = Number(nextVal()) || 0.5;
+      // 0 は「語彙重み 0 = セマンティックのみ」の正当なスイープ端点。
+      // `|| 0.5` だと falsy 判定で 0 が黙って既定値に潰れるため NaN のみ置換する。
+      const jpw = Number(nextVal());
+      args.jpw = Number.isNaN(jpw) ? 0.5 : jpw;
       args.wGiven = true;
     } else if (a === "--by-len") args.byLen = true;
     else if (a === "--adaptive") args.adaptive = true;
