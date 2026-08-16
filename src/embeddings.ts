@@ -364,18 +364,21 @@ export const VENUE_PAPERS: Record<string, string[]> = {
  * 日本語クエリから検索可能にする。英語モデルは日本語キーワードがノイズになるため
  * 付与しない（言語別の埋め込みを実測で分離した設計）。 */
 export function profileTexts(
-  confs: Array<Record<string, unknown>>,
-  catNames: Record<string, string>,
-  forMulti: boolean,
+  confs: Array<Record<string, unknown>> | null | undefined,
+  catNames?: Record<string, string> | null,
+  forMulti = false,
 ): { keys: string[]; texts: string[] } {
   const keys: string[] = [];
   const texts: string[] = [];
-  for (const c of confs) {
-    const key = String(c.key ?? "");
+  const safeCats = catNames ?? {};
+  for (const c of confs ?? []) {
+    if (!c || typeof c !== "object") continue;
+    const key = String(c.key ?? "").trim();
+    if (!key) continue;
     // カテゴリは短いキー（systems 等）より正式名（Systems, Architecture and Storage）で
     // 埋め込む方がセマンティック品質が高い（ベンチマークで実測）。
-    const cats = (c.categories as string[] | null) ?? [];
-    const catText = cats.map((k) => catNames[k] || k).join(" ");
+    const cats = Array.isArray(c.categories) ? (c.categories as string[]) : [];
+    const catText = cats.map((k) => safeCats[k] || k).join(" ");
     const name = `${String(c.title ?? "")} ${String(c.full_name ?? "")}`;
     // 多言語モデル用: 日本語名の会議に日本語の分野語を付与（クエリ側の日本語語彙と一致させる）
     const jpKw = forMulti && hasJapanese(name) ? cats.map((k) => JP_CAT_KW[k] || "").join(" ") : "";
@@ -393,12 +396,13 @@ export function profileTexts(
     // golden 7 件を sem で拾う正の効果が奪取を上回る）→ 埋め込みは従来どおり維持。
     const skipEmb = SKIP_EMB_KEYS.has(key);
     const papers = !forMulti && !skipEmb ? (VENUE_PAPERS[key] ?? []).slice(0, 8).join(" . ") : "";
+    const tags = Array.isArray(c.tags) ? (c.tags as string[]) : [];
     const parts = [
       String(c.title ?? ""),
       String(c.full_name ?? ""),
       catText,
       jpKw,
-      ((c.tags as string[] | null) ?? []).join(" "),
+      tags.join(" "),
       papers,
     ];
     const text = parts.filter(Boolean).join(" ").trim();
