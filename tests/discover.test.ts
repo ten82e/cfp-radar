@@ -536,6 +536,16 @@ describe("review helpers", () => {
     expect(isPredatory("PARMA-DITAM 2027 Glasgow")).toBe(false);
     expect(normTitle("SIGSPATIAL 2026")).toBe(normTitle("SIGSPATIAL 2027"));
     expect(normTitle("GeoAI'26")).toBe(normTitle("GeoAI 2026"));
+    expect(normTitle("SC ’26")).toBe("sc");
+    expect(normTitle("情報処理学会 HPC 研究会 2026年")).toBe("情報処理学会 hpc 研究会");
+    expect(normTitle("ソフトウェア工学の基礎ワークショップ (FOSE 2026)")).toBe(
+      "ソフトウェア工学の基礎ワークショップ fose",
+    );
+    expect(normTitle("ソフトウェア工学の基礎ワークショップ")).toBe(
+      "ソフトウェア工学の基礎ワークショップ",
+    );
+    expect(normTitle("   ")).toBe("");
+    expect(normTitle(null)).toBe("");
   });
 
   it("parseReviewArgs handles flags, --help, and --now", () => {

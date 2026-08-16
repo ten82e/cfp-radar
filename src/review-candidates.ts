@@ -24,12 +24,12 @@ export function isPredatory(text: string | null | undefined): boolean {
 }
 
 export function normTitle(title: string | null | undefined): string {
-  /** 年・記号を落とした正規化タイトル (重複グループ検出用)。 */
+  /** 年・記号を落とした正規化タイトル (重複グループ検出用)。Unicode/日本語文字を保持。 */
   if (!title) return "";
-  let t = String(title).toLowerCase();
-  t = t.replace(/'\d\d\b/g, ""); // '26 形式の短縮年
-  t = t.replace(/\b20\d\d\b/g, ""); // 2026 形式の年
-  t = t.replace(/[^a-z0-9]+/g, " ");
+  let t = String(title).normalize("NFKC").toLowerCase();
+  t = t.replace(/['’]\d\d\b/g, ""); // '26 形式の短縮年
+  t = t.replace(/\b20\d\d(?:年|\b)/g, ""); // 2026 / 2026年 形式の年
+  t = t.replace(/[^\p{L}\p{N}]+/gu, " ");
   return t.trim().split(/\s+/).join(" ");
 }
 
@@ -37,9 +37,18 @@ export function loadTrackedTitles(): Set<string> {
   /** 収録済み (snapshot.json + data/extra.yaml + data/overrides.yaml) の正規化タイトル・フルネーム・キー集合。 */
   const tracked = new Set<string>();
   const add = (c: Record<string, unknown>): void => {
-    if (typeof c.title === "string" && c.title) tracked.add(normTitle(c.title));
-    if (typeof c.full_name === "string" && c.full_name) tracked.add(normTitle(c.full_name));
-    if (typeof c.key === "string" && c.key) tracked.add(normTitle(c.key));
+    if (typeof c.title === "string" && c.title) {
+      const k = normTitle(c.title);
+      if (k) tracked.add(k);
+    }
+    if (typeof c.full_name === "string" && c.full_name) {
+      const k = normTitle(c.full_name);
+      if (k) tracked.add(k);
+    }
+    if (typeof c.key === "string" && c.key) {
+      const k = normTitle(c.key);
+      if (k) tracked.add(k);
+    }
   };
   try {
     const snap = JSON.parse(readFileSync(join(ROOT, "data", "snapshot.json"), "utf8")) as Record<
@@ -70,7 +79,8 @@ export function loadTrackedTitles(): Set<string> {
     for (const [key, val] of Object.entries(
       (overrides?.conferences as Record<string, unknown>) ?? {},
     )) {
-      tracked.add(normTitle(key));
+      const k = normTitle(key);
+      if (k) tracked.add(k);
       if (typeof val === "object" && val !== null) add(val as Record<string, unknown>);
     }
   } catch {
@@ -127,15 +137,20 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
   const tracked = loadTrackedTitles();
   const enriched: Enriched[] = cands
     .filter((raw): raw is Record<string, any> => raw !== null && typeof raw === "object")
-    .map((c) => ({
-      c,
-      dl: parseDeadlineText(reviewDeadlineText(c)),
-      pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
-      tracked:
-        tracked.has(normTitle(String(c.title ?? ""))) ||
-        tracked.has(normTitle(String(c.full_name ?? ""))) ||
-        tracked.has(normTitle(String(c.key ?? ""))),
-    }));
+    .map((c) => {
+      const tKey = normTitle(String(c.title ?? ""));
+      const fKey = normTitle(String(c.full_name ?? ""));
+      const kKey = normTitle(String(c.key ?? ""));
+      return {
+        c,
+        dl: parseDeadlineText(reviewDeadlineText(c)),
+        pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
+        tracked:
+          (Boolean(tKey) && tracked.has(tKey)) ||
+          (Boolean(fKey) && tracked.has(fKey)) ||
+          (Boolean(kKey) && tracked.has(kKey)),
+      };
+    });
 
   const future = enriched
     .filter((e) => e.dl && e.dl.getTime() >= today.getTime() && !e.tracked)
@@ -155,6 +170,7 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
   const groups = new Map<string, Enriched[]>();
   for (const e of enriched) {
     const key = normTitle(String(e.c.title ?? ""));
+    if (!key) continue;
     groups.set(key, [...(groups.get(key) ?? []), e]);
   }
   const dups = [...groups.entries()]
