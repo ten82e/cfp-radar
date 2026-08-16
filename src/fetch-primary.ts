@@ -43,6 +43,8 @@ const LABELS: Record<string, string> = {
   camera_ready: "Camera-ready submission",
   notification: "Notification",
   registration: "Registration",
+  supplementary: "Supplementary material",
+  rebuttal_end: "Rebuttal deadline",
 };
 
 // 検証不能なサイトが多いので証明書検証を迂回する (Python 版の CERT_NONE 相当)。
@@ -94,6 +96,14 @@ function kindOf(window: string): string {
   if (low.includes("camera")) return "camera_ready";
   if (low.includes("notification")) return "notification";
   if (low.includes("registration")) return "registration";
+  if (low.includes("supplementary") || low.includes("appendix")) return "supplementary";
+  if (
+    low.includes("rebuttal") ||
+    low.includes("author response") ||
+    low.includes("author_response")
+  ) {
+    return "rebuttal_end";
+  }
   return "paper";
 }
 
@@ -123,9 +133,9 @@ function parsePrimaryDate(window: string): ExtractedDate | null {
     const year = Number(m[3]);
     return { year, month, day };
   }
-  // 2. Day Month Year: '15 May 2026', '16th August 2026', '1st October, 2026', '15-May-2026', '15/May/2026'
+  // 2. Day Month Year: '15 May 2026', '16th August 2026', '15th of May 2026', '1st October, 2026', '15-May-2026', '15/May/2026'
   m =
-    /\b(\d{1,2})(?:st|nd|rd|th)?[-/\s]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?[-/\s]+(\d{4})\b/i.exec(
+    /\b(\d{1,2})(?:st|nd|rd|th)?(?:[-/\s]+(?:of\s+)?|\s+of\s+)(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?:,)?[-/\s]+(\d{4})\b/i.exec(
       window,
     );
   if (m) {
@@ -140,6 +150,16 @@ function parsePrimaryDate(window: string): ExtractedDate | null {
     const year = Number(m[1]);
     const month = Number(m[2]);
     const day = Number(m[3]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return { year, month, day };
+    }
+  }
+  // 4. European Numeric Day Month Year: '15.05.2026', '15/05/2026', '15-05-2026'
+  m = /\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b/.exec(window);
+  if (m) {
+    const day = Number(m[1]);
+    const month = Number(m[2]);
+    const year = Number(m[3]);
     if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
       return { year, month, day };
     }
