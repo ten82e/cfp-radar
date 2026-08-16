@@ -17,6 +17,7 @@ import {
   toLlmsTxt,
   toUpcomingMd,
 } from "../src/build.ts";
+import { usage } from "../src/cli.ts";
 import { venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
@@ -426,6 +427,29 @@ it("llms.txt schema summary documents every key data.json actually emits (site/p
   // 会議レベルのキーは全て要約に現れる
   for (const key of Object.keys(data.conferences[0] ?? {})) {
     expect(summary).toContain(key);
+  }
+});
+
+it("README documents every build CLI flag (--no-embeddings regression)", () => {
+  // #239: README の build オプション表が --no-embeddings を記載しておらず、
+  // usage() / テストだけが知っている状態だった。README はユーザーが最初に読む
+  // 文書で、実装（src/cli.ts の usage()）が機械可読契約である。
+  // ここでは usage() の build セクションに現れる全 --flag が README に
+  // 記載されていることを検証し、将来のフラグ追加・削除の乖離を検出する。
+  const lines = usage().split("\n");
+  const buildStart = lines.findIndex((l) => l.trim().startsWith("build "));
+  const buildEnd = lines.findIndex((l, i) => i > buildStart && l.trim().startsWith("discover "));
+  expect(buildStart).toBeGreaterThanOrEqual(0);
+  expect(buildEnd).toBeGreaterThan(buildStart);
+  const flags = [
+    ...new Set(
+      lines.slice(buildStart, buildEnd).flatMap((l) => l.match(/--[a-z][a-z0-9-]*/g) ?? []),
+    ),
+  ];
+  expect(flags.length).toBeGreaterThan(0);
+  const readme = readFileSync(join(REPO_ROOT, "README.md"), "utf8");
+  for (const flag of flags) {
+    expect(readme, `README must document the build flag ${flag}`).toContain(flag);
   }
 });
 
