@@ -37,6 +37,11 @@ const CAMERA_READY_KEYS = [
   "camera ready deadline",
   "camera_ready",
   "final_deadline",
+  "final deadline",
+  "final_paper",
+  "final paper",
+  "final_submission",
+  "final submission",
 ];
 
 function extractCandidate(rec: Record<string, unknown>, keys: string[]): unknown {
@@ -110,7 +115,11 @@ export function deadlinesOf(
   return out;
 }
 
-export function editionOf(raw: Record<string, unknown>, parentTz = ""): Edition | null {
+export function editionOf(
+  raw: Record<string, unknown> | null | undefined,
+  parentTz = "",
+): Edition | null {
+  if (!raw || typeof raw !== "object") return null;
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`ccfddl edition without a usable year: ${JSON.stringify(raw.id)}`);
@@ -133,7 +142,8 @@ export function editionOf(raw: Record<string, unknown>, parentTz = ""): Edition 
   };
 }
 
-export function conferenceOf(raw: Record<string, unknown>): Conference | null {
+export function conferenceOf(raw: Record<string, unknown> | null | undefined): Conference | null {
+  if (!raw || typeof raw !== "object") return null;
   const title = String(raw.title ?? "").trim();
   if (!title) return null;
   const parentTz = String(raw.timezone ?? raw.tz ?? "");
@@ -172,7 +182,8 @@ export function conferenceOf(raw: Record<string, unknown>): Conference | null {
 }
 
 /** Read every `conference/<SUB>/<name>.yml` under an extracted tree. */
-export function parseTree(conferenceDir: string): Conference[] {
+export function parseTree(conferenceDir: string | null | undefined): Conference[] {
+  if (!conferenceDir) return [];
   const out: Conference[] = [];
   const files: string[] = [];
   const stack = [conferenceDir];
