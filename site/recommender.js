@@ -1105,6 +1105,35 @@
     return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
   }
 
+  /* Markdown 参照表記の生成。
+   * 例: [SIGCOMM '26] August 17-21, 2026 https://...
+   * タイトルが既に '26 や 2026 等の開催年を含んでいる場合は二重に年を付与しない。
+   * 開催年が無い場合は末尾に孤立したアポストロフィを付けない。
+   */
+  function formatMarkdownRef(r) {
+    if (!r || !r.conf) return "";
+    var ed = r.ed || {};
+    var title = String(r.conf.title || r.conf.key || "").trim();
+    var year = ed.year ? String(ed.year) : "";
+    var shortYear = year ? "'" + year.slice(-2) : "";
+    var titleWithRef;
+    if (shortYear) {
+      if (title.endsWith(shortYear) || (year && title.endsWith(year))) {
+        titleWithRef = title;
+      } else {
+        titleWithRef = title + " " + shortYear;
+      }
+    } else {
+      titleWithRef = title;
+    }
+    var datePart = ed.date_text || (ed.event_start ? String(ed.event_start) : "");
+    var linkPart = ed.link || r.conf.link || "";
+    var parts = ["[" + titleWithRef + "]"];
+    if (datePart) parts.push(datePart);
+    if (linkPart) parts.push(linkPart);
+    return parts.join(" ");
+  }
+
   var api = {
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     STOPWORDS: STOPWORDS,
@@ -1136,6 +1165,7 @@
     setExpandEnabled: setExpandEnabled,
     queryText: queryText,
     getGCalUrl: getGCalUrl,
+    formatMarkdownRef: formatMarkdownRef,
     wordInText: wordInText,
   };
 

@@ -1204,3 +1204,10 @@ it("site template does not include external Google Fonts per SPEC §7 (#223)", (
   expect(template).toContain("--font-sans: system-ui,");
   expect(template).toContain("--font-mono: ui-monospace,");
 });
+
+it("site template copyMarkdownRef delegates to Recommender.formatMarkdownRef (#228)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  expect(template).toContain("window.Recommender.formatMarkdownRef");
+  const recommenderJs = readFileSync(join(REPO_ROOT, "site", "recommender.js"), "utf8");
+  expect(recommenderJs).toContain("formatMarkdownRef: formatMarkdownRef");
+});
