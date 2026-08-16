@@ -844,10 +844,15 @@ export function conferencesFromJson(
       full_name: String(conf.full_name ?? ""),
       link: String(conf.link ?? ""),
       rank: Object.fromEntries(
-        Object.entries((conf.rank as Record<string, unknown> | undefined) ?? {}).map(([k, v]) => [
-          String(k),
-          String(v),
-        ]),
+        Object.entries((conf.rank as Record<string, unknown> | undefined) ?? {})
+          .filter(
+            ([, v]) =>
+              v !== null &&
+              v !== undefined &&
+              String(v).trim() !== "" &&
+              String(v).trim() !== "null",
+          )
+          .map(([k, v]) => [String(k).toLowerCase().trim(), String(v).trim()]),
       ),
       dblp: null,
       upstream_sub: null,
