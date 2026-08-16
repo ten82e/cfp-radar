@@ -309,6 +309,7 @@ th {
   user-select: none;
 }
 th:hover { color: var(--fg); }
+th[data-sort]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--panel-hover); }
 tr.selected td { background: var(--accent-subtle); border-color: rgba(47, 95, 208, 0.25); }
@@ -573,11 +574,11 @@ footer a:hover { text-decoration: underline; }
     <table>
       <thead>
         <tr>
-          <th onclick="toggleSort('rem')">残り ↕</th>
-          <th onclick="toggleSort('date')">日時 ↕</th>
-          <th onclick="toggleSort('conf')">会議 ↕</th>
+          <th tabindex="0" aria-sort="ascending" data-sort="rem" onclick="toggleSort('rem')">残り ↕</th>
+          <th tabindex="0" aria-sort="none" data-sort="date" onclick="toggleSort('date')">日時 ↕</th>
+          <th tabindex="0" aria-sort="none" data-sort="conf" onclick="toggleSort('conf')">会議 ↕</th>
           <th>種別</th>
-          <th onclick="toggleSort('rank')">ランク ↕</th>
+          <th tabindex="0" aria-sort="none" data-sort="rank" onclick="toggleSort('rank')">ランク ↕</th>
           <th>会期</th>
           <th>開催地</th>
         </tr>
@@ -707,6 +708,18 @@ footer a:hover { text-decoration: underline; }
   };
 
   // Column Sorting
+  // 現在の並び順を aria-sort でスクリーンリーダーに伝える（昇順/降順/指定なし）。
+  function setSortAria(key) {
+    Array.prototype.forEach.call(document.querySelectorAll("th[data-sort]"), (th) => {
+      var k = th.getAttribute("data-sort");
+      var state = "none";
+      if (k === key) {
+        state = sortAsc ? "ascending" : "descending";
+      }
+      th.setAttribute("aria-sort", state);
+    });
+  }
+
   window.toggleSort = (key) => {
     if (sortKey === key) {
       sortAsc = !sortAsc;
@@ -714,8 +727,21 @@ footer a:hover { text-decoration: underline; }
       sortKey = key;
       sortAsc = true;
     }
+    setSortAria(key);
     render();
   };
+
+  // ソート可能ヘッダーはキーボード（Enter / Space）でも操作できるようにする。
+  // グローバル keydown の Enter=選択行のリンクを開く に奪われないよう stopPropagation する。
+  Array.prototype.forEach.call(document.querySelectorAll("th[data-sort]"), (th) => {
+    th.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSort(th.getAttribute("data-sort"));
+      }
+    });
+  });
 
   // Google Calendar URL Generator
   function getGCalUrl(r) {

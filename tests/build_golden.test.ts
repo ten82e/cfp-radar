@@ -768,6 +768,47 @@ it("default filter shows only submission deadlines", () => {
   expect(JSON.parse(proc.stdout)).toEqual(["paper", "abstract"]);
 });
 
+it("sortable headers are keyboard-operable and expose sort state (aria-sort)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: ソート可能 4 ヘッダーに tabindex / aria-sort / data-sort がある
+  const ths = [...html.matchAll(/<th([^>]*data-sort="([^"]+)"[^>]*)>/g)];
+  expect(ths.length).toBe(4);
+  for (const m of ths) {
+    expect(m[1]).toContain('tabindex="0"');
+    expect(m[1]).toContain("aria-sort=");
+  }
+  // 既定の並び（残り昇順）に合わせて rem のみ ascending、他は none
+  const attrs = Object.fromEntries(ths.map((m) => [m[2], /aria-sort="([^"]+)"/.exec(m[1])?.[1]]));
+  expect(attrs).toEqual({ rem: "ascending", date: "none", conf: "none", rank: "none" });
+  // 実行検証: setSortAria を抽出して fake DOM で状態遷移を確認する
+  const src = jsFunction(html, "setSortAria");
+  const script = [
+    "const ths = ['rem','date','conf','rank'].map(k => ({ k, attrs: {} }));",
+    "const document = {",
+    "  querySelectorAll: () => ths.map(t => ({",
+    "    getAttribute: (a) => a === 'data-sort' ? t.k : null,",
+    "    setAttribute: (a, v) => { t.attrs[a] = v; },",
+    "  })),",
+    "};",
+    `const setSortAria = ${src};`,
+    "let sortAsc = true;",
+    "setSortAria('rem');",
+    "const s1 = JSON.stringify(ths.map(t => t.attrs['aria-sort']));",
+    "setSortAria('date');",
+    "const s2 = JSON.stringify(ths.map(t => t.attrs['aria-sort']));",
+    "sortAsc = false;",
+    "setSortAria('date');",
+    "const s3 = JSON.stringify(ths.map(t => t.attrs['aria-sort']));",
+    "console.log(s1 + '|' + s2 + '|' + s3);",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  const [r1, r2, r3] = proc.stdout.trim().split("|");
+  expect(JSON.parse(r1)).toEqual(["ascending", "none", "none", "none"]);
+  expect(JSON.parse(r2)).toEqual(["none", "ascending", "none", "none"]);
+  expect(JSON.parse(r3)).toEqual(["none", "descending", "none", "none"]);
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
