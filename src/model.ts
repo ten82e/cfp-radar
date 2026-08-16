@@ -651,9 +651,18 @@ export function kindOf(rawTypeOrKey: string | null | undefined): DeadlineKind {
   return "other";
 }
 
+const ROMAN_NUMERALS: Record<string, number> = {
+  i: 1,
+  ii: 2,
+  iii: 3,
+  iv: 4,
+  v: 5,
+};
+
 const ROUND_PATTERNS = [
-  /\b(?:round|cycle)\s*#?\s*([0-9]+)\b/i,
-  /\b([0-9]+)(?:st|nd|rd|th)\s+(?:round|cycle)\b/i,
+  /\b(?:round|cycle|phase|stage)\s*#?\s*([0-9]+)\b/i,
+  /\b([0-9]+)(?:st|nd|rd|th)\s+(?:round|cycle|phase|stage)\b/i,
+  /\b(?:round|cycle|phase|stage)\s*#?\s*(i|ii|iii|iv|v)\b/i,
   /\br([1-9][0-9]?)\b/i,
 ];
 
@@ -663,7 +672,9 @@ export function roundOf(label: string | null | undefined, defaultRound = 1): num
   for (const pattern of ROUND_PATTERNS) {
     const match = pattern.exec(s);
     if (match) {
-      const value = Number(match[1]);
+      const raw = match[1].toLowerCase();
+      if (raw in ROMAN_NUMERALS) return ROMAN_NUMERALS[raw];
+      const value = Number(raw);
       if (value >= 1) return value;
     }
   }
