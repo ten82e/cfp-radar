@@ -942,4 +942,52 @@ describe("aideadlines deadlinesOf parsing", () => {
     expect(ed?.year).toBe(2026);
     expect(ed?.edition_id).toBe("2026");
   });
+
+  it("extracts place prioritizing raw.place and cleanly joining city/country (#274)", () => {
+    // 1. raw.place priority
+    expect(
+      editionOf({
+        year: 2026,
+        place: "Honolulu, Hawaii",
+        city: "Honolulu",
+        country: "USA",
+      })?.place,
+    ).toBe("Honolulu, Hawaii");
+
+    // 2. city + country combination
+    expect(
+      editionOf({
+        year: 2026,
+        city: "Honolulu",
+        country: "USA",
+      })?.place,
+    ).toBe("Honolulu, USA");
+
+    // 3. whitespace-only city does not produce leading comma
+    expect(
+      editionOf({
+        year: 2026,
+        city: "   ",
+        country: "USA",
+      })?.place,
+    ).toBe("USA");
+
+    // 4. whitespace-only country does not produce trailing comma
+    expect(
+      editionOf({
+        year: 2026,
+        city: "Tokyo",
+        country: "   ",
+      })?.place,
+    ).toBe("Tokyo");
+
+    // 5. whitespace-only both produces empty string
+    expect(
+      editionOf({
+        year: 2026,
+        city: "   ",
+        country: "   ",
+      })?.place,
+    ).toBe("");
+  });
 });

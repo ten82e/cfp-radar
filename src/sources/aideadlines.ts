@@ -149,10 +149,13 @@ export function editionOf(raw: Record<string, unknown>): Edition | null {
     start = start ?? parsedStart;
     end = end ?? parsedEnd;
   }
-  const place = ["city", "country"]
-    .filter((k) => raw[k])
-    .map((k) => String(raw[k]).trim())
-    .join(", ");
+  const rawPlace = raw.place !== null && raw.place !== undefined ? String(raw.place).trim() : "";
+  const place =
+    rawPlace ||
+    ["city", "country"]
+      .map((k) => (raw[k] !== null && raw[k] !== undefined ? String(raw[k]).trim() : ""))
+      .filter((s) => s.length > 0)
+      .join(", ");
   return {
     year,
     edition_id: String(raw.id ?? (year ? String(year) : "")),
