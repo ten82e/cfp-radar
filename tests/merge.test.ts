@@ -758,6 +758,35 @@ describe("apply_overrides", () => {
     expect(ed.deadlines[0].kind).toBe("paper");
     expect(ed.deadlines[0].at_utc.toISOString()).toBe("2026-03-01T23:59:00.000Z");
   });
+
+  it("override updates or deletes rank schemes cleanly (#288)", () => {
+    const confs = [
+      makeConference({
+        key: "testrank",
+        title: "TESTRANK",
+        rank: { ccf: "B", core: "B", thcpl: "B" },
+      }),
+    ];
+    const overrides = {
+      conferences: {
+        testrank: {
+          rank: {
+            ccf: null, // delete
+            thcpl: "", // delete
+            core: " A* ", // update & trim
+            era: " A ", // add
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    expect(out[0].rank).toEqual({
+      core: "A*",
+      era: "A",
+    });
+    expect(out[0].rank.ccf).toBeUndefined();
+    expect(out[0].rank.thcpl).toBeUndefined();
+  });
 });
 
 describe("rollforward", () => {

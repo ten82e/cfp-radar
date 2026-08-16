@@ -3,6 +3,7 @@
  * Ported from tests/test_parse.py.
  */
 
+import { existsSync, unlinkSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   monthOf,
@@ -915,6 +916,34 @@ describe("local source parsing", () => {
     expect(ed?.deadlines.length).toBe(1);
     expect(ed?.deadlines[0].kind).toBe("paper");
     expect(ed?.estimated).toBe(true);
+  });
+
+  it("parseFile ignores null, undefined, and empty rank values without stringifying to 'null' (#288)", () => {
+    const tmp = "/tmp/test-null-rank-parse.yaml";
+    writeFileSync(
+      tmp,
+      `
+conferences:
+  - key: test-rank-conf
+    title: Test Rank Conference
+    rank:
+      ccf: null
+      core: " A* "
+      thcpl: ""
+    editions:
+      - year: 2026
+        deadline: "2026-05-15 23:59:00"
+`,
+    );
+    try {
+      const confs = localParseFile(tmp);
+      expect(confs.length).toBe(1);
+      expect(confs[0].rank).toEqual({ core: "A*" });
+      expect(confs[0].rank.ccf).toBeUndefined();
+      expect(confs[0].rank.thcpl).toBeUndefined();
+    } finally {
+      if (existsSync(tmp)) unlinkSync(tmp);
+    }
   });
 });
 
