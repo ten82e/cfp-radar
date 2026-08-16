@@ -52,6 +52,7 @@ export function deadlinesOf(
       if (typeof entry !== "object" || entry === null) continue;
       const rec = entry as Record<string, unknown>;
       const rnd = index + 1;
+      const entryTz = String(rec.timezone ?? rec.tz ?? tzRaw ?? "");
       const comment =
         rec.comment === null || rec.comment === undefined ? null : String(rec.comment);
       const rawAbstract = extractCandidate(rec, ABSTRACT_KEYS);
@@ -62,9 +63,9 @@ export function deadlinesOf(
       ];
       for (const [kind, label, raw] of candidates) {
         if (raw === null || raw === undefined) continue;
-        const at = parseInstant(raw, tzRaw);
+        const at = parseInstant(raw, entryTz);
         if (at === null) continue;
-        out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: rnd, comment });
+        out.push({ kind, label, at_utc: at, tz_raw: entryTz, round: rnd, comment });
       }
     }
     if (out.length > 0) return out;
@@ -72,6 +73,7 @@ export function deadlinesOf(
 
   // Fallback to top-level rawEdition properties if timeline is absent or yielded no deadlines
   if (rawEdition && typeof rawEdition === "object") {
+    const entryTz = String(rawEdition.timezone ?? rawEdition.tz ?? tzRaw ?? "");
     const comment =
       rawEdition.comment === null || rawEdition.comment === undefined
         ? null
@@ -84,27 +86,27 @@ export function deadlinesOf(
     ];
     for (const [kind, label, raw] of candidates) {
       if (raw === null || raw === undefined) continue;
-      const at = parseInstant(raw, tzRaw);
+      const at = parseInstant(raw, entryTz);
       if (at === null) continue;
-      out.push({ kind, label, at_utc: at, tz_raw: tzRaw, round: 1, comment });
+      out.push({ kind, label, at_utc: at, tz_raw: entryTz, round: 1, comment });
     }
   }
 
   return out;
 }
 
-export function editionOf(raw: Record<string, unknown>): Edition | null {
+export function editionOf(raw: Record<string, unknown>, parentTz = ""): Edition | null {
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`ccfddl edition without a usable year: ${JSON.stringify(raw.id)}`);
     return null;
   }
-  const tzRaw = String(raw.timezone ?? "");
+  const tzRaw = String(raw.timezone ?? raw.tz ?? parentTz ?? "");
   const dateText = String(raw.date ?? "");
   const [start, end] = parseDateRange(dateText, year);
   return {
     year,
-    edition_id: String(raw.id ?? ""),
+    edition_id: String(raw.id ?? (year ? String(year) : "")),
     link: String(raw.link ?? ""),
     place: String(raw.place ?? ""),
     date_text: dateText,
@@ -119,9 +121,12 @@ export function editionOf(raw: Record<string, unknown>): Edition | null {
 export function conferenceOf(raw: Record<string, unknown>): Conference | null {
   const title = String(raw.title ?? "").trim();
   if (!title) return null;
+  const parentTz = String(raw.timezone ?? raw.tz ?? "");
   const editions = ((raw.confs as unknown[] | null) ?? [])
     .map((c) =>
-      typeof c === "object" && c !== null ? editionOf(c as Record<string, unknown>) : null,
+      typeof c === "object" && c !== null
+        ? editionOf(c as Record<string, unknown>, parentTz)
+        : null,
     )
     .filter((e): e is Edition => e !== null)
     .sort((a, b) => a.year - b.year);
