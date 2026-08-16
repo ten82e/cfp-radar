@@ -743,23 +743,45 @@ const ROMAN_NUMERALS: Record<string, number> = {
   iii: 3,
   iv: 4,
   v: 5,
+  vi: 6,
+  vii: 7,
+  viii: 8,
+  ix: 9,
+  x: 10,
+};
+
+const KANJI_NUMERALS: Record<string, number> = {
+  一: 1,
+  二: 2,
+  三: 3,
+  四: 4,
+  五: 5,
+  六: 6,
+  七: 7,
+  八: 8,
+  九: 9,
+  十: 10,
 };
 
 const ROUND_PATTERNS = [
   /\b(?:round|cycle|phase|stage)\s*#?\s*([0-9]+)\b/i,
   /\b([0-9]+)(?:st|nd|rd|th)\s+(?:round|cycle|phase|stage)\b/i,
-  /\b(?:round|cycle|phase|stage)\s*#?\s*(i|ii|iii|iv|v)\b/i,
+  /\b(?:round|cycle|phase|stage)\s*#?\s*(i|ii|iii|iv|v|vi|vii|viii|ix|x)\b/i,
   /\br([1-9][0-9]?)\b/i,
+  /第\s*([0-9]+|[一二三四五六七八九十]+)\s*(?:回|次|期)/,
+  /([0-9]+|[一二三四五六七八九十]+)\s*次(?:締切|募集|提出)/,
+  /([0-9]+|[一二三四五六七八九十]+)\s*回目/,
 ];
 
 /** Submission round stated in a free-form label, else `default`. */
 export function roundOf(label: string | null | undefined, defaultRound = 1): number {
-  const s = String(label ?? "");
+  const s = String(label ?? "").normalize("NFKC");
   for (const pattern of ROUND_PATTERNS) {
     const match = pattern.exec(s);
     if (match) {
       const raw = match[1].toLowerCase();
       if (raw in ROMAN_NUMERALS) return ROMAN_NUMERALS[raw];
+      if (raw in KANJI_NUMERALS) return KANJI_NUMERALS[raw];
       const value = Number(raw);
       if (value >= 1) return value;
     }
