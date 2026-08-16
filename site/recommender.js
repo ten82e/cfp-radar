@@ -1051,8 +1051,13 @@
       event: "開催",
       other: "締切",
     };
+    var ed = r.ed || {};
+    var dl = r.dl || {};
+    var round = r.round || dl.round;
     var label = kl[r.kind] || r.kind || "締切";
-    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key || "") + "] " + label);
+    var title = encodeURIComponent(
+      "[" + (r.conf.title || r.conf.key || "") + "] " + label + (round && round > 1 ? " (R" + round + ")" : "")
+    );
     var pad = function(n) { return (n < 10 ? "0" : "") + n; };
     var dates = "";
     if (r.kind === "event") {
@@ -1071,13 +1076,16 @@
       var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
       dates = isoStart + "/" + isoEnd;
     }
-    var ed = r.ed || {};
     var descParts = [];
     if (r.conf.full_name || r.conf.title) {
       descParts.push(r.conf.full_name || r.conf.title);
     }
-    if (r.comment) {
-      descParts.push("備考: " + r.comment);
+    var comment = r.comment || dl.comment;
+    if (comment) {
+      descParts.push("備考: " + comment);
+    }
+    if (round && round > 1) {
+      descParts.push("ラウンド: Round " + round);
     }
     var cfpLink = ed.link || r.conf.link || "";
     if (cfpLink) {

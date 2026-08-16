@@ -1269,4 +1269,29 @@ describe("getGCalUrl", () => {
     expect(url).toContain("%E5%82%99%E8%80%83%3A%20Round%202%20Submission"); // 備考: Round 2 Submission
     expect(url).toContain("CFP%20Link%3A%20https%3A%2F%2Fexample.com%2Fniche26");
   });
+
+  it("extracts comment from r.dl.comment and formats round info when round > 1", () => {
+    const r = {
+      conf: {
+        key: "nsdi",
+        title: "NSDI",
+        full_name: "USENIX Symposium on Networked Systems Design and Implementation",
+      },
+      ed: {
+        place: "Renton, WA, USA",
+        link: "https://www.usenix.org/conference/nsdi26",
+      },
+      dl: {
+        round: 2,
+        comment: "Fall deadline",
+      },
+      kind: "paper",
+      t: new Date(Date.UTC(2026, 8, 10, 23, 59, 59)).getTime(),
+    };
+    const url = R.getGCalUrl(r);
+    expect(url).toContain("NSDI");
+    expect(url).toContain("%20(R2)");
+    expect(url).toContain("%E5%82%99%E8%80%83%3A%20Fall%20deadline"); // 備考: Fall deadline
+    expect(url).toContain("%E3%83%A9%E3%82%A6%E3%83%B3%E3%83%89%3A%20Round%202"); // ラウンド: Round 2
+  });
 });
