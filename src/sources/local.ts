@@ -11,6 +11,7 @@ import {
   asDate,
   type Conference,
   type Deadline,
+  type DeadlineKind,
   type Edition,
   kindOf,
   parseDateRange,
@@ -24,6 +25,20 @@ export const NAME = "local";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const DEFAULT_PATH = join(ROOT, "data", "extra.yaml");
+
+const LEGACY_KIND_KEYS: Array<[DeadlineKind, string, string[]]> = [
+  ["abstract", "Abstract submission", ["abstract_deadline", "abstract"]],
+  [
+    "paper",
+    "Paper submission",
+    ["deadline", "paper_deadline", "submission_deadline", "submission"],
+  ],
+  ["notification", "Notification", ["notification_deadline", "notification"]],
+  ["camera_ready", "Camera-ready", ["camera_ready_deadline", "camera_ready", "final_deadline"]],
+  ["rebuttal_start", "Rebuttal start", ["rebuttal_start", "rebuttal_start_deadline"]],
+  ["rebuttal_end", "Rebuttal end", ["rebuttal_end", "rebuttal_deadline", "rebuttal_end_deadline"]],
+  ["registration", "Registration", ["registration_deadline", "registration"]],
+];
 
 export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
   const out: Deadline[] = [];
@@ -47,41 +62,22 @@ export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
     });
   }
   if (out.length === 0) {
-    for (const key of ["deadline", "paper_deadline", "submission_deadline", "submission"]) {
-      const val = raw[key];
-      if (typeof val === "string" && val.trim()) {
-        const at = parseInstant(val, parentTz);
-        if (at !== null) {
-          const kind = "paper";
-          const label = "Paper submission";
-          out.push({
-            kind,
-            label,
-            at_utc: at,
-            tz_raw: parentTz,
-            round: roundOf(label, 1),
-            comment: null,
-          });
-          break;
-        }
-      }
-    }
-    for (const key of ["abstract_deadline", "abstract"]) {
-      const val = raw[key];
-      if (typeof val === "string" && val.trim()) {
-        const at = parseInstant(val, parentTz);
-        if (at !== null) {
-          const kind = "abstract";
-          const label = "Abstract submission";
-          out.push({
-            kind,
-            label,
-            at_utc: at,
-            tz_raw: parentTz,
-            round: roundOf(label, 1),
-            comment: null,
-          });
-          break;
+    for (const [kind, label, keys] of LEGACY_KIND_KEYS) {
+      for (const key of keys) {
+        const val = raw[key];
+        if (typeof val === "string" && val.trim()) {
+          const at = parseInstant(val, parentTz);
+          if (at !== null) {
+            out.push({
+              kind,
+              label,
+              at_utc: at,
+              tz_raw: parentTz,
+              round: roundOf(label, 1),
+              comment: null,
+            });
+            break;
+          }
         }
       }
     }
@@ -112,7 +108,7 @@ export function editionOf(raw: Record<string, unknown>, key: string): Edition | 
     event_start: start,
     event_end: end,
     deadlines: deadlinesOf(raw),
-    estimated: false,
+    estimated: Boolean(raw.estimated),
     source: NAME,
   };
 }
