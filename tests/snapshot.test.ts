@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
 import { type BuildArgs, cmdBuild, hooks, main, parseArgs, parseNow, setRoot } from "../src/cli.ts";
-import { fmtUTC } from "../src/model.ts";
+import { type Conference, fmtUTC } from "../src/model.ts";
 import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
 
 function allUpstreamsDown(): void {
@@ -551,6 +551,48 @@ describe("snapshot fallback", () => {
     const code = await cmdBuild(args(outdir, cache));
     expect(code).toBe(0);
     expect(JSON.parse(readFileSync(target, "utf8"))).toEqual(kept);
+  });
+
+  it("a healthy online build writes the snapshot without generated_at (SPEC §3.5)", async () => {
+    // SPEC §3.5: snapshot は data.json のコピーだが「generated_at を含まない」。
+    // 既存の snapshot テストは全て offline でこの経路を未カバーだったため、
+    // fixture キャッシュから上流取得成功（failed 空）を模した healthy build で検証する。
+    const root = isolatedRepo();
+    setRoot(root);
+    const cache = makeFixtureCache(mkdtempSync("/tmp/cfp-snap-online-"));
+    // 上流を実 fetch せず fixture キャッシュ（offline 収集）で healthy な groups を作り、
+    // 呼び出し側は offline: false（= 健全な online build の書き込み条件）にする。
+    // collect の型: (cacheDir, options) => Promise<{groups, failed}>。
+    // prev を明示的に hooks.collect と同じ型にして、finally の復元で型が広がらないようにする。
+    const prev: typeof hooks.collect = hooks.collect;
+    hooks.collect = async (dir: string, _options: { offline?: boolean }) => {
+      const { CcfddlSource } = await import("../src/sources/ccfddl.ts");
+      const { AideadlinesSource } = await import("../src/sources/aideadlines.ts");
+      const { LocalSource } = await import("../src/sources/local.ts");
+      const groups: Conference[][] = [
+        (await new CcfddlSource().load(dir, { offline: true })) as Conference[],
+        (await new AideadlinesSource().load(dir, { offline: true })) as Conference[],
+        (await new LocalSource().load()) as Conference[],
+      ];
+      return { groups, failed: new Set<string>() };
+    };
+    try {
+      const outdir = join(mkdtempSync("/tmp/cfp-snap-out-online-"), "out");
+      const code = await cmdBuild({ ...args(outdir, cache), offline: false });
+      expect(code).toBe(0);
+      const snapshot = JSON.parse(
+        readFileSync(join(root, "data", "snapshot.json"), "utf8"),
+      ) as Record<string, unknown>;
+      expect("generated_at" in snapshot).toBe(false);
+      // data.json（§4.2）側は従来どおり generated_at を持つ。
+      const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as Record<
+        string,
+        unknown
+      >;
+      expect("generated_at" in data).toBe(true);
+    } finally {
+      hooks.collect = prev;
+    }
   });
 
   it("the real repository's snapshot is untouched by the test suite", () => {
