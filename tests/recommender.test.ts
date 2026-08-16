@@ -224,6 +224,31 @@ describe("sig weights (R11: サブシグナル実測スイープ対応)", () => 
     );
     expect(back.agg.jp).toBe(30);
   });
+
+  it("setSigWeights nameOnce: boolean フラグを適用し先頭 1 語の固定加点になる (#265)", () => {
+    R.setNameIdf(null);
+    const row = {
+      conf: {
+        key: "t-conf",
+        title: "Data Management Systems",
+        full_name: "",
+        tags: [],
+        papers: [],
+      },
+      cats: [],
+    };
+    const lines = R.parsePaperLines("efficient data management systems for analytics");
+    try {
+      // 既定（nameOnce=false）: 語数比例 15 × 2 語 = 30
+      R.setSigWeights({ nameOnce: false });
+      expect(R.breakdown(row, lines).agg.name).toBe(30);
+      // nameOnce=true: 先頭 1 語のみ固定加点 15（#265 以前は boolean が無視され 30 のまま）
+      R.setSigWeights({ nameOnce: true });
+      expect(R.breakdown(row, lines).agg.name).toBe(15);
+    } finally {
+      R.setSigWeights({ nameOnce: false });
+    }
+  });
 });
 
 describe("representative-paper vocabulary (R12: 実論文で会議を拾う)", () => {
