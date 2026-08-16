@@ -18,7 +18,7 @@ import {
   sanitizeEditions,
   select,
 } from "../src/merge.ts";
-import type { Conference, Deadline, Edition } from "../src/model.ts";
+import { type Conference, conferencesFromJson, type Deadline, type Edition } from "../src/model.ts";
 import { DEFAULT_PATH, parseFile } from "../src/sources/local.ts";
 import { makeConference, makeDeadline, makeEdition, REPO_ROOT } from "./helpers.ts";
 
@@ -1195,5 +1195,85 @@ describe("apply_aliases", () => {
     ];
     const aliased = applyAliases(groups, { sigkdd: "kdd" });
     expect(aliased[1][0].key).toBe("kdd");
+  });
+
+  it("handles null and undefined groups gracefully", () => {
+    expect(applyAliases(null, {})).toEqual([]);
+    expect(applyAliases(undefined, {})).toEqual([]);
+    expect(applyAliases([[makeConference({ key: "kdd", title: "KDD" })]], null)).toHaveLength(1);
+  });
+});
+
+describe("conferencesFromJson & defensive merge operations", () => {
+  it("conferencesFromJson handles null, undefined, and non-object inputs", () => {
+    expect(conferencesFromJson(null)).toEqual([]);
+    expect(conferencesFromJson(undefined)).toEqual([]);
+    expect(conferencesFromJson({} as any)).toEqual([]);
+    expect(conferencesFromJson({ conferences: null } as any)).toEqual([]);
+    expect(conferencesFromJson({ conferences: [null, undefined, "invalid", 123] } as any)).toEqual(
+      [],
+    );
+  });
+
+  it("conferencesFromJson parses valid and recovers from corrupted child elements", () => {
+    const payload = {
+      conferences: [
+        {
+          key: "test-conf",
+          title: "Test Conf",
+          full_name: "Test Conference",
+          link: "https://example.com",
+          rank: { ccf: "A" },
+          tags: ["hpc"],
+          categories: ["hpc"],
+          sources: ["local"],
+          editions: [
+            null,
+            {
+              year: 2026,
+              id: "test26",
+              link: "https://example.com/26",
+              place: "Tokyo",
+              date_text: "2026-10-01",
+              event_start: "2026-10-01",
+              event_end: "2026-10-03",
+              estimated: false,
+              source: "local",
+              deadlines: [
+                null,
+                {
+                  kind: "paper",
+                  label: "Submission",
+                  utc: "2026-08-01 23:59:59",
+                  tz_raw: "UTC",
+                  round: 1,
+                  comment: "Regular",
+                },
+                {
+                  kind: "camera_ready",
+                  label: "Camera Ready",
+                  utc: "invalid-utc",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const confs = conferencesFromJson(payload as any);
+    expect(confs).toHaveLength(1);
+    expect(confs[0].key).toBe("test-conf");
+    expect(confs[0].editions).toHaveLength(1);
+    expect(confs[0].editions[0].deadlines).toHaveLength(1);
+    expect(confs[0].editions[0].deadlines[0].kind).toBe("paper");
+  });
+
+  it("merge functions handle null, undefined, and non-array arguments safely", () => {
+    expect(mergeSources(null, {})).toEqual([]);
+    expect(mergeSources(undefined, null as any)).toEqual([]);
+    expect(select(null, {})).toEqual([]);
+    expect(select(undefined, null as any)).toEqual([]);
+    expect(rollforward(null, TODAY, {})).toEqual([]);
+    expect(rollforward(undefined, TODAY, null as any)).toEqual([]);
   });
 });

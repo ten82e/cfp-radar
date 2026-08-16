@@ -32,16 +32,19 @@ interface Windows {
 
 /** Rewrite conference keys before name matching (SPEC.md 3.1). */
 export function applyAliases(
-  groups: Conference[][],
+  groups: Conference[][] | null | undefined,
   aliases: Record<string, unknown> | null | undefined,
 ): Conference[][] {
+  if (!groups || !Array.isArray(groups)) return [];
   if (!aliases) return groups;
   const table = new Map(Object.entries(aliases).map(([k, v]) => [k, String(v)]));
   return groups.map((group) =>
-    group.map((conf) => {
-      const key = table.get(conf.key);
-      return key === undefined ? conf : { ...conf, key };
-    }),
+    Array.isArray(group)
+      ? group.map((conf) => {
+          const key = table.get(conf.key);
+          return key === undefined ? conf : { ...conf, key };
+        })
+      : [],
   );
 }
 
@@ -56,17 +59,20 @@ function freshStats(): MergeStats {
 
 /** Merge per-source conference lists into one list keyed by `Conference.key`. */
 export function mergeSources(
-  groups: Conference[][],
-  config: Record<string, unknown>,
+  groups: Conference[][] | null | undefined,
+  config: Record<string, unknown> | null | undefined,
   stats: MergeStats | null = null,
 ): Conference[] {
-  const priority = (config.source_priority as string[]) ?? DEFAULT_SOURCE_PRIORITY;
-  const windows = windowsOf(config);
+  const safeConfig = config ?? {};
+  const priority = (safeConfig.source_priority as string[]) ?? DEFAULT_SOURCE_PRIORITY;
+  const windows = windowsOf(safeConfig);
   const tally = freshStats();
 
   const ordered: Array<{ prio: number; seq: number; conf: Conference }> = [];
-  for (const group of groups) {
+  for (const group of groups ?? []) {
+    if (!Array.isArray(group)) continue;
     for (const conf of group) {
+      if (!conf || typeof conf !== "object") continue;
       ordered.push({ prio: priorityOf(conf, priority), seq: ordered.length, conf });
     }
   }
@@ -539,11 +545,13 @@ function pyRound(x: number): number {
 }
 
 export function rollforward(
-  confs: Conference[],
+  confs: Conference[] | null | undefined,
   today: Date,
-  config: Record<string, unknown>,
+  config: Record<string, unknown> | null | undefined,
 ): Conference[] {
-  const cfg = (config.rollforward as Record<string, unknown>) ?? {};
+  if (!confs || !Array.isArray(confs)) return [];
+  const safeConfig = config ?? {};
+  const cfg = (safeConfig.rollforward as Record<string, unknown>) ?? {};
   const enabled = cfg.enabled === undefined ? true : Boolean(cfg.enabled);
   if (!enabled) return [...confs];
   const kinds = new Set((cfg.kinds as string[] | null) ?? ["abstract", "paper"]);
@@ -661,13 +669,18 @@ function intervalDays(instants: Date[], defaultInterval: number): number {
 // select
 // --------------------------------------------------------------------------
 
-export function select(confs: Conference[], config: Record<string, unknown>): Conference[] {
-  const enabled = new Set(Object.keys((config.categories as Record<string, unknown>) ?? {}));
-  const excluded = new Set((config.exclude as string[] | null) ?? []);
-  const rankFilter = (config.rank_filter as Record<string, unknown>) ?? {};
+export function select(
+  confs: Conference[] | null | undefined,
+  config: Record<string, unknown> | null | undefined,
+): Conference[] {
+  if (!confs || !Array.isArray(confs)) return [];
+  const safeConfig = config ?? {};
+  const enabled = new Set(Object.keys((safeConfig.categories as Record<string, unknown>) ?? {}));
+  const excluded = new Set((safeConfig.exclude as string[] | null) ?? []);
+  const rankFilter = (safeConfig.rank_filter as Record<string, unknown>) ?? {};
   const alwaysKeep = new Set((rankFilter.always_keep as string[] | null) ?? []);
   // Venues named under taxonomy are intentional inclusions.
-  for (const rule of Object.values((config.taxonomy as Record<string, unknown>) ?? {})) {
+  for (const rule of Object.values((safeConfig.taxonomy as Record<string, unknown>) ?? {})) {
     if (typeof rule === "object" && rule !== null) {
       for (const v of ((rule as Record<string, unknown>).venues as string[] | null) ?? []) {
         alwaysKeep.add(v);

@@ -624,7 +624,14 @@ export function parseDateRange(
 // --------------------------------------------------------------------------
 
 const PAPER = new Set(["deadline", "paper", "submission", "full_paper"]);
-const CAMERA = new Set(["camera_ready", "revision_deadline"]);
+const CAMERA = new Set([
+  "camera_ready",
+  "camera_ready_deadline",
+  "camera",
+  "revision_deadline",
+  "final_paper",
+  "final_submission",
+]);
 const REBUTTAL_END = new Set([
   "rebuttal_end",
   "rebuttal",
@@ -643,7 +650,7 @@ export function kindOf(rawTypeOrKey: string | null | undefined): DeadlineKind {
   if (s.includes("notification")) return "notification";
   if (PAPER.has(s)) return "paper";
   if (s === "supplementary") return "supplementary";
-  if (CAMERA.has(s)) return "camera_ready";
+  if (CAMERA.has(s) || s.includes("camera_ready")) return "camera_ready";
   if (s === "rebuttal_start") return "rebuttal_start";
   if (REBUTTAL_END.has(s)) return "rebuttal_end";
   if (s === "review_release") return "review_release";
@@ -686,15 +693,21 @@ export function roundOf(label: string | null | undefined, defaultRound = 1): num
 // --------------------------------------------------------------------------
 
 /** Rebuild conferences from a `data.json`-shaped payload. */
-export function conferencesFromJson(payload: Record<string, unknown>): Conference[] {
+export function conferencesFromJson(
+  payload: Record<string, unknown> | null | undefined,
+): Conference[] {
+  if (!payload || typeof payload !== "object") return [];
   const out: Conference[] = [];
   for (const raw of (payload.conferences as unknown[] | undefined) ?? []) {
+    if (!raw || typeof raw !== "object") continue;
     const conf = raw as Record<string, unknown>;
     const editions: Edition[] = [];
     for (const edRaw of (conf.editions as unknown[] | undefined) ?? []) {
+      if (!edRaw || typeof edRaw !== "object") continue;
       const ed = edRaw as Record<string, unknown>;
       const deadlines: Deadline[] = [];
       for (const dlRaw of (ed.deadlines as unknown[] | undefined) ?? []) {
+        if (!dlRaw || typeof dlRaw !== "object") continue;
         const dl = dlRaw as Record<string, unknown>;
         const at = parseInstant(dl.utc, "UTC");
         if (at === null) continue;
