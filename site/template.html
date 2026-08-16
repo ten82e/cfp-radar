@@ -722,7 +722,10 @@ footer a:hover { text-decoration: underline; }
     if (window.Recommender && window.Recommender.getGCalUrl) {
       return window.Recommender.getGCalUrl(r, KIND_LABEL);
     }
-    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key) + "] " + (KIND_LABEL[r.kind] || r.kind));
+    var dl = r.dl || {};
+    var round = r.round || dl.round;
+    var label = (KIND_LABEL[r.kind] || r.kind) + (round && round > 1 ? " (R" + round + ")" : "");
+    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key) + "] " + label);
     var pad = function(n) { return (n < 10 ? "0" : "") + n; };
     var dates = "";
     if (r.kind === "event") {
@@ -739,8 +742,15 @@ footer a:hover { text-decoration: underline; }
       var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
       dates = isoStart + "/" + isoEnd;
     }
-    var details = encodeURIComponent((r.conf.full_name || "") + "\nCFP Link: " + (r.ed.link || r.conf.link || ""));
-    var location = encodeURIComponent(r.ed.place || "");
+    var descParts = [];
+    if (r.conf.full_name || r.conf.title) descParts.push(r.conf.full_name || r.conf.title);
+    var comment = r.comment || dl.comment;
+    if (comment) descParts.push("備考: " + comment);
+    if (round && round > 1) descParts.push("ラウンド: Round " + round);
+    var cfpLink = r.ed && r.ed.link ? r.ed.link : (r.conf.link || "");
+    if (cfpLink) descParts.push("CFP Link: " + cfpLink);
+    var details = encodeURIComponent(descParts.join("\n"));
+    var location = encodeURIComponent(r.ed && r.ed.place ? r.ed.place : "");
     return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
   }
 
