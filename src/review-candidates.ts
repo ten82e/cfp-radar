@@ -16,14 +16,16 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // 名乗りベースの危険フラグ。確定 predatory ではない (IEEE の一部も Ei 名乗り)。
 const PREDATORY_HINTS = ["ei compendex", "scopus", "ieee xplore", "indexed by"];
 
-export function isPredatory(text: string): boolean {
-  const t = text.toLowerCase();
+export function isPredatory(text: string | null | undefined): boolean {
+  if (!text) return false;
+  const t = String(text).toLowerCase();
   return PREDATORY_HINTS.some((h) => t.includes(h));
 }
 
-export function normTitle(title: string): string {
+export function normTitle(title: string | null | undefined): string {
   /** 年・記号を落とした正規化タイトル (重複グループ検出用)。 */
-  let t = title.toLowerCase();
+  if (!title) return "";
+  let t = String(title).toLowerCase();
   t = t.replace(/'\d\d\b/g, ""); // '26 形式の短縮年
   t = t.replace(/\b20\d\d\b/g, ""); // 2026 形式の年
   t = t.replace(/[^a-z0-9]+/g, " ");
@@ -87,18 +89,19 @@ interface Enriched {
  * レビュー締切判定に使うテキスト。EasyChair 候補は edition date_text が開催日
  * のため、候補レベルの submission_deadline_text (提出締切) を優先する。
  */
-export function reviewDeadlineText(c: Record<string, any>): string {
+export function reviewDeadlineText(c: Record<string, any> | null | undefined): string {
+  if (!c || typeof c !== "object") return "";
   if (c.submission_deadline_text) return String(c.submission_deadline_text);
   const ed = (Array.isArray(c.editions) && c.editions.length > 0 ? c.editions[0] : {}) as Record<
     string,
     any
   >;
-  if (ed.date_text) return String(ed.date_text);
+  if (ed && typeof ed === "object" && ed.date_text) return String(ed.date_text);
   if (c.date_text) return String(c.date_text);
   const dls = (
     Array.isArray(c.deadlines) && c.deadlines.length > 0
       ? c.deadlines
-      : Array.isArray(ed.deadlines) && ed.deadlines.length > 0
+      : ed && Array.isArray(ed.deadlines) && ed.deadlines.length > 0
         ? ed.deadlines
         : []
   ) as Array<Record<string, any>>;
@@ -118,9 +121,9 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
   const cands = (data.conferences as unknown[] | null) ?? [];
 
   const tracked = loadTrackedTitles();
-  const enriched: Enriched[] = cands.map((raw) => {
-    const c = raw as Record<string, any>;
-    return {
+  const enriched: Enriched[] = cands
+    .filter((raw): raw is Record<string, any> => raw !== null && typeof raw === "object")
+    .map((c) => ({
       c,
       dl: parseDeadlineText(reviewDeadlineText(c)),
       pred: isPredatory(`${c.title ?? ""} ${c.full_name ?? ""}`),
@@ -128,8 +131,7 @@ export function runReviewCandidates(candidatesPath: string, limit: number, today
         tracked.has(normTitle(String(c.title ?? ""))) ||
         tracked.has(normTitle(String(c.full_name ?? ""))) ||
         tracked.has(normTitle(String(c.key ?? ""))),
-    };
-  });
+    }));
 
   const future = enriched
     .filter((e) => e.dl && e.dl.getTime() >= today.getTime() && !e.tracked)
@@ -194,16 +196,16 @@ export function parseArgs(argv: string[]): ReviewArgs {
       help = true;
     } else if (a.startsWith("--candidates=")) {
       candidates = a.slice("--candidates=".length);
-    } else if (a === "--candidates" && argv[i + 1]) {
+    } else if ((a === "--candidates" || a === "-c") && argv[i + 1]) {
       candidates = argv[++i];
     } else if (a.startsWith("--limit=")) {
       limit = Number(a.slice("--limit=".length)) || 60;
-    } else if (a === "--limit" && argv[i + 1]) {
+    } else if ((a === "--limit" || a === "-l") && argv[i + 1]) {
       limit = Number(argv[++i]) || 60;
     } else if (a.startsWith("--now=")) {
       const parsed = new Date(a.slice("--now=".length));
       if (!Number.isNaN(parsed.getTime())) now = parsed;
-    } else if (a === "--now" && argv[i + 1]) {
+    } else if ((a === "--now" || a === "-n") && argv[i + 1]) {
       const parsed = new Date(argv[++i]);
       if (!Number.isNaN(parsed.getTime())) now = parsed;
     }
