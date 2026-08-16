@@ -862,7 +862,9 @@ footer a:hover { text-decoration: underline; }
 
   // Copy Markdown Reference
   window.copyMarkdownRef = (r) => {
-    var text = "[" + (r.conf.title || r.conf.key) + " '" + String(r.ed.year || "").slice(-2) + "] " + (r.ed.date_text || r.ed.event_start || "") + " " + (r.ed.link || r.conf.link || "");
+    var text = (window.Recommender && window.Recommender.formatMarkdownRef)
+      ? window.Recommender.formatMarkdownRef(r)
+      : "[" + (r.conf.title || r.conf.key) + (r.ed && r.ed.year ? " '" + String(r.ed.year).slice(-2) : "") + "]" + ((r.ed && (r.ed.date_text || r.ed.event_start)) ? " " + (r.ed.date_text || r.ed.event_start) : "") + ((r.ed && r.ed.link) || r.conf.link ? " " + (r.ed.link || r.conf.link) : "");
     copyToClipboard(text);
   };
 

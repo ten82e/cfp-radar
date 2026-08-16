@@ -1425,4 +1425,42 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(b.perLine).toEqual([]);
     expect(b.agg).toEqual({ domain: 0, name: 0, jp: 0, tags: 0, venue: 0 });
   });
+
+  describe("formatMarkdownRef", () => {
+    it("formats standard conference references with 'YY", () => {
+      const ref = R.formatMarkdownRef({
+        conf: { title: "SIGCOMM", link: "https://sigcomm2026.org" },
+        ed: { year: 2026, date_text: "August 17-21, 2026", link: "https://sigcomm2026.org" },
+      });
+      expect(ref).toBe("[SIGCOMM '26] August 17-21, 2026 https://sigcomm2026.org");
+    });
+
+    it("avoids duplicate year when title ends with 4-digit or short year", () => {
+      const ref1 = R.formatMarkdownRef({
+        conf: { title: "CANOPIE-HPC 2026", link: "https://canopie.org" },
+        ed: { year: 2026, date_text: "November 16, 2026" },
+      });
+      expect(ref1).toBe("[CANOPIE-HPC 2026] November 16, 2026 https://canopie.org");
+
+      const ref2 = R.formatMarkdownRef({
+        conf: { title: "SC '26", link: "https://sc26.org" },
+        ed: { year: 2026, date_text: "November 15-20, 2026" },
+      });
+      expect(ref2).toBe("[SC '26] November 15-20, 2026 https://sc26.org");
+    });
+
+    it("handles missing year without trailing apostrophe", () => {
+      const ref = R.formatMarkdownRef({
+        conf: { title: "IPSJ-Special", link: "https://ipsj.or.jp" },
+        ed: { date_text: "2026-10-01" },
+      });
+      expect(ref).toBe("[IPSJ-Special] 2026-10-01 https://ipsj.or.jp");
+    });
+
+    it("handles null and empty input defensively", () => {
+      expect(R.formatMarkdownRef(null)).toBe("");
+      expect(R.formatMarkdownRef({})).toBe("");
+      expect(R.formatMarkdownRef({ conf: {} })).toBe("[]");
+    });
+  });
 });
