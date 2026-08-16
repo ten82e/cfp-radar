@@ -152,7 +152,7 @@ export function parseFile(path: string | null | undefined): Conference[] {
       .sort((a, b) => a.year - b.year);
     const rank: Record<string, string> = {};
     for (const [k, v] of Object.entries((raw.rank as Record<string, unknown> | null) ?? {})) {
-      if (v !== null && v !== undefined && String(v).trim() !== "") {
+      if (v !== null && v !== undefined && String(v).trim() !== "" && String(v).trim() !== "null") {
         rank[String(k).toLowerCase().trim()] = String(v).trim();
       }
     }

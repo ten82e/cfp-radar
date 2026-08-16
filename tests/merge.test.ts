@@ -1317,4 +1317,29 @@ describe("conferencesFromJson & defensive merge operations", () => {
     expect(rankOk(conf, { ccf: ["A"] }, true)).toBe(true);
     expect(rankOk(conf, { ccf: ["B"] }, false)).toBe(false);
   });
+
+  it("conferencesFromJson sanitizes rank removing null, empty, and 'null' values (#310)", () => {
+    const payload = {
+      conferences: [
+        {
+          key: "rank-test",
+          title: "Rank Test",
+          rank: { ccf: " A ", core: null, other: "", invalid: "null" },
+        },
+      ],
+    };
+    const confs = conferencesFromJson(payload as any);
+    expect(confs).toHaveLength(1);
+    expect(confs[0].rank).toEqual({ ccf: "A" });
+
+    // applyOverrides removes rank when set to null / "" / "null"
+    const patched = applyOverrides(confs, {
+      conferences: {
+        "rank-test": {
+          rank: { ccf: "null", core: "A*" },
+        },
+      },
+    });
+    expect(patched[0].rank).toEqual({ core: "A*" });
+  });
 });

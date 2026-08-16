@@ -422,7 +422,12 @@ export function applyOverrides(
       const updatedRank = { ...next.rank };
       for (const [k, v] of Object.entries((patch.rank as Record<string, unknown>) ?? {})) {
         const normK = String(k).toLowerCase().trim();
-        if (v === null || v === undefined || String(v).trim() === "") {
+        if (
+          v === null ||
+          v === undefined ||
+          String(v).trim() === "" ||
+          String(v).trim() === "null"
+        ) {
           delete updatedRank[normK];
         } else {
           updatedRank[normK] = String(v).trim();
