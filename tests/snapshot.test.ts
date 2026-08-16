@@ -186,6 +186,24 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(() => parseArgs(["--bad=value"])).toThrow("unknown option: --bad=value");
   });
 
+  // #312: 非数値・不正値の --min-year / --limit は既定値へフォールバック（NaN を下流へ伝播させない）
+  it("falls back to defaults when --min-year / --limit are non-numeric", () => {
+    expect(parseArgs(["discover", "-y", "abc"]).minYear).toBe(2026);
+    expect(parseArgs(["review", "-l", "foo"]).limit).toBe(60);
+  });
+
+  it("rejects zero / non-integer min-year and limit (#312)", () => {
+    // ゼロ・小数は正整数条件で弾かれ既定値へ（負は space 形式で unknown option に先行するため対象外）
+    expect(parseArgs(["discover", "-y", "0"]).minYear).toBe(2026);
+    expect(parseArgs(["discover", "-y", "3.5"]).minYear).toBe(2026);
+    expect(parseArgs(["review", "-l", "1.5"]).limit).toBe(60);
+  });
+
+  it("accepts valid positive integers for --min-year / --limit (#312)", () => {
+    expect(parseArgs(["discover", "-y", "2027"]).minYear).toBe(2027);
+    expect(parseArgs(["review", "-l", "30"]).limit).toBe(30);
+  });
+
   it("main returns 0 on help", async () => {
     expect(await main(["node", "cli.ts", "--help"])).toBe(0);
     expect(await main(["node", "cli.ts", "-h"])).toBe(0);
