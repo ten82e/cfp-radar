@@ -1305,4 +1305,16 @@ describe("conferencesFromJson & defensive merge operations", () => {
     expect(rollforward(null, TODAY, {})).toEqual([]);
     expect(rollforward(undefined, TODAY, null as any)).toEqual([]);
   });
+
+  it("rankOk handles null, undefined, and missing fields safely (#308)", () => {
+    expect(rankOk(null, { ccf: ["A"] }, true)).toBe(false);
+    expect(rankOk(undefined, { ccf: ["A"] }, false)).toBe(false);
+
+    const conf = makeConference({ key: "test", title: "Test", rank: { ccf: "A" } });
+    expect(rankOk(conf, null, true)).toBe(true);
+    expect(rankOk(conf, undefined, true)).toBe(true);
+    expect(rankOk(conf, {}, true)).toBe(true);
+    expect(rankOk(conf, { ccf: ["A"] }, true)).toBe(true);
+    expect(rankOk(conf, { ccf: ["B"] }, false)).toBe(false);
+  });
 });

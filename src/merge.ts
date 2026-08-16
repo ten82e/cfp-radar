@@ -718,17 +718,20 @@ export function select(
   return out;
 }
 
-function hasDates(conf: Conference): boolean {
+function hasDates(conf: Conference | null | undefined): boolean {
+  if (!conf || !Array.isArray(conf.editions)) return false;
   return conf.editions.some(
-    (ed) => ed.deadlines.length > 0 || ed.event_start !== null || ed.event_end !== null,
+    (ed) => ed && (ed.deadlines?.length > 0 || ed.event_start !== null || ed.event_end !== null),
   );
 }
 
 export function rankOk(
-  conf: Conference,
-  schemes: Record<string, unknown>,
+  conf: Conference | null | undefined,
+  schemes: Record<string, unknown> | null | undefined,
   keepIfNoRank: boolean,
 ): boolean {
+  if (!conf || typeof conf !== "object") return false;
+  if (!schemes || typeof schemes !== "object") return true;
   const schemeEntries = Object.entries(schemes).map(
     ([name, allowed]) =>
       [
