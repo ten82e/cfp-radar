@@ -654,6 +654,11 @@ describe("review helpers", () => {
     expect(res.limit).toBe(25);
     expect(res.now.toISOString()).toBe("2026-09-01T00:00:00.000Z");
     expect(res.help).toBe(false);
+
+    const resEq = parseReviewArgs(["-C=/tmp/custom2.yaml", "-l=30", "-n=2026-09-15T00:00:00Z"]);
+    expect(resEq.candidates).toBe("/tmp/custom2.yaml");
+    expect(resEq.limit).toBe(30);
+    expect(resEq.now.toISOString()).toBe("2026-09-15T00:00:00.000Z");
   });
 
   it("normTitle, isPredatory, and reviewDeadlineText handle null/undefined defensively", () => {

@@ -383,7 +383,7 @@ export function parseArgs(argv: string[]): CliArgs {
     let a = raw;
     let eqVal: string | undefined;
     const eqIdx = raw.indexOf("=");
-    if (raw.startsWith("--") && eqIdx > 0) {
+    if (raw.startsWith("-") && eqIdx > 0) {
       a = raw.slice(0, eqIdx);
       eqVal = raw.slice(eqIdx + 1);
     }
@@ -484,7 +484,9 @@ export async function main(argv: string[]): Promise<number> {
   return 2;
 }
 
-const isMain = process.argv[1]?.endsWith("cli.ts");
+const isMain = Boolean(
+  process.argv[1] && (process.argv[1].endsWith("cli.ts") || process.argv[1].endsWith("cli.js")),
+);
 if (isMain) {
   main(process.argv).then(
     (code) => {

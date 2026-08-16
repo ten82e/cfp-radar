@@ -214,16 +214,16 @@ export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
     const a = argv![i];
     if (a === "--help" || a === "-h" || a === "help") {
       help = true;
-    } else if (a.startsWith("--candidates=")) {
-      candidates = a.slice("--candidates=".length);
-    } else if ((a === "--candidates" || a === "-c") && argv![i + 1]) {
+    } else if (a.startsWith("--candidates=") || a.startsWith("-c=") || a.startsWith("-C=")) {
+      candidates = a.slice(a.indexOf("=") + 1);
+    } else if ((a === "--candidates" || a === "-c" || a === "-C") && argv![i + 1]) {
       candidates = argv![++i];
-    } else if (a.startsWith("--limit=")) {
-      limit = Number(a.slice("--limit=".length)) || 60;
+    } else if (a.startsWith("--limit=") || a.startsWith("-l=")) {
+      limit = Number(a.slice(a.indexOf("=") + 1)) || 60;
     } else if ((a === "--limit" || a === "-l") && argv![i + 1]) {
       limit = Number(argv![++i]) || 60;
-    } else if (a.startsWith("--now=")) {
-      now = parseNow(a.slice("--now=".length));
+    } else if (a.startsWith("--now=") || a.startsWith("-n=")) {
+      now = parseNow(a.slice(a.indexOf("=") + 1));
     } else if ((a === "--now" || a === "-n") && argv![i + 1]) {
       now = parseNow(argv![++i]);
     }
@@ -231,7 +231,11 @@ export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
   return { candidates, limit, now, help };
 }
 
-const isMain = process.argv[1]?.endsWith("review-candidates.ts");
+const isMain = Boolean(
+  process.argv[1] &&
+    (process.argv[1].endsWith("review-candidates.ts") ||
+      process.argv[1].endsWith("review-candidates.js")),
+);
 if (isMain) {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {

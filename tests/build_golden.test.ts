@@ -20,7 +20,7 @@ import {
   toLlmsTxt,
   toUpcomingMd,
 } from "../src/build.ts";
-import { usage } from "../src/cli.ts";
+import { parseArgs as parseCliArgs, usage } from "../src/cli.ts";
 import { venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
@@ -1535,4 +1535,30 @@ it("toUpcomingMd escapes pipe characters in URLs and preserves 7 table columns (
     const unescapedPipes = row.split(/(?<!\\)\|/g).length - 1;
     expect(unescapedPipes).toBe(8); // 8 pipes = 7 columns
   }
+});
+
+it("parseCliArgs parses short flags with equals syntax (-o=dist, -c=config.yaml, etc.) (#286)", () => {
+  const res1 = parseCliArgs([
+    "build",
+    "-o=dist",
+    "-c=custom.yaml",
+    "-n=2026-08-09T00:00:00Z",
+    "--offline=true",
+  ]);
+  expect(res1.command).toBe("build");
+  expect(res1.out).toBe("dist");
+  expect(res1.config).toBe("custom.yaml");
+  expect(res1.now).toBe("2026-08-09T00:00:00Z");
+  expect(res1.offline).toBe(true);
+
+  const res2 = parseCliArgs(["review", "-l=25", "-C=custom_cand.yaml"]);
+  expect(res2.command).toBe("review");
+  expect(res2.limit).toBe(25);
+  expect(res2.candidates).toBe("custom_cand.yaml");
+
+  const res3 = parseCliArgs(["discover", "-y=2027", "-d=true", "-a=true"]);
+  expect(res3.command).toBe("discover");
+  expect(res3.minYear).toBe(2027);
+  expect(res3.dryRun).toBe(true);
+  expect(res3.append).toBe(true);
 });
