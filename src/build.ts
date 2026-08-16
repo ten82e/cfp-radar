@@ -585,6 +585,14 @@ export function toCsv(records: CalendarRecord[] | null | undefined): string {
   return `${lines.join("\n")}\n`;
 }
 
+export function escapeMdCell(s: string | null | undefined): string {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/\|/g, "\\|")
+    .replace(/[\r\n]+/g, " ")
+    .trim();
+}
+
 export function toUpcomingMd(
   records: CalendarRecord[] | null | undefined,
   now: Date,
@@ -598,9 +606,9 @@ export function toUpcomingMd(
     const { conf, edition: ed } = rec;
     if (!conf || !ed) continue;
     const link = ed.link || conf.link;
-    const name = link
-      ? `[${titleWithYear(conf.title, ed.year)}](${link})`
-      : titleWithYear(conf.title, ed.year);
+    const titleEscaped = escapeMdCell(titleWithYear(conf.title, ed.year));
+    const name = link ? `[${titleEscaped}](${link})` : titleEscaped;
+    const placeEscaped = escapeMdCell(ed.place);
     if (rec.type === "deadline") {
       const dl = rec.deadline;
       if (dl === null) continue;
@@ -620,10 +628,10 @@ export function toUpcomingMd(
         }
       }
       const when = aoeText(dl.at_utc);
-      const kindText = rec.kind_label;
+      const kindText = escapeMdCell(rec.kind_label);
       const roundText = `R${dl.round}`;
       rows.push(
-        `| ${when} | ${left} | ${name} | ${kindText} | ${roundText} | ${ed.estimated ? "推定" : ""} | ${ed.place ?? ""} |`,
+        `| ${when} | ${left} | ${name} | ${kindText} | ${roundText} | ${ed.estimated ? "推定" : ""} | ${placeEscaped} |`,
       );
     } else {
       const start = ed.event_start;
@@ -648,7 +656,7 @@ export function toUpcomingMd(
       const when =
         end.getTime() !== start.getTime() ? `${fmtDate(start)} 〜 ${fmtDate(end)}` : fmtDate(start);
       rows.push(
-        `| ${when} | ${left} | ${name} | 開催 | - | ${ed.estimated ? "推定" : ""} | ${ed.place ?? ""} |`,
+        `| ${when} | ${left} | ${name} | 開催 | - | ${ed.estimated ? "推定" : ""} | ${placeEscaped} |`,
       );
     }
   }

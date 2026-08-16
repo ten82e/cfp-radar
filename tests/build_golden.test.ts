@@ -13,6 +13,7 @@ import {
   buildAll,
   DEFAULT_CATEGORIES,
   embeddingsStale,
+  escapeMdCell,
   recordsOf,
   toLlmsTxt,
   toUpcomingMd,
@@ -1349,4 +1350,101 @@ it("site template copyMarkdownRef delegates to Recommender.formatMarkdownRef (#2
   expect(template).toContain("window.Recommender.formatMarkdownRef");
   const recommenderJs = readFileSync(join(REPO_ROOT, "site", "recommender.js"), "utf8");
   expect(recommenderJs).toContain("formatMarkdownRef: formatMarkdownRef");
+});
+
+it("escapeMdCell escapes pipe characters and collapses newlines (#236)", () => {
+  expect(escapeMdCell("Tokyo | Online")).toBe("Tokyo \\| Online");
+  expect(escapeMdCell("Line 1\nLine 2\r\nLine 3")).toBe("Line 1 Line 2 Line 3");
+  expect(escapeMdCell(null)).toBe("");
+  expect(escapeMdCell(undefined)).toBe("");
+});
+
+it("toUpcomingMd escapes pipe characters in title and place preserving 7-column table layout (#236)", () => {
+  const records = [
+    {
+      type: "deadline" as const,
+      categories: ["ai"],
+      kind_label: "論文締切",
+      estimated: false,
+      conf: makeConference({
+        key: "pipe-conf",
+        title: "Test | Workshop",
+        categories: ["ai"],
+        sources: ["local"],
+        link: "https://example.com",
+      }),
+      edition: makeEdition({
+        year: 2026,
+        edition_id: "pipe26",
+        estimated: false,
+        place: "Tokyo | Online (Hybrid)",
+        link: "https://example.com",
+      }),
+      deadline: {
+        kind: "paper" as const,
+        label: "Paper",
+        at_utc: new Date("2026-08-20T12:00:00Z"),
+        tz_raw: "UTC",
+        round: 1,
+        comment: null,
+      },
+      entry: {
+        uid: "pipe-uid",
+        summary: "Test | Workshop 2026 論文締切",
+        description: "",
+        url: "https://example.com",
+        categories: ["ai"],
+        all_day: false,
+        start: new Date("2026-08-20T11:30:00Z"),
+        end: new Date("2026-08-20T12:00:00Z"),
+        alarms: [],
+      },
+    },
+    {
+      type: "event" as const,
+      categories: ["ai"],
+      kind_label: "開催",
+      estimated: false,
+      conf: makeConference({
+        key: "pipe-event",
+        title: "Symposium | Special Track",
+        categories: ["ai"],
+        sources: ["local"],
+        link: "https://example.com",
+      }),
+      edition: makeEdition({
+        year: 2026,
+        edition_id: "pipeev26",
+        estimated: false,
+        event_start: new Date("2026-08-25T00:00:00Z"),
+        event_end: new Date("2026-08-27T00:00:00Z"),
+        place: "Kyoto | In-person",
+        link: "https://example.com",
+      }),
+      deadline: null,
+      entry: {
+        uid: "pipe-ev-uid",
+        summary: "Symposium | Special Track 2026",
+        description: "",
+        url: "https://example.com",
+        categories: ["ai"],
+        all_day: true,
+        start: new Date("2026-08-25T00:00:00Z"),
+        end: new Date("2026-08-27T00:00:00Z"),
+        alarms: [],
+      },
+    },
+  ];
+  const md = toUpcomingMd(records, new Date("2026-08-10T00:00:00Z"));
+  expect(md).toContain("[Test \\| Workshop 2026](https://example.com)");
+  expect(md).toContain("Tokyo \\| Online (Hybrid)");
+  expect(md).toContain("[Symposium \\| Special Track 2026](https://example.com)");
+  expect(md).toContain("Kyoto \\| In-person");
+
+  // テーブルの各行の列区切り（エスケープされていないパイプ）が正確に 8 本（7 列）であることを検証
+  const tableRows = md.split("\n").filter((l) => l.startsWith("|") && !l.includes("---"));
+  for (const row of tableRows) {
+    const unescapedPipes = row.split(/(?<!\\)\|/g).length - 1;
+    expect(unescapedPipes).toBe(8);
+  }
 });
