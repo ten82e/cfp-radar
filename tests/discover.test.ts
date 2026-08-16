@@ -536,6 +536,15 @@ describe("review helpers", () => {
     expect(res3.help).toBe(true);
   });
 
+  it("parseReviewArgs rejects impossible calendar dates in --now (2026-02-30 等)", () => {
+    expect(() => parseReviewArgs(["--now=2026-02-30T00:00:00Z"])).toThrow("unparsable --now");
+    expect(() => parseReviewArgs(["--now", "2026-04-31T00:00:00Z"])).toThrow("unparsable --now");
+    expect(() => parseReviewArgs(["-n", "2026-02-29T00:00:00Z"])).toThrow("unparsable --now");
+    // 有効値は従来どおり受理される
+    const ok = parseReviewArgs(["--now=2026-08-09T00:00:00Z"]);
+    expect(ok.now.toISOString()).toBe("2026-08-09T00:00:00.000Z");
+  });
+
   it("reviewDeadlineText falls back through submission_deadline_text, ed.date_text, c.date_text, and deadlines", () => {
     // 1. submission_deadline_text priority
     expect(
