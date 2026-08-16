@@ -98,6 +98,34 @@ describe("parseArgs (CLI flag parsing)", () => {
     expect(res.minYear).toBe(2027);
   });
 
+  it("parses short options (-o, -c, -n)", () => {
+    const res = parseArgs([
+      "build",
+      "-o",
+      "out_dir",
+      "-c",
+      "custom.yaml",
+      "-n",
+      "2026-08-09T00:00:00Z",
+    ]);
+    expect(res.command).toBe("build");
+    expect(res.out).toBe("out_dir");
+    expect(res.config).toBe("custom.yaml");
+    expect(res.now).toBe("2026-08-09T00:00:00Z");
+  });
+
+  it("parses explicit boolean flags (=false, =0, =no, =true)", () => {
+    const resFalse = parseArgs(["build", "--offline=false", "--no-embeddings=0", "--dry-run=no"]);
+    expect(resFalse.offline).toBe(false);
+    expect(resFalse.noEmbeddings).toBe(false);
+    expect(resFalse.dryRun).toBe(false);
+
+    const resTrue = parseArgs(["build", "--offline=true", "--no-embeddings=1", "--append=true"]);
+    expect(resTrue.offline).toBe(true);
+    expect(resTrue.noEmbeddings).toBe(true);
+    expect(resTrue.append).toBe(true);
+  });
+
   it("parses review subcommand and options", () => {
     const res1 = parseArgs([
       "review",

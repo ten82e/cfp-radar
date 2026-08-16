@@ -328,23 +328,23 @@ export function usage(): string {
     "",
     "commands:",
     "  build    収集して public/ を生成する",
-    "    --out <dir>       出力先ディレクトリ (default: public)",
-    "    --config <path>   設定ファイル (default: config.yaml)",
-    "    --offline         ネットワークを使わずキャッシュのみ使う",
-    "    --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
-    "    --cache <dir>     上流 tarball のキャッシュ先 (default: .cache)",
-    "    --no-embeddings   埋め込み (embeddings.json) を生成しない（テスト用・高速化）",
+    "    -o, --out <dir>       出力先ディレクトリ (default: public)",
+    "    -c, --config <path>   設定ファイル (default: config.yaml)",
+    "    --offline             ネットワークを使わずキャッシュのみ使う",
+    "    -n, --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
+    "    --cache <dir>         上流 tarball のキャッシュ先 (default: .cache)",
+    "    --no-embeddings       埋め込み (embeddings.json) を生成しない（テスト用・高速化）",
     "  discover 穴場の会議・ジャーナルを自律探索する",
-    "    --out <path>      出力YAMLパス（未指定時は標準出力表示）",
-    "    --categories <s>  カンマ区切りの対象カテゴリ（例: hpc,systems）",
-    "    --min-year <n>    対象の最小年 (default: 2026)",
-    "    --dry-run         ファイル出力せず結果をプレビュー表示",
-    "    --append          既存 YAML に key 重複なしで追記",
+    "    -o, --out <path>      出力YAMLパス（未指定時は標準出力表示）",
+    "    --categories <s>      カンマ区切りの対象カテゴリ（例: hpc,systems）",
+    "    --min-year <n>        対象の最小年 (default: 2026)",
+    "    --dry-run             ファイル出力せず結果をプレビュー表示",
+    "    --append              既存 YAML に key 重複なしで追記",
     "  review   探索された候補のレビュー順・重複・predatory 疑いを一覧表示する",
-    "    --candidates <p>  候補 YAML パス (default: data/discovered_candidates.yaml)",
-    "    --limit <n>       表示上限件数 (default: 60)",
-    "    --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
-    "  help / --help / -h  使い方を表示する",
+    "    --candidates <p>      候補 YAML パス (default: data/discovered_candidates.yaml)",
+    "    --limit <n>           表示上限件数 (default: 60)",
+    "    -n, --now <iso>       基準時刻。例 2026-08-09T00:00:00Z",
+    "  help / --help / -h      使い方を表示する",
   ].join("\n");
 }
 
@@ -369,29 +369,34 @@ export function parseArgs(argv: string[]): CliArgs {
       }
       return undefined;
     };
+    const boolVal = (): boolean => {
+      if (eqVal === undefined) return true;
+      const low = eqVal.toLowerCase();
+      return low !== "false" && low !== "0" && low !== "no" && low !== "off";
+    };
 
     if (a === "--help" || a === "-h" || a === "help") {
       args.help = true;
-    } else if (a === "--out") {
+    } else if (a === "--out" || a === "-o") {
       args.out = nextVal() ?? "public";
-    } else if (a === "--config") {
+    } else if (a === "--config" || a === "-c") {
       args.config = nextVal() ?? "config.yaml";
     } else if (a === "--cache") {
       args.cache = nextVal() ?? ".cache";
-    } else if (a === "--now") {
+    } else if (a === "--now" || a === "-n") {
       args.now = nextVal() ?? null;
     } else if (a === "--categories") {
       args.categories = nextVal() ?? null;
     } else if (a === "--min-year") {
       args.minYear = Number(nextVal() ?? 2026);
     } else if (a === "--offline") {
-      args.offline = true;
+      args.offline = boolVal();
     } else if (a === "--no-embeddings") {
-      args.noEmbeddings = true;
+      args.noEmbeddings = boolVal();
     } else if (a === "--dry-run") {
-      args.dryRun = true;
+      args.dryRun = boolVal();
     } else if (a === "--append") {
-      args.append = true;
+      args.append = boolVal();
     } else if (a === "--candidates") {
       args.candidates = nextVal() ?? join(ROOT, "data", "discovered_candidates.yaml");
     } else if (a === "--limit") {
