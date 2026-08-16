@@ -836,6 +836,42 @@ describe("hasJapanese", () => {
   });
 });
 
+describe("wordInText (形態素・複数形・語境界照合 #282)", () => {
+  it.each([
+    ["bandit", "bandits", true],
+    ["bandits", "bandit", true],
+    ["system", "systems", true],
+    ["systems", "system", true],
+    ["process", "automated processes", true],
+    ["processes", "storage process", true],
+    ["access", "memory accesses in cxl", true],
+    ["accesses", "direct access storage", true],
+    ["wireless", "wireless communications", true],
+    ["wireless", "wirelesses network", true],
+    ["memory", "non-volatile memories", true],
+    ["memories", "memory hierarchy", true],
+    ["technology", "emerging technologies", true],
+    ["technologies", "semiconductor technology", true],
+    ["search", "efficient searches in databases", true],
+    ["searches", "heuristic search algorithm", true],
+    ["approach", "novel approaches", true],
+    ["approaches", "scalable approach", true],
+    ["index", "spatial indexes", true],
+    ["indexes", "b-tree index", true],
+    ["wireles", "wireless communication", false],
+    ["trans", "transcompiling c++", false],
+    ["syst", "distributed systems", false],
+  ])("matches %s in '%s' -> %s", (word, hay, expected) => {
+    expect(R.wordInText(hay, word)).toBe(expected);
+  });
+
+  it("handles null/undefined/empty gracefully", () => {
+    expect(R.wordInText(null, "system")).toBe(false);
+    expect(R.wordInText("system", null)).toBe(false);
+    expect(R.wordInText("", "")).toBe(false);
+  });
+});
+
 describe("venue normalization robustness", () => {
   const rows = [
     {
