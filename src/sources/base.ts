@@ -26,15 +26,28 @@ export interface Source {
   load(cacheDir: string, options?: { offline?: boolean }): Promise<unknown[]>;
 }
 
-function cacheSlot(cacheDir: string, repo: string, ref: string): string {
-  return join(cacheDir, `${repo.replace("/", "__")}__${ref}`);
+export function cacheSlot(cacheDir: string, repo: string, ref: string): string {
+  const safeRepo = repo.replace(/\//g, "__");
+  const safeRef = ref.replace(/\//g, "__");
+  return join(cacheDir, `${safeRepo}__${safeRef}`);
 }
 
 /** The single top-level directory inside an extracted tarball, or null. */
 export function extractedRoot(slot: string): string | null {
   if (!existsSync(slot)) return null;
-  const children = readdirSync(slot).filter((p) => statSync(join(slot, p)).isDirectory());
-  return children.length === 1 ? join(slot, children[0]) : null;
+  try {
+    if (!statSync(slot).isDirectory()) return null;
+    const children = readdirSync(slot).filter((p) => {
+      try {
+        return statSync(join(slot, p)).isDirectory();
+      } catch {
+        return false;
+      }
+    });
+    return children.length === 1 ? join(slot, children[0]) : null;
+  } catch {
+    return null;
+  }
 }
 
 async function download(url: string, dest: string): Promise<void> {

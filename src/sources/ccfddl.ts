@@ -197,9 +197,7 @@ export function parseTree(conferenceDir: string): Conference[] {
         ) {
           files.push(p);
         }
-      } catch {
-        continue;
-      }
+      } catch {}
     }
   }
   for (const path of files.sort()) {
