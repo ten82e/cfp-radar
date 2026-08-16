@@ -966,6 +966,37 @@ it("deadline display includes AoE notation (SPEC §7)", () => {
   expect(proc.stdout.trim()).toBe("2026-09-01 00:00 AoE|2026-09-01 12:30 AoE");
 });
 
+it("past-deadline toggle reveals past rows (SPEC §7)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: トグル UI と URL 状態の配線がある
+  expect(html).toContain('id="past"');
+  expect(html).toContain('state.past = p.get("past") === "1"');
+  expect(html).toContain('if (state.past) p.set("past", "1");');
+  // 実行検証: past=false では過去行が出ず、past=true で出る
+  const filterSrc = jsFunction(html, "filter");
+  const script = [
+    "const DAY = 86400000;",
+    `const FILTER = ${JSON.stringify(filterSrc)};`,
+    'const now = Date.parse("2026-08-10T00:00:00Z");',
+    "class FakeDate extends Date { static now() { return now; } }",
+    "function row(tOff) {",
+    "  return {",
+    "    kind: 'paper', est: false, cats: ['hpc'], rankPairs: [], hay: 'x',",
+    "    t: now + tOff, tLast: now + tOff, ed: { deadlines: [] }",
+    "  };",
+    "}",
+    // 未来の paper と過去の paper
+    "const rows = [row(86400000), row(-86400000)];",
+    "const mk = (past) => new Function('Date', 'DAY', 'rows', 'state', 'sortAsc', 'sortKey',",
+    "  'return (' + FILTER + ')')(FakeDate, DAY, rows,",
+    "  { q: '', cats: [], kind: '', rank: '', win: 'all', est: false, past: past }, true, 'rem');",
+    "console.log(JSON.stringify(mk(false)().length) + '|' + JSON.stringify(mk(true)().length));",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe("1|2");
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');

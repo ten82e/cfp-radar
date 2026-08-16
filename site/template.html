@@ -601,6 +601,7 @@ footer a:hover { text-decoration: underline; }
     <div class="row" style="margin-top: 14px;">
       <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
       <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
+      <label class="check"><input type="checkbox" id="past"> <span>過去の締切も表示</span></label>
     </div>
   </div>
 
@@ -697,7 +698,7 @@ footer a:hover { text-decoration: underline; }
 
   var state = {
     q: "", cats: [], kind: "", rank: "", win: "all",
-    est: false, domestic: false
+    est: false, domestic: false, past: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -767,7 +768,7 @@ footer a:hover { text-decoration: underline; }
 
   // Quick Presets
   window.applyPreset = (type) => {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
+    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     if (type === '7d') state.win = "7d";
     if (type === 'a_star') state.rank = "A*";
     if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
@@ -1193,8 +1194,9 @@ footer a:hover { text-decoration: underline; }
 
     var out = pool.filter((r) => {
       if (!state.est && r.est && !pLines.length) { return false; }
-      // 過去行は通常モードで除外。論文モードでは「締切済みだが次回予定あり」の会議として許容
-      if (r.t < now && !pLines.length) { return false; }
+      // 過去行は通常モードで除外（「過去の締切も表示」トグルで表示）。
+      // 論文モードでは「締切済みだが次回予定あり」の会議として許容
+      if (r.t < now && !pLines.length && !state.past) { return false; }
       if (r.est && r.t < now) { return false; }
       // このサイトは「これから投稿できるところ」を探すもの。
       // 投稿締切（概要・論文）以外の種別（開催・採否通知等）は表示しない。
@@ -1555,6 +1557,7 @@ footer a:hover { text-decoration: underline; }
     state.win = ["all", "7d", "30d", "90d", "180d"].indexOf(rawWin) >= 0 ? rawWin : "all";
     state.est = p.get("est") === "1";
     state.domestic = p.get("domestic") === "1";
+    state.past = p.get("past") === "1";
     state.cats = (p.get("cats") || "").split(",").filter((c) => Boolean(c) && Boolean(DATA.categories && DATA.categories[c]));
   }
 
@@ -1566,6 +1569,7 @@ footer a:hover { text-decoration: underline; }
     if (state.win !== "all") p.set("win", state.win);
     if (state.est) p.set("est", "1");
     if (state.domestic) p.set("domestic", "1");
+    if (state.past) p.set("past", "1");
     if (state.cats.length) p.set("cats", state.cats.join(","));
     var str = p.toString();
     history.replaceState(null, "", str ? "?" + str : window.location.pathname);
@@ -1578,6 +1582,7 @@ footer a:hover { text-decoration: underline; }
     $("win").value = state.win;
     $("est").checked = state.est;
     $("domestic").checked = state.domestic;
+    $("past").checked = state.past;
     Array.prototype.forEach.call(catsBox.querySelectorAll("input"), (chk) => {
       chk.checked = state.cats.indexOf(chk.value) >= 0;
     });
@@ -1671,13 +1676,13 @@ footer a:hover { text-decoration: underline; }
       scheduleSemantic();
     });
   });
-  ["kind", "rank", "win", "est", "domestic"].forEach((id) => {
+  ["kind", "rank", "win", "est", "domestic", "past"].forEach((id) => {
     $(id).addEventListener("change", apply);
   });
   catsBox.addEventListener("change", apply);
   $("more").addEventListener("click", drawMore);
   $("reset").addEventListener("click", () => {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false };
+    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     $("paperText").value = "";
     paperFiles.value = "";
     document.getElementById("paperFileLabel").textContent = "未選択";
