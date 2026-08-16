@@ -274,6 +274,13 @@ export function pageTitleYear(htmlText: string | null | undefined): number | nul
     (x) => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'" })[x] ?? x,
   );
   const years = [...title.matchAll(/\b(20\d{2})\b/g)].map((x) => Number(x[1]));
+  if (years.length === 0) {
+    const shortYears = [...title.matchAll(/['’](\d{2})\b/g)]
+      .map((x) => Number(x[1]))
+      .filter((y) => y >= 20 && y <= 35)
+      .map((y) => 2000 + y);
+    years.push(...shortYears);
+  }
   const uniqueYears = [...new Set(years)];
   return uniqueYears.length === 1 ? uniqueYears[0] : null;
 }
@@ -415,12 +422,12 @@ export function parsePrimaryArgs(argv: string[]): PrimaryArgs {
       help = true;
     } else if (a === "--apply" || a === "-a") {
       apply = true;
-    } else if (a.startsWith("--registry=")) {
-      registryPath = a.slice("--registry=".length);
+    } else if (a.startsWith("--registry=") || a.startsWith("-r=")) {
+      registryPath = a.slice(a.indexOf("=") + 1);
     } else if ((a === "--registry" || a === "-r") && argv[i + 1]) {
       registryPath = argv[++i];
-    } else if (a.startsWith("--out=")) {
-      outPath = a.slice("--out=".length);
+    } else if (a.startsWith("--out=") || a.startsWith("-o=")) {
+      outPath = a.slice(a.indexOf("=") + 1);
     } else if ((a === "--out" || a === "-o") && argv[i + 1]) {
       outPath = argv[++i];
     }
@@ -428,7 +435,10 @@ export function parsePrimaryArgs(argv: string[]): PrimaryArgs {
   return { apply, registryPath, outPath, help };
 }
 
-const isMain = process.argv[1]?.endsWith("fetch-primary.ts");
+const isMain = Boolean(
+  process.argv[1] &&
+    (process.argv[1].endsWith("fetch-primary.ts") || process.argv[1].endsWith("fetch-primary.js")),
+);
 if (isMain) {
   const args = parsePrimaryArgs(process.argv.slice(2));
   if (args.help) {
