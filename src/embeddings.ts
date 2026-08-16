@@ -608,7 +608,10 @@ export async function main(argv: string[] | null | undefined): Promise<number> {
   return 0;
 }
 
-const isMain = process.argv[1]?.endsWith("embeddings.ts");
+const isMain = Boolean(
+  process.argv[1] &&
+    (process.argv[1].endsWith("embeddings.ts") || process.argv[1].endsWith("embeddings.js")),
+);
 if (isMain) {
   main(process.argv).then(
     (code) => {

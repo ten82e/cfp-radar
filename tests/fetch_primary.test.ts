@@ -268,10 +268,13 @@ describe("page-year diagnostics", () => {
     expect(pageTitleYear("<title>ACM SIGCOMM 2026 (SIGCOMM 2026) Conference 2026</title>")).toBe(
       2026,
     );
+    expect(pageTitleYear("<title>EuroSys '26 - 21st European Conference</title>")).toBe(2026);
+    expect(pageTitleYear("<title>OSDI ’26 CFP</title>")).toBe(2026);
     expect(pageTitleYear("<title>SETTA 2025 / 2026</title>")).toBeNull();
     expect(pageTitleYear("<title>Annual Symposium on Systems</title>")).toBeNull();
     expect(pageYearMismatch("<title>ICDCS 2026 - 46th IEEE ICDCS 2026</title>", 2025)).toBe(2026);
     expect(pageYearMismatch("<title>ICDCS 2026 - 46th IEEE ICDCS 2026</title>", 2026)).toBeNull();
+    expect(pageYearMismatch("<title>EuroSys '26 CFP</title>", 2025)).toBe(2026);
   });
 });
 
@@ -298,6 +301,11 @@ describe("parsePrimaryArgs and null safety", () => {
     expect(res.registryPath).toBe("/tmp/custom-reg.yaml");
     expect(res.outPath).toBe("/tmp/custom-out.yaml");
     expect(res.help).toBe(false);
+
+    const resEq = parsePrimaryArgs(["-a", "-r=/tmp/custom-reg2.yaml", "-o=/tmp/custom-out2.yaml"]);
+    expect(resEq.apply).toBe(true);
+    expect(resEq.registryPath).toBe("/tmp/custom-reg2.yaml");
+    expect(resEq.outPath).toBe("/tmp/custom-out2.yaml");
 
     const helpRes = parsePrimaryArgs(["-h"]);
     expect(helpRes.help).toBe(true);
