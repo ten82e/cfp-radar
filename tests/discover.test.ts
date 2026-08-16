@@ -665,6 +665,19 @@ describe("review helpers", () => {
     expect(reviewDeadlineText(undefined)).toBe("");
     expect(reviewDeadlineText({})).toBe("");
   });
+
+  it("parseDeadlineText parses NFKC full-width dates and 'of' prepositions (#280)", () => {
+    expect(parseDeadlineText("15th of May, 2026")?.toISOString().slice(0, 10)).toBe("2026-05-15");
+    expect(parseDeadlineText("15th of May 2026")?.toISOString().slice(0, 10)).toBe("2026-05-15");
+    expect(parseDeadlineText("２０２６年５月１５日")?.toISOString().slice(0, 10)).toBe(
+      "2026-05-15",
+    );
+    expect(parseDeadlineText("2026年05月15日")?.toISOString().slice(0, 10)).toBe("2026-05-15");
+    expect(parseDeadlineText("2026年5月15日 (金)")?.toISOString().slice(0, 10)).toBe("2026-05-15");
+    expect(parseDeadlineText("Aug 15, 2026 (Aug 1, 2026)")?.toISOString().slice(0, 10)).toBe(
+      "2026-08-15",
+    );
+  });
 });
 
 const WIKICFP_SAMPLE = `<html><body>
