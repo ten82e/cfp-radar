@@ -930,6 +930,8 @@ it("drawer closes only on ✕ / backdrop click, not on inner buttons", () => {
   // 実行検証: fake DOM で閉じる / 閉じないの 4 経路を確認する
   const script = [
     "const removals = [];",
+    // #218: closeDrawer は window._prevFocus を参照するため注入する（フォーカス復元対象は無し）
+    "const window = { _prevFocus: null };",
     "const backdrop = { classList: { remove: () => removals.push(1) } };",
     "const document = { getElementById: (id) => (id === 'drawerBackdrop' ? backdrop : null) };",
     "function $(id) { return document.getElementById(id); }",
@@ -1014,6 +1016,66 @@ it("past-deadline toggle reveals past rows (SPEC §7)", () => {
   const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
   expect(proc.status, proc.stderr).toBe(0);
   expect(proc.stdout.trim()).toBe("1|2");
+});
+
+it("drawer is a keyboard-operable modal dialog with focus management (#218)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 静的検証: dialog セマンティクス・無名アイコンボタンのラベル・キーボード経路・ヒント表記
+  expect(html).toContain('role="dialog" aria-modal="true" aria-labelledby="drawerTitle"');
+  expect(html).toContain('aria-label="閉じる"');
+  expect(html).toContain("tr.tabIndex = -1;");
+  expect(html).toContain("<kbd>d</kbd> 詳細");
+  // 実行検証: d キーで選択行のドロワーが開き、開閉でフォーカスが移る / 戻る
+  const keySrc = jsFunction(html, "onKeydown");
+  const openSrc = jsFunction(html, "openDrawer");
+  const closeSrc = jsFunction(html, "closeDrawer");
+  const script = [
+    "const calls = { open: [], focus: [] };",
+    "const prevEl = { focus() { calls.focus.push('prev'); document.activeElement = prevEl; } };",
+    "const closeBtn = { focus() { calls.focus.push('close'); document.activeElement = closeBtn; } };",
+    "const rowEls = [",
+    "  { focus() { calls.focus.push('row0'); document.activeElement = rowEls[0]; } },",
+    "  { focus() { calls.focus.push('row1'); document.activeElement = rowEls[1]; } },",
+    "];",
+    "rowEls[0].classList = { contains: () => false };",
+    "rowEls[1].classList = { contains: () => false };",
+    "const backdrop = { classList: { add() {}, remove() {} } };",
+    "const els = {",
+    "  drawerBackdrop: backdrop, drawerTitle: {}, drawerFullName: {}, drawerBody: {},",
+    "  drawerClose: closeBtn, tbody: { querySelectorAll: () => rowEls }, q: { focus() {} },",
+    "};",
+    "const document = { activeElement: prevEl, getElementById: (id) => els[id] || null };",
+    "function $(id) { return document.getElementById(id); }",
+    "const window = { _prevFocus: null };",
+    "const openSpy = (r) => calls.open.push(r);",
+    "const closeSpy = () => {};",
+    `const KEY = ${JSON.stringify(keySrc)};`,
+    `const OPEN = ${JSON.stringify(openSrc)};`,
+    `const CLOSE = ${JSON.stringify(closeSrc)};`,
+    "const onKeydown = new Function('window', 'document', '$', 'selectedIndex', 'shown', 'openDrawer', 'closeDrawer', 'return (' + KEY + ')')(window, document, $, 1, ['A', 'B'], openSpy, closeSpy);",
+    // d キー → 選択行 (shown[1]) のドロワーが開き、行にフォーカスが移る
+    "onKeydown({ key: 'd', preventDefault() {}, target: { tagName: 'BODY' } });",
+    "const dOpened = calls.open.length === 1 && calls.open[0] === 'B';",
+    "const dFocusedRow = calls.focus[calls.focus.length - 1] === 'row1';",
+    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '');",
+    "document.activeElement = prevEl;",
+    "openDrawer({ kind: 'journal', conf: { title: 'X' }, ed: { place: 'P', date_text: 'D' } });",
+    "const focusedClose = document.activeElement === closeBtn;",
+    "const savedPrev = window._prevFocus === prevEl;",
+    "const closeDrawer = new Function('window', 'document', '$', 'return (' + CLOSE + ')')(window, document, $);",
+    "closeDrawer();",
+    "const restored = document.activeElement === prevEl;",
+    "console.log(JSON.stringify({ dOpened, dFocusedRow, focusedClose, savedPrev, restored }));",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(JSON.parse(proc.stdout)).toEqual({
+    dOpened: true,
+    dFocusedRow: true,
+    focusedClose: true,
+    savedPrev: true,
+    restored: true,
+  });
 });
 
 it("meeting past rule is wired to the end date", () => {
