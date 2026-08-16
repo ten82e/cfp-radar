@@ -497,6 +497,48 @@ describe("parseWikiCfpHtml", () => {
   });
 });
 
+describe("extractDeadlinesFromText", () => {
+  it("extracts ISO and slash dates in order", () => {
+    const text = "Submission deadline: 2026-05-15. Notification: 2026/07/01.";
+    const dls = extractDeadlinesFromText(text);
+    expect(dls.length).toBe(2);
+    expect(dls[0]).toEqual({
+      kind: "paper",
+      label: "Submission Deadline",
+      date: "2026-05-15 23:59:00",
+      tz: "AoE",
+    });
+    expect(dls[1]).toEqual({
+      kind: "notification",
+      label: "Notification Date",
+      date: "2026-07-01 23:59:00",
+      tz: "AoE",
+    });
+  });
+
+  it("extracts English month dates and Day Month Year forms", () => {
+    const text = "Paper deadline: May 15, 2026. Notification date: 1st of July 2026.";
+    const dls = extractDeadlinesFromText(text);
+    expect(dls.length).toBe(2);
+    expect(dls[0].date).toBe("2026-05-15 23:59:00");
+    expect(dls[1].date).toBe("2026-07-01 23:59:00");
+  });
+
+  it("extracts European numeric and Japanese format dates", () => {
+    const text = "締切: 2026年5月15日 (再延長: 31.05.2026)";
+    const dls = extractDeadlinesFromText(text);
+    expect(dls.length).toBe(2);
+    expect(dls[0].date).toBe("2026-05-15 23:59:00");
+    expect(dls[1].date).toBe("2026-05-31 23:59:00");
+  });
+
+  it("returns empty array for text with no valid calendar dates", () => {
+    expect(extractDeadlinesFromText("")).toEqual([]);
+    expect(extractDeadlinesFromText("Deadline: TBA")).toEqual([]);
+    expect(extractDeadlinesFromText("2026-02-30")).toEqual([]);
+  });
+});
+
 describe("parseDeadlineText", () => {
   it.each([
     ["15-May-2026", 2026, 5, 15],
