@@ -1423,6 +1423,23 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(args.topK).toBe(3);
     expect(args.lang).toBe("en");
     expect(args.jpw).toBe(0.6);
+
+    const argsEq = parseBenchArgs([
+      "node",
+      "bench-recommender.ts",
+      "-d=custom_data.json",
+      "-e=custom_emb.json",
+      "-s=100",
+      "-f=10",
+      "-k=10",
+      "-l=jp",
+    ]);
+    expect(argsEq.data).toBe("custom_data.json");
+    expect(argsEq.emb).toBe("custom_emb.json");
+    expect(argsEq.samples).toBe(100);
+    expect(argsEq.failures).toBe(10);
+    expect(argsEq.topK).toBe(10);
+    expect(argsEq.lang).toBe("jp");
   });
 
   it("--jpw 0 keeps zero as a valid sweep endpoint instead of coercing to 0.5", () => {
