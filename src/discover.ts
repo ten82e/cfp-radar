@@ -753,10 +753,11 @@ export function easyChairEntriesFromRows(
   const entries: Array<Record<string, unknown>> = [];
   for (const e of rows) {
     if (!e.date_text) continue; // 締切未登録は候補にしない
+    // 開催年はタイトルを優先する（wikiCFP 経路と同じ規約）。秋締切（締切が開催年の
+    // 前年、例: DASFAA 2026 の締切 Oct 27, 2025）の会議を締切年で落とさない (#261)。
+    const tm = /20\d\d/.exec(`${e.title} ${e.full_name}`);
     const dm = /(20\d\d)/.exec(e.date_text);
-    if (dm && Number(dm[1]) < minYear) continue;
-    const m = /20\d\d/.exec(`${e.title} ${e.full_name}`);
-    const year = m ? Number(m[0]) : minYear;
+    const year = tm ? Number(tm[0]) : dm ? Number(dm[1]) : minYear;
     if (year < minYear) continue;
     if (!inDomain(`${e.title} ${e.full_name} ${e.topics.join(" ")}`)) continue;
     entries.push({
