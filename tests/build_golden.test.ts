@@ -1078,6 +1078,19 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
   });
 });
 
+it("no external CDN / web fonts (SPEC §7 single-file contract)", () => {
+  const html = readFileSync(join(site, "index.html"), "utf8");
+  // 外部フォント CDN への依存が無い（preconnect / stylesheet とも）
+  expect(html).not.toContain("fonts.googleapis");
+  expect(html).not.toContain("fonts.gstatic");
+  // フォントは CSS 変数を介してシステムフォールバックで描画される
+  expect(html).toContain("--font-sans: system-ui");
+  expect(html).toContain("--font-mono: ui-monospace");
+  // フォント変数の参照は維持されている（タイポグラフィ構造は不変）
+  expect(html).toContain("font-family: var(--font-sans)");
+  expect(html).toContain("font-family: var(--font-mono)");
+});
+
 it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
