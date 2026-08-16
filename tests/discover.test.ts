@@ -82,6 +82,53 @@ describe("NicheDiscoverer", () => {
       expect(c.link).toBeTruthy();
     }
   }, 120_000);
+
+  it("discoverFromDblp decodes HTML entities and trims leading whitespace", async () => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response(
+        JSON.stringify({
+          result: {
+            hits: {
+              hit: [
+                {
+                  info: {
+                    venue:
+                      " &quot;I Can&apos;t Believe It&apos;s Not Better!&quot; Workshop Series (ICBINB)",
+                    acronym: "ICBINB",
+                    url: "https://dblp.org/db/conf/icbinb/",
+                  },
+                },
+                {
+                  info: {
+                    venue: "ACIS International Journal of Computer &amp; Information Science",
+                    url: "https://dblp.org/db/journals/acisj/",
+                  },
+                },
+              ],
+            },
+          },
+        }),
+        { status: 200 },
+      )) as typeof fetch;
+    try {
+      const cands = await discoverer.discoverFromDblp("workshop", 10);
+      const icbinb = cands.find((c) => c.key === "icbinb");
+      expect(icbinb).toBeDefined();
+      expect(icbinb?.full_name).toBe(
+        "\"I Can't Believe It's Not Better!\" Workshop Series (ICBINB)",
+      );
+      expect(icbinb?.full_name?.startsWith(" ")).toBe(false);
+
+      const acis = cands.find((c) => c.key.startsWith("acis-international"));
+      expect(acis).toBeDefined();
+      expect(acis?.title).toBe("ACIS International Journal of Computer & Information Science");
+      expect(acis?.key).toBe("acis-international-journal-of-computer-information-science");
+      expect(acis?.key).not.toContain("amp");
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  });
 });
 
 describe("formatDiscoveredYaml", () => {
