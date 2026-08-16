@@ -24,6 +24,7 @@ import {
 } from "../src/discover.ts";
 import {
   isPredatory,
+  loadTrackedTitles,
   normTitle,
   parseArgs as parseReviewArgs,
   reviewDeadlineText,
@@ -460,6 +461,47 @@ describe("review helpers", () => {
 
     const res3 = parseReviewArgs(["--help"]);
     expect(res3.help).toBe(true);
+  });
+
+  it("reviewDeadlineText falls back through submission_deadline_text, ed.date_text, c.date_text, and deadlines", () => {
+    // 1. submission_deadline_text priority
+    expect(
+      reviewDeadlineText({
+        submission_deadline_text: "2026-05-01",
+        date_text: "2026-06-01",
+        editions: [{ date_text: "2026-07-01" }],
+      }),
+    ).toBe("2026-05-01");
+
+    // 2. ed.date_text priority over c.date_text
+    expect(
+      reviewDeadlineText({
+        date_text: "2026-06-01",
+        editions: [{ date_text: "2026-07-01" }],
+      }),
+    ).toBe("2026-07-01");
+
+    // 3. c.date_text when no edition date_text
+    expect(
+      reviewDeadlineText({
+        date_text: "2026-06-01",
+        editions: [],
+      }),
+    ).toBe("2026-06-01");
+
+    // 4. deadlines array fallback
+    expect(
+      reviewDeadlineText({
+        deadlines: [{ date: "2026-08-15 23:59:00" }],
+      }),
+    ).toBe("2026-08-15 23:59:00");
+  });
+
+  it("loadTrackedTitles tracks titles, full names, keys, and overrides", () => {
+    const tracked = loadTrackedTitles();
+    expect(tracked.size).toBeGreaterThan(0);
+    expect(tracked.has("sigcomm")).toBe(true);
+    expect(tracked.has("isc hpc")).toBe(true);
   });
 
   it("runReviewCandidates gracefully handles missing candidate files", () => {
