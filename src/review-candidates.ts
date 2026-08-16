@@ -217,6 +217,13 @@ export interface ReviewArgs {
   help?: boolean;
 }
 
+// 不正な数値（負・非整数・非数値）を既定値へフォールバック。
+// --limit=-3 等は下流 future.slice(0, limit) が末尾切り捨て＋誤ヘッダ「上位 -3 件」になるのを防ぐ (#312/#302続編 と同型)。
+function toPosInt(raw: string | undefined, fallback: number): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
+}
+
 export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
   let candidates = join(ROOT, "data", "discovered_candidates.yaml");
   let limit = 60;
@@ -232,9 +239,9 @@ export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
     } else if ((a === "--candidates" || a === "-c" || a === "-C") && argv![i + 1]) {
       candidates = argv![++i];
     } else if (a.startsWith("--limit=") || a.startsWith("-l=")) {
-      limit = Number(a.slice(a.indexOf("=") + 1)) || 60;
+      limit = toPosInt(a.slice(a.indexOf("=") + 1), 60);
     } else if ((a === "--limit" || a === "-l") && argv![i + 1]) {
-      limit = Number(argv![++i]) || 60;
+      limit = toPosInt(argv![++i], 60);
     } else if (a.startsWith("--now=") || a.startsWith("-n=")) {
       now = parseNow(a.slice(a.indexOf("=") + 1));
     } else if ((a === "--now" || a === "-n") && argv![i + 1]) {
