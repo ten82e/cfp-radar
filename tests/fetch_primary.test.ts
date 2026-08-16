@@ -202,6 +202,38 @@ describe("fetch-primary extraction", () => {
     expect(got[0].kind).toBe("paper");
     expect(got[0].date).toBe("2026-08-17");
   });
+
+  it("extracts Japanese primary deadlines correctly", () => {
+    const lines = [
+      "重要日程",
+      "論文投稿締切: 2026年5月10日 (JST)",
+      "採否通知: 2026年6月20日",
+      "最終原稿締切: 2026年7月15日",
+    ];
+    const got = extractDeadlines(lines, 2026);
+    expect(got).toEqual([
+      {
+        kind: "paper",
+        label: "Paper submission",
+        date: "2026-05-10",
+        round: 1,
+        tz: "JST",
+      },
+      {
+        kind: "notification",
+        label: "Notification",
+        date: "2026-06-20",
+        round: 1,
+        tz: "JST",
+      },
+      {
+        kind: "camera_ready",
+        label: "Camera-ready submission",
+        date: "2026-07-15",
+        round: 1,
+      },
+    ]);
+  });
 });
 
 describe("pageYear", () => {
