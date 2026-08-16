@@ -1044,4 +1044,25 @@ describe("aideadlines deadlinesOf parsing", () => {
       })?.place,
     ).toBe("");
   });
+
+  it("aideadlines rankOf sanitizes null, empty strings, and 'null' values (#300)", () => {
+    expect(rankOf({ ccf: " A ", core: null, other: "", invalid: "null" })).toEqual({
+      ccf: "A",
+    });
+    expect(rankOf("CCF: A, CORE: null, OTHER: ")).toEqual({ ccf: "A" });
+    expect(rankOf(["CCF: A", "CORE: null", { THCPL: " A* " }])).toEqual({
+      ccf: "A",
+      thcpl: "A*",
+    });
+    expect(rankOf(null)).toEqual({});
+    expect(rankOf(undefined)).toEqual({});
+  });
+
+  it("ccfddl conferenceOf sanitizes rank values removing empty and 'null' (#300)", () => {
+    const conf = ccfddlConferenceOf({
+      title: "TestConf",
+      rank: { ccf: " A ", core: null, other: "", invalid: "null" },
+    });
+    expect(conf?.rank).toEqual({ ccf: "A" });
+  });
 });

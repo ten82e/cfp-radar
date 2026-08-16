@@ -56,13 +56,18 @@ export function rankOf(rankings: unknown): Record<string, string> {
         if (typeof item === "string") {
           const idx = item.indexOf(":");
           if (idx >= 0) {
-            const name = item.slice(0, idx).trim();
+            const name = item.slice(0, idx).trim().toLowerCase();
             const value = item.slice(idx + 1).trim();
-            if (name && value) rank[name.toLowerCase()] = value;
+            if (name && value && value !== "null") rank[name] = value;
           }
         } else if (typeof item === "object" && item !== null) {
           for (const [k, v] of Object.entries(item as Record<string, unknown>)) {
-            if (v !== null && v !== undefined && String(v).trim()) {
+            if (
+              v !== null &&
+              v !== undefined &&
+              String(v).trim() !== "" &&
+              String(v).trim() !== "null"
+            ) {
               rank[k.toLowerCase().trim()] = String(v).trim();
             }
           }
@@ -71,7 +76,7 @@ export function rankOf(rankings: unknown): Record<string, string> {
       return rank;
     }
     for (const [k, v] of Object.entries(rankings as Record<string, unknown>)) {
-      if (v !== null && v !== undefined && String(v).trim()) {
+      if (v !== null && v !== undefined && String(v).trim() !== "" && String(v).trim() !== "null") {
         rank[k.toLowerCase().trim()] = String(v).trim();
       }
     }
@@ -81,9 +86,9 @@ export function rankOf(rankings: unknown): Record<string, string> {
   for (const chunk of String(rankings).split(",")) {
     const idx = chunk.indexOf(":");
     if (idx >= 0) {
-      const name = chunk.slice(0, idx).trim();
+      const name = chunk.slice(0, idx).trim().toLowerCase();
       const value = chunk.slice(idx + 1).trim();
-      if (name && value) rank[name.toLowerCase()] = value;
+      if (name && value && value !== "null") rank[name] = value;
     }
   }
   return rank;
