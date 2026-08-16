@@ -3,7 +3,7 @@
  * Ported from scripts/cli.py (cfp-radar).
  */
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
