@@ -724,10 +724,22 @@ footer a:hover { text-decoration: underline; }
     return (DATA.categories && DATA.categories[key]) ? key.toUpperCase() : key;
   }
 
-  // タイトル + 開催年。タイトルが既にその年で終わっていれば年を二重に付けない (#93)。
+  // タイトル + 開催年。タイトルが既にその年で終わっていれば年を二重に付けない (#93, #294)。
   function titleWithYear(title, year) {
     var t = String(title || "").trim();
-    return year && !t.endsWith(String(year)) ? t + " " + year : t;
+    if (!t) return "";
+    if (!year) return t;
+    var yStr = String(year);
+    var yy = yStr.slice(-2);
+    var normT = t.normalize ? t.normalize("NFKC").trim() : t;
+    var hasYear =
+      normT.endsWith(yStr) ||
+      normT.endsWith("'" + yy) ||
+      (yy && new RegExp("(?:20" + yy + "|['’]?" + yy + ")$").test(normT));
+    if (hasYear) {
+      return t;
+    }
+    return t + " " + year;
   }
 
   // Toast Notify

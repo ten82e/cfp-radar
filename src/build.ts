@@ -151,9 +151,13 @@ export function titleWithYear(
   if (!t) return "";
   if (!year) return t;
   const yStr = String(year);
-  const short1 = `'${yStr.slice(-2)}`;
-  const short2 = `’${yStr.slice(-2)}`;
-  if (t.endsWith(yStr) || t.endsWith(short1) || t.endsWith(short2)) {
+  const yy = yStr.slice(-2);
+  const normT = t.normalize("NFKC").trim();
+  const hasYear =
+    normT.endsWith(yStr) ||
+    normT.endsWith(`'${yy}`) ||
+    (yy && new RegExp(`(?:20${yy}|['’]?${yy})$`).test(normT));
+  if (hasYear) {
     return t;
   }
   return `${t} ${year}`;

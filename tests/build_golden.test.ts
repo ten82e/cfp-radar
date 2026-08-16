@@ -1451,11 +1451,14 @@ it("toUpcomingMd escapes pipe characters in title and place preserving 7-column 
   }
 });
 
-it("titleWithYear avoids duplicate short-year appending and handles missing years (#276)", () => {
+it("titleWithYear avoids duplicate short-year appending and handles missing years (#276, #294)", () => {
   expect(titleWithYear("CANOPIE-HPC 2026", 2026)).toBe("CANOPIE-HPC 2026");
   expect(titleWithYear("SC '26", 2026)).toBe("SC '26");
   expect(titleWithYear("SC ’26", 2026)).toBe("SC ’26");
+  expect(titleWithYear("EuroSys ’26", 2026)).toBe("EuroSys ’26");
   expect(titleWithYear("GeoAI'26", 2026)).toBe("GeoAI'26");
+  expect(titleWithYear("CAIS'26", 2026)).toBe("CAIS'26");
+  expect(titleWithYear("SC26", 2026)).toBe("SC26");
   expect(titleWithYear("SIGCOMM", 2026)).toBe("SIGCOMM 2026");
   expect(titleWithYear("IPSJ", 0)).toBe("IPSJ");
   expect(titleWithYear("IPSJ", null)).toBe("IPSJ");
