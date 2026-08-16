@@ -554,8 +554,18 @@ export async function buildEmbeddings(
   return out;
 }
 
-export async function main(argv: string[]): Promise<number> {
-  const rawArgs = argv.slice(2);
+export async function main(argv: string[] | null | undefined): Promise<number> {
+  if (!argv || !Array.isArray(argv)) {
+    process.stderr.write(
+      "usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>\n",
+    );
+    return 2;
+  }
+  const rawArgs =
+    argv.length >= 2 &&
+    (argv[0].endsWith("node") || argv[1]?.endsWith(".ts") || argv[1]?.endsWith(".js"))
+      ? argv.slice(2)
+      : argv;
   if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
     console.log("usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>");
     return 0;
