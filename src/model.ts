@@ -638,10 +638,11 @@ export function parseDateRange(
     if (m1.month === null || m1.invalidDay) {
       // A standalone four-digit year is an intentional year-only value
       // (e.g. data/extra.yaml IPSJ/IEICE editions whose exact dates are
-      // not published): keep the null pair silently.  An impossible day
-      // (0, 32+, 3-digit) is not: fail closed instead of fabricating a
-      // month-only span.
-      if (!m1.invalidDay && !/^\d{4}$/.test(s)) {
+      // not published): keep the null pair silently.  'TBD 2027' is the
+      // same contract with an explicit unpublished marker (#388).
+      // An impossible day (0, 32+, 3-digit) is not: fail closed instead
+      // of fabricating a month-only span.
+      if (!m1.invalidDay && !/^\d{4}$/.test(s) && !/^TBD\s+\d{4}$/i.test(s)) {
         warn(`unparsable event date ${JSON.stringify(String(text))}`);
       }
       return [null, null];
