@@ -155,4 +155,16 @@ describe("local source data integrity", () => {
       ).not.toThrow();
     }
   });
+
+  it("primary.yaml and fetch-primary.ts do not advertise the retired fetch_primary.py (#384)", () => {
+    const primary = readFileSync(join(REPO_ROOT, "data", "primary.yaml"), "utf8");
+    const src = readFileSync(join(REPO_ROOT, "src", "fetch-primary.ts"), "utf8");
+    const generated = readFileSync(join(REPO_ROOT, "data", "primary_overrides.yaml"), "utf8");
+    expect(primary, "primary.yaml must name the TS extractor").toContain("src/fetch-primary.ts");
+    expect(primary).not.toContain("fetch_primary.py");
+    expect(src).not.toMatch(/"#": ".*fetch_primary\.py/);
+    expect(src).toMatch(/"#": ".*fetch-primary\.ts/);
+    expect(generated).not.toContain("fetch_primary.py");
+    expect(generated).toContain("fetch-primary.ts");
+  });
 });
