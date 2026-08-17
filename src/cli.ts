@@ -50,6 +50,18 @@ export function parseNow(text: string | null | undefined): Date {
       throw new Error(`unparsable --now: ${JSON.stringify(text)}`);
     }
   }
+  // Date は時刻あり・offset 無しをローカル時刻にし、T24:00:00Z を翌日へ繰り上げる。
+  // --now は決定的テスト用（SPEC §3.7）なので、どちらも拒否する (#392)。
+  const time = /T(\d{1,2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(.*)$/.exec(normalized);
+  if (time) {
+    const hour = Number(time[1]);
+    const minute = Number(time[2]);
+    const second = Number(time[3] ?? "0");
+    const zone = time[4] ?? "";
+    if (hour > 23 || minute > 59 || second > 59 || !/^[+-]\d{2}:?\d{2}$/.test(zone)) {
+      throw new Error(`unparsable --now: ${JSON.stringify(text)}`);
+    }
+  }
   const dt = new Date(normalized);
   if (Number.isNaN(dt.getTime())) {
     throw new Error(`unparsable --now: ${JSON.stringify(text)}`);
