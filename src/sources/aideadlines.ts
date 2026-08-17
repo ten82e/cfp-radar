@@ -177,6 +177,19 @@ export function editionOf(raw: Record<string, unknown> | null | undefined): Edit
   };
 }
 
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
 /** Read `src/data/conferences/*.yml`; each item is one edition. */
 export function parseTree(conferencesDir: string | null | undefined): Conference[] {
   if (!conferencesDir) return [];
@@ -214,7 +227,7 @@ export function parseTree(conferencesDir: string | null | undefined): Conference
           rank: {},
           dblp: null,
           upstream_sub: null,
-          tags: ((raw.tags as unknown[] | null) ?? []).map((t) => String(t)),
+          tags: toStringArray(raw.tags),
           categories: [],
           editions: [],
           sources: [NAME],
@@ -228,7 +241,7 @@ export function parseTree(conferencesDir: string | null | undefined): Conference
         const rank = rankOf(raw.rankings);
         if (Object.keys(rank).length > 0) conference.rank = rank;
         if (edition.link) conference.link = edition.link;
-        const tags = ((raw.tags as unknown[] | null) ?? []).map((t) => String(t));
+        const tags = toStringArray(raw.tags);
         if (tags.length > 0) conference.tags = tags;
       }
     }

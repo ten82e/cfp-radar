@@ -122,31 +122,46 @@ export function editionOf(
   };
 }
 
-/** Read data/extra.yaml.  A missing file yields an empty list. */
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
+/** Parse an extra.yaml file into conferences. */
 export function parseFile(path: string | null | undefined): Conference[] {
   if (!path) return [];
   let loaded: unknown;
   try {
-    loaded = loadYaml(readFileSync(path, "utf8")) ?? {};
+    loaded = loadYaml(readFileSync(path, "utf8"));
   } catch (exc) {
-    warn(`local source: cannot parse ${path}: ${String(exc)}`);
+    warn(`local: cannot parse ${path}: ${String(exc)}`);
     return [];
   }
-  if (typeof loaded !== "object" || loaded === null) return [];
-
+  const conferences =
+    typeof loaded === "object" && loaded !== null
+      ? (((loaded as Record<string, unknown>).conferences as unknown[] | null) ?? [])
+      : [];
   const out: Conference[] = [];
-  for (const item of ((loaded as Record<string, unknown>).conferences as unknown[] | null) ?? []) {
+  for (const item of conferences) {
     if (typeof item !== "object" || item === null) continue;
     const raw = item as Record<string, unknown>;
     const title = String(raw.title ?? "").trim();
-    const key = String(raw.key ?? slug(title));
+    const key = String(raw.key ?? slug(title)).trim();
     if (!key) {
       warn(`local source: entry without key or title in ${path}`);
       continue;
     }
     const editions = ((raw.editions as unknown[] | null) ?? [])
-      .map((c) =>
-        typeof c === "object" && c !== null ? editionOf(c as Record<string, unknown>, key) : null,
+      .map((e) =>
+        typeof e === "object" && e !== null ? editionOf(e as Record<string, unknown>, key) : null,
       )
       .filter((e): e is Edition => e !== null)
       .sort((a, b) => a.year - b.year);
@@ -173,8 +188,8 @@ export function parseFile(path: string | null | undefined): Conference[] {
       rank,
       dblp: raw.dblp === null || raw.dblp === undefined ? null : String(raw.dblp),
       upstream_sub: null,
-      tags: ((raw.tags as unknown[] | null) ?? []).map((t) => String(t)),
-      categories: ((raw.categories as unknown[] | null) ?? []).map((c) => String(c)),
+      tags: toStringArray(raw.tags),
+      categories: toStringArray(raw.categories),
       editions,
       sources: [NAME],
     });
