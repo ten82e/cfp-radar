@@ -689,6 +689,80 @@ describe("apply_overrides", () => {
     expect(editions[2025].deadlines[0].at_utc.getTime()).toBe(utc(2025, 8, 20).getTime());
   });
 
+  it("override date_text fills event_start when missing (#398)", () => {
+    const confs = [
+      makeConference({
+        key: "setta",
+        title: "SETTA",
+        editions: [
+          makeEdition({
+            year: 2025,
+            edition_id: "setta25",
+            deadlines: [makeDeadline("paper", "Paper", utc(2025, 8, 20), "AoE")],
+          }),
+        ],
+      }),
+    ];
+    const overrides = {
+      conferences: {
+        setta: {
+          editions: {
+            2026: {
+              date_text: "December 2-4, 2026",
+              deadlines: [{ kind: "paper", label: "Paper submission", date: "2026-05-10" }],
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    const added = out[0].editions.find((e) => e.year === 2026);
+    expect(added).toBeDefined();
+    expect(added?.event_start?.toISOString()).toBe("2026-12-02T00:00:00.000Z");
+    expect(added?.event_end?.toISOString()).toBe("2026-12-04T00:00:00.000Z");
+  });
+
+  it("override keeps explicit event_start over parsed date_text (#398)", () => {
+    const confs = [makeConference({ key: "issta", title: "ISSTA", editions: [] })];
+    const overrides = {
+      conferences: {
+        issta: {
+          editions: {
+            2027: {
+              date_text: "July 2027",
+              event_start: "2027-09-07",
+              event_end: "2027-09-10",
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    const ed = out[0].editions[0];
+    expect(ed.event_start?.toISOString()).toBe("2027-09-07T00:00:00.000Z");
+    expect(ed.event_end?.toISOString()).toBe("2027-09-10T00:00:00.000Z");
+  });
+
+  it("override leaves unparsable date_text as null event_start (#398)", () => {
+    const confs = [makeConference({ key: "closer", title: "CLOSER", editions: [] })];
+    const overrides = {
+      conferences: {
+        closer: {
+          editions: {
+            2027: {
+              date_text: "TBD 2027",
+            },
+          },
+        },
+      },
+    };
+    const out = applyOverrides(confs, overrides);
+    const ed = out[0].editions[0];
+    expect(ed.date_text).toBe("TBD 2027");
+    expect(ed.event_start).toBeNull();
+    expect(ed.event_end).toBeNull();
+  });
+
   it("override adds missing edition with custom id, estimated: true, and top-level deadline keys", () => {
     const confs = [
       makeConference({
