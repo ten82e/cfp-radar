@@ -1351,4 +1351,39 @@ describe("conferencesFromJson & defensive merge operations", () => {
     expect(applyOverrides(null, null)).toEqual([]);
     expect(applyOverrides(undefined, undefined)).toEqual([]);
   });
+
+  it("conferencesFromJson drops invalid year editions and restores link, dblp, upstream_sub (#334)", () => {
+    const payload = {
+      conferences: [
+        {
+          key: "sigcomm",
+          title: "SIGCOMM",
+          dblp: "conf/sigcomm",
+          upstream_sub: "NW",
+          editions: [
+            {
+              year: "invalid-year",
+              id: "sigcomm-bad",
+            },
+            {
+              year: 2026,
+              id: "sigcomm26",
+              link: "https://example.com/2026",
+            },
+            {
+              year: -1,
+              id: "sigcomm-neg",
+            },
+          ],
+        },
+      ],
+    };
+    const confs = conferencesFromJson(payload as any);
+    expect(confs).toHaveLength(1);
+    expect(confs[0].dblp).toBe("conf/sigcomm");
+    expect(confs[0].upstream_sub).toBe("NW");
+    expect(confs[0].link).toBe("https://example.com/2026");
+    expect(confs[0].editions).toHaveLength(1);
+    expect(confs[0].editions[0].year).toBe(2026);
+  });
 });
