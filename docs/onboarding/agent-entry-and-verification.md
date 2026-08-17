@@ -323,8 +323,8 @@ checks, confirm the detailed items below.
       `orphan-first-policy` value is recorded as `none`,
       `maintainer-approved`, or `public-disabled`. Public repositories
       use either `maintainer-approved` or `public-disabled`, not `none`.
-- [ ] The `cfp-radar-roadmap-id` and
-      `cfp-radar-blocked-by` marker names in
+- [ ] The `kamiyobi-roadmap-id` and
+      `kamiyobi-blocked-by` marker names in
       `.github/instructions/idd-discover.instructions.md` and
       `.github/instructions/idd-overview-core.instructions.md`
       match the prefix chosen for this project.

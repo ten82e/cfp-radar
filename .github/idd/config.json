@@ -1,7 +1,7 @@
 {
   "$schema": "https://kurone-kito.github.io/idd-skill/schemas/policy.schema.json",
   "iddVersion": "0.6.0",
-  "markerPrefix": "cfp-radar",
+  "markerPrefix": "kamiyobi",
   "mergePolicy": "fully_autonomous_merge",
   "reviewPolicy": "no-advisory",
   "threadResolutionPolicy": "fast-agent-resolve",

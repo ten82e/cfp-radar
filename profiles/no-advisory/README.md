@@ -60,5 +60,5 @@ Verification evidence:
 Profile artifact applied: profiles/no-advisory/README.md
 ```
 
-Completion record: applied in `ten82e/cfp-radar`; see
-[`docs/idd-cfp-radar-policy.md`](../../docs/idd-cfp-radar-policy.md).
+Completion record: applied in `ten82e/kamiyobi`; see
+[`docs/idd-kamiyobi-policy.md`](../../docs/idd-kamiyobi-policy.md).

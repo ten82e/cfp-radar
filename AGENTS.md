@@ -1,4 +1,4 @@
-# cfp-radar
+# kamiyobi
 
 HPC・ネットワーク・システム・AI・セキュリティ会議・穴場ワークショップの締切を ICS/JSON/Pages で自動探知・配信する。
 実装の正は `SPEC.md`。購読手順は `README.md`。
@@ -24,7 +24,7 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 
 ## 禁止（ユーザー指示 2026-08-11）
 
-- **https://ccfddl.com/ をフォーク・複製（パクり）するブランチは作らない**。cfp-radar は
+- **https://ccfddl.com/ をフォーク・複製（パクり）するブランチは作らない**。kamiyobi は
   独自名・独自 UI の独立プロジェクト。ccfddl/ccf-deadlines の GitHub リポジトリは
   「上流データソース」としてだけ扱う。**第三者に届く送信は一切絶対禁止** — 上流に限らず、
   PR・issue・コメント・レビュー返信・リアクション・既存 PR の再オープン・fork
@@ -34,7 +34,7 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
   `data/extra.yaml` で自前吸収する。`upstream-patches/` は過去の記録として残すだけで、
   新規に送ることはない。
 - フォーク用途の `~/ccf-deadlines` は停止済み・放置（触らない・コミットしない）。
-- このリポジトリは `origin = ten82e/cfp-radar`（フォークではない）を維持する。
+- このリポジトリは `origin = ten82e/kamiyobi`（フォークではない）を維持する。
 
 ## レッスン
 
@@ -47,10 +47,10 @@ node src/cli.ts build --out public --offline --cache .cache --now 2026-08-09T00:
 このプロジェクトは Issue-Driven Development (IDD) を採用している。
 
 - クロスエージェントの入り口とフェーズ振り分け: **`docs/idd-workflow.md`**
-- ローカル方針（merge / review / CI / claim / 禁止事項）: **`docs/idd-cfp-radar-policy.md`**
+- ローカル方針（merge / review / CI / claim / 禁止事項）: **`docs/idd-kamiyobi-policy.md`**
 - IDD 作業を始める前に: `.github/instructions/idd-overview-core.instructions.md` を開き、
   現在のフェーズが変わったら該当フェーズファイルを手で開くこと。
-- 収録の契約・禁止節は IDD でもそのまま有効。IDD の activity は `ten82e/cfp-radar` 内部のみ。
+- 収録の契約・禁止節は IDD でもそのまま有効。IDD の activity は `ten82e/kamiyobi` 内部のみ。
 
 ## 起動時プロローグ（IDD）
 

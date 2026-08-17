@@ -11,7 +11,7 @@ do this NOW?", A4.5 asks "SHOULD we do this at all?"
 
 ## Relationship to the autopilot-suitability score
 
-The numeric `<!-- cfp-radar-autopilot-suitability: N -->`
+The numeric `<!-- kamiyobi-autopilot-suitability: N -->`
 footer is a **discovery-time** ranking/routing hint consumed in
 `idd-discover.instructions.md` (floor: `.github/idd/config.json`
 `autopilotSuitability.floor`, default `3`; see also

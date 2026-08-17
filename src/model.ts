@@ -5,7 +5,7 @@
  * into structured data.  Nothing here throws on bad input: unparsable values
  * become `null` and a de-duplicated warning is written to stderr.
  *
- * Ported from scripts/model.py (cfp-radar).
+ * Ported from scripts/model.py (kamiyobi).
  */
 
 export const DAY_MS = 86_400_000;

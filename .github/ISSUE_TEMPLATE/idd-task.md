@@ -37,4 +37,4 @@ released for IDD execution.
 
 _Autopilot suitability: 4 / 5 -- higher is more autopilot-suitable; below the configured floor is human-oriented._
 
-<!-- cfp-radar-autopilot-suitability: 4 -->
+<!-- kamiyobi-autopilot-suitability: 4 -->

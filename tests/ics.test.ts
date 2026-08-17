@@ -567,7 +567,7 @@ describe("build output generator boundary handling", () => {
     expect(mdRes).toContain("該当なし");
 
     const llmsRes = toLlmsTxt("https://example.com", null, null);
-    // site.title 未設定時のフォールバックは現行プロジェクト名 cfp-radar（#215）
-    expect(llmsRes).toContain("# cfp-radar");
+    // site.title 未設定時のフォールバックは現行プロジェクト名 kamiyobi（#215）
+    expect(llmsRes).toContain("# kamiyobi");
   });
 });

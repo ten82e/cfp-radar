@@ -1,6 +1,6 @@
-# IDD Policy Configuration — cfp-radar
+# IDD Policy Configuration — kamiyobi
 
-このリポジトリ（`ten82e/cfp-radar`）の IDD (Issue-Driven Development)
+このリポジトリ（`ten82e/kamiyobi`）の IDD (Issue-Driven Development)
 ワークフローは、`kurone-kito/idd-skill` の portable template を
 オンボーディングしたものである。本ファイルは Step 3 のローカル方針記録
 であり、`.github/idd/config.json` と整合する。将来の IDD セッションは
@@ -35,7 +35,7 @@ IDD 管理下の advisory レビュアー（GitHub Copilot 等）は**一切**
 - AGENTS.md の「禁止（ユーザー指示 2026-08-11 / 2026-08-12）」により、
   第三者への送信は一切禁止。Copilot レビュー依頼は GitHub 外部サービス
   へのレビュアー追加を伴うため、これにも抵触し得る。IDD の PR/Issue/
-  コメント活動は ten82e/cfp-radar 内部のみ（下記「外部送信の禁止」節）。
+  コメント活動は ten82e/kamiyobi 内部のみ（下記「外部送信の禁止」節）。
 
 適用済みアーティファクト: `profiles/no-advisory/README.md`
 
@@ -182,8 +182,8 @@ Issue -> automated release checklist -> claim -> PR -> CI -> autonomous merge.
 
 | Placeholder (template token) | Value |
 | --- | --- |
-| `REPO_NAME` | `cfp-radar` |
-| `PROJECT_MARKER_PREFIX` | `cfp-radar`（`^[a-z][a-z0-9-]{1,31}$` 適合） |
+| `REPO_NAME` | `kamiyobi` |
+| `PROJECT_MARKER_PREFIX` | `kamiyobi`（`^[a-z][a-z0-9-]{1,31}$` 適合） |
 | `TRUSTED_MARKER_ACTOR` | `ten82e` |
 | `INSTALL_DEPS_COMMAND` | `npm ci` |
 | `FIX_VALIDATE_COMMANDS` | `npm run format && npm run check` |
@@ -192,7 +192,7 @@ Issue -> automated release checklist -> claim -> PR -> CI -> autonomous merge.
 
 `issue-scope` は `roadmap-first`、`orphan-first-policy` は `none`（分散既定）。
 
-## 外部送信の禁止（cfp-radar 固有の拘束）
+## 外部送信の禁止（kamiyobi 固有の拘束）
 
 AGENTS.md「禁止（ユーザー指示 2026-08-11 / 2026-08-12）」は IDD
 セッションにも**そのまま適用される**:
@@ -201,13 +201,13 @@ AGENTS.md「禁止（ユーザー指示 2026-08-11 / 2026-08-12）」は IDD
   に限らず、他リポジトリ・他アカウントへの PR・issue・コメント・
   レビュー返信・リアクション・既存 PR の再オープン・fork への push・
   メール・問い合わせフォーム・SNS すべて禁止。
-- IDD の activity は **`ten82e/cfp-radar` 内部のみ**：このリポジトリの
+- IDD の activity は **`ten82e/kamiyobi` 内部のみ**：このリポジトリの
   issue の claim コメント、PR のレビュー対応・digest 更新・マージ、
   F4 のクリーンアップ等は対象内。
 - 上流の誤り・欠落は従来どおり `data/overrides.yaml` /
   `data/extra.yaml` で自前吸収する。`upstream-patches/` は過去の記録として
   残すだけで、新規送付はしない。
-- このリポジトリは `origin = ten82e/cfp-radar`（フォークではない）を維持。
+- このリポジトリは `origin = ten82e/kamiyobi`（フォークではない）を維持。
   IDD は fork を前提としない（同一リポジトリ内のブランチ/ワークツリーで
   完結）。
 
@@ -252,8 +252,8 @@ IDD の変更（コード・データ・ドキュメント）は push 前に
   （`reviewPolicy: "no-advisory"`）でレビュー済み。
 - `idd-onboard --verify` と `idd-doctor --json` を `instructions-only` プロファイルで実行し、
   必須ファイル・プレースホルダー・設定スキーマ・エントリーファイルの検査は PASS。
-  doctor の警告は `ten82e/cfp-radar:main` のブランチ保護情報を GitHub API から読めない点だけ。
-- 2026-08-13 の Discover 検査では `ten82e/cfp-radar` の open Issue は 0 件。
+  doctor の警告は `ten82e/kamiyobi:main` のブランチ保護情報を GitHub API から読めない点だけ。
+- 2026-08-13 の Discover 検査では `ten82e/kamiyobi` の open Issue は 0 件。
   したがって、IDD/Freebuff は候補なしで停止するのが正しい状態である。
 - Issue authoring is reuse-first and hold-based: existing Issues are extended
   before new creation, new drafts carry `status:authoring`, and release is an

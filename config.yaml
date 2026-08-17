@@ -1,4 +1,4 @@
-# conf-deadlines: 収録範囲・分類・フィード定義
+# kamiyobi: 収録範囲・分類・フィード定義
 #
 # 方針は「上流サブ分野の丸ごと取り込み + 例外リスト」。
 # 個別許可リストにすると上流(ccfddl / ai-deadlines)に新規追加された会議が永久に
@@ -259,15 +259,15 @@ sources:
   - name: local
     repo: data/extra.yaml
     license: MIT
-    url: https://github.com/ten82e/cfp-radar
+    url: https://github.com/ten82e/kamiyobi
 
 site:
-  title: cfp-radar
+  title: kamiyobi
   description: HPC・ネットワーク・システム・AI・セキュリティ会議・穴場ワークショップの投稿締切と開催日
-  repo: ten82e/cfp-radar
+  repo: ten82e/kamiyobi
   # Pages の公開 URL。プロジェクトページなのでリポジトリ名のパスが付く。
   # llms.txt のフィード URL はここから作る。ICS の UID 右辺は別物で、
   # SPEC.md 4.1 により conf-deadlines.github.io に固定されている(設定不可)。
-  base_url: https://ten82e.github.io/cfp-radar
+  base_url: https://ten82e.github.io/kamiyobi
   domain: ten82e.github.io
   upcoming_days: 180            # upcoming.md に載せる期間

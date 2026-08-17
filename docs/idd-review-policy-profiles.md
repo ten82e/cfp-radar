@@ -15,15 +15,15 @@ before they treat the imported workflow as final.
 This page names the supported policy shapes and the instruction files
 that need customization when a repository does not use the default.
 
-## cfp-radar selection
+## kamiyobi selection
 
-`cfp-radar` selects `no-advisory` with `fully_autonomous_merge`. The
+`kamiyobi` selects `no-advisory` with `fully_autonomous_merge`. The
 repository intentionally does not request or wait for Copilot or another
 IDD-managed advisory reviewer. CI, branch state, required reviews configured
 outside IDD, unresolved conversations, claim ownership, and review-watermark
 freshness remain mandatory gates. The repository-local decision record and
 verification evidence are in
-[`docs/idd-cfp-radar-policy.md`](idd-cfp-radar-policy.md).
+[`docs/idd-kamiyobi-policy.md`](idd-kamiyobi-policy.md).
 
 ## PR Review Profile Summary
 

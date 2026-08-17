@@ -28,5 +28,5 @@ existing roadmap first. Keep the roadmap and its children under
 
 _Autopilot suitability: 3 / 5 -- higher is more autopilot-suitable; below the configured floor is human-oriented._
 
-<!-- cfp-radar-autopilot-suitability: 3 -->
-<!-- cfp-radar-roadmap-id: replace-with-stable-roadmap-id -->
+<!-- kamiyobi-autopilot-suitability: 3 -->
+<!-- kamiyobi-roadmap-id: replace-with-stable-roadmap-id -->
