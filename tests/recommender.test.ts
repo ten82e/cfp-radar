@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 // @ts-expect-error - no declaration file for plain-JS recommender.js
 import recommender from "../site/recommender.js";
 import { contentWords, norm, parseBenchArgs, topicWords } from "../src/bench-recommender.ts";
-import { venuePapersHash } from "../src/embeddings.ts";
+import { main as embeddingsMain, venuePapersHash } from "../src/embeddings.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 const R = recommender as any;
@@ -1619,5 +1619,30 @@ describe("parseBenchArgs 不正数値のフォールバック (#302 続編)", ()
     // 正整数・ゼロ既定の正当入力・既定値は従来どおり
     expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=10"]).topK).toBe(10);
     expect(parseBenchArgs(["node", "bench-recommender.ts"]).topK).toBe(5);
+  });
+});
+
+describe("embeddingsMain 引数パース (#322)", () => {
+  it("イコール構文 --force=true / -f=true を認識し非存在ファイルで 1 を返す", async () => {
+    const code1 = await embeddingsMain([
+      "node",
+      "embeddings.ts",
+      "--force=true",
+      "/tmp/nonexistent-data-999.json",
+      "/tmp/out-999.json",
+    ]);
+    expect(code1).toBe(1); // data not found (not usage error 2)
+
+    const code2 = await embeddingsMain([
+      "node",
+      "embeddings.ts",
+      "-f=true",
+      "/tmp/nonexistent-data-999.json",
+      "/tmp/out-999.json",
+    ]);
+    expect(code2).toBe(1); // data not found (not usage error 2)
+
+    const code3 = await embeddingsMain(["node", "embeddings.ts", "--help"]);
+    expect(code3).toBe(0);
   });
 });
