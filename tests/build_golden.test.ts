@@ -1341,13 +1341,38 @@ it("site template localized shortcuts label and preset button active sync", () =
 
 it("site template does not include external Google Fonts per SPEC §7 (#223)", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  // SPEC §7: 単一ファイル。外部 CDN・Web フォントを使わない
+  // SPEC §7: コア UI は外部 Web フォントを使わない
   expect(template).not.toContain("fonts.googleapis.com");
   expect(template).not.toContain("fonts.gstatic.com");
   expect(template).not.toContain("family=Inter");
   expect(template).not.toContain("family=JetBrains+Mono");
   expect(template).toContain("--font-sans: system-ui,");
   expect(template).toContain("--font-mono: ui-monospace,");
+});
+
+it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section7 = spec.slice(spec.indexOf("## 7."), spec.indexOf("## 8."));
+  expect(section7).toMatch(/cdn\.jsdelivr\.net/);
+  expect(section7).toMatch(/@xenova\/transformers/);
+  expect(section7).toMatch(/cdnjs\.cloudflare\.com/);
+  expect(section7).toMatch(/pdf\.js/);
+  expect(section7).toMatch(/recommender\.js/);
+  expect(section7).toMatch(/フォールバック/);
+
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const allowed = [
+    "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm",
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+  ];
+  const urls = [...template.matchAll(/https:\/\/[^\s"'`]+/g)].map((m) => m[0]);
+  const cdnLike = urls.filter((u) =>
+    /cdn\.|jsdelivr|unpkg|cdnjs|googleapis|gstatic|esm\.sh/i.test(u),
+  );
+  for (const url of cdnLike) {
+    expect(allowed).toContain(url);
+  }
 });
 
 it("site template copyMarkdownRef delegates to Recommender.formatMarkdownRef (#228)", () => {

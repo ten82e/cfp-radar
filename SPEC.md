@@ -24,6 +24,11 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.7（推薦 CDN の例外）。** §7 の「外部 CDN・依存ライブラリなし」はコア UI
+（表・絞り込み・コピー・システムフォント）に限る。§10 の推薦は sibling の
+`recommender.js` と、任意の CDN 遅延ロード（transformers.js / pdf.js）を使う。
+未接続時は語彙スコアと TXT 入力へフォールバックする（#370）。
+
 **rev.6（upcoming.md の窓を設定可能に）。** `config.yaml` の `site.upcoming_days`
 （既定 180）を `upcoming.md` の窓として実際に読むようにした。宣言のみで読まれず
 常に 180 日で固定されていた契約バグ（#95）を解消し、`llms.txt` の説明も同じ値に
@@ -859,7 +864,15 @@ on:
 
 ## 7. 静的サイト（`site/template.html`・担当D）
 
-- **単一ファイル**。外部 CDN・Web フォント・外部画像を使わない。
+- **コア UI は単一ファイル**。表・絞り込み・コピー・テーマ・フォントは外部 CDN・
+  Web フォント・外部画像を使わない（#223）。sibling の `recommender.js`（§10）は
+  ビルドが `index.html` と同じディレクトリへ同梱する。
+- 推薦機能だけ、オフライン時フォールバック付きの任意 CDN を遅延ロードしてよい。
+  許可するのは次の 3 URL に限る。
+  `https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm`、
+  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js`、
+  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`。
+  CDN が使えないときは語彙スコアと TXT 入力だけで動く。
 - ビルド時に、テンプレート中の文字列 **`/*__DATA__*/null`** が
   `data.json` 相当の JSON リテラルに置換される。これが唯一のマーカーである
   （rev.1 にあった `<!--DATA-->` は削除した）。
@@ -885,7 +898,8 @@ on:
   横スクロールし、body は横スクロールさせない。狭い画面ではカード表示に落とす。
 - 日本語 UI。ラテン文字の英単語を不必要に混ぜない
   （「フィルタ」ではなく「絞り込み」、「デッドライン」ではなく「締切」）。
-- 1000 件規模でも操作が引っかからないこと。依存ライブラリなし。
+- 1000 件規模でも操作が引っかからないこと。コア UI に依存ライブラリは置かない
+  （推薦の任意 CDN は上の例外）。
 
 ---
 
