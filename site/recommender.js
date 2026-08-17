@@ -251,7 +251,9 @@
   function buildNameIdf(confs) {
     var nameDf = {};
     var paperDf = {};
-    (confs || []).forEach((c) => {
+    var safeConfs = Array.isArray(confs) ? confs : [];
+    safeConfs.forEach((c) => {
+      if (!c || typeof c !== "object") return;
       var seenName = {};
       var seenPaper = {};
       normKey((c.title || "") + " " + (c.full_name || ""))
@@ -262,8 +264,13 @@
             nameDf[w] = (nameDf[w] || 0) + 1;
           }
         });
-      (c.papers || []).forEach((t) => {
-        normKey(t)
+      var papers = Array.isArray(c.papers)
+        ? c.papers
+        : typeof c.papers === "string" && c.papers.trim() !== ""
+          ? [c.papers.trim()]
+          : [];
+      papers.forEach((t) => {
+        normKey(t || "")
           .split(" ")
           .forEach((w) => {
             if (w.length > 3 && !STOPWORDS.has(w) && !seenPaper[w]) {
@@ -273,8 +280,8 @@
           });
       });
     });
-    var N = (confs || []).length;
-    var idfOf = (d) => Math.log(1 + N / (d + 1)) / Math.log(1 + N);
+    var N = safeConfs.length;
+    var idfOf = (d) => (N <= 0 ? 0 : Math.log(1 + N / (d + 1)) / Math.log(1 + N));
     var mk = (df) => {
       var out = {};
       Object.keys(df).forEach((w) => {
@@ -297,7 +304,16 @@
    * ブラウザ/ベンチから上書きできる。nameOnce は会議名一致を「先頭 1 語のみ固定加点」
    * （語数に比例させない）にする実験用フラグ。
    */
-  var SIG_WEIGHTS = { domain: 15, name: 15, paper: 15, paperCap: 4, jp: 30, tags: 10, venue: 40, nameOnce: false };
+  var SIG_WEIGHTS = {
+    domain: 15,
+    name: 15,
+    paper: 15,
+    paperCap: 4,
+    jp: 30,
+    tags: 10,
+    venue: 40,
+    nameOnce: false,
+  };
   function setSigWeights(w) {
     if (!w) return;
     Object.keys(SIG_WEIGHTS).forEach((k) => {
@@ -390,7 +406,7 @@
         venueHit: false,
         details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
       };
-    var pt = (((p.title || "") + " " + (p.keywords || "")).trim()).toLowerCase();
+    var pt = ((p.title || "") + " " + (p.keywords || "")).trim().toLowerCase();
     if (!pt)
       return {
         score: 0,
@@ -446,7 +462,13 @@
     var nameWords = (conf.title + " " + conf.full)
       .split(" ")
       .filter((w) => w.length > 3 && !STOPWORDS.has(w));
-    var paperWords = hasJapanese(pt) || p.venue ? [] : conf.papers.join(" ").split(" ").filter((w) => w.length > 3 && !STOPWORDS.has(w) && !GENERIC_PAPER_WORDS.has(w));
+    var paperWords =
+      hasJapanese(pt) || p.venue
+        ? []
+        : conf.papers
+            .join(" ")
+            .split(" ")
+            .filter((w) => w.length > 3 && !STOPWORDS.has(w) && !GENERIC_PAPER_WORDS.has(w));
     var nameGiven = false;
     nameWords.forEach((w) => {
       if (!wordInText(pt, w)) return;
@@ -508,10 +530,7 @@
       // 原文（日本語含む）照合: 「情報処理学会 DPS 研究会」タグが会議名に含まれれば一致。
       // 短いタグ（ISC 等）は完全一致のみ（ISCA への部分一致誤爆を防ぐ）
       c = (r && r.conf) || r || {};
-      rawHay = [
-        (c.title || "").replace(/\s+/g, " "),
-        (c.full_name || "").replace(/\s+/g, " "),
-      ];
+      rawHay = [(c.title || "").replace(/\s+/g, " "), (c.full_name || "").replace(/\s+/g, " ")];
       rt = rawTag.toLowerCase();
       venueHit =
         rawTag.length >= 2 &&
@@ -568,22 +587,33 @@
    * 特集号（締切付き）は通常の締切行で扱うため除外する。 */
   function journalRows(confs, now) {
     var out = [];
-    (confs || []).forEach((conf) => {
-      if (!conf || !Array.isArray(conf.tags) || conf.tags.indexOf("journal") === -1) return;
-      var hasDl = (conf.editions || []).some((e) => (e.deadlines || []).length > 0);
+    var safeConfs = Array.isArray(confs) ? confs : [];
+    safeConfs.forEach((conf) => {
+      if (!conf || typeof conf !== "object") return;
+      var tags = Array.isArray(conf.tags)
+        ? conf.tags
+        : typeof conf.tags === "string" && conf.tags.trim() !== ""
+          ? [conf.tags.trim()]
+          : [];
+      if (tags.indexOf("journal") === -1) return;
+      var hasDl = (conf.editions || []).some(
+        (e) => e && e.deadlines && Array.isArray(e.deadlines) && e.deadlines.length > 0,
+      );
       if (hasDl) return;
       var pairs = [];
-      if (conf.rank) {
+      if (conf.rank && typeof conf.rank === "object") {
         Object.keys(conf.rank).forEach((rk) => {
           if (conf.rank[rk]) {
             pairs.push(rk + ":" + conf.rank[rk]);
           }
         });
       }
-      var baseHay = [conf.title, conf.full_name, conf.key]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+      var baseHay = [conf.title, conf.full_name, conf.key].filter(Boolean).join(" ").toLowerCase();
+      var cats = Array.isArray(conf.categories)
+        ? conf.categories
+        : typeof conf.categories === "string" && conf.categories.trim() !== ""
+          ? [conf.categories.trim()]
+          : [];
       out.push({
         conf: conf,
         ed: { place: "", date_text: "" },
@@ -592,8 +622,8 @@
         est: false,
         t: now,
         tLast: now,
-        cats: conf.categories || [],
-        tags: conf.tags || [],
+        cats: cats,
+        tags: tags,
         rankPairs: pairs,
         hay: baseHay + " journal 常時受付",
         name: conf.title,
@@ -842,7 +872,9 @@
    */
   function wordInText(hay, w) {
     if (!hay || !w) return false;
-    var safeW = String(w).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var safeW = String(w)
+      .toLowerCase()
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     if (!safeW) return false;
     var re;
     if (safeW.endsWith("ies") && safeW.length > 4) {
@@ -1074,7 +1106,12 @@
    */
   function getGCalUrl(r, kindLabels) {
     if (!r || !r.conf) return "";
-    var t = typeof r.t === "number" && !isNaN(r.t) ? r.t : (r.t instanceof Date && !isNaN(r.t.getTime()) ? r.t.getTime() : 0);
+    var t =
+      typeof r.t === "number" && !isNaN(r.t)
+        ? r.t
+        : r.t instanceof Date && !isNaN(r.t.getTime())
+          ? r.t.getTime()
+          : 0;
     if (!t) return "";
     var kl = kindLabels || {
       abstract: "概要締切",
@@ -1094,18 +1131,25 @@
     var round = r.round || dl.round;
     var label = kl[r.kind] || r.kind || "締切";
     var title = encodeURIComponent(
-      "[" + (r.conf.title || r.conf.key || "") + "] " + label + (round && round > 1 ? " (R" + round + ")" : "")
+      "[" +
+        (r.conf.title || r.conf.key || "") +
+        "] " +
+        label +
+        (round && round > 1 ? " (R" + round + ")" : ""),
     );
-    var pad = function(n) { return (n < 10 ? "0" : "") + n; };
+    var pad = (n) => (n < 10 ? "0" : "") + n;
     var dates = "";
     if (r.kind === "event") {
       var tStart = t;
-      var tEnd = typeof r.tLast === "number" && !isNaN(r.tLast) ? r.tLast : (r.tLast instanceof Date && !isNaN(r.tLast.getTime()) ? r.tLast.getTime() : tStart);
+      var tEnd =
+        typeof r.tLast === "number" && !isNaN(r.tLast)
+          ? r.tLast
+          : r.tLast instanceof Date && !isNaN(r.tLast.getTime())
+            ? r.tLast.getTime()
+            : tStart;
       var dStart = new Date(tStart);
       var dEnd = new Date(tEnd + 86400000);
-      var fmtDateGCal = function(d) {
-        return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
-      };
+      var fmtDateGCal = (d) => d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
       dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
     } else {
       var dEnd = new Date(t);
@@ -1131,7 +1175,16 @@
     }
     var details = encodeURIComponent(descParts.join("\n"));
     var location = encodeURIComponent(ed.place || "");
-    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
+    return (
+      "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
+      title +
+      "&dates=" +
+      dates +
+      "&details=" +
+      details +
+      "&location=" +
+      location
+    );
   }
 
   /* Markdown 参照表記の生成。

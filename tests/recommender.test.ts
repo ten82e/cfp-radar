@@ -1700,4 +1700,41 @@ describe("embeddingsMain 引数パース (#322)", () => {
     const matches = R.matchVenueTag("SC", [null, undefined, directConf, { conf: directConf }]);
     expect(matches).toHaveLength(2);
   });
+
+  it("buildNameIdf and journalRows handle null items and string tags/papers safely (#360)", () => {
+    const idfNull = R.buildNameIdf(null);
+    expect(idfNull).toEqual({ name: {}, paper: {} });
+
+    const idfMixed = R.buildNameIdf([
+      null,
+      undefined,
+      {
+        title: "Test Conf",
+        full_name: "International Test Conference",
+        papers: "Single Paper String Title",
+      },
+    ]);
+    expect(idfMixed.name).toBeDefined();
+    expect(idfMixed.paper).toBeDefined();
+
+    const jRows = R.journalRows(
+      [
+        null,
+        undefined,
+        {
+          title: "Test Journal",
+          key: "test-journal",
+          tags: "journal",
+          categories: "systems",
+          rank: { ccf: "A" },
+        },
+      ],
+      1000,
+    );
+    expect(jRows).toHaveLength(1);
+    expect(jRows[0].kind).toBe("journal");
+    expect(jRows[0].tags).toEqual(["journal"]);
+    expect(jRows[0].cats).toEqual(["systems"]);
+    expect(jRows[0].rankPairs).toEqual(["ccf:A"]);
+  });
 });
