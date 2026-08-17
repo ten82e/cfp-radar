@@ -597,6 +597,81 @@ describe("snapshot fallback", () => {
     expect(data.conferences.find((c) => c.key === "partial-live-conf")).toBeDefined();
   });
 
+  it("partial upstream failure merges snapshot conferences from the failed source (#412)", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(
+      join(root, "data", "snapshot.json"),
+      JSON.stringify({
+        conferences: [
+          {
+            key: "partial-live-conf",
+            title: "Stale Live From Snapshot",
+            categories: ["networking"],
+            sources: ["ccfddl"],
+            editions: [
+              {
+                year: 2027,
+                id: "stale27",
+                deadlines: [{ kind: "paper", utc: "2026-10-01T23:59:59Z" }],
+              },
+            ],
+          },
+          {
+            key: "aideadlines-only-conf",
+            title: "AI Only",
+            categories: ["ai"],
+            sources: ["aideadlines"],
+            editions: [
+              {
+                year: 2027,
+                id: "aio27",
+                deadlines: [{ kind: "paper", utc: "2026-12-01T23:59:59Z" }],
+              },
+            ],
+          },
+        ],
+      }),
+      "utf8",
+    );
+    const live = makeConference({
+      key: "partial-live-conf",
+      title: "Partial Live",
+      categories: ["networking"],
+      sources: ["ccfddl"],
+      editions: [
+        makeEdition({
+          year: 2027,
+          deadlines: [makeDeadline("paper", "Paper", utc(2026, 11, 1))],
+        }),
+      ],
+    });
+    const live2 = makeConference({
+      key: "partial-live-conf-2",
+      title: "Partial Live 2",
+      categories: ["systems"],
+      sources: ["ccfddl"],
+      editions: [
+        makeEdition({
+          year: 2027,
+          deadlines: [makeDeadline("paper", "Paper", utc(2026, 11, 2))],
+        }),
+      ],
+    });
+    hooks.collect = async () => ({
+      groups: [[live, live2], [], []],
+      failed: new Set(["aideadlines"]),
+    });
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-partial-merge-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{ key: string; title: string }>;
+    };
+    expect(data.conferences.find((c) => c.key === "aideadlines-only-conf")).toBeDefined();
+    expect(data.conferences.find((c) => c.key === "partial-live-conf")?.title).toBe("Partial Live");
+  });
+
   it("build aborts when hand-edited data/overrides.yaml is unparsable", async () => {
     const root = isolatedRepo();
     setRoot(root);
