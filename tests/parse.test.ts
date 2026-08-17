@@ -9,6 +9,11 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parsePrimaryArgs } from "../src/fetch-primary.ts";
 import {
+  addDays,
+  cmpStr,
+  dateOnly,
+  fmtDate,
+  fmtUTC,
   monthOf,
   parseDateRange,
   parseInstant,
@@ -1216,5 +1221,29 @@ tags: machine-learning
     } finally {
       if (existsSync(localTmp)) unlinkSync(localTmp);
     }
+  });
+
+  it("addDays, dateOnly, cmpStr, fmtDate, fmtUTC, and slug handle null/undefined safely (#356)", () => {
+    expect(fmtDate(null)).toBe("");
+    expect(fmtDate(undefined)).toBe("");
+    expect(fmtDate(new Date(NaN))).toBe("");
+
+    expect(fmtUTC(null, "%Y-%m-%d")).toBe("");
+    expect(fmtUTC(undefined, "%Y-%m-%d")).toBe("");
+    expect(fmtUTC(new Date(NaN), "%Y-%m-%d")).toBe("");
+
+    expect(dateOnly(null).toISOString()).toBe("1970-01-01T00:00:00.000Z");
+    expect(dateOnly(undefined).toISOString()).toBe("1970-01-01T00:00:00.000Z");
+
+    expect(addDays(null, 1).toISOString()).toBe("1970-01-02T00:00:00.000Z");
+    expect(addDays(undefined, 2).toISOString()).toBe("1970-01-03T00:00:00.000Z");
+
+    expect(cmpStr(null, "a")).toBe(-1);
+    expect(cmpStr("b", null)).toBe(1);
+    expect(cmpStr(null, null)).toBe(0);
+    expect(cmpStr(undefined, undefined)).toBe(0);
+
+    expect(slug(null)).toBe("");
+    expect(slug(undefined)).toBe("");
   });
 });
