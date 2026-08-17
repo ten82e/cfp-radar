@@ -243,6 +243,14 @@ describe("parse_date_range", () => {
     resetWarnings();
   });
 
+  it("TBD with a year is a silent unpublished-date value (#388)", () => {
+    resetWarnings();
+    expect(parseDateRange("TBD 2027", 2027)).toEqual([null, null]);
+    expect(parseDateRange("tbd 2026", 2026)).toEqual([null, null]);
+    expect(warningCounts()).toEqual({});
+    resetWarnings();
+  });
+
   it("season-only text still warns as unparsable", () => {
     resetWarnings();
     expect(parseDateRange("Summer 2026", 2026)).toEqual([null, null]);
