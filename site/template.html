@@ -901,19 +901,19 @@ footer a:hover { text-decoration: underline; }
       actionRow = '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">常時受付のジャーナル（締切なし）です。投稿規程を公式サイトで確認してください。</div>';
     } else {
       actionRow = '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">' +
-        '<a href="' + getGCalUrl(r) + '" target="_blank" style="flex: 1; text-align: center; background: var(--chip); color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border);">Google カレンダーに追加</a>' +
+        '<a href="' + esc(getGCalUrl(r)) + '" target="_blank" style="flex: 1; text-align: center; background: var(--chip); color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border);">Google カレンダーに追加</a>' +
         '<button onclick="copyMarkdownRef(window._activeRef)" style="flex: 1; font-size: 0.82rem;">Markdown 参照コピー</button>' +
         '</div>';
     }
     html += actionRow;
 
     if (r.conf.link || r.ed.link) {
-      html += '<a href="' + (r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く</a>';
+      html += '<a href="' + esc(r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く</a>';
     }
 
     html += '<div style="font-size: 0.85rem;">' +
-      '<p style="margin-bottom: 8px;"><strong>開催地:</strong> ' + (r.ed.place || "未定") + '</p>' +
-      '<p style="margin-bottom: 8px;"><strong>会期:</strong> ' + (r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
+      '<p style="margin-bottom: 8px;"><strong>開催地:</strong> ' + esc(r.ed.place || "未定") + '</p>' +
+      '<p style="margin-bottom: 8px;"><strong>会期:</strong> ' + esc(r.ed.date_text || r.ed.event_start || "未定") + '</p>' +
       '</div>';
 
     window._activeRef = r;

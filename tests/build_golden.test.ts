@@ -1403,6 +1403,20 @@ it("site template does not include external Google Fonts per SPEC §7 (#223)", (
   expect(template).toContain("--font-mono: ui-monospace,");
 });
 
+it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const start = template.indexOf("function openDrawer");
+  const end = template.indexOf("window.openDrawer", start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  const body = template.slice(start, end);
+  expect(body).toContain("esc(r.ed.place");
+  expect(body).toContain("esc(r.ed.date_text");
+  expect(body).toMatch(
+    /esc\(\s*(r\.ed\.link\s*\|\|\s*r\.conf\.link|r\.conf\.link\s*\|\|\s*r\.ed\.link)/,
+  );
+});
+
 it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
   const section7 = spec.slice(spec.indexOf("## 7."), spec.indexOf("## 8."));
