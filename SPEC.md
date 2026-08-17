@@ -24,6 +24,10 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.8（§8 の開催行契約）。** §8 の `build_golden.test.ts` 行が、rev.4 以前の
+「開催回が index.html に届いている」を残していた。実装固定は
+`index.html has no meeting rows`。開催日は `events.ics` / `upcoming.md`（#372）。
+
 **rev.7（推薦 CDN の例外）。** §7 の「外部 CDN・依存ライブラリなし」はコア UI
 （表・絞り込み・コピー・システムフォント）に限る。§10 の推薦は sibling の
 `recommender.js` と、任意の CDN 遅延ロード（transformers.js / pdf.js）を使う。
@@ -935,8 +939,9 @@ on:
 - `build_golden.test.ts`: 小さな固定入力から `--now` 固定でビルドし、
   ファイル一式が生成されること・JSON スキーマが §4.2 どおりであること。
   推定フィードがカテゴリ別に分かれ、確定フィードに推定が混ざらないこと。
-  締切を持たない会議（ISC High Performance・HOTI・情報処理学会 HPC 研究会）の
-  開催回が index.html に届いていること。
+  サイト表は投稿締切のみ（`index.html has no meeting rows`）。締切を持たない会議
+  （ISC High Performance・HOTI・情報処理学会 HPC 研究会）の開催日は
+  `events.ics` と `upcoming.md` に出し、index.html の表には開催行を出さない。
 
 `tests/fixtures/` に上流 YAML の**縮小版**を置く（ネットワーク不要）。
 実物から次のエッジケースを含む代表を抜く:
