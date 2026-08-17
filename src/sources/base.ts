@@ -26,14 +26,19 @@ export interface Source {
   load(cacheDir: string, options?: { offline?: boolean }): Promise<unknown[]>;
 }
 
-export function cacheSlot(cacheDir: string, repo: string, ref: string): string {
-  const safeRepo = repo.replace(/\//g, "__");
-  const safeRef = ref.replace(/\//g, "__");
-  return join(cacheDir, `${safeRepo}__${safeRef}`);
+export function cacheSlot(
+  cacheDir: string | null | undefined,
+  repo: string | null | undefined,
+  ref: string | null | undefined,
+): string {
+  const safeRepo = String(repo ?? "").replace(/\//g, "__");
+  const safeRef = String(ref ?? "").replace(/\//g, "__");
+  return join(String(cacheDir ?? ".cache"), `${safeRepo}__${safeRef}`);
 }
 
 /** The single top-level directory inside an extracted tarball, or null. */
-export function extractedRoot(slot: string): string | null {
+export function extractedRoot(slot: string | null | undefined): string | null {
+  if (!slot || typeof slot !== "string") return null;
   if (!existsSync(slot)) return null;
   try {
     if (!statSync(slot).isDirectory()) return null;
