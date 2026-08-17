@@ -259,6 +259,12 @@ describe("parseDbworldHtml", () => {
         "[DEADLINE APPROACHING][CWN'26] Thirteenth International Workshop on Cooperative Wireless Networks",
       )[0],
     ).toBe("Thirteenth International Workshop on Cooperative Wireless Networks");
+    expect(cleanDbworldTitle("\x96 ICECCS 2026 (Brisbane, Australia, DDL Extended))")[0]).toBe(
+      "ICECCS 2026",
+    );
+    expect(cleanDbworldTitle("PDP 2027 \x96")[0]).toBe("PDP 2027");
+    expect(cleanDbworldTitle("NLP4KGC\x9226 \x96 Deadline Extension")[0]).toBe("NLP4KGC'26");
+    expect(cleanDbworldTitle("(Submission Deadline Extended: July 21st, 2026)")[0]).toBe("");
   });
 });
 
