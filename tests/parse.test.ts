@@ -1065,4 +1065,31 @@ describe("aideadlines deadlinesOf parsing", () => {
     });
     expect(conf?.rank).toEqual({ ccf: "A" });
   });
+
+  it("ccfddl conferenceOf falls back to raw.link and raw.full_name (#320)", () => {
+    const conf1 = ccfddlConferenceOf({
+      title: "TestConf",
+      link: "https://example.com/main",
+      full_name: "Test Conference Full Name",
+      confs: [],
+    });
+    expect(conf1?.link).toBe("https://example.com/main");
+    expect(conf1?.full_name).toBe("Test Conference Full Name");
+
+    // When description is present, description wins
+    const conf2 = ccfddlConferenceOf({
+      title: "TestConf2",
+      description: "Description Full Name",
+      full_name: "Ignored Full Name",
+    });
+    expect(conf2?.full_name).toBe("Description Full Name");
+
+    // When edition has link, edition link wins
+    const conf3 = ccfddlConferenceOf({
+      title: "TestConf3",
+      link: "https://example.com/top",
+      confs: [{ year: 2026, link: "https://example.com/2026" }],
+    });
+    expect(conf3?.link).toBe("https://example.com/2026");
+  });
 });
