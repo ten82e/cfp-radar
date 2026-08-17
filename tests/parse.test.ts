@@ -1117,4 +1117,19 @@ describe("aideadlines deadlinesOf parsing", () => {
     expect(res2.apply).toBe(false);
     expect(res2.help).toBe(true);
   });
+
+  it("cacheSlot and extractedRoot handle null and undefined safely (#326)", () => {
+    expect(extractedRoot(null)).toBeNull();
+    expect(extractedRoot(undefined)).toBeNull();
+    expect(extractedRoot("")).toBeNull();
+    expect(extractedRoot("/tmp/nonexistent-slot-12345")).toBeNull();
+
+    expect(cacheSlot(null, "ccfddl/ccf-deadlines", "main")).toBe(
+      ".cache/ccfddl__ccf-deadlines__main",
+    );
+    expect(cacheSlot(undefined, null, null)).toBe(".cache/__");
+    expect(cacheSlot("/custom/cache", "user/repo", "feat/branch")).toBe(
+      "/custom/cache/user__repo__feat__branch",
+    );
+  });
 });
