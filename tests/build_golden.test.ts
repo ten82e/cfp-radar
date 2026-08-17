@@ -19,6 +19,7 @@ import {
   recordsOf,
   setRoot,
   titleWithYear,
+  toJson,
   toLlmsTxt,
   toUpcomingMd,
 } from "../src/build.ts";
@@ -1627,4 +1628,30 @@ it("parseCliArgs and cliMain handle null/undefined and auto-detect argv offset (
 
   const nullCode = await cliMain(null);
   expect(nullCode).toBe(2);
+});
+
+it("buildAll, toJson, and toUpcomingMd handle null/undefined now and invalid upcoming_days safely (#354)", async () => {
+  const jsonNull = toJson([], {}, null);
+  expect(typeof jsonNull.generated_at).toBe("string");
+
+  const mdNull = toUpcomingMd([], null);
+  expect(mdNull).toContain("該当なし");
+
+  const mdCustomNegative = toUpcomingMd([], null, -10 as any);
+  expect(mdCustomNegative).toContain("直近 180 日の締切と開催");
+
+  const tmpDir = mkdtempSync(join(tmpdir(), "build-now-test-"));
+  try {
+    const stats = await buildAll([], { site: { upcoming_days: -50 } }, tmpDir, null, {
+      noEmbeddings: true,
+    });
+    expect(stats.conferences).toBe(0);
+    expect(stats.deadlines).toBe(0);
+    expect(existsSync(join(tmpDir, "data.json"))).toBe(true);
+    expect(existsSync(join(tmpDir, "upcoming.md"))).toBe(true);
+    const md = readFileSync(join(tmpDir, "upcoming.md"), "utf8");
+    expect(md).toContain("直近 180 日の締切と開催");
+  } finally {
+    // cleanup
+  }
 });
