@@ -637,6 +637,7 @@ export function cleanDbworldTitle(subject: string | null | undefined): [string, 
   t = t.replace(/\s*\|\|?.*$/, ""); // "|" 区切り以降
   t = t.replace(/\s*:\s*[^()]*\bDeadline\b.*$/i, "");
   t = t.replace(/\s*[-–]\s*(?:Deadline|Extended\s+deadline|Deadline\s+Extension).*$/i, "");
+  t = t.replace(/\s+Deadlines?\s+Extended\b.*$/i, "");
   t = t.replace(/\s*[(（][^)）]*\b(?:DDL\s+)?Extended\b[^)）]*[)）]+\s*$/iu, "");
   t = t
     .replace(/\s+/g, " ")
