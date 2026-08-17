@@ -1297,6 +1297,47 @@ describe("conferencesFromJson & defensive merge operations", () => {
     expect(confs[0].editions[0].deadlines[0].kind).toBe("paper");
   });
 
+  it("conferencesFromJson normalizes non-array tags/categories/sources (strings) without throwing (#366)", () => {
+    const payload = {
+      conferences: [
+        {
+          key: "test-conf",
+          title: "Test Conf",
+          tags: "systems",
+          categories: "systems",
+          sources: "local",
+          editions: [
+            {
+              year: 2026,
+              deadlines: [{ kind: "paper", label: "Submission", utc: "2026-08-09T00:00:00Z" }],
+            },
+          ],
+        },
+      ],
+    };
+    const confs = conferencesFromJson(payload as any);
+    expect(confs).toHaveLength(1);
+    expect(confs[0].tags).toEqual(["systems"]);
+    expect(confs[0].categories).toEqual(["systems"]);
+    expect(confs[0].sources).toEqual(["local"]);
+
+    // mixed array with null/empty elements is trimmed and filtered
+    const mixed = conferencesFromJson({
+      conferences: [
+        {
+          key: "mixed",
+          title: "Mixed",
+          tags: ["hpc", null, " ", " systems "],
+          categories: ["systems", undefined],
+          sources: "local",
+          editions: [],
+        },
+      ],
+    } as any);
+    expect(mixed[0].tags).toEqual(["hpc", "systems"]);
+    expect(mixed[0].categories).toEqual(["systems"]);
+  });
+
   it("merge functions handle null, undefined, and non-array arguments safely", () => {
     expect(mergeSources(null, {})).toEqual([]);
     expect(mergeSources(undefined, null as any)).toEqual([]);
