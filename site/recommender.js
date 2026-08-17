@@ -351,7 +351,7 @@
 
   /* 会議側の照合文字列（key / title / full_name / tags / 日本語表記 / 代表論文語彙） */
   function confHay(r) {
-    var c = (r && r.conf) || {};
+    var c = (r && r.conf) || r || {};
     return {
       key: normKey(c.key),
       title: normKey(c.title),
@@ -410,6 +410,7 @@
     var rt;
     var aliases;
     var hl;
+    var c;
 
     // 注: 日本語→英語展開（expandJp）はスコアリングに使わない。
     // 実測（ベンチマーク A/B）: 展開語が英語名の会議に広く一致して誤爆し、
@@ -506,9 +507,10 @@
       hay = [conf.key, conf.title, conf.full].filter(Boolean);
       // 原文（日本語含む）照合: 「情報処理学会 DPS 研究会」タグが会議名に含まれれば一致。
       // 短いタグ（ISC 等）は完全一致のみ（ISCA への部分一致誤爆を防ぐ）
+      c = (r && r.conf) || r || {};
       rawHay = [
-        (r.conf.title || "").replace(/\s+/g, " "),
-        (r.conf.full_name || "").replace(/\s+/g, " "),
+        (c.title || "").replace(/\s+/g, " "),
+        (c.full_name || "").replace(/\s+/g, " "),
       ];
       rt = rawTag.toLowerCase();
       venueHit =
@@ -731,7 +733,9 @@
     var nv = normKey(tag);
     if (raw.length < 2 && nv.length < 2) return [];
     var out = [];
-    (confs || []).forEach((c) => {
+    (confs || []).forEach((item) => {
+      if (!item) return;
+      var c = item.conf || item;
       var key = normKey(c.key);
       var hay = [key, normKey(c.title), normKey(c.full_name)].filter(Boolean); // 原文（日本語含む）: 空白正規化したタグが会議の名称に含まれれば一致。
       // 短いタグ（ISC 等）は完全一致のみ（ISCA への部分一致誤爆を防ぐ）
@@ -756,7 +760,7 @@
           if (aliases) hit = aliases.some((k) => normKey(k) === key);
         }
       }
-      if (hit) out.push(c);
+      if (hit) out.push(item);
     });
     return out;
   }

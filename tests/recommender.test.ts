@@ -1673,4 +1673,31 @@ describe("embeddingsMain 引数パース (#322)", () => {
     const code3 = await embeddingsMain(["node", "embeddings.ts", "--help"]);
     expect(code3).toBe(0);
   });
+
+  it("scorePapers, breakdown, and matchVenueTag handle direct conf objects, bare rows, and nulls (#342)", () => {
+    const directConf = {
+      key: "sc",
+      title: "SC",
+      full_name: "Supercomputing",
+      tags: ["hpc"],
+      categories: ["hpc"],
+    };
+
+    // scorePapers directly on conference object
+    const s1 = R.scorePapers(directConf, [{ title: "Parallel computing", venue: "SC" }]);
+    expect(s1).toBeGreaterThan(0);
+
+    // breakdown on direct conference object
+    const b1 = R.breakdown(directConf, [{ title: "Parallel computing", venue: "SC" }]);
+    expect(b1.score).toBeGreaterThan(0);
+    expect(b1.venueHit).toBe(true);
+
+    // scorePapers on bare row lacking conf
+    const s2 = R.scorePapers({ cats: ["hpc"] }, [{ title: "Parallel computing", venue: "SC" }]);
+    expect(s2).toBeGreaterThan(0);
+
+    // matchVenueTag with null, direct conf, and wrapped row
+    const matches = R.matchVenueTag("SC", [null, undefined, directConf, { conf: directConf }]);
+    expect(matches).toHaveLength(2);
+  });
 });
