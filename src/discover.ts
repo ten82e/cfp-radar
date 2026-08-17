@@ -947,9 +947,13 @@ export function parseIpsjCfpHtml(
       key: `ipsj-${fname}`,
       title,
       full_name: title,
-      link: url.startsWith("http")
-        ? url
-        : `${pageUrl.split("/").slice(0, -1).join("/")}/${url.replace(/^\//, "")}`,
+      link: (() => {
+        try {
+          return new URL(url, pageUrl).href;
+        } catch {
+          return url;
+        }
+      })(),
       categories: [],
       source_type: "special_issue",
       date_text: deadline,

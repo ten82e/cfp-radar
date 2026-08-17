@@ -946,4 +946,17 @@ describe("discover and review boundary handling", () => {
       );
     }).not.toThrow();
   });
+
+  it("parseIpsjCfpHtml resolves root-relative and document-relative links without duplicate path segments (#318)", () => {
+    const html = `
+      <div>
+        <a href="/journal/cfp/ipsj-27-p.html">論文誌「量子情報処理」特集 投稿締切：2026年10月15日</a>
+        <a href="cfp/ipsj-28-p.html">論文誌「システムソフトウェア」特集 投稿締切：2026年11月20日</a>
+      </div>
+    `;
+    const res = parseIpsjCfpHtml(html, "https://www.ipsj.or.jp/journal/index.html");
+    expect(res).toHaveLength(2);
+    expect(res[0].link).toBe("https://www.ipsj.or.jp/journal/cfp/ipsj-27-p.html");
+    expect(res[1].link).toBe("https://www.ipsj.or.jp/journal/cfp/ipsj-28-p.html");
+  });
 });
