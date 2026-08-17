@@ -208,6 +208,18 @@ describe("parseDbworldHtml", () => {
     expect(items[1].subject).toBe("PDP 2027  Call for Papers & Call for Special Sessions");
   });
 
+  it("skips Job: ads even when they mention a deadline (#408)", () => {
+    const html = HTML.replace(
+      "</TBODY>",
+      `<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:30:00 +0000</TD><TD>J</TD>
+<TD><A HREF=https://listserv.acm.org/job>Job: PhD/PostDoc - Knowledge Graphs (deadline Aug 31)</A></TD></TR>
+</TBODY>`,
+    );
+    const items = parseDbworldHtml(html);
+    expect(items.some((i) => /^Job:/i.test(i.subject))).toBe(false);
+    expect(items.length).toBe(3);
+  });
+
   it("cleans titles", () => {
     expect(cleanDbworldTitle("INDIS 2026: Paper Submission Deadline Extended to August 3")[0]).toBe(
       "INDIS 2026",

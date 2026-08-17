@@ -602,6 +602,7 @@ export function parseDbworldHtml(html: string | null | undefined): DbworldRow[] 
     if (!m) continue;
     const href = m[1].trim();
     const subject = decode(m[2]).trim();
+    if (/^job\s*:/i.test(subject)) continue;
     if (
       /call for (papers?|participation)|deadline|reminder|last call|special issue/i.test(subject)
     ) {
