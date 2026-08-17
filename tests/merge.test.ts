@@ -1386,4 +1386,26 @@ describe("conferencesFromJson & defensive merge operations", () => {
     expect(confs[0].editions).toHaveLength(1);
     expect(confs[0].editions[0].year).toBe(2026);
   });
+
+  it("applyOverrides handles non-array tags, categories, and drop safely (#352)", () => {
+    const conf = makeConference({
+      key: "test-conf",
+      title: "Test Conf",
+      tags: ["old-tag"],
+      categories: ["systems"],
+    });
+    const overrides = {
+      drop: "dropped-conf", // string instead of array
+      conferences: {
+        "test-conf": {
+          tags: "niche", // string instead of array
+          categories: "security", // string instead of array
+        },
+      },
+    };
+    const out = applyOverrides([conf], overrides);
+    expect(out).toHaveLength(1);
+    expect(out[0].tags).toEqual(["niche"]);
+    expect(out[0].categories).toEqual(["security"]);
+  });
 });
