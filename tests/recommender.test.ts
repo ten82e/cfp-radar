@@ -9,7 +9,13 @@ import { describe, expect, it } from "vitest";
 // recommender.js は UMD（module.exports あり、DOM 非依存）。型宣言なしのプレーン JS。
 // @ts-expect-error - no declaration file for plain-JS recommender.js
 import recommender from "../site/recommender.js";
-import { contentWords, norm, parseBenchArgs, topicWords } from "../src/bench-recommender.ts";
+import {
+  main as benchMain,
+  contentWords,
+  norm,
+  parseBenchArgs,
+  topicWords,
+} from "../src/bench-recommender.ts";
 import { main as embeddingsMain, venuePapersHash } from "../src/embeddings.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
@@ -1736,5 +1742,29 @@ describe("embeddingsMain 引数パース (#322)", () => {
     expect(jRows[0].tags).toEqual(["journal"]);
     expect(jRows[0].cats).toEqual(["systems"]);
     expect(jRows[0].rankPairs).toEqual(["ccf:A"]);
+  });
+
+  it("topicWords and benchMain handle non-array tags/categories, null catFull, and argv offset safely (#362)", async () => {
+    const tw = topicWords(
+      {
+        key: "test",
+        title: "Test Conference",
+        full_name: "International Test Conference on Distributed Systems",
+        tags: "storage" as any,
+        categories: "storage" as any,
+      },
+      null,
+    );
+    expect(Array.isArray(tw)).toBe(true);
+    expect(tw).toContain("storage");
+
+    const helpCode = await benchMain(["--help"]);
+    expect(helpCode).toBe(0);
+
+    const nodeHelp = await benchMain(["node", "src/bench-recommender.ts", "-h"]);
+    expect(nodeHelp).toBe(0);
+
+    const nonExistCode = await benchMain(["--data", "/tmp/nonexistent-bench-999.json"]);
+    expect(nonExistCode).toBe(1);
   });
 });
