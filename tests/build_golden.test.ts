@@ -1417,6 +1417,17 @@ it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
   );
 });
 
+it("openDrawer escapes KIND_LABEL fallback kind (#396)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const start = template.indexOf("function openDrawer");
+  const end = template.indexOf("window.openDrawer", start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  const body = template.slice(start, end);
+  expect(body).toMatch(/esc\(\s*KIND_LABEL\[r\.kind\]/);
+  expect(body).not.toMatch(/\+ \(KIND_LABEL\[r\.kind\] \|\| r\.kind\) \+/);
+});
+
 it("FEEDS list does not interpolate url or name into innerHTML (#394)", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
   const start = template.indexOf("FEEDS.forEach");
