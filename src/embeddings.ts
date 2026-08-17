@@ -570,8 +570,27 @@ export async function main(argv: string[] | null | undefined): Promise<number> {
     console.log("usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>");
     return 0;
   }
-  const force = rawArgs.includes("--force") || rawArgs.includes("-f");
-  const args = rawArgs.filter((a) => a !== "--force" && a !== "-f");
+  let force = false;
+  const args: string[] = [];
+  for (const raw of rawArgs) {
+    let a = raw;
+    let eqVal: string | undefined;
+    const eqIdx = raw.indexOf("=");
+    if (raw.startsWith("-") && eqIdx > 0) {
+      a = raw.slice(0, eqIdx);
+      eqVal = raw.slice(eqIdx + 1);
+    }
+    const boolVal = (): boolean => {
+      if (eqVal === undefined) return true;
+      const low = eqVal.toLowerCase();
+      return low !== "false" && low !== "0" && low !== "no" && low !== "off";
+    };
+    if (a === "--force" || a === "-f") {
+      force = boolVal();
+    } else {
+      args.push(raw);
+    }
+  }
   if (args.length !== 2) {
     process.stderr.write(
       "usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>\n",
