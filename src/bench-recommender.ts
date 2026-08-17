@@ -57,6 +57,41 @@ function toPosInt(raw: string | undefined, fallback: number): number {
   return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
 }
 
+function extractArgvRest(argv: string[] | null | undefined): string[] {
+  if (!argv || !Array.isArray(argv)) return [];
+  if (argv.length === 0) return [];
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  if (isNodeBin(argv[0])) {
+    if (argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))) {
+      return argv.slice(2);
+    }
+    return argv.slice(1);
+  }
+  if (isScript(argv[0])) {
+    return argv.slice(1);
+  }
+  return argv.slice(0);
+}
+
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
 export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
   const args: BenchArgs = {
     data: "public/data.json",
@@ -87,21 +122,7 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     return low !== "false" && low !== "0" && low !== "no";
   };
 
-  const isNodeBin = (s: string): boolean =>
-    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
-  const isScript = (s: string): boolean =>
-    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
-      s,
-    );
-
-  const rest = isNodeBin(argv[0])
-    ? argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))
-      ? argv.slice(2)
-      : argv.slice(1)
-    : isScript(argv[0])
-      ? argv.slice(1)
-      : argv.slice(0);
-
+  const rest = extractArgvRest(argv);
   for (let i = 0; i < rest.length; i++) {
     const raw = rest[i];
     let a = raw;
@@ -208,10 +229,14 @@ export const GENERIC_TAGS = new Set([
 ]);
 
 /** 会議のトピック語（実論文が使う語彙を模す）: トピックタグ + カテゴリ正式名の内容語 + full_name の内容語 */
-export function topicWords(c: Conf | null | undefined, catFull: Record<string, string>): string[] {
+export function topicWords(
+  c: Conf | null | undefined,
+  catFull?: Record<string, string> | null,
+): string[] {
   if (!c || typeof c !== "object") return [];
   const words: string[] = [];
   const seen = new Set<string>();
+  const safeCatFull = catFull ?? {};
   const add = (w: string): void => {
     w = w.toLowerCase();
     if (w.length > 3 && !STOP.has(w) && !seen.has(w)) {
@@ -219,9 +244,11 @@ export function topicWords(c: Conf | null | undefined, catFull: Record<string, s
       words.push(w);
     }
   };
-  (c.tags ?? []).filter((t) => !GENERIC_TAGS.has(t)).forEach(add);
-  (c.categories ?? []).forEach((k) => {
-    contentWords(catFull[k] ?? k).forEach(add);
+  toStringArray(c.tags)
+    .filter((t) => !GENERIC_TAGS.has(t))
+    .forEach(add);
+  toStringArray(c.categories).forEach((k) => {
+    contentWords(safeCatFull[k] ?? k).forEach(add);
   });
   contentWords(c.full_name ?? c.title ?? "")
     .slice(0, 6)
@@ -827,13 +854,35 @@ function jpChunks(s: string): string[] {
   return out.slice(0, 10);
 }
 
-async function main(): Promise<void> {
-  const args = parseBenchArgs(process.argv);
-  const data = JSON.parse(readFileSync(args.data, "utf8")) as {
+export async function main(argv: string[] | null | undefined = process.argv): Promise<number> {
+  const safeArgv = argv ?? [];
+  const rawArgs = extractArgvRest(safeArgv);
+  if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
+    console.log(
+      "usage: node src/bench-recommender.ts [--data <path>] [--emb <path>] [--samples <n>] [--failures <n>] [--topk <n>] [--lang <en|jp>] [--golden-en] [--no-idf]",
+    );
+    return 0;
+  }
+  const args = parseBenchArgs(safeArgv);
+  let dataRaw: string;
+  let embRaw: string;
+  try {
+    dataRaw = readFileSync(args.data, "utf8");
+  } catch {
+    process.stderr.write(`data not found: ${args.data}\n`);
+    return 1;
+  }
+  try {
+    embRaw = readFileSync(args.emb, "utf8");
+  } catch {
+    process.stderr.write(`embeddings not found: ${args.emb}\n`);
+    return 1;
+  }
+  const data = JSON.parse(dataRaw) as {
     conferences: Conf[];
     categories?: Record<string, string>;
   };
-  const emb = JSON.parse(readFileSync(args.emb, "utf8")) as {
+  const emb = JSON.parse(embRaw) as {
     embeddings: Record<string, number[]>;
     multi?: { embeddings: Record<string, number[]> };
     paperVecs?: Record<string, number[][]>;
@@ -1163,9 +1212,22 @@ async function main(): Promise<void> {
       `prf (タグ=会議自身): #1 一致 ${((prfTop1.base / pn) * 100).toFixed(1)}% → ${((prfTop1.blend / pn) * 100).toFixed(1)}%  (n=${pn})`,
     );
   }
+  return 0;
 }
 
-const isMain = process.argv[1]?.endsWith("bench-recommender.ts");
+const isMain = Boolean(
+  process.argv[1] &&
+    (process.argv[1].endsWith("bench-recommender.ts") ||
+      process.argv[1].endsWith("bench-recommender.js")),
+);
 if (isMain) {
-  await main();
+  main(process.argv).then(
+    (code) => {
+      process.exitCode = code;
+    },
+    (err) => {
+      console.error(err);
+      process.exitCode = 1;
+    },
+  );
 }
