@@ -156,11 +156,20 @@ export function parseFile(path: string | null | undefined): Conference[] {
         rank[String(k).toLowerCase().trim()] = String(v).trim();
       }
     }
+    let link = String(raw.link ?? "").trim();
+    if (!link) {
+      for (const edition of [...editions].reverse()) {
+        if (edition.link) {
+          link = edition.link;
+          break;
+        }
+      }
+    }
     out.push({
       key,
       title: title || key,
       full_name: String(raw.full_name ?? "") || title || key,
-      link: String(raw.link ?? ""),
+      link,
       rank,
       dblp: raw.dblp === null || raw.dblp === undefined ? null : String(raw.dblp),
       upstream_sub: null,

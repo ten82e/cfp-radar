@@ -1142,4 +1142,36 @@ describe("aideadlines deadlinesOf parsing", () => {
     expect(aideadlinesParseTree(undefined)).toEqual([]);
     expect(aideadlinesParseTree("/tmp/nonexistent-aideadlines-dir-12345")).toEqual([]);
   });
+
+  it("local parseFile falls back to latest edition link when raw.link is missing (#330)", () => {
+    const tmpPath = "/tmp/test-local-link-fallback-330.yaml";
+    writeFileSync(
+      tmpPath,
+      `conferences:
+  - title: FallbackConf
+    key: fallback-conf
+    editions:
+      - year: 2025
+        link: "https://example.com/2025"
+      - year: 2026
+        link: "https://example.com/2026"
+  - title: ExplicitConf
+    key: explicit-conf
+    link: "https://example.com/top"
+    editions:
+      - year: 2026
+        link: "https://example.com/2026-sub"
+`,
+      "utf8",
+    );
+
+    try {
+      const confs = localParseFile(tmpPath);
+      expect(confs).toHaveLength(2);
+      expect(confs[0].link).toBe("https://example.com/2026");
+      expect(confs[1].link).toBe("https://example.com/top");
+    } finally {
+      if (existsSync(tmpPath)) unlinkSync(tmpPath);
+    }
+  });
 });
