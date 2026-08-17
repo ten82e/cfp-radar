@@ -94,7 +94,8 @@ export function rankOf(rankings: unknown): Record<string, string> {
   return rank;
 }
 
-export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
+export function deadlinesOf(raw: Record<string, unknown> | null | undefined): Deadline[] {
+  if (!raw || typeof raw !== "object") return [];
   const out: Deadline[] = [];
   const parentTz = String(raw.timezone ?? raw.tz ?? "");
   const entries = raw.deadlines;
@@ -130,7 +131,8 @@ export function deadlinesOf(raw: Record<string, unknown>): Deadline[] {
   return out;
 }
 
-export function editionOf(raw: Record<string, unknown>): Edition | null {
+export function editionOf(raw: Record<string, unknown> | null | undefined): Edition | null {
+  if (!raw || typeof raw !== "object") return null;
   const year = Number(raw.year);
   if (!Number.isInteger(year) || year <= 0) {
     warn(`aideadlines edition without a usable year: ${JSON.stringify(raw.id)}`);
@@ -176,7 +178,8 @@ export function editionOf(raw: Record<string, unknown>): Edition | null {
 }
 
 /** Read `src/data/conferences/*.yml`; each item is one edition. */
-export function parseTree(conferencesDir: string): Conference[] {
+export function parseTree(conferencesDir: string | null | undefined): Conference[] {
+  if (!conferencesDir) return [];
   const byKey = new Map<string, Conference>();
   let fileList: string[];
   try {

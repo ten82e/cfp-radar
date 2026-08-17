@@ -1132,4 +1132,14 @@ describe("aideadlines deadlinesOf parsing", () => {
       "/custom/cache/user__repo__feat__branch",
     );
   });
+
+  it("aideadlines deadlinesOf, editionOf, and parseTree handle null and undefined safely (#328)", () => {
+    expect(aideadlinesDeadlinesOf(null)).toEqual([]);
+    expect(aideadlinesDeadlinesOf(undefined)).toEqual([]);
+    expect(editionOf(null)).toBeNull();
+    expect(editionOf(undefined)).toBeNull();
+    expect(aideadlinesParseTree(null)).toEqual([]);
+    expect(aideadlinesParseTree(undefined)).toEqual([]);
+    expect(aideadlinesParseTree("/tmp/nonexistent-aideadlines-dir-12345")).toEqual([]);
+  });
 });
