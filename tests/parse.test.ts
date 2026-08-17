@@ -404,6 +404,10 @@ describe("parse_date_range", () => {
     ["2026年8月", 2026, "2026-08-01", "2026-08-31"],
     ["2026年8月〜9月", 2026, "2026-08-01", "2026-09-30"],
     ["２０２６年８月１７日〜２１日", 2026, "2026-08-17", "2026-08-21"],
+    // extra.yaml house style: trailing 回次 / 併催名 (#368)
+    ["2026年8月6日-7日 (SWoPP 2026 / 第205回)", 2026, "2026-08-06", "2026-08-07"],
+    ["2026年9月28日 (第206回)", 2026, "2026-09-28", "2026-09-28"],
+    ["2026年8月6日-7日（SWoPP 2026）", 2026, "2026-08-06", "2026-08-07"],
   ] as Array<[string, number, string, string]>)(
     "japanese date range %s -> [%s, %s]",
     (text, fallbackYear, expectedStart, expectedEnd) => {
@@ -416,15 +420,18 @@ describe("parse_date_range", () => {
     },
   );
 
-  it.each(["2026年2月30日", "2026年8月25日〜20日", "2026年9月31日", "2026年8月32日〜9月2日"])(
-    "invalid japanese date %j fails closed and warns",
-    (text) => {
-      resetWarnings();
-      expect(parseDateRange(text, 2026)).toEqual([null, null]);
-      expect(warningCounts()[`unparsable event date ${JSON.stringify(text)}`]).toBe(1);
-      resetWarnings();
-    },
-  );
+  it.each([
+    "2026年2月30日",
+    "2026年8月25日〜20日",
+    "2026年9月31日",
+    "2026年8月32日〜9月2日",
+    "2026年11月下旬～12月上旬（詳細未定）",
+  ])("invalid japanese date %j fails closed and warns", (text) => {
+    resetWarnings();
+    expect(parseDateRange(text, 2026)).toEqual([null, null]);
+    expect(warningCounts()[`unparsable event date ${JSON.stringify(text)}`]).toBe(1);
+    resetWarnings();
+  });
 
   it("monthOf parses month names, standard abbreviations, and known typos without matching city names (#278)", () => {
     expect(monthOf("August")).toBe(8);
