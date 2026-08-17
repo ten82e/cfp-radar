@@ -1255,7 +1255,7 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
     "onKeydown({ key: 'd', preventDefault() {}, target: { tagName: 'BODY' } });",
     "const dOpened = calls.open.length === 1 && calls.open[0] === 'B';",
     "const dFocusedRow = calls.focus[calls.focus.length - 1] === 'row1';",
-    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '');",
+    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'esc', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '', (s) => String(s ?? ''));",
     "document.activeElement = prevEl;",
     "openDrawer({ kind: 'journal', conf: { title: 'X' }, ed: { place: 'P', date_text: 'D' } });",
     "const focusedClose = document.activeElement === closeBtn;",
