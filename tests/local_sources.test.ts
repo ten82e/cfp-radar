@@ -167,4 +167,15 @@ describe("local source data integrity", () => {
     expect(generated).not.toContain("fetch_primary.py");
     expect(generated).toContain("fetch-primary.ts");
   });
+
+  it("overrides.yaml does not advertise the retired scripts/merge.py (#386)", () => {
+    const header = readFileSync(join(REPO_ROOT, "data", "overrides.yaml"), "utf8")
+      .split("\n")
+      .slice(0, 8)
+      .join("\n");
+    expect(header, "overrides.yaml header must name src/merge.ts").toContain("src/merge.ts");
+    expect(header).toContain("applyOverrides");
+    expect(header).not.toContain("merge.py");
+    expect(header).not.toContain("apply_overrides");
+  });
 });
