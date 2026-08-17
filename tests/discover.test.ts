@@ -265,6 +265,15 @@ describe("parseDbworldHtml", () => {
     expect(cleanDbworldTitle("PDP 2027 \x96")[0]).toBe("PDP 2027");
     expect(cleanDbworldTitle("NLP4KGC\x9226 \x96 Deadline Extension")[0]).toBe("NLP4KGC'26");
     expect(cleanDbworldTitle("(Submission Deadline Extended: July 21st, 2026)")[0]).toBe("");
+    expect(cleanDbworldTitle("Call for Papers for ICNCC 2026")[0]).toBe("ICNCC 2026");
+    expect(
+      cleanDbworldTitle(
+        "Deadlines approaching: CFP: 24th Australasian Data Science and Machine Learning Conference",
+      )[0],
+    ).toBe("24th Australasian Data Science and Machine Learning Conference");
+    expect(cleanDbworldTitle("Deadline Reminder - NL4AI @ AIxIA 2026")[0]).toBe(
+      "NL4AI @ AIxIA 2026",
+    );
   });
 });
 
