@@ -401,7 +401,7 @@ export async function runFetchPrimary(
     return 1;
   }
   const payload = {
-    "#": "自動生成。scripts/fetch_primary.py が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。",
+    "#": "自動生成。src/fetch-primary.ts が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。",
     conferences: generated,
   };
   const yamlText = dumpYaml(payload, { skipInvalid: true });

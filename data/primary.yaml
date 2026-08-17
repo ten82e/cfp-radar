@@ -1,4 +1,4 @@
-# 一次ソースレジストリ。scripts/fetch_primary.py が巡回して data/primary_overrides.yaml
+# 一次ソースレジストリ。src/fetch-primary.ts が巡回して data/primary_overrides.yaml
 # を自動生成する (build は overrides.yaml の後に primary_overrides.yaml を適用)。
 #
 # 登録方法: 会議の公式ページ (CFP / Important Dates / EasyChair CFP) の URL と edition
@@ -12,7 +12,7 @@
 #   - 静的 HTML の CFP / Important Dates ページも抽出できる。
 #   - JS レンダリングサイト (wacv.thecvf.com / vldb.org / bigdataieee.org 等) は静的
 #     HTML に締切が無く現行抽出では 0 件になる。登録しないこと (毎回警告が出るだけ)。
-#     必要になったら個別の抽出ルールを fetch_primary.py に足す。
+#     必要になったら個別の抽出ルールを src/fetch-primary.ts に足す。
 #
 # tz フィールド (任意): 公式が tz を明記しているが、日付行に tz 表記が無いページで
 # 抽出を補うヒント。裏が取れたものだけ書くこと (推測は禁止)。
