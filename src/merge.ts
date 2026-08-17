@@ -390,11 +390,24 @@ export function classify(
   return out;
 }
 
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
 function matches(conf: Conference, rule: Record<string, unknown>): boolean {
-  if (((rule.venues as string[] | null) ?? []).includes(conf.key)) return true;
-  const subs = (rule.ccfddl_subs as string[] | null) ?? [];
+  if (toStringArray(rule.venues).includes(conf.key)) return true;
+  const subs = toStringArray(rule.ccfddl_subs);
   if (conf.upstream_sub && subs.includes(conf.upstream_sub)) return true;
-  const sources = (rule.sources as string[] | null) ?? [];
+  const sources = toStringArray(rule.sources);
   return sources.length > 0 && sources.some((s) => conf.sources.includes(s));
 }
 
@@ -408,7 +421,7 @@ export function applyOverrides(
 ): Conference[] {
   if (!confs || !Array.isArray(confs)) return [];
   overrides = overrides ?? {};
-  const dropped = new Set((overrides.drop as string[] | null) ?? []);
+  const dropped = new Set(toStringArray(overrides.drop));
   const patches = (overrides.conferences as Record<string, unknown>) ?? {};
   const out: Conference[] = [];
   for (const conf of confs) {
@@ -445,7 +458,7 @@ export function applyOverrides(
     }
     for (const field of ["tags", "categories"] as const) {
       if (field in patch) {
-        next[field] = ((patch[field] as unknown[] | null) ?? []).map((t) => String(t));
+        next[field] = toStringArray(patch[field]);
       }
     }
     const editionPatches = (patch.editions as Record<string, unknown>) ?? {};
