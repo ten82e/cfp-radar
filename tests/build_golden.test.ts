@@ -1255,7 +1255,7 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
     "onKeydown({ key: 'd', preventDefault() {}, target: { tagName: 'BODY' } });",
     "const dOpened = calls.open.length === 1 && calls.open[0] === 'B';",
     "const dFocusedRow = calls.focus[calls.focus.length - 1] === 'row1';",
-    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '');",
+    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'esc', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '', (s) => String(s ?? ''));",
     "document.activeElement = prevEl;",
     "openDrawer({ kind: 'journal', conf: { title: 'X' }, ed: { place: 'P', date_text: 'D' } });",
     "const focusedClose = document.activeElement === closeBtn;",
@@ -1401,6 +1401,20 @@ it("site template does not include external Google Fonts per SPEC §7 (#223)", (
   expect(template).not.toContain("family=JetBrains+Mono");
   expect(template).toContain("--font-sans: system-ui,");
   expect(template).toContain("--font-mono: ui-monospace,");
+});
+
+it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const start = template.indexOf("function openDrawer");
+  const end = template.indexOf("window.openDrawer", start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  const body = template.slice(start, end);
+  expect(body).toContain("esc(r.ed.place");
+  expect(body).toContain("esc(r.ed.date_text");
+  expect(body).toMatch(
+    /esc\(\s*(r\.ed\.link\s*\|\|\s*r\.conf\.link|r\.conf\.link\s*\|\|\s*r\.ed\.link)/,
+  );
 });
 
 it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
