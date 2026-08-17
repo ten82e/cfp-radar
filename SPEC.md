@@ -24,6 +24,10 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.9（§3.7 CLI）。** §3.7 が `build` だけを書いていた。実装の `usage()` は
+`discover` / `review` と `build --no-embeddings` を持つ。README は #239/#243/#247
+で同期済み。SPEC を実装の正に戻す（#374）。
+
 **rev.8（§8 の開催行契約）。** §8 の `build_golden.test.ts` 行が、rev.4 以前の
 「開催回が index.html に届いている」を残していた。実装固定は
 `index.html has no meeting rows`。開催日は `events.ics` / `upcoming.md`（#372）。
@@ -570,10 +574,18 @@ export function renderIcs(
 ```sh
 node --experimental-strip-types src/cli.ts build [--out public] [--config config.yaml]
                               [--offline] [--now 2026-08-09T00:00:00Z] [--cache .cache]
+                              [--no-embeddings]
+node --experimental-strip-types src/cli.ts discover [--out path] [--categories hpc,systems]
+                              [--min-year 2026] [--dry-run] [--append]
+node --experimental-strip-types src/cli.ts review [--candidates data/discovered_candidates.yaml]
+                              [--limit 60] [--now 2026-08-09T00:00:00Z]
 ```
 
 `--offline` は「新規取得をせず、キャッシュ → snapshot の順で退避する」。
 `--now` は決定的テストのため必須で実装する。既定は実時刻 UTC。
+`--no-embeddings` は `embeddings.json` を書かない（テスト用・高速化）。
+`discover` は穴場の会議・ジャーナルを探索し、`review` は候補を締切昇順・重複・
+predatory 疑い付きで一覧する。
 （rev.1 にあった `--no-fetch` は `--offline` と区別がつかないので削除した。）
 
 ---
