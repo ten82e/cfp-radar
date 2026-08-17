@@ -143,9 +143,10 @@ export function reviewDeadlineText(c: Record<string, any> | null | undefined): s
 export function runReviewCandidates(
   candidatesPath: string,
   limit: number,
-  today: Date,
+  today: Date | null | undefined,
   root: string = ROOT,
 ): void {
+  const safeToday = today instanceof Date && !Number.isNaN(today.getTime()) ? today : new Date();
   const resolvedPath = isAbsolute(candidatesPath) ? candidatesPath : join(root, candidatesPath);
   let text: string;
   try {
@@ -176,9 +177,9 @@ export function runReviewCandidates(
     });
 
   const future = enriched
-    .filter((e) => e.dl && e.dl.getTime() >= today.getTime() && !e.tracked)
+    .filter((e) => e.dl && e.dl.getTime() >= safeToday.getTime() && !e.tracked)
     .sort((a, b) => a.dl!.getTime() - b.dl!.getTime());
-  const past = enriched.filter((e) => e.dl && e.dl.getTime() < today.getTime() && !e.tracked);
+  const past = enriched.filter((e) => e.dl && e.dl.getTime() < safeToday.getTime() && !e.tracked);
   const unknown = enriched.filter((e) => !e.dl && !e.tracked);
   const already = enriched.filter((e) => e.tracked);
 
@@ -261,18 +262,54 @@ export function parseArgs(argv: string[] | null | undefined): ReviewArgs {
   return { candidates, limit, now, help };
 }
 
+function extractArgvRest(argv: string[] | null | undefined): string[] {
+  if (!argv || !Array.isArray(argv)) return [];
+  if (argv.length === 0) return [];
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  if (isNodeBin(argv[0])) {
+    if (argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))) {
+      return argv.slice(2);
+    }
+    return argv.slice(1);
+  }
+  if (isScript(argv[0])) {
+    return argv.slice(1);
+  }
+  return argv.slice(0);
+}
+
+export async function main(argv: string[] | null | undefined): Promise<number> {
+  const rest = extractArgvRest(argv);
+  const args = parseArgs(rest);
+  if (args.help) {
+    console.log(
+      "usage: node src/review-candidates.ts [--candidates <path>] [--limit <n>] [--now <iso>]",
+    );
+    return 0;
+  }
+  runReviewCandidates(args.candidates, args.limit, args.now);
+  return 0;
+}
+
 const isMain = Boolean(
   process.argv[1] &&
     (process.argv[1].endsWith("review-candidates.ts") ||
       process.argv[1].endsWith("review-candidates.js")),
 );
 if (isMain) {
-  const args = parseArgs(process.argv.slice(2));
-  if (args.help) {
-    console.log(
-      "usage: node src/review-candidates.ts [--candidates <path>] [--limit <n>] [--now <iso>]",
-    );
-    process.exit(0);
-  }
-  runReviewCandidates(args.candidates, args.limit, args.now);
+  main(process.argv).then(
+    (code) => {
+      process.exitCode = code;
+    },
+    (err) => {
+      console.error(err);
+      process.exitCode = 1;
+    },
+  );
 }
