@@ -1417,6 +1417,19 @@ it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
   );
 });
 
+it("FEEDS list does not interpolate url or name into innerHTML (#394)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const start = template.indexOf("FEEDS.forEach");
+  const end = template.indexOf("feedsBox.appendChild", start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  const body = template.slice(start, end);
+  expect(body).not.toContain("div.innerHTML");
+  expect(body).not.toMatch(/onclick=["']copyToClipboard/);
+  expect(body).toMatch(/textContent\s*=\s*f\.name/);
+  expect(body).toContain("copyToClipboard(url)");
+});
+
 it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
   const section7 = spec.slice(spec.indexOf("## 7."), spec.indexOf("## 8."));
