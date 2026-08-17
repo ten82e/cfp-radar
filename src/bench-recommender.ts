@@ -87,17 +87,19 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     return low !== "false" && low !== "0" && low !== "no";
   };
 
-  const rest =
-    argv.length > 0 &&
-    !argv[0].startsWith("-") &&
-    (argv[0] === "node" ||
-      argv[0] === "bun" ||
-      argv[0].endsWith(".js") ||
-      argv[0].endsWith(".ts") ||
-      argv[0].includes("bench"))
-      ? argv.length > 1 && !argv[1].startsWith("-")
-        ? argv.slice(2)
-        : argv.slice(1)
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  const rest = isNodeBin(argv[0])
+    ? argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))
+      ? argv.slice(2)
+      : argv.slice(1)
+    : isScript(argv[0])
+      ? argv.slice(1)
       : argv.slice(0);
 
   for (let i = 0; i < rest.length; i++) {
