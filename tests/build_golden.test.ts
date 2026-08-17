@@ -628,7 +628,7 @@ it.each(CONFIRMED_FEEDS)("confirmed feed carries no estimate: %s", (name) => {
   }
 });
 
-// --- meeting-only conferences reach the site (SPEC.md 7) -------------------
+// --- meeting-only conferences keep dates; site table stays paper-only (SPEC §7/§8) ---
 
 it("conferences without deadlines keep their meeting dates", () => {
   for (const key of ["isc-hpc", "hoti", "apnoms"]) {
@@ -649,6 +649,15 @@ it("index.html has no meeting rows", () => {
   for (const title of ["ISC High Performance", "HOTI", "情報処理学会 HPC 研究会"]) {
     expect(html).toContain(title);
   }
+});
+
+it("SPEC §8 no longer claims meeting-only conferences appear as index.html rows (#372)", () => {
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section8 = spec.slice(spec.indexOf("## 8."), spec.indexOf("## 9."));
+  expect(section8).not.toMatch(/開催回が index\.html に届いている/);
+  expect(section8).toMatch(/index\.html has no meeting rows/);
+  expect(section8).toMatch(/events\.ics/);
+  expect(section8).toMatch(/upcoming\.md/);
 });
 
 it("index.html 7d preset uses a real 7-day window", () => {
