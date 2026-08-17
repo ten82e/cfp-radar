@@ -220,6 +220,24 @@ describe("parseDbworldHtml", () => {
     expect(items.length).toBe(3);
   });
 
+  it("keeps CFP:/CfP:/Last CFP: abbreviation subjects (#414)", () => {
+    const html = HTML.replace(
+      "</TBODY>",
+      `<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:30:00 +0000</TD><TD>A</TD>
+<TD><A HREF=https://listserv.acm.org/a>CFP: SIMBig 2026</A></TD></TR>
+<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:31:00 +0000</TD><TD>B</TD>
+<TD><A HREF=https://listserv.acm.org/b>CfP: Foo 2027</A></TD></TR>
+<TR VALIGN=TOP><TD>Mon, 10 Aug 2026 09:32:00 +0000</TD><TD>C</TD>
+<TD><A HREF=https://listserv.acm.org/c>Last CFP: SIMBig 2026</A></TD></TR>
+</TBODY>`,
+    );
+    const items = parseDbworldHtml(html);
+    expect(items.map((i) => i.subject)).toEqual(
+      expect.arrayContaining(["CFP: SIMBig 2026", "CfP: Foo 2027", "Last CFP: SIMBig 2026"]),
+    );
+    expect(items.some((i) => i.subject === "Some random announcement")).toBe(false);
+  });
+
   it("cleans titles", () => {
     expect(cleanDbworldTitle("INDIS 2026: Paper Submission Deadline Extended to August 3")[0]).toBe(
       "INDIS 2026",
