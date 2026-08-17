@@ -555,7 +555,7 @@ it("SPEC §3.7 documents every CLI command and flag from usage() (#374)", () => 
   }
 });
 
-it("SPEC §2 tree documents every src / site / data yaml file (#378)", () => {
+it("SPEC §2 tree documents every src / site / data yaml / scripts ts file (#378/#380)", () => {
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
   const section = spec.slice(spec.indexOf("## 2."), spec.indexOf("## 3."));
   const fenceStart = section.indexOf("```");
@@ -567,10 +567,12 @@ it("SPEC §2 tree documents every src / site / data yaml file (#378)", () => {
     ...readdirSync(join(REPO_ROOT, "src", "sources")).filter((f) => f.endsWith(".ts")),
     ...readdirSync(join(REPO_ROOT, "site")),
     ...readdirSync(join(REPO_ROOT, "data")).filter((f) => /\.ya?ml$/i.test(f)),
+    ...readdirSync(join(REPO_ROOT, "scripts")).filter((f) => f.endsWith(".ts")),
   ];
   expect(names).toContain("bench-recommender.ts");
   expect(names).toContain("recommender.js");
   expect(names).toContain("primary.yaml");
+  expect(names).toContain("compare-head.ts");
   for (const name of names) {
     expect(tree, `SPEC §2 must list ${name}`).toContain(name);
   }

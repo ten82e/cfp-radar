@@ -24,6 +24,9 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.11（§2 scripts）。** `scripts/compare-head.ts` は update.yml の実質差分検出。
+分担ツリーに足す（#380）。
+
 **rev.10（§2 ツリー）。** 実リポジトリにある `site/recommender.js`・
 `src/bench-recommender.ts`・`data/primary.yaml`・`data/primary_overrides.yaml`・
 `data/discovered_candidates.yaml` を分担ツリーへ足す（#378）。
@@ -229,6 +232,8 @@ kamiyobi/
 ├── site/
 │   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
 │   └── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
+├── scripts/
+│   └── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
 ├── public/                      # 生成物(git 管理外)
 ├── tests/                       # vitest                                 [担当F]
 └── .github/workflows/
