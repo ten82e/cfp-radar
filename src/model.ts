@@ -102,30 +102,37 @@ export function resetWarnings(): void {
 // date helpers (all values are UTC; date-only values are UTC midnights)
 // --------------------------------------------------------------------------
 
-export function addDays(d: Date, n: number): Date {
-  return new Date(d.getTime() + n * DAY_MS);
+export function addDays(d: Date | null | undefined, n: number): Date {
+  const base = d instanceof Date && !Number.isNaN(d.getTime()) ? d : new Date(0);
+  return new Date(base.getTime() + (Number(n) || 0) * DAY_MS);
 }
 
 /** The calendar day of `d` as a UTC midnight. */
-export function dateOnly(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+export function dateOnly(d: Date | null | undefined): Date {
+  const base = d instanceof Date && !Number.isNaN(d.getTime()) ? d : new Date(0);
+  return new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
 }
 
 const PAD2 = (n: number): string => String(n).padStart(2, "0");
 
 /** Python's str ordering: code-point order, locale-independent. */
-export function cmpStr(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
+export function cmpStr(a: string | null | undefined, b: string | null | undefined): number {
+  const sa = String(a ?? "");
+  const sb = String(b ?? "");
+  return sa < sb ? -1 : sa > sb ? 1 : 0;
 }
 
 /** 'YYYY-MM-DD' in UTC. */
-export function fmtDate(d: Date): string {
+export function fmtDate(d: Date | null | undefined): string {
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return "";
   return `${d.getUTCFullYear()}-${PAD2(d.getUTCMonth() + 1)}-${PAD2(d.getUTCDate())}`;
 }
 
 /** strftime subset: %Y %m %d %H %M %S (UTC). */
-export function fmtUTC(d: Date, pattern: string): string {
-  return pattern
+export function fmtUTC(d: Date | null | undefined, pattern: string | null | undefined): string {
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return "";
+  const pat = String(pattern ?? "");
+  return pat
     .replace(/%Y/g, String(d.getUTCFullYear()))
     .replace(/%m/g, PAD2(d.getUTCMonth() + 1))
     .replace(/%d/g, PAD2(d.getUTCDate()))
@@ -157,8 +164,8 @@ export function asDate(value: unknown): Date | null {
 // --------------------------------------------------------------------------
 
 /** Normalize a conference title into a key: 'IH&MMSec' -> 'ih-mmsec'. */
-export function slug(title: string): string {
-  return (title ?? "")
+export function slug(title: string | null | undefined): string {
+  return String(title ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
