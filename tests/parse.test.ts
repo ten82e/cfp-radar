@@ -3,7 +3,9 @@
  * Ported from tests/test_parse.py.
  */
 
-import { existsSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parsePrimaryArgs } from "../src/fetch-primary.ts";
 import {
@@ -1172,6 +1174,47 @@ describe("aideadlines deadlinesOf parsing", () => {
       expect(confs[1].link).toBe("https://example.com/top");
     } finally {
       if (existsSync(tmpPath)) unlinkSync(tmpPath);
+    }
+  });
+
+  it("aideadlines and local sources parse non-array tags and categories safely (#348)", () => {
+    const tmpDir = mkdtempSync(join(tmpdir(), "cfp-tags-test-"));
+    const yamlContent = `
+title: StringTagsConf
+year: 2026
+tags: machine-learning
+`;
+    writeFileSync(join(tmpDir, "string_tags.yml"), yamlContent, "utf8");
+
+    try {
+      const confs = aideadlinesParseTree(tmpDir);
+      expect(confs).toHaveLength(1);
+      expect(confs[0].tags).toEqual(["machine-learning"]);
+    } finally {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+
+    const localTmp = join(tmpdir(), `local-tags-${Date.now()}.yaml`);
+    writeFileSync(
+      localTmp,
+      `conferences:
+  - title: LocalStringTags
+    key: local-string-tags
+    tags: niche-tag
+    categories: systems
+    editions:
+      - year: 2026
+`,
+      "utf8",
+    );
+
+    try {
+      const confs = localParseFile(localTmp);
+      expect(confs).toHaveLength(1);
+      expect(confs[0].tags).toEqual(["niche-tag"]);
+      expect(confs[0].categories).toEqual(["systems"]);
+    } finally {
+      if (existsSync(localTmp)) unlinkSync(localTmp);
     }
   });
 });
