@@ -77,6 +77,21 @@ describe("parseNow (CLI --now boundary)", () => {
   it.each(["2026-13-01T00:00:00Z", "not-a-date"])("garbage %s still throws", (text) => {
     expect(() => parseNow(text)).toThrow("unparsable --now");
   });
+
+  it.each(["2026-08-09T00:00:00", "2026-08-09 00:00:00"])(
+    "timezone-less datetime %s is rejected so --now stays deterministic (#392)",
+    (text) => {
+      expect(() => parseNow(text)).toThrow("unparsable --now");
+    },
+  );
+
+  it("date-only --now stays UTC midnight (#392)", () => {
+    expect(parseNow("2026-08-09").toISOString()).toBe("2026-08-09T00:00:00.000Z");
+  });
+
+  it("hour 24 is rejected instead of rolling to the next day (#392)", () => {
+    expect(() => parseNow("2026-08-09T24:00:00Z")).toThrow("unparsable --now");
+  });
 });
 
 describe("parseArgs (CLI flag parsing)", () => {
