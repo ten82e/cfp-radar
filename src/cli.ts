@@ -222,6 +222,17 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
       process.stderr.write(
         `warning: 上流 ${[...failed].sort().join(",")} が取得できないが、成功した ${confs.length} 会議で継続する（SPEC.md 3.5）\n`,
       );
+      const liveKeys = new Set(confs.map((c) => c.key));
+      const extras = restored.filter(
+        (c) => !liveKeys.has(c.key) && c.sources.some((s) => failed.has(s)),
+      );
+      if (extras.length > 0) {
+        confs = [...confs, ...extras];
+        confs = applyOverrides(confs, overrides);
+        confs = applyOverrides(confs, primary);
+        confs = sanitizeEditions(confs);
+        confs = select(confs, config);
+      }
     }
   }
 
