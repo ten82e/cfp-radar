@@ -57,7 +57,7 @@ function toPosInt(raw: string | undefined, fallback: number): number {
   return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
 }
 
-export function parseBenchArgs(argv: string[]): BenchArgs {
+export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
   const args: BenchArgs = {
     data: "public/data.json",
     emb: "public/embeddings.json",
@@ -79,7 +79,27 @@ export function parseBenchArgs(argv: string[]): BenchArgs {
     // （英語のみ）。実測で golden EN top1 15.8→26.3 / top5 63.2→71.9。既定オン。
     paperMax: true,
   };
-  const rest = argv.slice(2);
+  if (!argv || !Array.isArray(argv)) return args;
+
+  const parseBool = (v: string | undefined, defaultVal = true): boolean => {
+    if (v === undefined) return defaultVal;
+    const low = v.toLowerCase().trim();
+    return low !== "false" && low !== "0" && low !== "no";
+  };
+
+  const rest =
+    argv.length > 0 &&
+    !argv[0].startsWith("-") &&
+    (argv[0] === "node" ||
+      argv[0] === "bun" ||
+      argv[0].endsWith(".js") ||
+      argv[0].endsWith(".ts") ||
+      argv[0].includes("bench"))
+      ? argv.length > 1 && !argv[1].startsWith("-")
+        ? argv.slice(2)
+        : argv.slice(1)
+      : argv.slice(0);
+
   for (let i = 0; i < rest.length; i++) {
     const raw = rest[i];
     let a = raw;
@@ -113,14 +133,14 @@ export function parseBenchArgs(argv: string[]): BenchArgs {
       const jpw = Number(nextVal());
       args.jpw = Number.isNaN(jpw) ? 0.5 : jpw;
       args.wGiven = true;
-    } else if (a === "--by-len") args.byLen = true;
-    else if (a === "--adaptive") args.adaptive = true;
-    else if (a === "--penalty") args.penalty = true;
-    else if (a === "--prf") args.prf = true;
-    else if (a === "--idf") args.idf = true;
+    } else if (a === "--by-len") args.byLen = parseBool(eqVal, true);
+    else if (a === "--adaptive") args.adaptive = parseBool(eqVal, true);
+    else if (a === "--penalty") args.penalty = parseBool(eqVal, true);
+    else if (a === "--prf") args.prf = parseBool(eqVal, true);
+    else if (a === "--idf") args.idf = parseBool(eqVal, true);
     else if (a === "--no-idf") args.idf = false;
-    else if (a === "--golden-en") args.goldenEn = true;
-    else if (a === "--paper-max") args.paperMax = true;
+    else if (a === "--golden-en") args.goldenEn = parseBool(eqVal, true);
+    else if (a === "--paper-max") args.paperMax = parseBool(eqVal, true);
     else if (a === "--no-paper-max") args.paperMax = false;
     else if (a === "--sw") {
       args.sw = nextVal() ?? null;
