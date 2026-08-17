@@ -4,7 +4,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
@@ -552,6 +552,27 @@ it("SPEC §3.7 documents every CLI command and flag from usage() (#374)", () => 
   expect(flags).toContain("--no-embeddings");
   for (const flag of flags) {
     expect(section, `SPEC §3.7 must document the CLI flag ${flag}`).toContain(flag);
+  }
+});
+
+it("SPEC §2 tree documents every src / site / data yaml file (#378)", () => {
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section = spec.slice(spec.indexOf("## 2."), spec.indexOf("## 3."));
+  const fenceStart = section.indexOf("```");
+  const fenceEnd = section.indexOf("```", fenceStart + 3);
+  const tree = section.slice(fenceStart, fenceEnd);
+  expect(tree.length).toBeGreaterThan(0);
+  const names = [
+    ...readdirSync(join(REPO_ROOT, "src")).filter((f) => f.endsWith(".ts")),
+    ...readdirSync(join(REPO_ROOT, "src", "sources")).filter((f) => f.endsWith(".ts")),
+    ...readdirSync(join(REPO_ROOT, "site")),
+    ...readdirSync(join(REPO_ROOT, "data")).filter((f) => /\.ya?ml$/i.test(f)),
+  ];
+  expect(names).toContain("bench-recommender.ts");
+  expect(names).toContain("recommender.js");
+  expect(names).toContain("primary.yaml");
+  for (const name of names) {
+    expect(tree, `SPEC §2 must list ${name}`).toContain(name);
   }
 });
 
