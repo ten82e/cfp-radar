@@ -804,6 +804,20 @@ export function roundOf(label: string | null | undefined, defaultRound = 1): num
 // snapshot restore (SPEC.md section 6: keep building when upstream is down)
 // --------------------------------------------------------------------------
 
+/** 配列・文字列両対応の string[] 正規化（sources 層と同じ挙動: trim・空要素除去）。 */
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
 /** Rebuild conferences from a `data.json`-shaped payload. */
 export function conferencesFromJson(
   payload: Record<string, unknown> | null | undefined,
@@ -885,10 +899,10 @@ export function conferencesFromJson(
       ),
       dblp,
       upstream_sub,
-      tags: ((conf.tags as unknown[] | undefined) ?? []).map((t) => String(t)),
-      categories: ((conf.categories as unknown[] | undefined) ?? []).map((c) => String(c)),
+      tags: toStringArray(conf.tags),
+      categories: toStringArray(conf.categories),
       editions,
-      sources: ((conf.sources as unknown[] | undefined) ?? []).map((s) => String(s)),
+      sources: toStringArray(conf.sources),
     });
   }
   return out;
