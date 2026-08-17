@@ -1,6 +1,6 @@
 /**
  * Name matching, classification, overrides, roll-forward and selection.
- * Ported from scripts/merge.py (cfp-radar).  Consumes the frozen interface
+ * Ported from scripts/merge.py (kamiyobi).  Consumes the frozen interface
  * of src/model.ts (SPEC.md section 3) only.
  */
 

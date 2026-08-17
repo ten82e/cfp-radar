@@ -62,7 +62,7 @@ The release checklist is:
 
 _Autopilot suitability: 4 / 5 -- higher is more autopilot-suitable; below the configured floor is human-oriented._
 
-<!-- cfp-radar-autopilot-suitability: 4 -->
+<!-- kamiyobi-autopilot-suitability: 4 -->
 ```
 
 Use a roadmap Issue with `## Goal`, `## Tracks`, and `## Success criteria`
@@ -74,7 +74,7 @@ child from the roadmap. Use a single orphan Issue for one bounded task.
 Before publishing, run:
 
 ```sh
-gh issue list --repo ten82e/cfp-radar --state all --limit 100
+gh issue list --repo ten82e/kamiyobi --state all --limit 100
 ```
 
 Compare title, body, changed surface, and recent Issues. Prefer extending an

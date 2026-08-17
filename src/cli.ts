@@ -1,6 +1,6 @@
 /**
  * Entry point: node src/cli.ts build [options]
- * Ported from scripts/cli.py (cfp-radar).
+ * Ported from scripts/cli.py (kamiyobi).
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";

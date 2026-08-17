@@ -3,7 +3,7 @@
  *
  * Everything under public/ is produced here.  Rendering is a pure function of
  * (conferences, config, now) so that two runs with the same input are byte
- * identical.  Ported from scripts/build.py (cfp-radar).
+ * identical.  Ported from scripts/build.py (kamiyobi).
  */
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -720,7 +720,7 @@ export function toLlmsTxt(
   const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
   // config.yaml の site.title をタイトル行に反映する（旧名 conf-deadlines のハードコードを廃止）。
   const siteTitle = String(
-    (safeConfig.site as Record<string, unknown> | null)?.title ?? "cfp-radar",
+    (safeConfig.site as Record<string, unknown> | null)?.title ?? "kamiyobi",
   );
   const lines = [
     `# ${siteTitle}`,

@@ -63,7 +63,7 @@ that issue only:
 3. Apply A3's readiness bullets to the target — no configured
    blocked-by-human/needs-decision label, no open blocking dependent
    issue (visible `Blocked by #NNN` or hidden
-   `cfp-radar-blocked-by` marker, both resolved the
+   `kamiyobi-blocked-by` marker, both resolved the
    same way A3 resolves them), no external human coordination required
    — plus one target-only check: no active, non-stale claim from a
    trusted marker actor exists on the target, other than a claim this
@@ -124,8 +124,8 @@ ran and must not be re-entered (no A1 ↔ A0-O or A4 ↔ A0-O loop).
 - For `none` and `maintainer-approved`, continue with A0-O.
 
 Search all open issues in the repository. Collect every issue that does
-NOT contain a `cfp-radar-roadmap-id` marker (not itself
-a roadmap) or a `cfp-radar-blocked-by` marker, AND
+NOT contain a `kamiyobi-roadmap-id` marker (not itself
+a roadmap) or a `kamiyobi-blocked-by` marker, AND
 otherwise passes A3's own readiness bullets (no configured
 blocked-by-human/needs-decision label, no configured authoring label,
 no open blocking dependent issue via either visible `Blocked by #NNN`
@@ -188,10 +188,10 @@ candidate through the normal A3/A4/A4.5/A5 gates. This is additive: the
 single-root selection above stays the default; orphan-first filtering
 still applies only to true orphans, since cross-roadmap leaves are
 reached via a parent roadmap's task list and never carry their own
-`cfp-radar-roadmap-id` marker.
+`kamiyobi-roadmap-id` marker.
 
 **Legacy roots**: `--all-roadmaps` finds roots only by label or
-`cfp-radar-roadmap-id` marker. Retro-label a legacy
+`kamiyobi-roadmap-id` marker. Retro-label a legacy
 umbrella, or configure **`discover.legacyRoots`** (issue numbers,
 deduped against label/marker roots; invalid fails safe to none). See
 `docs/idd-helper-scripts.md`.
@@ -231,7 +231,7 @@ referenced issues. Collect only **open** issues.
 
 Traverse referenced issues regardless of open/closed state. Issues
 carrying the configured roadmap label or an
-`<!-- cfp-radar-roadmap-id: ... -->` marker are
+`<!-- kamiyobi-roadmap-id: ... -->` marker are
 **roadmap nodes**; any other issue is an **execution leaf**. Include
 only open execution leaves in the candidate set; never advance roadmap
 nodes to A3/A4/A4.5/A5, but traverse closed nodes too (so descendants
@@ -242,14 +242,14 @@ excluded from the open roadmap-node set.
 touch issues outside the roadmap traversal graph:
 
 - **A0-T only**: the scoped body-content lookup needed to resolve
-  `cfp-radar-blocked-by` markers on the explicit target.
+  `kamiyobi-blocked-by` markers on the explicit target.
   The result is used solely to determine targeted readiness and is not
   added to any candidate set.
 - **A0-O only** (when `issue-scope` is `orphan-first`, or when
   `issue-scope` is `roadmap-first` and A0-O runs as the roadmap-path
   fallback): a repo-wide open-issue query to find issues without
-  `cfp-radar-roadmap-id` or
-  `cfp-radar-blocked-by` markers.
+  `kamiyobi-roadmap-id` or
+  `kamiyobi-blocked-by` markers.
 - **A1 only**: any method (including `gh issue list`, `gh search`, or
   label-based queries) to locate the roadmap issue itself.
 - **A1.5 only**: a narrow duplicate/reuse lookup for one specific
@@ -258,8 +258,8 @@ touch issues outside the roadmap traversal graph:
   duplicate; it must not be added to the A2 candidate set.
 - **A3 only**: a body-content search (e.g.,
   `gh search issues --match-body`) to find the issue with a matching
-  `cfp-radar-roadmap-id` marker when checking
-  `cfp-radar-blocked-by` dependency markers (see A3
+  `kamiyobi-roadmap-id` marker when checking
+  `kamiyobi-blocked-by` dependency markers (see A3
   below). The result is used solely to determine blocked status and is
   not added to the A2 candidate set.
 - **A4.5 only**: a narrow duplicate/reuse search for the candidate
@@ -339,9 +339,9 @@ From A2, keep only issues that satisfy **all** of the following:
 - All dependency issues are closed or otherwise completed. Two forms:
   (a) visible `Blocked by #NNN` lines — an open or unresolvable
   reference is treated as blocked (fail-safe); (b) hidden
-  `<!-- cfp-radar-blocked-by: {roadmap-id} -->` markers —
+  `<!-- kamiyobi-blocked-by: {roadmap-id} -->` markers —
   find the issue whose body contains a matching
-  `<!-- cfp-radar-roadmap-id: {roadmap-id} -->`; treat as
+  `<!-- kamiyobi-roadmap-id: {roadmap-id} -->`; treat as
   blocked if that issue is open, if no issue matches (fail-safe — a
   migration integrity problem such as a typo, deleted issue, or
   incomplete migration), or if any matching issue is open.
@@ -519,7 +519,7 @@ for why this pre-scan exists.
 
 Among the surviving viable and unclaimed issues (after Step 1.5), pick
 the **highest authored autopilot-suitability score** (the
-`<!-- cfp-radar-autopilot-suitability: N -->` footer, or the
+`<!-- kamiyobi-autopilot-suitability: N -->` footer, or the
 `discover-roadmap-graph` node's `autopilotSuitability`), tie-broken by
 **lowest issue number**. In autopilot runs, skip scores below
 `autopilotSuitability.floor` (default `3`) as human-oriented; a missing
@@ -578,7 +578,7 @@ deterministic **lowest issue number** pick. See
 **Author-recorded effort hint (soft tie-breaker).** When candidates
 remain tied after the score and optional desync rules, prefer the
 **lower-effort** candidate before the lowest-issue-number tie-break.
-Read the authored `<!-- cfp-radar-effort: S|M|L -->` footer
+Read the authored `<!-- kamiyobi-effort: S|M|L -->` footer
 (or the `discover-roadmap-graph` node's `effort`): `S` < `M` < `L`, with
 a missing or invalid hint as the **neutral middle** (`M`). **Soft**
 rule: reorders only within a single score tie band, never skips,
@@ -611,15 +611,15 @@ mutation policy, coordination rules, decision flow, and edge cases.
 Two hidden HTML comment markers are used in issue bodies to support the
 discover phase:
 
-- **Roadmap identity** (`cfp-radar-roadmap-id`): placed in
+- **Roadmap identity** (`kamiyobi-roadmap-id`): placed in
   the roadmap issue body; A3 uses it to resolve `blocked-by` dependency
   lookups. A1 identifies the roadmap by its configured label or umbrella
   structure, not by this marker.
-- **Sequential dependency** (`cfp-radar-blocked-by`): placed
+- **Sequential dependency** (`kamiyobi-blocked-by`): placed
   in an issue body to express a hard dependency — this issue **cannot
   start until** the roadmap with the matching `roadmap-id` is closed.
 
-**Do not use `cfp-radar-blocked-by` to group sub-tasks under
+**Do not use `kamiyobi-blocked-by` to group sub-tasks under
 an active roadmap.** Sub-tasks that should be worked on while the
 roadmap is open belong in the roadmap's task list as `- [ ] #NNN`
 entries; `blocked-by` is reserved for issues that must wait for a

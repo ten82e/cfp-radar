@@ -18,7 +18,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { warn } from "../model.ts";
 
-export const USER_AGENT = "conf-deadlines/1.0 (+https://github.com/ccfddl; node)";
+export const USER_AGENT = "kamiyobi/1.0 (+https://github.com/ten82e/kamiyobi; node)";
 export const CODELOAD = "https://codeload.github.com/{repo}/tar.gz/refs/heads/{ref}";
 
 export interface Source {

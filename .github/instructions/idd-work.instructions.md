@@ -84,8 +84,8 @@ repository root. Compute the path as
 `../<repo-name>.<normalized-branch>` where `<normalized-branch>` is the
 branch name with every `/` replaced by `-`.
 
-Example: repo `cfp-radar`, branch `issue/123-add-foo` → worktree path
-`../cfp-radar.issue-123-add-foo`.
+Example: repo `kamiyobi`, branch `issue/123-add-foo` → worktree path
+`../kamiyobi.issue-123-add-foo`.
 
 **Harness-native worktree tools**: an agent harness's own worktree
 primitive — for example, Claude Code's `EnterWorktree` — is a third

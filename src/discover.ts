@@ -4,7 +4,7 @@
  * This module searches external academic CFP sources (DBLP, wikiCFP, DBWorld,
  * EasyChair, OpenReview, IEEE ComSoc, IEICE, IPSJ) for niche conferences,
  * workshops, symposia, and journal Call for Papers in HPC, Systems, Networking,
- * AI, and Security.  Ported from scripts/discover.py (cfp-radar).
+ * AI, and Security.  Ported from scripts/discover.py (kamiyobi).
  */
 
 import { readFileSync } from "node:fs";
@@ -130,7 +130,7 @@ export const NICHE_KEYWORDS = [
   "short papers",
 ];
 
-// wikiCFP のカテゴリページ (?conference=<cat>) と cfp-radar カテゴリの対応。
+// wikiCFP のカテゴリページ (?conference=<cat>) と kamiyobi カテゴリの対応。
 export const WIKICFP_CATEGORY_MAP: Record<string, string[]> = {
   hpc: ["parallel", "high", "grid", "performance", "computational"],
   networking: [
@@ -558,7 +558,7 @@ async function fetchText(url: string, userAgent: string, timeoutMs: number): Pro
   }
 }
 
-const DISCOVER_UA = "Mozilla/5.0 (cfp-radar-discoverer)";
+const DISCOVER_UA = "Mozilla/5.0 (kamiyobi-discoverer)";
 const MAC_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)";
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
@@ -1234,7 +1234,7 @@ export class NicheDiscoverer {
       results.push(...(await this.discoverFromOpenreview(q)));
     }
 
-    // 3. wikiCFP: 各 cfp-radar カテゴリの wikiCFP カテゴリ全部を取得。
+    // 3. wikiCFP: 各 kamiyobi カテゴリの wikiCFP カテゴリ全部を取得。
     for (const [cat, wikicfpCats] of Object.entries(WIKICFP_CATEGORY_MAP)) {
       if (categories && !categories.includes(cat)) continue;
       for (const entry of await discoverFromWikiCfpUrls(wikicfpCats, minYear)) {

@@ -1,10 +1,11 @@
-# conf-deadlines 設計仕様（実装の正）
+# kamiyobi 設計仕様（実装の正）
 
 HPC・ネットワーク・システム・AI 系会議の投稿締切と開催日を、GitHub Actions だけで
 日次に自動収集し、ICS / JSON / CSV / Markdown / 静的サイトとして公開する。
 サーバも外部サービスも使わない。GitHub 内で完結する。
 
 この文書は実装の契約である。ここに書かれた型・関数シグネチャ・ファイル分担から逸脱しない。
+プロジェクト名は kamiyobi（旧称 conf-deadlines / cfp-radar）。ICS の UID ドメインと PRODID は購読互換のため conf-deadlines のまま固定する（§4.1）。
 
 ## 0. 改訂
 
@@ -177,7 +178,7 @@ Git API のファイル単位取得はレート制限に当たるので使わな
 ## 2. ディレクトリ構成とファイル分担
 
 ```
-conf-deadlines/
+kamiyobi/
 ├── SPEC.md                      # 本書
 ├── README.md                    # 購読手順（手書き。自動更新しない）      [担当E]
 ├── LICENSE                      # MIT                                    [担当E]
@@ -664,7 +665,7 @@ README に「12 時間ごとに更新される」と書かない。
 ```json
 {
   "generated_at": "2026-08-09T00:00:00Z",
-  "site": {"domain": "ten82e.github.io", "base_url": "https://ten82e.github.io/cfp-radar"},
+  "site": {"domain": "ten82e.github.io", "base_url": "https://ten82e.github.io/kamiyobi"},
   "sources": [{"name": "ccfddl", "repo": "...", "license": "MIT", "url": "..."}],
   "categories": {"hpc": "High Performance Computing", "...": "..."},
   "conferences": [

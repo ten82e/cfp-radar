@@ -1,14 +1,14 @@
-# cfp-radar
+# kamiyobi
 
 高性能計算・ネットワーク・システム・人工知能・セキュリティ・データベース・グラフィックス・HCI・理論の国際会議および穴場ワークショップ・ジャーナルについて、論文投稿の締切と開催日を全自動で探知・配信する。
 毎日 1 回自動で上流データを取得・自律探索し、ICS / JSON / CSV / Markdown と静的サイトを生成して GitHub Pages で公開する。
 サーバも外部サービスも使わず、GitHub の中だけで完結している。
 
-公開先は https://ten82e.github.io/cfp-radar/ である。
+公開先は https://ten82e.github.io/kamiyobi/ である。
 
 ## 直近の締切と開催
 
-直近 180 日の締切と開催の表は [upcoming.md](https://ten82e.github.io/cfp-radar/upcoming.md) にある。
+直近 180 日の締切と開催の表は [upcoming.md](https://ten82e.github.io/kamiyobi/upcoming.md) にある。
 締切を持たず開催日だけがわかっている会議も、開催の行としてここに出る。
 この README は手書きで、ビルドが書き換えることはない。
 
@@ -19,7 +19,7 @@
 分野を絞りたいときは、後述のフィード一覧から別の URL に読み替える。
 
 ```
-https://ten82e.github.io/cfp-radar/all.ics
+https://ten82e.github.io/kamiyobi/all.ics
 ```
 
 `all.ics` と分野別フィードには、上流が募集要項を公開した確定の締切だけが入る。
@@ -78,28 +78,28 @@ iOS と iPadOS の場合。
 
 | フィード | URL | 内容 |
 |---|---|---|
-| 全部 | `https://ten82e.github.io/cfp-radar/all.ics` | 全分野・全種別の締切と開催日。推定は含まない |
-| 高性能計算 | `https://ten82e.github.io/cfp-radar/hpc.ics` | `hpc` 分野のみ |
-| ネットワーク | `https://ten82e.github.io/cfp-radar/networking.ics` | `networking` 分野のみ |
-| システム | `https://ten82e.github.io/cfp-radar/systems.ics` | `systems` 分野のみ |
-| 人工知能 | `https://ten82e.github.io/cfp-radar/ai.ics` | `ai` 分野のみ |
-| セキュリティ | `https://ten82e.github.io/cfp-radar/security.ics` | `security` 分野のみ |
-| データベース | `https://ten82e.github.io/cfp-radar/db.ics` | `db` 分野のみ |
-| グラフィックス | `https://ten82e.github.io/cfp-radar/graphics.ics` | `graphics` 分野のみ |
-| HCI | `https://ten82e.github.io/cfp-radar/hci.ics` | `hci` 分野のみ |
-| 理論 | `https://ten82e.github.io/cfp-radar/theory.ics` | `theory` 分野のみ |
-| 締切のみ | `https://ten82e.github.io/cfp-radar/deadlines.ics` | 投稿・査読応答などの締切だけ |
-| 開催日のみ | `https://ten82e.github.io/cfp-radar/events.ics` | 会期の終日イベントだけ |
-| 推定・全分野 | `https://ten82e.github.io/cfp-radar/all-estimated.ics` | 前年からの推定で作った締切。確定フィードには混ぜていない |
-| 推定・高性能計算 | `https://ten82e.github.io/cfp-radar/hpc-estimated.ics` | `hpc` 分野の推定締切のみ |
-| 推定・ネットワーク | `https://ten82e.github.io/cfp-radar/networking-estimated.ics` | `networking` 分野の推定締切のみ |
-| 推定・システム | `https://ten82e.github.io/cfp-radar/systems-estimated.ics` | `systems` 分野の推定締切のみ |
-| 推定・人工知能 | `https://ten82e.github.io/cfp-radar/ai-estimated.ics` | `ai` 分野の推定締切のみ |
-| 推定・セキュリティ | `https://ten82e.github.io/cfp-radar/security-estimated.ics` | `security` 分野の推定締切のみ |
-| 推定・データベース | `https://ten82e.github.io/cfp-radar/db-estimated.ics` | `db` 分野の推定締切のみ |
-| 推定・グラフィックス | `https://ten82e.github.io/cfp-radar/graphics-estimated.ics` | `graphics` 分野の推定締切のみ |
-| 推定・HCI | `https://ten82e.github.io/cfp-radar/hci-estimated.ics` | `hci` 分野の推定締切のみ |
-| 推定・理論 | `https://ten82e.github.io/cfp-radar/theory-estimated.ics` | `theory` 分野の推定締切のみ |
+| 全部 | `https://ten82e.github.io/kamiyobi/all.ics` | 全分野・全種別の締切と開催日。推定は含まない |
+| 高性能計算 | `https://ten82e.github.io/kamiyobi/hpc.ics` | `hpc` 分野のみ |
+| ネットワーク | `https://ten82e.github.io/kamiyobi/networking.ics` | `networking` 分野のみ |
+| システム | `https://ten82e.github.io/kamiyobi/systems.ics` | `systems` 分野のみ |
+| 人工知能 | `https://ten82e.github.io/kamiyobi/ai.ics` | `ai` 分野のみ |
+| セキュリティ | `https://ten82e.github.io/kamiyobi/security.ics` | `security` 分野のみ |
+| データベース | `https://ten82e.github.io/kamiyobi/db.ics` | `db` 分野のみ |
+| グラフィックス | `https://ten82e.github.io/kamiyobi/graphics.ics` | `graphics` 分野のみ |
+| HCI | `https://ten82e.github.io/kamiyobi/hci.ics` | `hci` 分野のみ |
+| 理論 | `https://ten82e.github.io/kamiyobi/theory.ics` | `theory` 分野のみ |
+| 締切のみ | `https://ten82e.github.io/kamiyobi/deadlines.ics` | 投稿・査読応答などの締切だけ |
+| 開催日のみ | `https://ten82e.github.io/kamiyobi/events.ics` | 会期の終日イベントだけ |
+| 推定・全分野 | `https://ten82e.github.io/kamiyobi/all-estimated.ics` | 前年からの推定で作った締切。確定フィードには混ぜていない |
+| 推定・高性能計算 | `https://ten82e.github.io/kamiyobi/hpc-estimated.ics` | `hpc` 分野の推定締切のみ |
+| 推定・ネットワーク | `https://ten82e.github.io/kamiyobi/networking-estimated.ics` | `networking` 分野の推定締切のみ |
+| 推定・システム | `https://ten82e.github.io/kamiyobi/systems-estimated.ics` | `systems` 分野の推定締切のみ |
+| 推定・人工知能 | `https://ten82e.github.io/kamiyobi/ai-estimated.ics` | `ai` 分野の推定締切のみ |
+| 推定・セキュリティ | `https://ten82e.github.io/kamiyobi/security-estimated.ics` | `security` 分野の推定締切のみ |
+| 推定・データベース | `https://ten82e.github.io/kamiyobi/db-estimated.ics` | `db` 分野の推定締切のみ |
+| 推定・グラフィックス | `https://ten82e.github.io/kamiyobi/graphics-estimated.ics` | `graphics` 分野の推定締切のみ |
+| 推定・HCI | `https://ten82e.github.io/kamiyobi/hci-estimated.ics` | `hci` 分野の推定締切のみ |
+| 推定・理論 | `https://ten82e.github.io/kamiyobi/theory-estimated.ics` | `theory` 分野の推定締切のみ |
 
 締切のイベントは締切時刻の 30 分前から締切時刻までの予定として作られる。
 7 日前・1 日前・3 時間前の 3 本の通知が入っている。
@@ -111,14 +111,14 @@ iOS と iPadOS の場合。
 
 | ファイル | 用途 |
 |---|---|
-| `https://ten82e.github.io/cfp-radar/llms.txt` | 各フィードの URL と意味、データの形を 1 枚にまとめた索引。まずここを読む |
-| `https://ten82e.github.io/cfp-radar/data.json` | 正規化済みの全データ。会議・版・締切の三層構造。締切時刻は UTC と AoE 表記を併記 |
+| `https://ten82e.github.io/kamiyobi/llms.txt` | 各フィードの URL と意味、データの形を 1 枚にまとめた索引。まずここを読む |
+| `https://ten82e.github.io/kamiyobi/data.json` | 正規化済みの全データ。会議・版・締切の三層構造。締切時刻は UTC と AoE 表記を併記 |
 
-他に、1 行 1 締切の平坦な表 [`data.csv`](https://ten82e.github.io/cfp-radar/data.csv) と、直近 180 日の締切と開催の表 `upcoming.md` がある。
+他に、1 行 1 締切の平坦な表 [`data.csv`](https://ten82e.github.io/kamiyobi/data.csv) と、直近 180 日の締切と開催の表 `upcoming.md` がある。
 
 ## サイトの使い方（投稿先レコメンド）
 
-公開サイト https://ten82e.github.io/cfp-radar/ の上部で、**読んだ論文（似た論文）または投稿予定の論文の PDF / TXT を選ぶだけ**で、合いそうな会議・ジャーナルを適合度順にランク付けする（複数ファイル可）。
+公開サイト https://ten82e.github.io/kamiyobi/ の上部で、**読んだ論文（似た論文）または投稿予定の論文の PDF / TXT を選ぶだけ**で、合いそうな会議・ジャーナルを適合度順にランク付けする（複数ファイル可）。
 
 - PDF はタイトルとアブストラクト（先頭 1500 字）を自動で読み取ってマッチングする。PDF の読み取りは CDN の pdf.js を使用（未接続環境では TXT のみ対応）。
 - 内部では 1 ファイルを `タイトル | 本文` の 1 行として処理する。掲載先タグ（`| RTSS` 等）による「掲載先一致」優先は手動の行入力時のみの機能だが、サイト上はアップロードが主経路のため通常は不要。
