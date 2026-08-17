@@ -534,6 +534,27 @@ it("README documents every CLI command (review command regression)", () => {
   }
 });
 
+it("SPEC §3.7 documents every CLI command and flag from usage() (#374)", () => {
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section = spec.slice(spec.indexOf("### 3.7 "), spec.indexOf("## 4. "));
+  expect(section.length).toBeGreaterThan(0);
+  const lines = usage().split("\n");
+  const commands = lines
+    .map((l) => /^ {2}([a-z][a-z0-9-]*) /.exec(l)?.[1])
+    .filter((c): c is string => Boolean(c) && c !== "help");
+  expect(commands).toEqual(["build", "discover", "review"]);
+  for (const cmd of commands) {
+    expect(section, `SPEC §3.7 must document the CLI command ${cmd}`).toContain(cmd);
+  }
+  const flags = [...new Set(lines.flatMap((l) => l.match(/--[a-z][a-z0-9-]*/g) ?? []))].filter(
+    (f) => f !== "--help",
+  );
+  expect(flags).toContain("--no-embeddings");
+  for (const flag of flags) {
+    expect(section, `SPEC §3.7 must document the CLI flag ${flag}`).toContain(flag);
+  }
+});
+
 it("SPEC §4 documents every file a standard build generates (embeddings.json/recommender.js regression)", () => {
   // #241: SPEC §4 の生成物一覧が embeddings.json と recommender.js を記載しておらず、
   // 標準 build（node src/cli.ts build --out public）が生成する 2 ファイルが目録から
