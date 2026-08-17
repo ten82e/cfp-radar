@@ -598,8 +598,14 @@ export function parseDateRange(
 
   let s = String(text).replace(/[\u2010-\u2015\u2212]/g, "-");
   s = s.replace(/\s+/g, " ").trim();
-  // Drop trailing notes that only say the day is unknown.
-  s = s.replace(/\s*\([^)]*\bTBD\b[^)]*\)\s*$/i, "").trim();
+  // Drop trailing parenthetical notes (回次・併催名・TBD・場所など).
+  // extra.yaml house style: '2026年8月6日-7日 (SWoPP 2026 / 第205回)' (#368).
+  // ASCII and fullwidth parens; repeat so stacked notes fall off.
+  for (;;) {
+    const stripped = s.replace(/\s*[(（][^)）]*[)）]\s*$/u, "").trim();
+    if (stripped === s) break;
+    s = stripped;
+  }
 
   const num = parseNumericRange(s);
   if (num.matched) {
