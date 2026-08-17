@@ -359,6 +359,19 @@ export const VENUE_PAPERS: Record<string, string[]> = {
   ],
 };
 
+function toStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .filter((x) => x !== null && x !== undefined)
+      .map((x) => String(x).trim())
+      .filter(Boolean);
+  }
+  if (typeof val === "string" && val.trim() !== "") {
+    return [val.trim()];
+  }
+  return [];
+}
+
 /** 会議プロファイル文（カテゴリは正式名で展開）。
  * 多言語モデル用（forMulti）は、日本語名の会議にカテゴリの日本語キーワードを付与して
  * 日本語クエリから検索可能にする。英語モデルは日本語キーワードがノイズになるため
@@ -377,7 +390,7 @@ export function profileTexts(
     if (!key) continue;
     // カテゴリは短いキー（systems 等）より正式名（Systems, Architecture and Storage）で
     // 埋め込む方がセマンティック品質が高い（ベンチマークで実測）。
-    const cats = Array.isArray(c.categories) ? (c.categories as string[]) : [];
+    const cats = toStringArray(c.categories);
     const catText = cats.map((k) => safeCats[k] || k).join(" ");
     const name = `${String(c.title ?? "")} ${String(c.full_name ?? "")}`;
     // 多言語モデル用: 日本語名の会議に日本語の分野語を付与（クエリ側の日本語語彙と一致させる）
@@ -396,7 +409,7 @@ export function profileTexts(
     // golden 7 件を sem で拾う正の効果が奪取を上回る）→ 埋め込みは従来どおり維持。
     const skipEmb = SKIP_EMB_KEYS.has(key);
     const papers = !forMulti && !skipEmb ? (VENUE_PAPERS[key] ?? []).slice(0, 8).join(" . ") : "";
-    const tags = Array.isArray(c.tags) ? (c.tags as string[]) : [];
+    const tags = toStringArray(c.tags);
     const parts = [
       String(c.title ?? ""),
       String(c.full_name ?? ""),
@@ -554,18 +567,36 @@ export async function buildEmbeddings(
   return out;
 }
 
+function extractArgvRest(argv: string[] | null | undefined): string[] {
+  if (!argv || !Array.isArray(argv)) return [];
+  if (argv.length === 0) return [];
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  if (isNodeBin(argv[0])) {
+    if (argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))) {
+      return argv.slice(2);
+    }
+    return argv.slice(1);
+  }
+  if (isScript(argv[0])) {
+    return argv.slice(1);
+  }
+  return argv.slice(0);
+}
+
 export async function main(argv: string[] | null | undefined): Promise<number> {
-  if (!argv || !Array.isArray(argv)) {
+  const rawArgs = extractArgvRest(argv);
+  if (rawArgs.length === 0) {
     process.stderr.write(
       "usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>\n",
     );
     return 2;
   }
-  const rawArgs =
-    argv.length >= 2 &&
-    (argv[0].endsWith("node") || argv[1]?.endsWith(".ts") || argv[1]?.endsWith(".js"))
-      ? argv.slice(2)
-      : argv;
   if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
     console.log("usage: node src/embeddings.ts [--force|-f] <data.json> <embeddings.json>");
     return 0;

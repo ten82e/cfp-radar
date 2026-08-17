@@ -24,7 +24,7 @@ import {
   toUpcomingMd,
 } from "../src/build.ts";
 import { main as cliMain, parseArgs as parseCliArgs, usage } from "../src/cli.ts";
-import { venuePapersHash } from "../src/embeddings.ts";
+import { main as embeddingsMain, profileTexts, venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
   makeConference,
@@ -1654,4 +1654,28 @@ it("buildAll, toJson, and toUpcomingMd handle null/undefined now and invalid upc
   } finally {
     // cleanup
   }
+});
+
+it("profileTexts and embeddingsMain handle non-array tags/categories and argv offset safely (#358)", async () => {
+  const res = profileTexts([
+    {
+      key: "test-conf",
+      title: "TestConf",
+      full_name: "International Test Conference",
+      categories: "systems" as any,
+      tags: "niche" as any,
+    },
+  ]);
+  expect(res.keys).toEqual(["test-conf"]);
+  expect(res.texts[0]).toContain("systems");
+  expect(res.texts[0]).toContain("niche");
+
+  const nullCode = await embeddingsMain(null);
+  expect(nullCode).toBe(2);
+
+  const helpCode = await embeddingsMain(["--help"]);
+  expect(helpCode).toBe(0);
+
+  const nodeHelp = await embeddingsMain(["node", "src/embeddings.ts", "-h"]);
+  expect(nodeHelp).toBe(0);
 });
