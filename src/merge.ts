@@ -13,6 +13,7 @@ import {
   type Deadline,
   dateOnly,
   type Edition,
+  parseDateRange,
 } from "./model.ts";
 import { deadlinesOf } from "./sources/local.ts";
 
@@ -531,6 +532,7 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
       // 置換 (延長・訂正): 上流の古い締切を残さず差し替える (SPEC.md 3.5)。
       next.deadlines = deadlinesOf(patch);
     }
+    fillEventFromDateText(next);
     kept.push(next);
   }
   // 既存 edition に無い year の patch は新規 edition として追加する。
@@ -559,9 +561,18 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
     for (const field of ["event_start", "event_end"] as const) {
       if (field in rec) edition[field] = asDate(rec[field]);
     }
+    fillEventFromDateText(edition);
     kept.push(edition);
   }
   return kept;
+}
+
+/** date_text がパースできるのに event_start が空なら埋める。明示値は残す。 */
+function fillEventFromDateText(edition: Edition): void {
+  if (edition.event_start || !edition.date_text) return;
+  const [start, end] = parseDateRange(edition.date_text, edition.year);
+  if (start) edition.event_start = start;
+  if (end) edition.event_end = end;
 }
 
 // --------------------------------------------------------------------------
