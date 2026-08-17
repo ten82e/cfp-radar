@@ -1,4 +1,4 @@
-# 上流データの訂正と除外。scripts/merge.py の apply_overrides() が読む。
+# 上流データの訂正と除外。src/merge.ts の applyOverrides() が読む。
 #
 # 収録範囲の方針(サブ分野丸ごと + 例外)は config.yaml の taxonomy / exclude が担う。
 # ここは「上流の値そのものが誤っている」場合の局所的な訂正にだけ使う。
