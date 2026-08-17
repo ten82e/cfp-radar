@@ -890,7 +890,7 @@ footer a:hover { text-decoration: underline; }
 
     var html = '<div style="background: var(--chip); padding: 14px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 16px;">' +
       '<div style="font-size: 0.78rem; color: var(--muted);">種別・日時</div>' +
-      '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + (KIND_LABEL[r.kind] || r.kind) + '</div>' +
+      '<div style="font-size: 1.1rem; font-weight: 600; color: var(--fg); margin-top: 2px;">' + esc(KIND_LABEL[r.kind] || r.kind) + '</div>' +
       (r.kind === "journal"
         ? '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">随時受付（締切なし）</div>'
         : '<div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); margin-top: 4px;">' + fmtDate(new Date(r.t)) + ' UTC (' + fmtJst(new Date(r.t)) + ' / ' + fmtAoE(new Date(r.t)) + ')</div>') +
