@@ -6,12 +6,17 @@
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
 import { roundOf, warn } from "./model.ts";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+export function setRoot(root: string): void {
+  ROOT = root;
+}
+
 const REGISTRY = join(ROOT, "data", "primary.yaml");
 const OUT = join(ROOT, "data", "primary_overrides.yaml");
 
@@ -326,10 +331,12 @@ export async function runFetchPrimary(
   registryPath = REGISTRY,
   outPath = OUT,
 ): Promise<number> {
-  const registry = (loadYamlFile(registryPath).conferences as Record<string, any>) ?? {};
-  const previous = (loadYamlFile(outPath).conferences as Record<string, any>) ?? {};
+  const resolvedRegistry = isAbsolute(registryPath) ? registryPath : join(ROOT, registryPath);
+  const resolvedOut = isAbsolute(outPath) ? outPath : join(ROOT, outPath);
+  const registry = (loadYamlFile(resolvedRegistry).conferences as Record<string, any>) ?? {};
+  const previous = (loadYamlFile(resolvedOut).conferences as Record<string, any>) ?? {};
   if (Object.keys(registry).length === 0) {
-    process.stderr.write(`error: ${registryPath} に conferences が無い\n`);
+    process.stderr.write(`error: ${resolvedRegistry} に conferences が無い\n`);
     return 2;
   }
   const today = new Date().toISOString().slice(0, 10);
@@ -394,10 +401,10 @@ export async function runFetchPrimary(
   };
   const yamlText = dumpYaml(payload, { skipInvalid: true });
   if (apply) {
-    writeFileSync(outPath, yamlText, "utf8");
-    console.log(`wrote ${outPath} (${Object.keys(generated).length} conferences)`);
+    writeFileSync(resolvedOut, yamlText, "utf8");
+    console.log(`wrote ${resolvedOut} (${Object.keys(generated).length} conferences)`);
   } else {
-    console.log(`--- dry-run: ${outPath} (${Object.keys(generated).length} conferences) ---`);
+    console.log(`--- dry-run: ${resolvedOut} (${Object.keys(generated).length} conferences) ---`);
     console.log(yamlText);
   }
   return 0;
@@ -410,26 +417,47 @@ export interface PrimaryArgs {
   help: boolean;
 }
 
-export function parsePrimaryArgs(argv: string[]): PrimaryArgs {
+export function parsePrimaryArgs(argv: string[] | null | undefined): PrimaryArgs {
   let apply = false;
   let registryPath = REGISTRY;
   let outPath = OUT;
   let help = false;
 
+  if (!argv || !Array.isArray(argv)) {
+    return { apply, registryPath, outPath, help };
+  }
+
   for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
+    const raw = argv[i];
+    let a = raw;
+    let eqVal: string | undefined;
+    const eqIdx = raw.indexOf("=");
+    if (raw.startsWith("-") && eqIdx > 0) {
+      a = raw.slice(0, eqIdx);
+      eqVal = raw.slice(eqIdx + 1);
+    }
+    const boolVal = (): boolean => {
+      if (eqVal === undefined) return true;
+      const low = eqVal.toLowerCase();
+      return low !== "false" && low !== "0" && low !== "no" && low !== "off";
+    };
+
     if (a === "--help" || a === "-h" || a === "help") {
       help = true;
     } else if (a === "--apply" || a === "-a") {
-      apply = true;
-    } else if (a.startsWith("--registry=") || a.startsWith("-r=")) {
-      registryPath = a.slice(a.indexOf("=") + 1);
-    } else if ((a === "--registry" || a === "-r") && argv[i + 1]) {
-      registryPath = argv[++i];
-    } else if (a.startsWith("--out=") || a.startsWith("-o=")) {
-      outPath = a.slice(a.indexOf("=") + 1);
-    } else if ((a === "--out" || a === "-o") && argv[i + 1]) {
-      outPath = argv[++i];
+      apply = boolVal();
+    } else if (a === "--registry" || a === "-r") {
+      if (eqVal !== undefined) {
+        registryPath = eqVal;
+      } else if (argv[i + 1] && !argv[i + 1].startsWith("-")) {
+        registryPath = argv[++i];
+      }
+    } else if (a === "--out" || a === "-o") {
+      if (eqVal !== undefined) {
+        outPath = eqVal;
+      } else if (argv[i + 1] && !argv[i + 1].startsWith("-")) {
+        outPath = argv[++i];
+      }
     }
   }
   return { apply, registryPath, outPath, help };

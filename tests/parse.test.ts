@@ -5,6 +5,7 @@
 
 import { existsSync, unlinkSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { parsePrimaryArgs } from "../src/fetch-primary.ts";
 import {
   monthOf,
   parseDateRange,
@@ -1091,5 +1092,29 @@ describe("aideadlines deadlinesOf parsing", () => {
       confs: [{ year: 2026, link: "https://example.com/2026" }],
     });
     expect(conf3?.link).toBe("https://example.com/2026");
+  });
+
+  it("parsePrimaryArgs handles null, undefined, and equals syntax safely (#324)", () => {
+    expect(parsePrimaryArgs(null)).toEqual({
+      apply: false,
+      registryPath: expect.any(String),
+      outPath: expect.any(String),
+      help: false,
+    });
+    expect(parsePrimaryArgs(undefined)).toEqual({
+      apply: false,
+      registryPath: expect.any(String),
+      outPath: expect.any(String),
+      help: false,
+    });
+
+    const res1 = parsePrimaryArgs(["--apply=true", "-r=custom_reg.yaml", "-o=custom_out.yaml"]);
+    expect(res1.apply).toBe(true);
+    expect(res1.registryPath).toBe("custom_reg.yaml");
+    expect(res1.outPath).toBe("custom_out.yaml");
+
+    const res2 = parsePrimaryArgs(["--apply=false", "-a=0", "--help"]);
+    expect(res2.apply).toBe(false);
+    expect(res2.help).toBe(true);
   });
 });
