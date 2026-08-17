@@ -810,6 +810,8 @@ export function conferencesFromJson(
     for (const edRaw of (conf.editions as unknown[] | undefined) ?? []) {
       if (!edRaw || typeof edRaw !== "object") continue;
       const ed = edRaw as Record<string, unknown>;
+      const year = Number(ed.year);
+      if (!Number.isInteger(year) || year <= 0) continue;
       const deadlines: Deadline[] = [];
       for (const dlRaw of (ed.deadlines as unknown[] | undefined) ?? []) {
         if (!dlRaw || typeof dlRaw !== "object") continue;
@@ -826,7 +828,7 @@ export function conferencesFromJson(
         });
       }
       editions.push({
-        year: Number(ed.year),
+        year,
         edition_id: String(ed.id ?? ""),
         link: String(ed.link ?? ""),
         place: String(ed.place ?? ""),
@@ -838,11 +840,31 @@ export function conferencesFromJson(
         source: String(ed.source ?? ""),
       });
     }
+    editions.sort((a, b) => a.year - b.year);
+    let link = String(conf.link ?? "").trim();
+    if (!link) {
+      for (const ed of [...editions].reverse()) {
+        if (ed.link) {
+          link = ed.link;
+          break;
+        }
+      }
+    }
+    const dblp =
+      conf.dblp === null || conf.dblp === undefined || String(conf.dblp).trim() === ""
+        ? null
+        : String(conf.dblp).trim();
+    const upstream_sub =
+      conf.upstream_sub !== null && conf.upstream_sub !== undefined
+        ? String(conf.upstream_sub).trim()
+        : conf.sub !== null && conf.sub !== undefined
+          ? String(conf.sub).trim()
+          : null;
     out.push({
       key: String(conf.key ?? ""),
       title: String(conf.title ?? ""),
       full_name: String(conf.full_name ?? ""),
-      link: String(conf.link ?? ""),
+      link,
       rank: Object.fromEntries(
         Object.entries((conf.rank as Record<string, unknown> | undefined) ?? {})
           .filter(
@@ -854,8 +876,8 @@ export function conferencesFromJson(
           )
           .map(([k, v]) => [String(k).toLowerCase().trim(), String(v).trim()]),
       ),
-      dblp: null,
-      upstream_sub: null,
+      dblp,
+      upstream_sub,
       tags: ((conf.tags as unknown[] | undefined) ?? []).map((t) => String(t)),
       categories: ((conf.categories as unknown[] | undefined) ?? []).map((c) => String(c)),
       editions,
