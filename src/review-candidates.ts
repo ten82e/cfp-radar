@@ -6,13 +6,17 @@
  */
 
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as loadYaml } from "js-yaml";
 import { parseNow } from "./cli.ts";
 import { parseDeadlineText } from "./discover.ts";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+export function setRoot(root: string): void {
+  ROOT = root;
+}
 
 // 名乗りベースの危険フラグ。確定 predatory ではない (IEEE の一部も Ei 名乗り)。
 const PREDATORY_HINTS = ["ei compendex", "scopus", "ieee xplore", "indexed by"];
@@ -46,7 +50,7 @@ export function normTitle(title: string | null | undefined): string {
   return t.trim().split(/\s+/).join(" ");
 }
 
-export function loadTrackedTitles(): Set<string> {
+export function loadTrackedTitles(root: string = ROOT): Set<string> {
   /** 収録済み (snapshot.json + data/extra.yaml + data/overrides.yaml) の正規化タイトル・フルネーム・キー集合。 */
   const tracked = new Set<string>();
   const add = (c: Record<string, unknown>): void => {
@@ -64,7 +68,7 @@ export function loadTrackedTitles(): Set<string> {
     }
   };
   try {
-    const snap = JSON.parse(readFileSync(join(ROOT, "data", "snapshot.json"), "utf8")) as Record<
+    const snap = JSON.parse(readFileSync(join(root, "data", "snapshot.json"), "utf8")) as Record<
       string,
       any
     >;
@@ -75,7 +79,7 @@ export function loadTrackedTitles(): Set<string> {
     // snapshot が無い/壊れている場合も extra.yaml 側で拾う
   }
   try {
-    const extra = loadYaml(readFileSync(join(ROOT, "data", "extra.yaml"), "utf8")) as Record<
+    const extra = loadYaml(readFileSync(join(root, "data", "extra.yaml"), "utf8")) as Record<
       string,
       any
     >;
@@ -87,7 +91,7 @@ export function loadTrackedTitles(): Set<string> {
   }
   try {
     const overrides = loadYaml(
-      readFileSync(join(ROOT, "data", "overrides.yaml"), "utf8"),
+      readFileSync(join(root, "data", "overrides.yaml"), "utf8"),
     ) as Record<string, any>;
     for (const [key, val] of Object.entries(
       (overrides?.conferences as Record<string, unknown>) ?? {},
@@ -136,18 +140,24 @@ export function reviewDeadlineText(c: Record<string, any> | null | undefined): s
   return "";
 }
 
-export function runReviewCandidates(candidatesPath: string, limit: number, today: Date): void {
+export function runReviewCandidates(
+  candidatesPath: string,
+  limit: number,
+  today: Date,
+  root: string = ROOT,
+): void {
+  const resolvedPath = isAbsolute(candidatesPath) ? candidatesPath : join(root, candidatesPath);
   let text: string;
   try {
-    text = readFileSync(candidatesPath, "utf8");
+    text = readFileSync(resolvedPath, "utf8");
   } catch (err) {
-    console.warn(`warning: cannot read candidates from ${candidatesPath} (${String(err)})`);
+    console.warn(`warning: cannot read candidates from ${resolvedPath} (${String(err)})`);
     return;
   }
   const data = (loadYaml(text) as Record<string, any>) ?? {};
   const cands = (data.conferences as unknown[] | null) ?? [];
 
-  const tracked = loadTrackedTitles();
+  const tracked = loadTrackedTitles(root);
   const enriched: Enriched[] = cands
     .filter((raw): raw is Record<string, any> => raw !== null && typeof raw === "object")
     .map((c) => {

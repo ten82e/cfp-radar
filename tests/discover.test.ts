@@ -926,4 +926,24 @@ describe("discover and review boundary handling", () => {
     expect(res.limit).toBe(60);
     expect(res.help).toBe(false);
   });
+
+  it("loadTrackedTitles and runReviewCandidates accept custom root and resolve relative paths (#316)", () => {
+    const trackedDefault = loadTrackedTitles(REPO_ROOT);
+    expect(trackedDefault.size).toBeGreaterThan(0);
+    expect(trackedDefault.has("sigcomm") || trackedDefault.has("isc hpc")).toBe(true);
+
+    // Empty custom root returns empty set gracefully without throwing
+    const trackedEmpty = loadTrackedTitles("/tmp/nonexistent-root-dir-999");
+    expect(trackedEmpty.size).toBe(0);
+
+    // runReviewCandidates with relative path against custom root
+    expect(() => {
+      runReviewCandidates(
+        "data/discovered_candidates.yaml",
+        10,
+        new Date("2026-08-09T00:00:00Z"),
+        REPO_ROOT,
+      );
+    }).not.toThrow();
+  });
 });
