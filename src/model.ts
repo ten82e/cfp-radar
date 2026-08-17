@@ -520,7 +520,10 @@ function parseJapaneseRange(
   fallbackYear: number,
 ): { matched: boolean; range: [Date | null, Date | null] } {
   // 全角数字・記号を正規化 (２０２６ -> 2026, ～ -> 〜)
-  const norm = s.normalize("NFKC").replace(/\s+/g, "");
+  // extra.yaml: '特集号予定 2027年9月号' — drop a leading label before YYYY年
+  // and a trailing 号 (journal-issue marker) so the existing month branch matches (#376).
+  let norm = s.normalize("NFKC").replace(/\s+/g, "");
+  norm = norm.replace(/^.*?(?=\d{4}年)/u, "").replace(/号$/u, "");
 
   // 1. 日付範囲: YYYY年M月D日[〜-]YYYY年M月D日 / YYYY年M月D日[〜-]M月D日 / YYYY年M月D日[〜-]D日
   let m =
