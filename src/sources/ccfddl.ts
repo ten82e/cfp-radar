@@ -168,10 +168,13 @@ export function conferenceOf(raw: Record<string, unknown> | null | undefined): C
       break;
     }
   }
+  if (!link && raw.link) {
+    link = String(raw.link);
+  }
   return {
     key: slug(title),
     title,
-    full_name: String(raw.description ?? title),
+    full_name: String(raw.description ?? raw.full_name ?? title),
     link,
     rank,
     dblp: raw.dblp === null || raw.dblp === undefined ? null : String(raw.dblp),
