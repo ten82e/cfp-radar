@@ -25,7 +25,15 @@ import {
   setRoot,
 } from "../src/cli.ts";
 import { type Conference, fmtUTC } from "../src/model.ts";
-import { makeFixtureCache, NOW_ARG, REPO_ROOT } from "./helpers.ts";
+import {
+  makeConference,
+  makeDeadline,
+  makeEdition,
+  makeFixtureCache,
+  NOW_ARG,
+  REPO_ROOT,
+  utc,
+} from "./helpers.ts";
 
 function allUpstreamsDown(): void {
   hooks.collect = async () => ({
@@ -539,6 +547,54 @@ describe("snapshot fallback", () => {
     const code = await cmdBuild(args(outdir));
     expect(code).not.toBe(0);
     expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+  });
+
+  it("partial upstream failure continues when live is nonempty even if snapshot is not larger (#410)", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(
+      join(root, "data", "snapshot.json"),
+      JSON.stringify({
+        conferences: [
+          {
+            key: "tiny-snap",
+            title: "Tiny",
+            categories: ["ai"],
+            editions: [
+              {
+                year: 2027,
+                id: "tiny27",
+                deadlines: [{ kind: "paper", utc: "2026-11-01T23:59:59Z" }],
+              },
+            ],
+          },
+        ],
+      }),
+      "utf8",
+    );
+    const live = makeConference({
+      key: "partial-live-conf",
+      title: "Partial Live",
+      categories: ["networking"],
+      sources: ["ccfddl"],
+      editions: [
+        makeEdition({
+          year: 2027,
+          deadlines: [makeDeadline("paper", "Paper", utc(2026, 11, 1))],
+        }),
+      ],
+    });
+    hooks.collect = async () => ({
+      groups: [[live], [], []],
+      failed: new Set(["aideadlines"]),
+    });
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-partial-"), "out");
+    const code = await cmdBuild(args(outdir));
+    expect(code).toBe(0);
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{ key: string }>;
+    };
+    expect(data.conferences.find((c) => c.key === "partial-live-conf")).toBeDefined();
   });
 
   it("build aborts when hand-edited data/overrides.yaml is unparsable", async () => {

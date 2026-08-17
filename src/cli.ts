@@ -213,11 +213,15 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
       confs = applyOverrides(confs, primary);
       confs = sanitizeEditions(confs);
       confs = select(confs, config);
-    } else {
+    } else if (confs.length === 0) {
       process.stderr.write(
         `error: 上流 ${[...failed].sort().join(",")} が取得できず、退避に使える ${snapshot} も無い（${confs.length} 会議）。縮退した内容を配信しないため中断する\n`,
       );
       return 2;
+    } else {
+      process.stderr.write(
+        `warning: 上流 ${[...failed].sort().join(",")} が取得できないが、成功した ${confs.length} 会議で継続する（SPEC.md 3.5）\n`,
+      );
     }
   }
 
