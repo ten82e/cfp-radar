@@ -28,6 +28,7 @@ import {
   normTitle,
   parseArgs as parseReviewArgs,
   reviewDeadlineText,
+  main as reviewMain,
   runReviewCandidates,
   tagSource,
 } from "../src/review-candidates.ts";
@@ -974,5 +975,22 @@ describe("discover and review boundary handling", () => {
     expect(deadlineIsFuture(undefined, null)).toBe(false);
     expect(deadlineIsFuture("2099-12-31", null)).toBe(true);
     expect(deadlineIsFuture("1990-01-01", null)).toBe(false);
+  });
+
+  it("runReviewCandidates and reviewMain handle null/undefined today and argv offset (#350)", async () => {
+    // today = null / undefined falls back to new Date() safely
+    expect(() => {
+      runReviewCandidates("data/discovered_candidates.yaml", 10, null, REPO_ROOT);
+    }).not.toThrow();
+
+    expect(() => {
+      runReviewCandidates("data/discovered_candidates.yaml", 10, undefined, REPO_ROOT);
+    }).not.toThrow();
+
+    const directHelp = await reviewMain(["--help"]);
+    expect(directHelp).toBe(0);
+
+    const nodeHelp = await reviewMain(["node", "src/review-candidates.ts", "-h"]);
+    expect(nodeHelp).toBe(0);
   });
 });
