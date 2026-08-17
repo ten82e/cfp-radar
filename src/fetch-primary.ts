@@ -175,8 +175,9 @@ interface ExtractedDate {
   day: number;
 }
 
-export function parsePrimaryDate(window: string): ExtractedDate | null {
-  const norm = window.normalize("NFKC");
+export function parsePrimaryDate(window: string | null | undefined): ExtractedDate | null {
+  if (!window) return null;
+  const norm = String(window).normalize("NFKC");
   // 1. Japanese format: '2026年5月10日', '2026年05月10日'
   let m = /\b(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(norm);
   if (m) {
@@ -299,8 +300,12 @@ export function pageYear(_htmlText: string, fallback: number): number {
   return fallback;
 }
 
-export function extractDeadlines(lines: string[], year: number): PrimaryDeadline[] {
+export function extractDeadlines(
+  lines: string[] | null | undefined,
+  year: number,
+): PrimaryDeadline[] {
   const out: PrimaryDeadline[] = [];
+  if (!lines || !Array.isArray(lines)) return out;
   for (let i = 0; i < lines.length; i++) {
     const ln = lines[i];
     if (!isDeadlineLine(ln)) continue;
@@ -463,17 +468,44 @@ export function parsePrimaryArgs(argv: string[] | null | undefined): PrimaryArgs
   return { apply, registryPath, outPath, help };
 }
 
+function extractArgvRest(argv: string[] | null | undefined): string[] {
+  if (!argv || !Array.isArray(argv)) return [];
+  if (argv.length === 0) return [];
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  if (isNodeBin(argv[0])) {
+    if (argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))) {
+      return argv.slice(2);
+    }
+    return argv.slice(1);
+  }
+  if (isScript(argv[0])) {
+    return argv.slice(1);
+  }
+  return argv.slice(0);
+}
+
+export async function main(argv: string[] | null | undefined): Promise<number> {
+  const rest = extractArgvRest(argv);
+  const args = parsePrimaryArgs(rest);
+  if (args.help) {
+    console.log("usage: node src/fetch-primary.ts [--apply] [--registry <path>] [--out <path>]");
+    return 0;
+  }
+  return await runFetchPrimary(args.apply, args.registryPath, args.outPath);
+}
+
 const isMain = Boolean(
   process.argv[1] &&
     (process.argv[1].endsWith("fetch-primary.ts") || process.argv[1].endsWith("fetch-primary.js")),
 );
 if (isMain) {
-  const args = parsePrimaryArgs(process.argv.slice(2));
-  if (args.help) {
-    console.log("usage: node src/fetch-primary.ts [--apply] [--registry <path>] [--out <path>]");
-    process.exit(0);
-  }
-  runFetchPrimary(args.apply, args.registryPath, args.outPath).then(
+  main(process.argv).then(
     (code) => {
       process.exitCode = code;
     },
