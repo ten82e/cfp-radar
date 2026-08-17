@@ -497,8 +497,9 @@ function sortKey(rec: CalendarRecord): [number, string] {
 export function toJson(
   confs: Conference[] | null | undefined,
   config: Record<string, unknown> | null | undefined,
-  now: Date,
+  now: Date | null | undefined,
 ): Record<string, unknown> {
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
   const safeConfig = config ?? {};
   const site = (safeConfig.site as Record<string, unknown>) ?? {};
   const domain = String(site.domain ?? "conf-deadlines");
@@ -548,7 +549,7 @@ export function toJson(
     });
   }
   return {
-    generated_at: fmtUTC(now, "%Y-%m-%dT%H:%M:%SZ"),
+    generated_at: fmtUTC(safeNow, "%Y-%m-%dT%H:%M:%SZ"),
     site: {
       domain,
       base_url: baseUrl,
@@ -626,11 +627,15 @@ export function escapeMdUrl(url: string | null | undefined): string {
 
 export function toUpcomingMd(
   records: CalendarRecord[] | null | undefined,
-  now: Date,
+  now: Date | null | undefined,
   days = 180,
 ): string {
-  const horizon = addDays(now, days);
-  const today = dateOnly(now);
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
+  const rawDays = Number(days);
+  const safeDays =
+    Number.isFinite(rawDays) && Number.isInteger(rawDays) && rawDays > 0 ? rawDays : 180;
+  const horizon = addDays(safeNow, safeDays);
+  const today = dateOnly(safeNow);
   const rows: string[] = [];
   for (const rec of records ?? []) {
     if (!rec || typeof rec !== "object") continue;
@@ -644,8 +649,9 @@ export function toUpcomingMd(
     if (rec.type === "deadline") {
       const dl = rec.deadline;
       if (dl === null) continue;
-      if (now.getTime() > dl.at_utc.getTime() || dl.at_utc.getTime() > horizon.getTime()) continue;
-      const remainMs = dl.at_utc.getTime() - now.getTime();
+      if (safeNow.getTime() > dl.at_utc.getTime() || dl.at_utc.getTime() > horizon.getTime())
+        continue;
+      const remainMs = dl.at_utc.getTime() - safeNow.getTime();
       const remainDays = Math.floor(remainMs / DAY_MS);
       let left: string;
       if (remainDays >= 1) {
@@ -693,9 +699,9 @@ export function toUpcomingMd(
     }
   }
   const head = [
-    `# 直近 ${days} 日の締切と開催`,
+    `# 直近 ${safeDays} 日の締切と開催`,
     "",
-    `生成時刻: ${fmtUTC(now, "%Y-%m-%dT%H:%M:%SZ")}`,
+    `生成時刻: ${fmtUTC(safeNow, "%Y-%m-%dT%H:%M:%SZ")}`,
     "",
     "| 日付 | 残り | 会議 | 種別 | R | 推定 | 開催地 |",
     "|---|---|---|---|---|---|---|",
@@ -838,7 +844,7 @@ export async function buildAll(
   confs: Conference[] | null | undefined,
   config: Record<string, unknown> | null | undefined,
   outdir: string,
-  now: Date,
+  now: Date | null | undefined,
   opts: { noEmbeddings?: boolean } = {},
 ): Promise<BuildStats> {
   mkdirSync(outdir, { recursive: true });
@@ -846,7 +852,8 @@ export async function buildAll(
   const safeConfs = Array.isArray(confs) ? confs : [];
   const safeConfig = config ?? {};
 
-  const nowUtc = new Date(now.getTime());
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
+  const nowUtc = new Date(safeNow.getTime());
   // DTSTAMP is derived from --now (floored to the day).
   const dtstamp = new Date(
     Date.UTC(nowUtc.getUTCFullYear(), nowUtc.getUTCMonth(), nowUtc.getUTCDate()),
@@ -857,7 +864,11 @@ export async function buildAll(
   const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
   // config.yaml の site.upcoming_days（既定 180）: upcoming.md の窓を決める。
   // これまで宣言のみで読まれず 180 に固定されていた（#95）。
-  const upcomingDays = Number(site.upcoming_days ?? 180) || 180;
+  const rawUpcomingDays = Number(site.upcoming_days ?? 180);
+  const upcomingDays =
+    Number.isFinite(rawUpcomingDays) && Number.isInteger(rawUpcomingDays) && rawUpcomingDays > 0
+      ? rawUpcomingDays
+      : 180;
   const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
 
   const records = recordsOf(safeConfs);
