@@ -10,11 +10,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   extractDeadline,
   extractDeadlines,
+  main as fetchPrimaryMain,
   loadYamlFile,
   pageTitleYear,
   pageYear,
   pageYearMismatch,
   parsePrimaryArgs,
+  parsePrimaryDate,
   runFetchPrimary,
   toLines,
 } from "../src/fetch-primary.ts";
@@ -323,5 +325,20 @@ describe("parsePrimaryArgs and null safety", () => {
     expect(pageTitleYear(null)).toBeNull();
     expect(pageTitleYear(undefined)).toBeNull();
     expect(pageTitleYear("")).toBeNull();
+  });
+
+  it("parsePrimaryDate, extractDeadlines, and main handle null/undefined and auto-detect argv offset (#346)", async () => {
+    expect(parsePrimaryDate(null)).toBeNull();
+    expect(parsePrimaryDate(undefined)).toBeNull();
+    expect(parsePrimaryDate("")).toBeNull();
+
+    expect(extractDeadlines(null, 2026)).toEqual([]);
+    expect(extractDeadlines(undefined, 2026)).toEqual([]);
+
+    const directHelp = await fetchPrimaryMain(["--help"]);
+    expect(directHelp).toBe(0);
+
+    const nodeHelp = await fetchPrimaryMain(["node", "src/fetch-primary.ts", "-h"]);
+    expect(nodeHelp).toBe(0);
   });
 });
