@@ -7,13 +7,16 @@
  * 変換コード自体は正しかったため、このテストは変換の意味論ではなく
  * 「ローカルデータの各エントリが無言で落ちない・未知 tz にならない」ことを
  * 検証する（parse 失敗はビルドで警告のうえ静かにスキップされるため）。
+ *
+ * #382: 会期 date_text も同じ理由で検査する。#376 は締切検査だけでは緑のまま
+ * ICS / upcoming から落ちた。
  */
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { parseInstant, resetWarnings, warningCounts } from "../src/model.ts";
+import { parseDateRange, parseInstant, resetWarnings, warningCounts } from "../src/model.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 interface RawDeadline {
@@ -104,6 +107,34 @@ describe("local source data integrity", () => {
     const counts = warningCounts();
     const unknownTz = Object.keys(counts).filter((k) => k.startsWith("unknown timezone"));
     expect(unknownTz).toEqual([]);
+  });
+
+  it("every extra.yaml date_text parses or is an explicit year-only / TBD exception (#382)", () => {
+    const extra = loadYaml(readFileSync(join(REPO_ROOT, "data", "extra.yaml"), "utf8")) as {
+      conferences?: Array<{
+        key?: string;
+        editions?: Array<{ year?: number; date_text?: string; date?: string }>;
+      }>;
+    };
+    const allowNull = new Set(["TBD 2027", "2026年11月下旬～12月上旬（詳細未定）"]);
+    const rows: Array<{ key: string; year: number; text: string }> = [];
+    for (const conf of extra?.conferences ?? []) {
+      for (const ed of conf.editions ?? []) {
+        const text = String(ed.date_text ?? ed.date ?? "").trim();
+        if (!text) continue;
+        rows.push({ key: conf.key ?? "?", year: Number(ed.year) || 2026, text });
+      }
+    }
+    expect(rows.length).toBeGreaterThan(50);
+    const unexpected: string[] = [];
+    for (const row of rows) {
+      if (/^\d{4}$/.test(row.text) || allowNull.has(row.text)) continue;
+      const [start, end] = parseDateRange(row.text, row.year);
+      if (start === null || end === null) {
+        unexpected.push(`${row.key}: ${JSON.stringify(row.text)}`);
+      }
+    }
+    expect(unexpected).toEqual([]);
   });
 
   it("every YAML data file parses without error", () => {
