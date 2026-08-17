@@ -555,6 +555,14 @@ it("SPEC §3.7 documents every CLI command and flag from usage() (#374)", () => 
   }
 });
 
+it("SPEC §3.7 documents parseNow TZ and T24:00 fail-closed (#404)", () => {
+  const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
+  const section = spec.slice(spec.indexOf("### 3.7 "), spec.indexOf("## 4. "));
+  expect(section).toMatch(/offset|タイムゾーン|timezone/i);
+  expect(section).toMatch(/T24:00|24:00/);
+  expect(section).toMatch(/日付だけ|date-only|YYYY-MM-DD/);
+});
+
 it("SPEC §2 tree documents every src / site / data yaml / scripts ts file (#378/#380)", () => {
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
   const section = spec.slice(spec.indexOf("## 2."), spec.indexOf("## 3."));

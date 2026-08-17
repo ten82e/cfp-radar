@@ -598,6 +598,10 @@ node --experimental-strip-types src/cli.ts review [--candidates data/discovered_
 
 `--offline` は「新規取得をせず、キャッシュ → snapshot の順で退避する」。
 `--now` は決定的テストのため必須で実装する。既定は実時刻 UTC。
+時刻成分がある値は `Z` または `±HH:MM` offset を必須とする。offset 無し
+（`2026-08-09T00:00:00`）はローカル時刻になり決定性を壊すので拒否する。
+`T24:00:00Z` も Date が翌日へ繰り上げるので拒否する。日付だけ
+（`2026-08-09`）は UTC 0 時とする。
 `--no-embeddings` は `embeddings.json` を書かない（テスト用・高速化）。
 `discover` は穴場の会議・ジャーナルを探索し、`review` は候補を締切昇順・重複・
 predatory 疑い付きで一覧する。
