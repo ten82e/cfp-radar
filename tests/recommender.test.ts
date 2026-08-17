@@ -1620,6 +1620,34 @@ describe("parseBenchArgs 不正数値のフォールバック (#302 続編)", ()
     expect(parseBenchArgs(["node", "bench-recommender.ts", "--topk=10"]).topK).toBe(10);
     expect(parseBenchArgs(["node", "bench-recommender.ts"]).topK).toBe(5);
   });
+
+  it("handles null, undefined, raw flag arrays, and boolean equals syntax (#338)", () => {
+    expect(parseBenchArgs(null).topK).toBe(5);
+    expect(parseBenchArgs(undefined).topK).toBe(5);
+
+    // direct flag array without node / script prefix
+    const direct1 = parseBenchArgs(["--samples", "10", "--failures", "3"]);
+    expect(direct1.samples).toBe(10);
+    expect(direct1.failures).toBe(3);
+
+    // boolean equals syntax
+    const boolArgs = parseBenchArgs([
+      "--by-len=true",
+      "--adaptive=false",
+      "--penalty=1",
+      "--prf=0",
+      "--idf=false",
+      "--golden-en=true",
+      "--paper-max=false",
+    ]);
+    expect(boolArgs.byLen).toBe(true);
+    expect(boolArgs.adaptive).toBe(false);
+    expect(boolArgs.penalty).toBe(true);
+    expect(boolArgs.prf).toBe(false);
+    expect(boolArgs.idf).toBe(false);
+    expect(boolArgs.goldenEn).toBe(true);
+    expect(boolArgs.paperMax).toBe(false);
+  });
 });
 
 describe("embeddingsMain 引数パース (#322)", () => {
