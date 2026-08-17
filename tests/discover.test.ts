@@ -959,4 +959,20 @@ describe("discover and review boundary handling", () => {
     expect(res[0].link).toBe("https://www.ipsj.or.jp/journal/cfp/ipsj-27-p.html");
     expect(res[1].link).toBe("https://www.ipsj.or.jp/journal/cfp/ipsj-28-p.html");
   });
+
+  it("isAlreadyTracked, classifyCategory, and deadlineIsFuture handle null/undefined safely (#344)", () => {
+    const disc = new NicheDiscoverer(REPO_ROOT);
+    expect(disc.isAlreadyTracked(null)).toBe(false);
+    expect(disc.isAlreadyTracked(undefined)).toBe(false);
+    expect(disc.isAlreadyTracked("")).toBe(false);
+
+    expect(disc.classifyCategory(null)).toEqual(["systems"]);
+    expect(disc.classifyCategory(undefined)).toEqual(["systems"]);
+    expect(disc.classifyCategory("")).toEqual(["systems"]);
+
+    expect(deadlineIsFuture(null, null)).toBe(false);
+    expect(deadlineIsFuture(undefined, null)).toBe(false);
+    expect(deadlineIsFuture("2099-12-31", null)).toBe(true);
+    expect(deadlineIsFuture("1990-01-01", null)).toBe(false);
+  });
 });

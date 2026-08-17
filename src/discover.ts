@@ -532,9 +532,15 @@ export function parseDeadlineText(dateText: string): Date | null {
   return null;
 }
 
-export function deadlineIsFuture(dateText: string, today: Date): boolean {
+export function deadlineIsFuture(
+  dateText: string | null | undefined,
+  today: Date | null = null,
+): boolean {
+  if (!dateText) return false;
   const d = parseDeadlineText(dateText);
-  return d !== null && d.getTime() >= today.getTime();
+  if (!d) return false;
+  const now = today instanceof Date && !Number.isNaN(today.getTime()) ? today : new Date();
+  return d.getTime() >= now.getTime();
 }
 
 async function fetchText(url: string, userAgent: string, timeoutMs: number): Promise<string> {
@@ -1099,8 +1105,10 @@ export class NicheDiscoverer {
   }
 
   /** Check if candidate key or title is already in our repository. */
-  isAlreadyTracked(keyOrTitle: string): boolean {
+  isAlreadyTracked(keyOrTitle: string | null | undefined): boolean {
+    if (!keyOrTitle) return false;
     const s = slug(keyOrTitle);
+    if (!s) return false;
     if (this.knownKeys.has(s)) return true;
     if (this.knownTitles.has(keyOrTitle.toLowerCase())) return true;
     // 年付きタイトル (例: "CIDR 2027") は年を除いて比較
@@ -1110,8 +1118,9 @@ export class NicheDiscoverer {
   }
 
   /** Classify candidate text into target categories. */
-  classifyCategory(text: string): string[] {
-    const textLower = text.toLowerCase();
+  classifyCategory(text: string | null | undefined): string[] {
+    if (!text) return ["systems"];
+    const textLower = String(text).toLowerCase();
     const matched: string[] = [];
     for (const [cat, keywords] of Object.entries(DOMAIN_KEYWORDS)) {
       if (keywords.some((kw) => textLower.includes(kw))) matched.push(cat);
