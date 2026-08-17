@@ -615,16 +615,24 @@ export function parseDbworldHtml(html: string | null | undefined): DbworldRow[] 
 export function cleanDbworldTitle(subject: string | null | undefined): [string, string] {
   if (!subject) return ["", "conference"];
   let t = subject.trim();
+  t = t.replace(/[\u0080-\u009f]/g, (ch) => {
+    const code = ch.charCodeAt(0);
+    if (code === 0x92) return "'";
+    if (code === 0x96 || code === 0x97) return "-";
+    return " ";
+  });
   t = t.replace(/^(\[[^\]]*\]\s*)+/, ""); // [DEADLINE EXTENDED] 等 (複数)
   t = t.replace(/^(?:Last\s+)?(?:Call for Papers?|CfP|CFP)\s*:?\s*/i, "");
   t = t.replace(
     /^(?:DEADLINE EXTENSION|Extended (?:Submission )?Deadline|Deadline\s+(?:Extended|Extension|Approaching))\s*:?\s*/i,
     "",
   );
+  t = t.replace(/^\(\s*(?:submission\s+)?deadline\b.*\)$/i, "");
   t = t.replace(/\s*(?:[|:]\s*)?(?:Final\s+|Last\s+)?Call for\b.*$/i, "");
   t = t.replace(/\s*\|\|?.*$/, ""); // "|" 区切り以降
   t = t.replace(/\s*:\s*[^()]*\bDeadline\b.*$/i, "");
-  t = t.replace(/\s*[-–]\s*(?:Deadline|Extended\s+deadline).*$/i, "");
+  t = t.replace(/\s*[-–]\s*(?:Deadline|Extended\s+deadline|Deadline\s+Extension).*$/i, "");
+  t = t.replace(/\s*[(（][^)）]*\b(?:DDL\s+)?Extended\b[^)）]*[)）]+\s*$/iu, "");
   t = t
     .replace(/\s+/g, " ")
     .trim()
