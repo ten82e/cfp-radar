@@ -408,6 +408,9 @@ describe("parse_date_range", () => {
     ["2026年8月6日-7日 (SWoPP 2026 / 第205回)", 2026, "2026-08-06", "2026-08-07"],
     ["2026年9月28日 (第206回)", 2026, "2026-09-28", "2026-09-28"],
     ["2026年8月6日-7日（SWoPP 2026）", 2026, "2026-08-06", "2026-08-07"],
+    // extra.yaml JIP special issue: prefix label + 月号 (#376)
+    ["特集号予定 2027年9月号 (COMPSAC 2026 関連)", 2026, "2027-09-01", "2027-09-30"],
+    ["2027年9月号", 2026, "2027-09-01", "2027-09-30"],
   ] as Array<[string, number, string, string]>)(
     "japanese date range %s -> [%s, %s]",
     (text, fallbackYear, expectedStart, expectedEnd) => {
