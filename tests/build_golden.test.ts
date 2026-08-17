@@ -15,7 +15,9 @@ import {
   embeddingsStale,
   escapeMdCell,
   escapeMdUrl,
+  ROOT,
   recordsOf,
+  setRoot,
   titleWithYear,
   toLlmsTxt,
   toUpcomingMd,
@@ -1586,4 +1588,26 @@ it("buildAll falls back to site/recommender.js when custom template is in separa
   expect(existsSync(join(outDir, "index.html"))).toBe(true);
   expect(existsSync(join(outDir, "recommender.js"))).toBe(true);
   expect(readFileSync(join(outDir, "recommender.js"), "utf8")).toContain("Recommender");
+});
+
+it("buildAll handles null and undefined arguments safely and setRoot works (#336)", async () => {
+  const originalRoot = ROOT;
+  try {
+    setRoot("/custom/test/root");
+    expect(ROOT).toBe("/custom/test/root");
+  } finally {
+    setRoot(originalRoot);
+  }
+
+  const tmpDir = mkdtempSync(join(tmpdir(), "cfp-null-build-"));
+  const stats = await buildAll(null, null, tmpDir, new Date("2026-08-09T00:00:00Z"), {
+    noEmbeddings: true,
+  });
+
+  expect(stats.conferences).toBe(0);
+  expect(stats.editions).toBe(0);
+  expect(stats.deadlines).toBe(0);
+  expect(existsSync(join(tmpDir, "data.json"))).toBe(true);
+  expect(existsSync(join(tmpDir, "data.csv"))).toBe(true);
+  expect(existsSync(join(tmpDir, "all.ics"))).toBe(true);
 });

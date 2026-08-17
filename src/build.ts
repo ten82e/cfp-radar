@@ -25,7 +25,11 @@ import {
   fmtUTC,
 } from "./model.ts";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+export function setRoot(root: string): void {
+  ROOT = root;
+}
 
 // --- constants ---------------------------------------------------------------
 
@@ -831,13 +835,16 @@ export interface BuildStats {
 
 /** Generate everything under `outdir` and return a stats dict. */
 export async function buildAll(
-  confs: Conference[],
-  config: Record<string, unknown>,
+  confs: Conference[] | null | undefined,
+  config: Record<string, unknown> | null | undefined,
   outdir: string,
   now: Date,
   opts: { noEmbeddings?: boolean } = {},
 ): Promise<BuildStats> {
   mkdirSync(outdir, { recursive: true });
+
+  const safeConfs = Array.isArray(confs) ? confs : [];
+  const safeConfig = config ?? {};
 
   const nowUtc = new Date(now.getTime());
   // DTSTAMP is derived from --now (floored to the day).
@@ -845,15 +852,15 @@ export async function buildAll(
     Date.UTC(nowUtc.getUTCFullYear(), nowUtc.getUTCMonth(), nowUtc.getUTCDate()),
   );
 
-  const site = (config.site as Record<string, unknown>) ?? {};
+  const site = (safeConfig.site as Record<string, unknown>) ?? {};
   const domain = String(site.domain ?? "conf-deadlines");
   const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
   // config.yaml の site.upcoming_days（既定 180）: upcoming.md の窓を決める。
   // これまで宣言のみで読まれず 180 に固定されていた（#95）。
   const upcomingDays = Number(site.upcoming_days ?? 180) || 180;
-  const categories = (config.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
+  const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
 
-  const records = recordsOf(confs);
+  const records = recordsOf(safeConfs);
   records.sort((a, b) => {
     const [sa, sb] = [sortKey(a), sortKey(b)];
     return sa[0] - sb[0] || cmpStr(sa[1], sb[1]);
@@ -920,7 +927,7 @@ export async function buildAll(
     write(name, renderIcs(ents, { calname, caldesc }));
   }
 
-  const data = toJson(confs, config, nowUtc);
+  const data = toJson(safeConfs, safeConfig, nowUtc);
   const jsonText = JSON.stringify(data, null, 2);
   write("data.json", `${jsonText}\n`);
   write("data.csv", toCsv(records));
@@ -937,7 +944,7 @@ export async function buildAll(
         };
         needEmb = embeddingsStale(
           existing,
-          confs.map((c) => c.key),
+          safeConfs.map((c) => c.key),
         );
       } catch {
         needEmb = true;
@@ -964,12 +971,12 @@ export async function buildAll(
         ["data.csv", "1 行 1 締切のフラット表"],
         ["upcoming.md", `直近 ${upcomingDays} 日の締切と開催の表`],
       ],
-      config,
+      safeConfig,
     ),
   );
   write(".nojekyll", "");
 
-  const template = String(config.template ?? "site/template.html");
+  const template = String(safeConfig.template ?? "site/template.html");
   const templatePath = isAbsolute(template) ? template : join(ROOT, template);
   let templateText: string | null = null;
   try {
@@ -1008,13 +1015,11 @@ export async function buildAll(
   const nDeadlines = records.filter((r) => r.type === "deadline").length;
   return {
     generated_at: String(data.generated_at),
-    conferences: confs.length,
-    editions: confs.reduce((n, c) => n + c.editions.length, 0),
+    conferences: safeConfs.length,
+    editions: safeConfs.reduce((n, c) => n + (c?.editions?.length ?? 0), 0),
     deadlines: nDeadlines,
     events: records.length - nDeadlines,
     estimated: records.filter((r) => r.estimated).length,
     files: written,
   };
 }
-
-export { ROOT };
