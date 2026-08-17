@@ -22,7 +22,7 @@ import {
   toLlmsTxt,
   toUpcomingMd,
 } from "../src/build.ts";
-import { parseArgs as parseCliArgs, usage } from "../src/cli.ts";
+import { main as cliMain, parseArgs as parseCliArgs, usage } from "../src/cli.ts";
 import { venuePapersHash } from "../src/embeddings.ts";
 import {
   icsPhysicalLines,
@@ -1610,4 +1610,21 @@ it("buildAll handles null and undefined arguments safely and setRoot works (#336
   expect(existsSync(join(tmpDir, "data.json"))).toBe(true);
   expect(existsSync(join(tmpDir, "data.csv"))).toBe(true);
   expect(existsSync(join(tmpDir, "all.ics"))).toBe(true);
+});
+
+it("parseCliArgs and cliMain handle null/undefined and auto-detect argv offset (#340)", async () => {
+  expect(parseCliArgs(null)).toEqual({});
+  expect(parseCliArgs(undefined)).toEqual({});
+
+  const directHelp = await cliMain(["help"]);
+  expect(directHelp).toBe(0);
+
+  const directFlag = await cliMain(["--help"]);
+  expect(directFlag).toBe(0);
+
+  const nodeHelp = await cliMain(["node", "src/cli.ts", "help"]);
+  expect(nodeHelp).toBe(0);
+
+  const nullCode = await cliMain(null);
+  expect(nullCode).toBe(2);
 });

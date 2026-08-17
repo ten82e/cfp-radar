@@ -385,8 +385,9 @@ function toPosInt(raw: string | undefined, fallback: number): number {
   return Number.isFinite(n) && Number.isInteger(n) && n > 0 ? n : fallback;
 }
 
-export function parseArgs(argv: string[]): CliArgs {
+export function parseArgs(argv: string[] | null | undefined): CliArgs {
   const args: CliArgs = {};
+  if (!argv || !Array.isArray(argv)) return args;
   const positional: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const raw = argv[i];
@@ -452,10 +453,33 @@ export function parseArgs(argv: string[]): CliArgs {
   return args;
 }
 
-export async function main(argv: string[]): Promise<number> {
+function extractArgvRest(argv: string[] | null | undefined): string[] {
+  if (!argv || !Array.isArray(argv)) return [];
+  if (argv.length === 0) return [];
+  const isNodeBin = (s: string): boolean =>
+    s === "node" || s === "bun" || /(?:^|[/\\])(?:node|bun)(?:\.exe)?$/i.test(s);
+  const isScript = (s: string): boolean =>
+    /(?:^|[/\\])(?:cli|bench|embeddings|discover|review|fetch-primary)(?:[-_a-z0-9]*)?\.[jt]sx?$/i.test(
+      s,
+    );
+
+  if (isNodeBin(argv[0])) {
+    if (argv.length > 1 && (isScript(argv[1]) || !argv[1].startsWith("-"))) {
+      return argv.slice(2);
+    }
+    return argv.slice(1);
+  }
+  if (isScript(argv[0])) {
+    return argv.slice(1);
+  }
+  return argv.slice(0);
+}
+
+export async function main(argv: string[] | null | undefined): Promise<number> {
   let args: CliArgs;
   try {
-    args = parseArgs(argv.slice(2));
+    const rest = extractArgvRest(argv);
+    args = parseArgs(rest);
   } catch (exc) {
     process.stderr.write(`error: ${String(exc)}\n\n${usage()}\n`);
     return 2;
