@@ -24,6 +24,10 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
 - `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
+**rev.10（§2 ツリー）。** 実リポジトリにある `site/recommender.js`・
+`src/bench-recommender.ts`・`data/primary.yaml`・`data/primary_overrides.yaml`・
+`data/discovered_candidates.yaml` を分担ツリーへ足す（#378）。
+
 **rev.9（§3.7 CLI）。** §3.7 が `build` だけを書いていた。実装の `usage()` は
 `discover` / `review` と `build --no-embeddings` を持つ。README は #239/#243/#247
 で同期済み。SPEC を実装の正に戻す（#374）。
@@ -203,6 +207,9 @@ kamiyobi/
 ├── data/
 │   ├── extra.yaml               # 上流に無い会議                          [担当B]
 │   ├── overrides.yaml           # 上流の訂正・別名・カテゴリ上書き        [担当B]
+│   ├── primary.yaml             # 一次ソース URL 一覧                     [担当E]
+│   ├── primary_overrides.yaml   # 一次ソース抽出結果（自動）              [自動]
+│   ├── discovered_candidates.yaml # discover の既定出力                   [担当G]
 │   └── snapshot.json            # 生成物(コミットされる。上流障害時の退避) [自動]
 ├── src/
 │   ├── model.ts                 # 型・時刻解決・日付パーサ・snapshot 入出力 [担当A]
@@ -216,9 +223,12 @@ kamiyobi/
 │   ├── fetch-primary.ts         # 一次ソース自動抽出                     [担当E]
 │   ├── review-candidates.ts     # 候補レビュー支援                       [担当G]
 │   ├── embeddings.ts            # 埋め込み生成                           [担当C]
+│   ├── bench-recommender.ts            # 推薦ベンチ                             [担当C]
 │   ├── build.ts                 # ICS/JSON/CSV/MD/llms.txt/HTML 出力      [担当C]
 │   └── cli.ts                   # エントリポイント                        [担当C]
-├── site/template.html           # 単一ファイル静的サイト                  [担当D]
+├── site/
+│   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
+│   └── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
 ├── public/                      # 生成物(git 管理外)
 ├── tests/                       # vitest                                 [担当F]
 └── .github/workflows/
