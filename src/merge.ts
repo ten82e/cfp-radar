@@ -360,10 +360,17 @@ function unique(values: string[]): string[] {
 // classify
 // --------------------------------------------------------------------------
 
-export function classify(confs: Conference[], config: Record<string, unknown>): Conference[] {
-  const taxonomy = (config.taxonomy as Record<string, unknown>) ?? {};
-  const known = new Set(Object.keys((config.categories as Record<string, unknown>) ?? taxonomy));
-  const excluded = new Set((config.exclude as string[] | null) ?? []);
+export function classify(
+  confs: Conference[] | null | undefined,
+  config: Record<string, unknown> | null | undefined,
+): Conference[] {
+  if (!confs || !Array.isArray(confs)) return [];
+  const safeConfig = config ?? {};
+  const taxonomy = (safeConfig.taxonomy as Record<string, unknown>) ?? {};
+  const known = new Set(
+    Object.keys((safeConfig.categories as Record<string, unknown>) ?? taxonomy),
+  );
+  const excluded = new Set((safeConfig.exclude as string[] | null) ?? []);
   const out: Conference[] = [];
   for (const conf of confs) {
     let categories: string[];
@@ -396,9 +403,10 @@ function matches(conf: Conference, rule: Record<string, unknown>): boolean {
 // --------------------------------------------------------------------------
 
 export function applyOverrides(
-  confs: Conference[],
+  confs: Conference[] | null | undefined,
   overrides: Record<string, unknown> | null | undefined,
 ): Conference[] {
+  if (!confs || !Array.isArray(confs)) return [];
   overrides = overrides ?? {};
   const dropped = new Set((overrides.drop as string[] | null) ?? []);
   const patches = (overrides.conferences as Record<string, unknown>) ?? {};
@@ -450,21 +458,32 @@ export function applyOverrides(
 }
 
 /** Drop paper/abstract deadlines that fall after the meeting ends (or starts, if event_end is null). */
-export function sanitizeEditions(confs: Conference[]): Conference[] {
-  return confs.map((conf) => ({
-    ...conf,
-    editions: conf.editions.map((edition) => {
-      const meetingEnd = edition.event_end ?? edition.event_start;
-      if (meetingEnd === null || edition.deadlines.length === 0) return edition;
-      const kept = edition.deadlines.filter(
-        (d) =>
-          !(d.kind === "paper" || d.kind === "abstract") ||
-          dateOnly(d.at_utc).getTime() <= dateOnly(meetingEnd).getTime(),
-      );
-      if (kept.length === edition.deadlines.length) return edition;
-      return { ...edition, deadlines: kept };
-    }),
-  }));
+export function sanitizeEditions(confs: Conference[] | null | undefined): Conference[] {
+  if (!confs || !Array.isArray(confs)) return [];
+  return confs.map((conf) => {
+    if (!conf || typeof conf !== "object") return conf;
+    const editions = Array.isArray(conf.editions) ? conf.editions : [];
+    return {
+      ...conf,
+      editions: editions.map((edition) => {
+        if (!edition || typeof edition !== "object") return edition;
+        const meetingEnd = edition.event_end ?? edition.event_start;
+        if (
+          meetingEnd === null ||
+          !Array.isArray(edition.deadlines) ||
+          edition.deadlines.length === 0
+        )
+          return edition;
+        const kept = edition.deadlines.filter(
+          (d) =>
+            !(d && (d.kind === "paper" || d.kind === "abstract")) ||
+            dateOnly(d.at_utc).getTime() <= dateOnly(meetingEnd).getTime(),
+        );
+        if (kept.length === edition.deadlines.length) return edition;
+        return { ...edition, deadlines: kept };
+      }),
+    };
+  });
 }
 
 function patchEditions(editions: Edition[], patches: Record<string, unknown>): Edition[] {

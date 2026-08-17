@@ -1342,4 +1342,13 @@ describe("conferencesFromJson & defensive merge operations", () => {
     });
     expect(patched[0].rank).toEqual({ core: "A*" });
   });
+
+  it("classify, sanitizeEditions, and applyOverrides handle null and undefined safely (#332)", () => {
+    expect(classify(null, null)).toEqual([]);
+    expect(classify(undefined, undefined)).toEqual([]);
+    expect(sanitizeEditions(null)).toEqual([]);
+    expect(sanitizeEditions(undefined)).toEqual([]);
+    expect(applyOverrides(null, null)).toEqual([]);
+    expect(applyOverrides(undefined, undefined)).toEqual([]);
+  });
 });
