@@ -622,11 +622,16 @@ export function cleanDbworldTitle(subject: string | null | undefined): [string, 
     return " ";
   });
   t = t.replace(/^(\[[^\]]*\]\s*)+/, ""); // [DEADLINE EXTENDED] 等 (複数)
-  t = t.replace(/^(?:Last\s+)?(?:Call for Papers?|CfP|CFP)\s*:?\s*/i, "");
-  t = t.replace(
-    /^(?:DEADLINE EXTENSION|Extended (?:Submission )?Deadline|Deadline\s+(?:Extended|Extension|Approaching))\s*:?\s*/i,
-    "",
-  );
+  // CFP / Deadline 接頭辞は重なる（Deadlines approaching: CFP: X）。
+  for (let i = 0; i < 4; i++) {
+    const prev = t;
+    t = t.replace(/^(?:Last\s+)?(?:Call for Papers?|CfP|CFP)(?:\s+for)?\s*:?\s*/i, "");
+    t = t.replace(
+      /^(?:DEADLINE EXTENSION|Extended (?:Submission )?Deadline|Deadlines?\s+(?:Extended|Extension|Approaching|Reminder))\s*[:\-–]?\s*/i,
+      "",
+    );
+    if (t === prev) break;
+  }
   t = t.replace(/^\(\s*(?:submission\s+)?deadline\b.*\)$/i, "");
   t = t.replace(/\s*(?:[|:]\s*)?(?:Final\s+|Last\s+)?Call for\b.*$/i, "");
   t = t.replace(/\s*\|\|?.*$/, ""); // "|" 区切り以降
