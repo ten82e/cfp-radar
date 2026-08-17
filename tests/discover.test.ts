@@ -274,6 +274,9 @@ describe("parseDbworldHtml", () => {
     expect(cleanDbworldTitle("Deadline Reminder - NL4AI @ AIxIA 2026")[0]).toBe(
       "NL4AI @ AIxIA 2026",
     );
+    expect(cleanDbworldTitle("SIGIR-AP 2026 Deadline Extended by Two Weeks")[0]).toBe(
+      "SIGIR-AP 2026",
+    );
   });
 });
 
