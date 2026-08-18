@@ -22540,3 +22540,39 @@ conferences:
         place: Beijing, China
         date_text: Aug 23, 2026
         deadlines: []
+  - key: sylen-2027
+    title: SYLEN 2027
+    full_name: SYLEN Annual Conference 2027
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202652&copyownerid=199951
+    categories:
+      - reliability
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2027
+        id: sylen-202727
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202652&copyownerid=199951
+        place: San Jose, USA
+        date_text: Nov 14, 2026 (Sep 15, 2026)
+        deadlines: []
+  - key: asiajcis-2027
+    title: AsiaJCIS 2027
+    full_name: The 22nd Asia Joint Conference on Information Security
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202719&copyownerid=199998
+    categories:
+      - security
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2027
+        id: asiajcis-202727
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=202719&copyownerid=199998
+        place: Urayasu, Japan
+        date_text: Apr 16, 2027
+        deadlines: []
