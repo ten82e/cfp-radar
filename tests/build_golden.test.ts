@@ -1200,6 +1200,19 @@ it("site template does not include external Google Fonts per SPEC §7 (#223)", (
   expect(template).toContain("--font-mono: ui-monospace,");
 });
 
+it("site template exposes independent recommendation and deadline render paths (#466)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  expect(template).toContain('id="modeRecommend"');
+  expect(template).toContain('id="modeDeadlines"');
+  expect(template).toContain('aria-pressed="false"');
+  expect(template).toContain('id="deadlineTableWrap"');
+  expect(template).toContain('id="recommendationCards"');
+  expect(template).toContain("function setMode(mode)");
+  expect(template).toContain("renderRecommendationCards(paperMode ? shown : [])");
+  expect(template).toContain("mode-recommend .deadline-only");
+  expect(template).toContain("mode-deadlines .recommend-only");
+});
+
 it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
   const start = template.indexOf("function openDrawer");
