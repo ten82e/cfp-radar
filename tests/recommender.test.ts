@@ -62,6 +62,22 @@ describe("parsePaperLines", () => {
   });
 });
 
+describe("safeExternalUrl", () => {
+  it.each(["http://example.com/cfp", "https://example.com/cfp", "/cfp", "//example.com/cfp"])(
+    "accepts %s",
+    (value) => {
+      expect(R.safeExternalUrl(value)).toBe(value);
+    },
+  );
+
+  it.each(["javascript:alert(1)", "data:text/html,<script>", "vbscript:msgbox(1)", "https://"])(
+    "rejects %s",
+    (value) => {
+      expect(R.safeExternalUrl(value)).toBe("");
+    },
+  );
+});
+
 describe("autoDetectCats", () => {
   it("detects networking", () => {
     const cats = R.autoDetectCats(

@@ -907,8 +907,9 @@ footer a:hover { text-decoration: underline; }
     }
     html += actionRow;
 
-    if (r.conf.link || r.ed.link) {
-      html += '<a href="' + esc(r.ed.link || r.conf.link) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く</a>';
+    var officialLink = safeExternalUrl(r.ed.link || r.conf.link);
+    if (officialLink) {
+      html += '<a href="' + esc(officialLink) + '" target="_blank" style="display: block; text-align: center; background: var(--accent); color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 20px;">公式サイトを開く</a>';
     }
 
     html += '<div style="font-size: 0.85rem;">' +
@@ -966,7 +967,7 @@ footer a:hover { text-decoration: underline; }
       }
     } else if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < shown.length) {
       var r = shown[selectedIndex];
-      var href = r.ed.link || r.conf.link;
+      var href = safeExternalUrl(r.ed.link || r.conf.link);
       if (href) window.open(href, "_blank");
     } else if (e.key === "Escape") {
       closeDrawer();
@@ -1367,7 +1368,7 @@ footer a:hover { text-decoration: underline; }
     var head = document.createElement("div");
     head.className = "conf";
     var name = titleWithYear(r.conf.title || r.conf.key || "", r.ed.year);
-    var href = r.ed.link || r.conf.link;
+    var href = safeExternalUrl(r.ed.link || r.conf.link);
     if (href) {
       var a = document.createElement("a");
       a.href = href; a.textContent = name.trim();
@@ -1467,6 +1468,12 @@ footer a:hover { text-decoration: underline; }
   // ---- 推薦理由の行内展開（適合度タグのクリックで開閉） ----
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function safeExternalUrl(value) {
+    return window.Recommender && window.Recommender.safeExternalUrl
+      ? window.Recommender.safeExternalUrl(value)
+      : "";
   }
 
   function makeDetailRow(r) {
