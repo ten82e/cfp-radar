@@ -635,6 +635,31 @@ describe("semantic functions", () => {
     expect(R.cosine(null, a)).toBe(0); // null → 0
   });
 
+  it("embedding manifest rejects incompatible browser data", () => {
+    const probe = { text: "kamiyobi embedding compatibility probe", vector: [1, 0] };
+    const manifest = {
+      schema: 1,
+      profile_hash: "profile",
+      keys: ["a"],
+      models: {
+        en: { model: "en", revision: "main", dim: 2, probe },
+        multi: { model: "multi", revision: "main", dim: 2, probe },
+      },
+    };
+    const bundle = {
+      manifest,
+      model: "en",
+      dim: 2,
+      embeddings: { a: [1, 0] },
+      multi: { model: "multi", dim: 2, embeddings: { a: [1, 0] } },
+    };
+    expect(R.embeddingSetCompatible(bundle, "en")).toBe(true);
+    expect(R.embeddingProbeMatches(manifest.models.en, [1, 0])).toBe(true);
+    expect(R.embeddingProbeMatches(manifest.models.en, [0, 1])).toBe(false);
+    expect(R.embeddingSetCompatible({ ...bundle, dim: 3 }, "en")).toBe(false);
+    expect(R.embeddingSetCompatible({ ...bundle, manifest: undefined }, "en")).toBe(false);
+  });
+
   it("semantic score scaling", () => {
     // cosine 0.2 以下は 0、1.0 で 100 にスケーリングされる
     const emb = {

@@ -12,7 +12,16 @@ import { fileURLToPath } from "node:url";
 // 代表採択論文タイトル（R12: 会議のセマンティック/語彙プロファイル強化）。
 // データパイプラインで conferences に papers として載せ、ブラウザの語彙一致と
 // IDF（buildNameIdf）の両方に使えるようにする。
-import { VENUE_PAPERS, venuePapersHash } from "./embeddings.ts";
+import {
+  EMBEDDING_DIM,
+  EMBEDDING_MODEL,
+  EMBEDDING_MULTI_MODEL,
+  EMBEDDING_REVISION,
+  embeddingManifest,
+  embeddingProfileHash,
+  VENUE_PAPERS,
+  venuePapersHash,
+} from "./embeddings.ts";
 import {
   addDays,
   type Conference,
@@ -115,24 +124,88 @@ export function titleWithYear(
   return `${t} ${year}`;
 }
 
-/**
- * 既存 embeddings.json と現在の会議キー集合から再生成要否を判定する。
- * キー**数**だけでなく集合自体の一致を比較する（数比較だと同数の
- * 入れ替え・改名で stale のまま残り、新規会議が semanticScore 0 になる）。
- * R29 の VENUE_PAPERS ハッシュ比較も引き継ぐ。
- */
+type EmbeddingFile = {
+  model?: unknown;
+  dim?: unknown;
+  venuePapersHash?: unknown;
+  embeddings?: Record<string, unknown>;
+  multi?: { model?: unknown; dim?: unknown; embeddings?: Record<string, unknown> };
+  paperVecs?: Record<string, unknown>;
+  manifest?: {
+    schema?: unknown;
+    profile_hash?: unknown;
+    keys?: unknown;
+    venue_papers_hash?: unknown;
+    models?: {
+      en?: { model?: unknown; revision?: unknown; dim?: unknown; probe?: { vector?: unknown } };
+      multi?: { model?: unknown; revision?: unknown; dim?: unknown; probe?: { vector?: unknown } };
+    };
+    paper_vecs?: { keys?: unknown; dim?: unknown };
+  };
+};
+
+function sameKeys(have: Record<string, unknown> | undefined, want: string[]): boolean {
+  const keys = Object.keys(have ?? {}).sort();
+  return keys.length === want.length && keys.every((key, i) => key === want[i]);
+}
+
+function vectorsHaveDim(vectors: Record<string, unknown> | undefined, dim: number): boolean {
+  return Object.values(vectors ?? {}).every(
+    (vector) => Array.isArray(vector) && vector.length === dim,
+  );
+}
+
+/** 既存 embeddings.json が profile/model/vector 契約を満たすか判定する。 */
 export function embeddingsStale(
-  existing: { embeddings?: Record<string, unknown>; venuePapersHash?: string } | null | undefined,
-  confKeys: string[],
+  existing: EmbeddingFile | null | undefined,
+  data: Parameters<typeof embeddingProfileHash>[0],
 ): boolean {
   if (!existing || typeof existing !== "object") return true;
-  const have = new Set(Object.keys(existing.embeddings ?? {}));
-  const want = new Set(confKeys);
-  if (existing.venuePapersHash !== venuePapersHash()) return true;
-  if (have.size !== want.size) return true;
-  for (const key of want) {
-    if (!have.has(key)) return true;
+  const expected = embeddingManifest(data);
+  const manifest = existing.manifest;
+  const en = manifest?.models?.en;
+  const multi = manifest?.models?.multi;
+  if (!manifest || !en || !multi) return true;
+  if (manifest.schema !== expected.schema || manifest.profile_hash !== expected.profile_hash)
+    return true;
+  if (manifest.profile_hash !== embeddingProfileHash(data)) return true;
+  if (
+    !sameKeys(existing.embeddings, expected.keys) ||
+    !sameKeys(existing.multi?.embeddings, expected.keys)
+  ) {
+    return true;
   }
+  if (JSON.stringify(manifest.keys) !== JSON.stringify(expected.keys)) return true;
+  if (manifest.venue_papers_hash !== expected.venue_papers_hash) return true;
+  if (existing.venuePapersHash !== venuePapersHash()) return true;
+  if (
+    existing.model !== EMBEDDING_MODEL ||
+    existing.dim !== EMBEDDING_DIM ||
+    existing.multi?.model !== EMBEDDING_MULTI_MODEL ||
+    existing.multi?.dim !== EMBEDDING_DIM
+  ) {
+    return true;
+  }
+  if (
+    en.model !== EMBEDDING_MODEL ||
+    en.revision !== EMBEDDING_REVISION ||
+    en.dim !== EMBEDDING_DIM ||
+    multi.model !== EMBEDDING_MULTI_MODEL ||
+    multi.revision !== EMBEDDING_REVISION ||
+    multi.dim !== EMBEDDING_DIM ||
+    !Array.isArray(en.probe?.vector) ||
+    en.probe.vector.length !== EMBEDDING_DIM ||
+    !Array.isArray(multi.probe?.vector) ||
+    multi.probe.vector.length !== EMBEDDING_DIM
+  ) {
+    return true;
+  }
+  if (!vectorsHaveDim(existing.embeddings, EMBEDDING_DIM)) return true;
+  if (!vectorsHaveDim(existing.multi?.embeddings, EMBEDDING_DIM)) return true;
+  if (!vectorsHaveDim(existing.paperVecs, EMBEDDING_DIM)) return true;
+  if (JSON.stringify(manifest.paper_vecs?.keys) !== JSON.stringify(expected.paper_vecs.keys))
+    return true;
+  if (manifest.paper_vecs?.dim !== EMBEDDING_DIM) return true;
   return false;
 }
 
@@ -628,10 +701,7 @@ export async function buildAll(
         const existing = JSON.parse(readFileSync(embPath, "utf8")) as {
           embeddings?: Record<string, unknown>;
         };
-        needEmb = embeddingsStale(
-          existing,
-          safeConfs.map((c) => c.key),
-        );
+        needEmb = embeddingsStale(existing, data);
       } catch {
         needEmb = true;
       }

@@ -828,6 +828,31 @@
     return dot / (Math.sqrt(na) * Math.sqrt(nb));
   }
 
+  function embeddingSetCompatible(bundle, language) {
+    var manifest = bundle && bundle.manifest;
+    var meta = manifest && manifest.models && manifest.models[language];
+    var set = language === "multi" ? bundle.multi : bundle;
+    if (!manifest || manifest.schema !== 1 || typeof manifest.profile_hash !== "string" || !meta || !set) return false;
+    if (set.model !== meta.model || set.dim !== meta.dim || !meta.revision) return false;
+    if (!Array.isArray(manifest.keys) || !set.embeddings) return false;
+    var keys = Object.keys(set.embeddings).sort();
+    var expected = manifest.keys.slice().sort();
+    if (keys.length !== expected.length || keys.some(function (key, i) { return key !== expected[i]; })) return false;
+    if (!meta.probe || meta.probe.text !== "kamiyobi embedding compatibility probe") return false;
+    if (!Array.isArray(meta.probe.vector) || meta.probe.vector.length !== meta.dim) return false;
+    return keys.every(function (key) {
+      var vector = set.embeddings[key];
+      return Array.isArray(vector) && vector.length === meta.dim;
+    });
+  }
+
+  function embeddingProbeMatches(meta, vector) {
+    return Boolean(
+      meta && meta.probe && Array.isArray(meta.probe.vector) && Array.isArray(vector) &&
+      meta.probe.vector.length === vector.length && cosine(meta.probe.vector, vector) >= 0.99,
+    );
+  }
+
   /* セマンティック適合度 0..100。
    * query: ユーザー論文の埋め込みベクトル、emb: {key: [...]} の会議埋め込み表。
    * 掲載先タグ付きの行が複数あってもクエリは 1 本に集約して類似度を出す。
@@ -1129,6 +1154,8 @@
     matchVenueTag: matchVenueTag,
     blendVectors: blendVectors,
     cosine: cosine,
+    embeddingSetCompatible: embeddingSetCompatible,
+    embeddingProbeMatches: embeddingProbeMatches,
     semanticScore: semanticScore,
     blendScore: blendScore,
     vocabWeight: vocabWeight,

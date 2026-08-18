@@ -15,17 +15,24 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
 
-export const EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2";
+export const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
 export const EMBEDDING_MULTI_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 export const EMBEDDING_DIM = 384;
+export const EMBEDDING_REVISION = "main";
+export const EMBEDDING_SCHEMA_VERSION = 1;
+export const EMBEDDING_PROBE = "kamiyobi embedding compatibility probe";
 
 const extractorPromises = new Map<string, Promise<FeatureExtractionPipeline>>();
 
-function getExtractor(model: string): Promise<FeatureExtractionPipeline> {
-  let p = extractorPromises.get(model);
+function getExtractor(
+  model: string,
+  revision = EMBEDDING_REVISION,
+): Promise<FeatureExtractionPipeline> {
+  const cacheKey = `${model}@${revision}`;
+  let p = extractorPromises.get(cacheKey);
   if (!p) {
-    p = pipeline("feature-extraction", model) as Promise<FeatureExtractionPipeline>;
-    extractorPromises.set(model, p);
+    p = pipeline("feature-extraction", model, { revision }) as Promise<FeatureExtractionPipeline>;
+    extractorPromises.set(cacheKey, p);
   }
   return p;
 }
@@ -432,8 +439,9 @@ async function embedSet(
   model: string,
   texts: string[],
   keys: string[],
+  revision = EMBEDDING_REVISION,
 ): Promise<Record<string, number[]>> {
-  const extractor = await getExtractor(model);
+  const extractor = await getExtractor(model, revision);
   const sums = new Map<string, number[]>();
   const counts = new Map<string, number>();
   // メモリ節約のためバッチで処理
@@ -475,8 +483,12 @@ async function embedSet(
 }
 
 /** 各テキストを個別ベクトルとして埋め込む（平均しない）。max 類似度用。 */
-async function embedEach(model: string, texts: string[]): Promise<number[][]> {
-  const extractor = await getExtractor(model);
+async function embedEach(
+  model: string,
+  texts: string[],
+  revision = EMBEDDING_REVISION,
+): Promise<number[][]> {
+  const extractor = await getExtractor(model, revision);
   const out: number[][] = [];
   const batch = 128;
   for (let start = 0; start < texts.length; start += batch) {
@@ -500,6 +512,115 @@ async function embedEach(model: string, texts: string[]): Promise<number[][]> {
 
 const SKIP_EMB_KEYS = new Set(["rtss", "ecrts", "usenix-security"]);
 
+type EmbeddingData = {
+  categories?: Record<string, unknown>;
+  conferences?: Array<Record<string, unknown>>;
+};
+
+export type EmbeddingModelManifest = {
+  model: string;
+  revision: string;
+  dim: number;
+  probe: { text: string; vector: number[] };
+};
+
+export type EmbeddingManifest = {
+  schema: number;
+  profile_hash: string;
+  keys: string[];
+  venue_papers_hash: string;
+  models: { en: EmbeddingModelManifest; multi: EmbeddingModelManifest };
+  paper_vecs: { keys: string[]; dim: number };
+};
+
+function stableValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, item]) => [key, stableValue(item)]),
+    );
+  }
+  return value;
+}
+
+function dataConferences(data: EmbeddingData | null | undefined): Array<Record<string, unknown>> {
+  return (data?.conferences ?? [])
+    .filter((c): c is Record<string, unknown> => Boolean(c && typeof c === "object"))
+    .map((c) => ({
+      key: String(c.key ?? "").trim(),
+      title: String(c.title ?? ""),
+      full_name: String(c.full_name ?? ""),
+      categories: toStringArray(c.categories),
+      tags: toStringArray(c.tags),
+    }))
+    .filter((c) => c.key)
+    .sort((a, b) => String(a.key).localeCompare(String(b.key)));
+}
+
+function expectedPaperKeys(data: EmbeddingData | null | undefined): string[] {
+  return dataConferences(data)
+    .map((c) => String(c.key))
+    .filter(
+      (key) => ["usenix-security", "rtss"].includes(key) && (VENUE_PAPERS[key]?.length ?? 0) > 0,
+    )
+    .sort();
+}
+
+function modelManifest(model: string, probe: number[]): EmbeddingModelManifest {
+  return {
+    model,
+    revision: EMBEDDING_REVISION,
+    dim: EMBEDDING_DIM,
+    probe: { text: EMBEDDING_PROBE, vector: probe },
+  };
+}
+
+/** Hash every input that changes profile vectors, not only the output key set. */
+export function embeddingProfileHash(data: EmbeddingData | null | undefined): string {
+  const profile = {
+    schema: EMBEDDING_SCHEMA_VERSION,
+    models: {
+      en: modelManifest(EMBEDDING_MODEL, []),
+      multi: modelManifest(EMBEDDING_MULTI_MODEL, []),
+    },
+    categories: data?.categories ?? {},
+    conferences: dataConferences(data).map((c) => ({
+      ...c,
+      papers: VENUE_PAPERS[String(c.key)] ?? [],
+    })),
+    profile_rules: {
+      jp_category_keywords: JP_CAT_KW,
+      skip_embedding_keys: [...SKIP_EMB_KEYS].sort(),
+      english_papers: "first-eight-concatenated",
+      multilingual_papers: "excluded",
+    },
+  };
+  return createHash("sha256")
+    .update(JSON.stringify(stableValue(profile)))
+    .digest("hex")
+    .slice(0, 16);
+}
+
+export function embeddingManifest(
+  data: EmbeddingData | null | undefined,
+  probes: { en?: number[]; multi?: number[] } = {},
+): EmbeddingManifest {
+  const keys = dataConferences(data).map((c) => String(c.key));
+  return {
+    schema: EMBEDDING_SCHEMA_VERSION,
+    profile_hash: embeddingProfileHash(data),
+    keys,
+    venue_papers_hash: venuePapersHash(),
+    models: {
+      en: modelManifest(EMBEDDING_MODEL, probes.en ?? []),
+      multi: modelManifest(EMBEDDING_MULTI_MODEL, probes.multi ?? []),
+    },
+    paper_vecs: { keys: expectedPaperKeys(data), dim: EMBEDDING_DIM },
+  };
+}
+
 export async function buildEmbeddings(
   dataPath: string,
   outPath: string,
@@ -516,8 +637,19 @@ export async function buildEmbeddings(
   // 英語は all-MiniLM-L6-v2（EN top1 80.1%）、日本語は paraphrase-multilingual
   // （JP top1 19.0% → 42.9%）。一方だけだと他方が落ちるため両方持つ。
   // 多言語側は日本語会議に日本語キーワードを付与（国内研究会の検索改善、実測済み）。
-  const out = await embedSet(EMBEDDING_MODEL, en.texts, en.keys);
-  const multi = await embedSet(EMBEDDING_MULTI_MODEL, multiTexts.texts, multiTexts.keys);
+  const out = await embedSet(EMBEDDING_MODEL, en.texts, en.keys, EMBEDDING_REVISION);
+  const multi = await embedSet(
+    EMBEDDING_MULTI_MODEL,
+    multiTexts.texts,
+    multiTexts.keys,
+    EMBEDDING_REVISION,
+  );
+  const [enProbe] = await embedEach(EMBEDDING_MODEL, [EMBEDDING_PROBE], EMBEDDING_REVISION);
+  const [multiProbe] = await embedEach(
+    EMBEDDING_MULTI_MODEL,
+    [EMBEDDING_PROBE],
+    EMBEDDING_REVISION,
+  );
 
   // skipEmb 会議（rtss/ecrts/usenix-security）の論文個別ベクトル（R16）。
   // R14 で「多様な論文の平均重心の汎用化」が判明し埋め込みから外したが、その副作用で
@@ -543,7 +675,7 @@ export async function buildEmbeddings(
     if (!papers.length) continue;
     // 論文タイトルを**個別に**埋め込む（平均しない — max 類似度で使うため）。
     // embedSet は key ごとに平均するので使えない。
-    const vecs = await embedEach(EMBEDDING_MODEL, papers);
+    const vecs = await embedEach(EMBEDDING_MODEL, papers, EMBEDDING_REVISION);
     paperVecs[key] = vecs;
   }
 
@@ -554,6 +686,7 @@ export async function buildEmbeddings(
       model: EMBEDDING_MODEL,
       dim: EMBEDDING_DIM,
       venuePapersHash: venuePapersHash(),
+      manifest: embeddingManifest(data, { en: enProbe, multi: multiProbe }),
       embeddings: out,
       multi: {
         model: EMBEDDING_MULTI_MODEL,
