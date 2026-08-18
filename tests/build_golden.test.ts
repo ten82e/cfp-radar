@@ -1435,6 +1435,16 @@ it("openDrawer escapes KIND_LABEL fallback kind (#396)", () => {
   expect(body).not.toMatch(/\+ \(KIND_LABEL\[r\.kind\] \|\| r\.kind\) \+/);
 });
 
+it("repolink URL is sanitised via safeExternalUrl (#419)", () => {
+  // #419: DATA.sources[].url を a.href に代入する箇所が safeExternalUrl を
+  // 経由していないと、javascript:alert(1) 等の不正スキーマがクロスサイト
+  // スクリプティングの原因になる。ビルド成果が safeExternalUrl(localSrc.url)
+  // を使うことを静的に検証する。
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  expect(template).toContain("safeExternalUrl(localSrc.url)");
+  expect(template).not.toMatch(/a\.href\s*=\s*localSrc\.url[^)]/);
+});
+
 it("FEEDS list does not interpolate url or name into innerHTML (#394)", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
   const start = template.indexOf("FEEDS.forEach");

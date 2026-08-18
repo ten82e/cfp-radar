@@ -1755,9 +1755,9 @@ footer a:hover { text-decoration: underline; }
   $("sources").textContent = srcs.length ? srcs.join(" / ") : "-";
 
   var localSrc = (DATA.sources || []).filter((s) => s.name === "local")[0];
-  if (localSrc && localSrc.url) {
+  if (localSrc && safeExternalUrl(localSrc.url)) {
     var a = document.createElement("a");
-    a.href = localSrc.url;
+    a.href = safeExternalUrl(localSrc.url);
     a.textContent = "リポジトリ";
     $("repolink").appendChild(document.createTextNode(" / "));
     $("repolink").appendChild(a);
