@@ -835,6 +835,9 @@ on:
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js`、
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`。
   CDN が使えないときは語彙スコアと TXT 入力だけで動く。
+- `index.html` は `Content-Security-Policy` を持ち、script / worker / model 接続を上記の
+  固定 origin に限定する。`unsafe-inline` は単一テンプレート内の既存 inline script/style
+  を維持するためだけに使い、外部 origin の wildcard は許可しない。
 - ビルド時に、テンプレート中の文字列 **`/*__DATA__*/null`** が
   `data.json` 相当の JSON リテラルに置換される。これが唯一のマーカーである
   （rev.1 にあった `<!--DATA-->` は削除した）。

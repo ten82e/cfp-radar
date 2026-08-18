@@ -1162,6 +1162,14 @@ it("toLlmsTxt documents outputs and categories correctly", () => {
 
 it("site template statUpcoming counts confirmed submission deadlines only", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  expect(template).toMatch(/Content-Security-Policy/);
+  expect(template).toMatch(
+    /script-src 'self' 'unsafe-inline' https:\/\/cdn\.jsdelivr\.net https:\/\/cdnjs\.cloudflare\.com/,
+  );
+  expect(template).toMatch(
+    /connect-src 'self' https:\/\/cdn\.jsdelivr\.net https:\/\/huggingface\.co https:\/\/cdn-lfs\.huggingface\.co/,
+  );
+  expect(template).not.toMatch(/script-src[^>]*\*/);
   // statUpcoming の計算が投稿締切 (abstract/paper) かつ非推定 (!r.est) のみに限定されていること
   expect(template).toContain(
     'rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est',
@@ -1238,14 +1246,18 @@ it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#
 
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
   const allowed = [
+    "https://cdn.jsdelivr.net",
+    "https://cdnjs.cloudflare.com",
+    "https://huggingface.co",
+    "https://cdn-lfs.huggingface.co",
     "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm",
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
   ];
   const urls = [...template.matchAll(/https:\/\/[^\s"'`]+/g)].map((m) => m[0]);
-  const cdnLike = urls.filter((u) =>
-    /cdn\.|jsdelivr|unpkg|cdnjs|googleapis|gstatic|esm\.sh/i.test(u),
-  );
+  const cdnLike = urls
+    .map((u) => u.replace(/[;,]+$/, ""))
+    .filter((u) => /cdn\.|jsdelivr|unpkg|cdnjs|googleapis|gstatic|esm\.sh/i.test(u));
   for (const url of cdnLike) {
     expect(allowed).toContain(url);
   }
