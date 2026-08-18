@@ -211,14 +211,14 @@ describe("parseArgs (CLI flag parsing)", () => {
 
   // #312: 非数値・不正値の --min-year / --limit は既定値へフォールバック（NaN を下流へ伝播させない）
   it("falls back to defaults when --min-year / --limit are non-numeric", () => {
-    expect(parseArgs(["discover", "-y", "abc"]).minYear).toBe(2026);
+    expect(parseArgs(["discover", "-y", "abc"]).minYear).toBe(new Date().getUTCFullYear());
     expect(parseArgs(["review", "-l", "foo"]).limit).toBe(60);
   });
 
   it("rejects zero / non-integer min-year and limit (#312)", () => {
     // ゼロ・小数は正整数条件で弾かれ既定値へ（負は space 形式で unknown option に先行するため対象外）
-    expect(parseArgs(["discover", "-y", "0"]).minYear).toBe(2026);
-    expect(parseArgs(["discover", "-y", "3.5"]).minYear).toBe(2026);
+    expect(parseArgs(["discover", "-y", "0"]).minYear).toBe(new Date().getUTCFullYear());
+    expect(parseArgs(["discover", "-y", "3.5"]).minYear).toBe(new Date().getUTCFullYear());
     expect(parseArgs(["review", "-l", "1.5"]).limit).toBe(60);
   });
 
