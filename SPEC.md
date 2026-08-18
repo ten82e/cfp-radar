@@ -614,6 +614,8 @@ predatory 疑い付きで一覧する。
 |---|---|
 | `index.html` | 静的サイト（テンプレートに正規化データを埋め込む） |
 | `data.json` | 正規化データ全体（機械可読の正）。推定版も含む |
+| `catalog.json` | 締切画面向けの現在・近日期間カタログ。履歴と論文プロフィールを含めない |
+| `recommendation-index.json` | 投稿先推薦用の会議プロフィール、代表締切、埋め込みマニフェスト参照 |
 | `data.csv` | 1 行 1 締切の平坦な表。推定版も含む |
 | `upcoming.md` | 直近 N 日の締切と開催日の表（N は `site.upcoming_days`、既定 180） |
 | `llms.txt` | エージェント向け出力索引 |
@@ -621,7 +623,10 @@ predatory 疑い付きで一覧する。
 | `recommender.js` | サイトの推薦ロジック |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
-サイトに埋め込む JSON は `data.json` と同一で、推定の表示切替はサイト側の絞り込みで行う。
+`index.html` に埋め込む JSON は `catalog.json` と同一である。推薦モードは
+`recommendation-index.json` を遅延取得し、`embeddings.json` を参照する。
+`data.json` は全履歴を含む機械可読の正典として、サイトシェルには埋め込まない。
+推定の表示切替はサイト側の絞り込みで行う。
 `upcoming.md` には締切と開催日の両方を載せる。締切を持たない会議も開催行で確認できる。
 
 **`upcoming.md` の行の選び方**: 締切行は `at_utc` が `now` から N 日以内のもの。

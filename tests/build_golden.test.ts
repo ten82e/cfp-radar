@@ -504,6 +504,21 @@ it("index.html has the data injected", () => {
   expect(text).toContain("conferences");
 });
 
+it("build splits catalog, recommendation, and historical payloads (#468)", () => {
+  const catalog = JSON.parse(readFileSync(join(site, "catalog.json"), "utf8"));
+  const recommendation = JSON.parse(readFileSync(join(site, "recommendation-index.json"), "utf8"));
+  expect(catalog.history_ref).toBe("data.json");
+  expect(catalog.recommendation_ref).toBe("recommendation-index.json");
+  expect(catalog.conferences[0]).not.toHaveProperty("papers");
+  expect(recommendation.embedding_ref).toBe("embeddings.json");
+  expect(recommendation.conferences[0]).toHaveProperty("papers");
+  expect(recommendation.conferences[0].editions.every((e: any) => e.deadlines.length <= 1)).toBe(
+    true,
+  );
+  expect(readFileSync(join(site, "index.html"), "utf8")).not.toContain('"papers":');
+  expect(data.conferences.length).toBeGreaterThanOrEqual(catalog.conferences.length);
+});
+
 it("generated_at follows the --now argument", () => {
   const other = join(mkdtempSync(join(tmpdir(), "cfp-site3-")), "public3");
   const run = runCli(other, { now: "2027-01-02T00:00:00Z", extra: ["--no-embeddings"] });
@@ -1156,6 +1171,8 @@ it("toLlmsTxt documents outputs and categories correctly", () => {
   });
   expect(text).toContain("data.json");
   expect(text).toContain("upcoming.md");
+  expect(text).toContain("catalog.json");
+  expect(text).toContain("recommendation-index.json");
   expect(text).not.toMatch(/\.ics/);
   expect(text).toContain("実在値: systems");
 });
@@ -1174,6 +1191,12 @@ it("site template statUpcoming counts confirmed submission deadlines only", () =
   expect(template).toContain(
     'rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est',
   );
+});
+
+it("site template lazy-loads recommendation data outside the catalog shell (#468)", () => {
+  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  expect(template).toContain('fetch("recommendation-index.json")');
+  expect(template).toContain("setRecommendationProfile(data)");
 });
 
 it("site template localized shortcuts label and preset button active sync", () => {

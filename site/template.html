@@ -639,7 +639,7 @@ footer a:hover { text-decoration: underline; }
 <script src="recommender.js"></script>
 <script>
 (() => {
-  // SPEC.md section 7: DATA is injected by build.py. Defaults to empty so that
+  // SPEC.md section 7: catalog.json is injected by the build. Defaults to empty so that
   // opening the template standalone displays a blank table instead of throwing.
   var DATA = /*__DATA__*/null;
   if (!DATA) {
@@ -660,12 +660,20 @@ footer a:hover { text-decoration: underline; }
 
   // recommender.js から供給（テスト可能な単一正典）。無ければこの場で縮退定義。
   var Recommender = (typeof window !== "undefined" && window.Recommender) || null;
+  var activeData = DATA;
+  var recommendationData = null;
+  var recommendationPromise = null;
+  var recommendationError = false;
 
   // R12: 会議名 + 代表採択論文語彙の IDF 重みを実行時に計算して有効化する。
   // 実測（golden EN）: 実論文タイトルで正解会議 top1 が 25.0→37.5% に改善。
   // 汎用語（machine/deep/cache 等）が全会議の語彙に現れて誤爆するのを減衰する。
-  if (Recommender && Recommender.buildNameIdf && DATA.conferences.length) {
-    Recommender.setNameIdf(Recommender.buildNameIdf(DATA.conferences));
+  function setRecommendationProfile(data) {
+    activeData = data;
+    rows = buildRows(data);
+    if (Recommender && Recommender.buildNameIdf && data.conferences.length) {
+      Recommender.setNameIdf(Recommender.buildNameIdf(data.conferences));
+    }
   }
 
   var state = {
@@ -915,8 +923,9 @@ footer a:hover { text-decoration: underline; }
   });
 
   // ---- DATA FLATTENING ----
-  var rows = [];
-  (DATA.conferences || []).forEach((conf) => {
+  function buildRows(data) {
+    var out = [];
+    (data.conferences || []).forEach((conf) => {
     (conf.editions || []).forEach((e) => {
       var pairs = [];
       if (conf.rank) {
@@ -931,7 +940,7 @@ footer a:hover { text-decoration: underline; }
       (e.deadlines || []).forEach((dl) => {
         var t = Date.parse(dl.utc);
         if (isNaN(t)) return;
-        rows.push({
+        out.push({
           conf: conf, ed: e, dl: dl,
           kind: dl.kind, est: e.estimated,
           t: t, tLast: t,
@@ -943,7 +952,10 @@ footer a:hover { text-decoration: underline; }
         });
       });
     });
-  });
+    });
+    return out;
+  }
+  var rows = buildRows(DATA);
 
   // Update Summary Dashboard Stats
   $("statConfs").textContent = (DATA.conferences || []).length;
@@ -1053,10 +1065,10 @@ footer a:hover { text-decoration: underline; }
             // その会議の埋め込みを 0.3 混ぜる（「自分が載せた所と似た会議」を拾う）。
             // 実測: タグ付きクエリで正解会議 #1 が 78.9% → 92.2% に改善。
             var tagged = Recommender.parsePaperLines(text).filter((p) => p.venue);
-            if (tagged.length && DATA && DATA.conferences) {
+            if (tagged.length && activeData && activeData.conferences) {
               var matched = [];
               tagged.forEach((p) => {
-                Recommender.matchVenueTag(p.venue, DATA.conferences).forEach((c) => matched.push(c));
+                Recommender.matchVenueTag(p.venue, activeData.conferences).forEach((c) => matched.push(c));
               });
               var mvecs = matched.map((c) => embSet.embeddings[c.key]).filter(Boolean);
               if (mvecs.length) {
@@ -1115,9 +1127,9 @@ footer a:hover { text-decoration: underline; }
     if (pLines.length && Rec) {
       pool = rows
         .filter((r) => r.t >= now)
-        .concat(Rec.journalRows(DATA.conferences, now), Rec.pastRepresentatives(rows, now));
+        .concat(Rec.journalRows(activeData.conferences, now), Rec.pastRepresentatives(rows, now));
     } else if (state.kind === "journal" && Rec) {
-      pool = rows.concat(Rec.journalRows(DATA.conferences, now));
+      pool = rows.concat(Rec.journalRows(activeData.conferences, now));
     }
 
     var out = pool.filter((r) => {
@@ -1519,6 +1531,10 @@ footer a:hover { text-decoration: underline; }
   function renderRecommendationCards(list) {
     var cards = $("recommendationCards");
     cards.textContent = "";
+    if (!recommendationData) {
+      line(cards, recommendationError ? "推薦データを読み込めませんでした。" : "推薦データを読み込み中…", "recommendation-card");
+      return;
+    }
     var pe = $("paperText");
     var lines = pe && Recommender ? Recommender.parsePaperLines(pe.value) : [];
     if (!lines.length) {
@@ -1533,13 +1549,14 @@ footer a:hover { text-decoration: underline; }
   }
 
   function render() {
-    shown = filter();
+    var recMode = state.mode === "recommend";
+    if (recMode && !recommendationData && !recommendationError) loadRecommendationData();
+    shown = recMode && !recommendationData ? [] : filter();
     drawn = 0;
     selectedIndex = -1;
     $("tbody").textContent = "";
     var pe = $("paperText");
-    var paperMode = state.mode === "recommend" && !!(pe && pe.value.trim() && Recommender);
-    var recMode = state.mode === "recommend";
+    var paperMode = recMode && !!(pe && pe.value.trim() && Recommender);
     var cnt = paperMode
       ? "あなたの論文に合う投稿先 " + shown.length + " 件"
       : recMode ? "投稿先を探すには論文情報を入力してください"
@@ -1584,8 +1601,27 @@ footer a:hover { text-decoration: underline; }
     $("modeDeadlines").setAttribute("aria-pressed", String(!recommend));
   }
 
+  function loadRecommendationData() {
+    if (recommendationData || recommendationPromise || recommendationError) return;
+    recommendationPromise = fetch("recommendation-index.json")
+      .then((response) => { if (!response.ok) throw new Error("recommendation-index " + response.status); return response.json(); })
+      .then((data) => {
+        if (!data || !Array.isArray(data.conferences)) throw new Error("invalid recommendation-index");
+        recommendationData = data;
+        setRecommendationProfile(data);
+        render();
+      })
+      .catch(() => { recommendationError = true; render(); });
+  }
+
   function setMode(mode) {
     state.mode = mode === "recommend" ? "recommend" : "deadlines";
+    if (state.mode === "recommend") {
+      if (recommendationData) setRecommendationProfile(recommendationData);
+      else loadRecommendationData();
+    } else {
+      setRecommendationProfile(DATA);
+    }
     updateModeUi();
     writeUrl();
     render();
