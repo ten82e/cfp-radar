@@ -1,133 +1,144 @@
-'#': 自動生成。src/fetch-primary.ts が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。
+'#': >-
+  自動生成。src/fetch-primary.ts が data/primary.yaml
+  の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。
 conferences:
   1st-dl2-international-workshop:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: abstract
-          label: Abstract submission
-          date: '2026-09-30'
-          tz: UTC
-        - kind: paper
-          label: Paper submission
-          date: '2026-09-30'
-          tz: UTC
-    _comment: 一次ソース (https://easychair.org/cfp/jornadas-dl2) から自動抽出 (2026-08-10)
+          - kind: abstract
+            label: Abstract submission
+            date: '2026-09-30'
+          - kind: paper
+            label: Paper submission
+            date: '2026-09-30'
+          - kind: paper
+            label: Paper submission
+            date: '2026-10-30'
+    _comment: 一次ソース (https://easychair.org/cfp/jornadas-dl2) から自動抽出 (2026-08-18)
   ai4s-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-14'
-          tz: AoE
-    _comment: 一次ソース (https://ai4s.github.io/) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-14'
+            tz: AoE
+    _comment: 一次ソース (https://ai4s.github.io/) から自動抽出 (2026-08-18)
   cna-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-09-02'
-          tz: AoE
-    _comment: 一次ソース (https://complexnetworks.org/) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-09-02'
+            tz: AoE
+    _comment: 一次ソース (https://complexnetworks.org/) から自動抽出 (2026-08-18)
   geohealth-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-15'
-          tz: UTC
-    _comment: 一次ソース (https://onspatial.github.io/geo-health-2026/) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-22'
+    _comment: 一次ソース (https://onspatial.github.io/geo-health-2026/) から自動抽出 (2026-08-18)
   geoindustry-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-28'
-          tz: AoE
-    _comment: 一次ソース (https://geoindustry.github.io/geoindustryworkshop2026/) から自動抽出
-      (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-28'
+            tz: AoE
+    _comment: >-
+      一次ソース (https://geoindustry.github.io/geoindustryworkshop2026/) から自動抽出
+      (2026-08-18)
   hmem-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-17'
-          tz: AoE
-    _comment: 一次ソース (https://hmem-workshop.github.io/) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2025-08-31'
+            tz: AoE
+    _comment: 一次ソース (https://hmem-workshop.github.io/) から自動抽出 (2026-08-18)
+  iiai-aai-2026:
+    editions:
+      '2026':
+        deadlines:
+          - kind: paper
+            label: Paper submission
+            date: '2026-04-30'
+            tz: PST
+          - kind: paper
+            label: Paper submission
+            date: '2026-07-17'
+            tz: PST
+          - kind: paper
+            label: Paper submission
+            date: '2026-02-21'
+            tz: PST
+          - kind: paper
+            label: Paper submission
+            date: '2026-03-01'
+            tz: PST
+    _comment: 一次ソース (https://iaiai.org/conference/aai2026/) から自動抽出 (2026-08-18)
   llvm-hpc-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-14'
-          tz: AoE
-    _comment: 一次ソース (https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/)
-      から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-14'
+            tz: AoE
+    _comment: >-
+      一次ソース
+      (https://llvm-in-hpc-workshop.github.io/LLVM-HPC-2026-Workshop.github.io/)
+      から自動抽出 (2026-08-18)
   network-flows-2-0:
     editions:
-      2026:
-        place: Bethlehem, PA, USA
-        date_text: January 28-29, 2027
-        event_start: '2027-01-28'
-        event_end: '2027-01-29'
+      '2026':
         deadlines:
-        - kind: abstract
-          label: Abstract submission
-          date: '2026-09-15'
-          tz: UTC
-        - kind: paper
-          label: Paper submission
-          date: '2026-09-15'
-          tz: UTC
-    _comment: 一次ソース (https://easychair.org/cfp/flowchallenge2) から自動抽出 (2026-08-10)。
-      会期は公式 https://coral.ise.lehigh.edu/flow-challenge-2-0/schedule/ の
-      「January 28-29, 2027, Challenge workshop」で 2026-08-12 追記。
+          - kind: abstract
+            label: Abstract submission
+            date: '2026-09-15'
+          - kind: paper
+            label: Paper submission
+            date: '2026-09-15'
+    _comment: 一次ソース (https://easychair.org/cfp/flowchallenge2) から自動抽出 (2026-08-18)
   polds-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-15'
-          tz: UTC
-    _comment: 一次ソース (https://iharp.umbc.edu/polds26/) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-15'
+    _comment: 一次ソース (https://iharp.umbc.edu/polds26/) から自動抽出 (2026-08-18)
   setta:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-05-10'
-          tz: UTC
+          - kind: paper
+            label: Paper submission
+            date: '2026-05-10'
         link: https://www.setta2026.sg
         place: Singapore
         date_text: December 2-4, 2026
-    _comment: 一次ソース (https://easychair.org/cfp/SETTA2026) から自動抽出 (2026-08-10)
+    _comment: 一次ソース (https://easychair.org/cfp/SETTA2026) から自動抽出 (2026-08-18)
   whpc-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Application Deadline
-          date: '2026-08-21'
-          tz: AoE
-        - kind: notification
-          label: Application Notifications
-          date: '2026-09-09'
-          tz: AoE
-    _comment: '一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-10)。2026-08-12 手動更新: 公式「<s>Aug 14</s> Extended! Aug 21」+ 通知 9/9 (r.jina.ai レンダリングで再確認)'
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-14'
+            tz: AoE
+    _comment: 一次ソース (https://womeninhpc.org/events/sc-2026-workshop) から自動抽出 (2026-08-18)
   wsse-2026:
     editions:
-      2026:
+      '2026':
         deadlines:
-        - kind: paper
-          label: Paper submission
-          date: '2026-08-15'
-          tz: UTC
-    _comment: 一次ソース (https://easychair.org/cfp/WSSE2026) から自動抽出 (2026-08-10)
+          - kind: paper
+            label: Paper submission
+            date: '2026-08-30'
+    _comment: 一次ソース (https://easychair.org/cfp/WSSE2026) から自動抽出 (2026-08-18)
