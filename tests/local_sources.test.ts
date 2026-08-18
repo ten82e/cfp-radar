@@ -162,8 +162,9 @@ describe("local source data integrity", () => {
     const generated = readFileSync(join(REPO_ROOT, "data", "primary_overrides.yaml"), "utf8");
     expect(primary, "primary.yaml must name the TS extractor").toContain("src/fetch-primary.ts");
     expect(primary).not.toContain("fetch_primary.py");
-    expect(src).not.toMatch(/"#": ".*fetch_primary\.py/);
-    expect(src).toMatch(/"#": ".*fetch-primary\.ts/);
+    expect(src).not.toContain('"#":');
+    expect(src).toContain("const header =");
+    expect(src).toContain("# 自動生成。src/fetch-primary.ts");
     expect(generated).not.toContain("fetch_primary.py");
     expect(generated).toContain("fetch-primary.ts");
   });

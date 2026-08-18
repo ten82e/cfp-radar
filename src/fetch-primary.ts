@@ -396,11 +396,11 @@ export async function runFetchPrimary(
     console.log("抽出できた会議が無い。primary_overrides.yaml は変更しない。");
     return 1;
   }
-  const payload = {
-    "#": "自動生成。src/fetch-primary.ts が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。",
-    conferences: generated,
-  };
-  const yamlText = dumpYaml(payload, { skipInvalid: true });
+  // 生成ヘッダは YAML コメント行として書く（"#" キーにすると primary_overrides.yaml の
+  // 1 行目がキー付きエントリになり、compare-head.ts の正規化でも除去されない）。
+  const header =
+    "# 自動生成。src/fetch-primary.ts が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。";
+  const yamlText = `${header}\n${dumpYaml({ conferences: generated }, { skipInvalid: true })}`;
   if (apply) {
     writeFileSync(resolvedOut, yamlText, "utf8");
     console.log(`wrote ${resolvedOut} (${Object.keys(generated).length} conferences)`);

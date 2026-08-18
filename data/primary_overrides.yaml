@@ -1,6 +1,4 @@
-'#': >-
-  自動生成。src/fetch-primary.ts が data/primary.yaml
-  の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。
+# 自動生成。src/fetch-primary.ts が data/primary.yaml の一次ソースから抽出した。手で編集しない。抽出失敗した会議は前回値が維持される。
 conferences:
   1st-dl2-international-workshop:
     editions:
