@@ -22520,3 +22520,23 @@ conferences:
         place: Hakodate, Hokkaido, Japan
         date_text: Sep 20, 2026
         deadlines: []
+  - key: aicss-2026
+    title: AICSS 2026
+    full_name: >-
+      2026 2nd International Symposium on Artificial Intelligence and
+      Computational Social Sciences
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192762&copyownerid=182680
+    categories:
+      - communications
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: aicss-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=192762&copyownerid=182680
+        place: Beijing, China
+        date_text: Aug 23, 2026
+        deadlines: []
