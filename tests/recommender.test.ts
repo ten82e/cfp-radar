@@ -708,6 +708,16 @@ describe("venue-level evidence fusion", () => {
   });
 });
 
+describe("score labels and transient UI state", () => {
+  it("keeps ordinal score labels out of percentage language", () => {
+    const template = readFileSync(join(REPO_ROOT, "site/template.html"), "utf8");
+    expect(template).toContain('"適合度 " + r._matchScore + "点');
+    expect(template).not.toContain('"適合度 " + r._matchScore + "%');
+    expect(template).toContain("r._boosted = false;");
+    expect(template).toContain("return (ar === br ? 0 : ar > br ? 1 : -1) * mult;");
+  });
+});
+
 // ---- セマンティック（埋め込み） ----
 
 describe("semantic functions", () => {

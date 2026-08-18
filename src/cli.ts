@@ -26,6 +26,7 @@ import { LocalSource } from "./sources/local.ts";
 
 // ROOT はテストから差し替え可能（let）。
 export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const DEFAULT_MIN_YEAR = new Date().getUTCFullYear();
 
 export function setRoot(root: string): void {
   ROOT = root;
@@ -393,7 +394,7 @@ export function usage(): string {
     "  discover 穴場の会議・ジャーナルを自律探索する",
     "    -o, --out <path>      出力YAMLパス（未指定時は標準出力表示）",
     "    --categories <s>      カンマ区切りの対象カテゴリ（例: hpc,systems）",
-    "    -y, --min-year <n>    対象の最小年 (default: 2026)",
+    `    -y, --min-year <n>    対象の最小年 (default: ${DEFAULT_MIN_YEAR})`,
     "    -d, --dry-run         ファイル出力せず結果をプレビュー表示",
     "    -a, --append          既存 YAML に key 重複なしで追記",
     "  review   探索された候補のレビュー順・重複・predatory 疑いを一覧表示する",
@@ -453,7 +454,7 @@ export function parseArgs(argv: string[] | null | undefined): CliArgs {
     } else if (a === "--categories") {
       args.categories = nextVal() ?? null;
     } else if (a === "--min-year" || a === "-y") {
-      args.minYear = toPosInt(nextVal(), 2026);
+      args.minYear = toPosInt(nextVal(), DEFAULT_MIN_YEAR);
     } else if (a === "--offline") {
       args.offline = boolVal();
     } else if (a === "--no-embeddings") {
@@ -529,7 +530,7 @@ export async function main(argv: string[] | null | undefined): Promise<number> {
     return cmdDiscover({
       out: args.out ?? null,
       categories: args.categories ?? null,
-      minYear: args.minYear ?? 2026,
+      minYear: args.minYear ?? DEFAULT_MIN_YEAR,
       dryRun: Boolean(args.dryRun),
       append: Boolean(args.append),
     });

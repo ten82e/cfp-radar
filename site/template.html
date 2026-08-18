@@ -1096,6 +1096,7 @@ footer a:hover { text-decoration: underline; }
       if (state.domestic && (r.tags || []).indexOf("domestic-jp") < 0) { return false; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
 
+      r._boosted = false;
       r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
       r._vocabScore = r._match ? (r._match.venueScore ?? r._match.score) : 0;
       r._matchScore = r._vocabScore;
@@ -1131,7 +1132,9 @@ footer a:hover { text-decoration: underline; }
       if (sortKey === "conf") {
         return (a.conf.title || "").localeCompare(b.conf.title || "") * mult;
       } else if (sortKey === "rank") {
-        return ((a.rankPairs[0] || "") > (b.rankPairs[0] || "") ? 1 : -1) * mult;
+        var ar = a.rankPairs[0] || "";
+        var br = b.rankPairs[0] || "";
+        return (ar === br ? 0 : ar > br ? 1 : -1) * mult;
       }
       return (a.t - b.t) * mult;
     });
@@ -1218,7 +1221,7 @@ footer a:hover { text-decoration: underline; }
     if (r._matchScore && r._matchScore >= 10) {
       var ms = document.createElement("span");
       // match-trigger: クリックで行内展開（この会議が選ばれた理由の内訳）
-      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + r._matchScore + "% ▾";
+      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + r._matchScore + "点 ▾";
       if (r._match && r._match.agg) {
         var a = r._match.agg;
         var parts = [];
@@ -1227,7 +1230,7 @@ footer a:hover { text-decoration: underline; }
         if (a.jp > 0) parts.push("日本語一致 +" + a.jp);
         if (a.tags > 0) parts.push("領域タグ +" + a.tags);
         if (a.venue > 0) parts.push("掲載先一致 +" + a.venue);
-        if (r._semScore > 0) parts.push("AI類似度 " + r._semScore + "%");
+        if (r._semScore > 0) parts.push("AI類似度 " + r._semScore + "点");
         if (parts.length) ms.title = parts.join(" ／ ");
       }
       tags.appendChild(ms);
@@ -1324,22 +1327,22 @@ footer a:hover { text-decoration: underline; }
     if (agg.tags > 0) chips.push(["領域タグ", "+" + agg.tags, "会議の領域タグ（real-time 等）が論文に含まれる"]);
     if (agg.venue > 0) chips.push(["掲載先一致", "+" + agg.venue, "論文の掲載先タグとこの会議が一致（強いシグナル）"]);
     var chipW = Recommender.vocabWeight(lastLen, lastIsJp);
-    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "%", "埋め込みベクトルの類似度（語彙スコアと " + chipW.toFixed(2) + ":" + (1 - chipW).toFixed(2) + " で合成）"]);
+    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "点", "埋め込みベクトルの類似度（語彙スコアと " + chipW.toFixed(2) + ":" + (1 - chipW).toFixed(2) + " で合成）"]);
     if (r._boosted) chips.push(["同分野ブースト", "+10", "掲載先タグから推定した分野とこの会議が一致"]);
     if (!chips.length) chips.push(["一致要素なし", "—", "低スコアでも閾値を超えたため表示"]);
 
     var html = '<div class="detail-inner">';
-    html += '<div class="detail-head">適合度 ' + r._matchScore + '% の内訳 — この会議が選ばれた理由</div>';
+    html += '<div class="detail-head">適合度 ' + r._matchScore + '点の内訳 — この会議が選ばれた理由</div>';
     var w = Recommender.vocabWeight(lastLen, lastIsJp);
     var comp;
     if (r._semScore > 0) {
-      comp = '語彙 ' + r._vocabScore + '% × ' + w.toFixed(2) + ' + AI類似度 ' + r._semScore + '% × ' + (1 - w).toFixed(2) + ' → 適合度 ' + r._matchScore + '%';
+      comp = '語彙 ' + r._vocabScore + '点 × ' + w.toFixed(2) + ' + AI類似度 ' + r._semScore + '点 × ' + (1 - w).toFixed(2) + ' → 適合度 ' + r._matchScore + '点';
     } else if (semState === "loading") {
-      comp = '語彙スコア ' + r._vocabScore + '%（AI 類似度 計算中…）';
+      comp = '語彙スコア ' + r._vocabScore + '点（AI 類似度 計算中…）';
     } else if (semState === "error") {
-      comp = '語彙スコア ' + r._vocabScore + '%（オフラインのため AI 類似度なし）';
+      comp = '語彙スコア ' + r._vocabScore + '点（オフラインのため AI 類似度なし）';
     } else {
-      comp = '語彙スコア ' + r._vocabScore + '%';
+      comp = '語彙スコア ' + r._vocabScore + '点';
     }
     html += '<div class="detail-comp">' + comp + (m.evidence && m.evidence.length > 1 ? '（' + m.evidence.length + '本の evidence を RRF 集約）' : '') + '</div>';
     html += '<div class="reason-chips">' + chips.map((c) => '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>').join("") + '</div>';
@@ -1361,7 +1364,7 @@ footer a:hover { text-decoration: underline; }
         html += '<div class="perline-item">' +
           '<span class="perline-idx">' + (i + 1) + '</span>' +
           '<span class="perline-title">' + esc(p.title || "") + '</span>' +
-          '<span class="perline-score">' + sc + '%</span>' +
+          '<span class="perline-score">' + sc + '点</span>' +
           (pl && pl.venueHit ? '<span class="perline-venue">掲載先一致' + (p.venue ? " (" + esc(p.venue) + ")" : "") + '</span>' : "") +
           (parts.length ? '<span class="perline-parts">' + parts.join(" ・ ") + '</span>' : "") +
           '</div>';

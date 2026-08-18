@@ -261,7 +261,7 @@ export function toYamlDict(c: Candidate | null | undefined): Record<string, unkn
     const m = /(20\d\d)/.exec(c.date_text || "");
     // 開催年がパース時に判明している場合は date_text（締切日）より優先する。
     // 締切が開催年の前年（秋締切等）だと date_text 由来の年が 1 年前にずれるため。
-    const year = c.year && c.year >= 2020 ? c.year : m ? Number(m[1]) : 2026;
+    const year = c.year && c.year >= 2020 ? c.year : m ? Number(m[1]) : new Date().getUTCFullYear();
     editions.push({
       year,
       id: `${c.key}${year % 100}`,
@@ -1228,7 +1228,10 @@ export class NicheDiscoverer {
   }
 
   /** Run full autonomous discovery across multiple sources. */
-  async runDiscovery(categories: string[] | null = null, minYear = 2026): Promise<Candidate[]> {
+  async runDiscovery(
+    categories: string[] | null = null,
+    minYear = new Date().getUTCFullYear(),
+  ): Promise<Candidate[]> {
     const results: Candidate[] = [];
 
     // 1. DBLP queries
@@ -1246,7 +1249,7 @@ export class NicheDiscoverer {
     }
 
     // 2. OpenReview queries
-    const orQueries = ["workshop", "symposium", "workshop 2026"];
+    const orQueries = ["workshop", "symposium", `workshop ${minYear}`];
     for (const q of orQueries) {
       results.push(...(await this.discoverFromOpenreview(q)));
     }
