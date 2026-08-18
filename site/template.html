@@ -167,6 +167,43 @@ header {
   padding: 20px;
   margin-bottom: 24px;
 }
+.mode-switch {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 14px;
+}
+.mode-switch button {
+  padding: 8px 14px;
+  background: var(--chip);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.mode-switch button:hover, .mode-switch button[aria-pressed="true"] {
+  color: var(--fg);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+.mode-recommend .deadline-only, .mode-deadlines .recommend-only { display: none !important; }
+.recommendation-cards {
+  display: grid;
+  gap: 12px;
+}
+.recommendation-card {
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.recommendation-card h3 { margin: 0; font-size: 1rem; }
+.recommendation-card h3 a { color: var(--fg); text-decoration: none; }
+.recommendation-card h3 a:hover { color: var(--accent); text-decoration: underline; }
+.recommendation-card .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.recommendation-card .card-section { margin-top: 10px; color: var(--muted); font-size: 0.82rem; }
+.recommendation-card .card-section strong { color: var(--fg); }
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -470,9 +507,14 @@ footer a:hover { text-decoration: underline; }
     </div>
   </header>
 
+  <nav class="mode-switch" aria-label="表示モード">
+    <button id="modeRecommend" type="button" aria-pressed="false">投稿先を探す</button>
+    <button id="modeDeadlines" type="button" aria-pressed="true">締切を検索</button>
+  </nav>
+
   <!-- Filter & Controls Toolbar -->
-  <div class="panel">
-    <div class="presets-bar">
+  <div class="panel mode-deadlines" id="controlsPanel">
+    <div class="presets-bar deadline-only">
       <span style="font-size: 0.78rem; color: var(--muted); align-self: center; margin-right: 4px;">クイック抽出:</span>
       <button class="preset-btn" data-preset="7d" onclick="applyPreset('7d')">締切直近 (7日以内)</button>
       <button class="preset-btn" data-preset="a_star" onclick="applyPreset('a_star')">Top Tier (A*)</button>
@@ -480,7 +522,7 @@ footer a:hover { text-decoration: underline; }
       <button class="preset-btn" data-preset="domestic" onclick="applyPreset('domestic')">国内研究会</button>
     </div>
 
-    <div class="row" style="margin-bottom: 14px;">
+    <div class="row deadline-only" style="margin-bottom: 14px;">
       <div class="search-wrap">
         <input type="search" id="q" placeholder="会議名・フルネーム・開催地を検索 (例: NSDI, NVMW)...">
       </div>
@@ -506,7 +548,7 @@ footer a:hover { text-decoration: underline; }
     </div>
 
     <!-- Paper Title / Abstract / Keyword Smart Recommender -->
-    <div style="margin-top: 14px;">
+    <div class="recommend-only" style="margin-top: 14px;">
       <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">投稿先レコメンド</span>
       <div style="margin-top: 4px;">
         <label style="display: inline-block; cursor: pointer; padding: 8px 14px; border: 1px dashed var(--border); border-radius: 8px; font-size: 0.85rem; color: var(--accent);">
@@ -534,12 +576,12 @@ footer a:hover { text-decoration: underline; }
     </div>
     <textarea id="paperText" hidden></textarea>
 
-    <div class="field">
+    <div class="field deadline-only">
       <span>分野（複数選択可。空ならすべて）</span>
       <div class="chips" id="cats"></div>
     </div>
 
-    <div class="row" style="margin-top: 14px;">
+    <div class="row deadline-only" style="margin-top: 14px;">
       <label class="check"><input type="checkbox" id="domestic"> <span>国内研究会・国内シンポジウムのみ</span></label>
       <label class="check"><input type="checkbox" id="est"> <span>推定締切を含める</span></label>
       <label class="check"><input type="checkbox" id="past"> <span>過去の締切も表示</span></label>
@@ -553,7 +595,7 @@ footer a:hover { text-decoration: underline; }
   </div>
 
   <!-- Table Container -->
-  <div class="tablewrap">
+  <div class="tablewrap" id="deadlineTableWrap">
     <table>
       <thead>
         <tr>
@@ -569,6 +611,8 @@ footer a:hover { text-decoration: underline; }
       <tbody id="tbody"></tbody>
     </table>
   </div>
+
+  <div id="recommendationCards" class="recommendation-cards" hidden></div>
 
   <div class="empty" id="empty" style="padding: 32px; text-align: center; color: var(--muted);" hidden>該当する締切はありません。</div>
   <div style="margin-top: 20px; text-align: center;"><button id="more">さらに表示</button></div>
@@ -625,7 +669,7 @@ footer a:hover { text-decoration: underline; }
   }
 
   var state = {
-    q: "", cats: [], kind: "", rank: "", win: "all",
+    mode: "deadlines", q: "", cats: [], kind: "", rank: "", win: "all",
     est: false, domestic: false, past: false
   };
 
@@ -687,7 +731,7 @@ footer a:hover { text-decoration: underline; }
   }
 
   window.applyPreset = (type) => {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
+    state = { mode: state.mode, q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     if (type === '7d') state.win = "7d";
     if (type === 'a_star') state.rank = "A*";
     if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
@@ -1050,7 +1094,7 @@ footer a:hover { text-decoration: underline; }
     var isWinFuture = state.win === "future";
     var limit = (state.win === "all" || isWinFuture) ? Infinity : now + parseInt(state.win, 10) * DAY;
     var pElem = (typeof document !== 'undefined') ? document.getElementById("paperText") : null;
-    var pText = pElem ? pElem.value.trim() : "";
+    var pText = state.mode === "recommend" && pElem ? pElem.value.trim() : "";
     // 単体抽出テスト（node probe）でも動くよう、filter 内では window 経由で解決する
     var Rec = (typeof window !== "undefined" && window.Recommender) || null;
     var pLines = Rec ? Rec.parsePaperLines(pText) : (pText ? [{ title: pText, keywords: "", venue: "" }] : []);
@@ -1411,15 +1455,94 @@ footer a:hover { text-decoration: underline; }
     }
   }
 
+  function recommendationAvailability(r) {
+    var a = r._availability || {};
+    if (a.status === "ongoing") return "常時受付";
+    if (a.timestamp) {
+      return "次回締切: " + fmtDate(new Date(a.timestamp)) + " UTC / " + fmtAoE(new Date(a.timestamp)) + (a.estimated ? "（推定）" : "");
+    }
+    return a.status === "past" ? "締切済み（次回情報なし）" : "受付状況不明";
+  }
+
+  function makeRecommendationCard(r) {
+    var card = document.createElement("article");
+    card.className = "recommendation-card";
+    var title = document.createElement("h3");
+    var name = titleWithYear(r.conf.title || r.conf.key || "", r.ed.year);
+    var href = safeExternalUrl(r.ed.link || r.conf.link);
+    if (href) {
+      var link = document.createElement("a");
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = name;
+      title.appendChild(link);
+    } else {
+      title.textContent = name;
+    }
+    card.appendChild(title);
+    if (r.conf.full_name && r.conf.full_name !== r.conf.title) line(card, r.conf.full_name, "sub");
+
+    var meta = document.createElement("div");
+    meta.className = "card-meta";
+    var fit = document.createElement("span");
+    fit.className = "tag match";
+    fit.textContent = "適合度 " + (r._fitLabel || "candidate");
+    meta.appendChild(fit);
+    var availability = document.createElement("span");
+    availability.className = "tag";
+    availability.textContent = recommendationAvailability(r);
+    meta.appendChild(availability);
+    card.appendChild(meta);
+
+    var match = r._match || {};
+    var agg = match.agg || {};
+    var reasons = [];
+    [["分野シグナル", agg.domain], ["会議名一致", agg.venueName], ["採択論文一致", agg.paper],
+      ["日本語一致", agg.jp], ["領域タグ", agg.tags], ["掲載先一致", agg.venue]]
+      .forEach((item) => { if (item[1] > 0) reasons.push(item[0] + " +" + item[1]); });
+    if (r._semanticRank) reasons.push("semantic rank " + r._semanticRank);
+    if (r._boosted) reasons.push("同分野ブースト");
+    line(card, reasons.length ? "選定理由: " + reasons.join(" / ") : "選定理由: 一致要素を確認できる候補", "card-section");
+    if (r.conf.link && safeExternalUrl(r.conf.link)) {
+      var official = document.createElement("a");
+      official.href = safeExternalUrl(r.conf.link);
+      official.target = "_blank";
+      official.rel = "noopener noreferrer";
+      official.textContent = "公式サイト";
+      official.className = "card-section";
+      card.appendChild(official);
+    }
+    return card;
+  }
+
+  function renderRecommendationCards(list) {
+    var cards = $("recommendationCards");
+    cards.textContent = "";
+    var pe = $("paperText");
+    var lines = pe && Recommender ? Recommender.parsePaperLines(pe.value) : [];
+    if (!lines.length) {
+      line(cards, "投稿予定論文のタイトル・Abstract・PDF/TXTを入力してください。", "recommendation-card");
+      return;
+    }
+    if (!list.length) {
+      line(cards, "該当する投稿先がありません。論文本文を長めに入れるか、条件を変えてみてください。", "recommendation-card");
+      return;
+    }
+    list.slice(0, 5).forEach((r) => cards.appendChild(makeRecommendationCard(r)));
+  }
+
   function render() {
     shown = filter();
     drawn = 0;
     selectedIndex = -1;
     $("tbody").textContent = "";
     var pe = $("paperText");
-    var paperMode = !!(pe && pe.value.trim() && Recommender);
+    var paperMode = state.mode === "recommend" && !!(pe && pe.value.trim() && Recommender);
+    var recMode = state.mode === "recommend";
     var cnt = paperMode
       ? "あなたの論文に合う投稿先 " + shown.length + " 件"
+      : recMode ? "投稿先を探すには論文情報を入力してください"
       : shown.length + " 件 / 全 " + rows.length + " 件";
     if (paperMode) {
       var _lines = Recommender.parsePaperLines(pe.value);
@@ -1432,19 +1555,45 @@ footer a:hover { text-decoration: underline; }
       else if (semState === "error") { cnt += " ｜ AI 類似度 利用不可（オフラインのため語彙のみ）"; }
     }
     $("count").textContent = cnt;
-    if (paperMode && !shown.length) {
-      $("empty").textContent = "該当する投稿先が見つかりません。論文本文を長めに入れるか、分野チップ・検索語を変えてみてください。";
-      $("empty").hidden = false;
+    if (recMode) {
+      $("deadlineTableWrap").hidden = true;
+      $("recommendationCards").hidden = false;
+      $("empty").hidden = true;
+      $("more").hidden = true;
+      renderRecommendationCards(paperMode ? shown : []);
     } else {
-      $("empty").textContent = "該当する締切はありません。";
-      $("empty").hidden = shown.length > 0;
+      $("deadlineTableWrap").hidden = false;
+      $("recommendationCards").hidden = true;
+      if (!shown.length) {
+        $("empty").textContent = "該当する締切はありません。";
+        $("empty").hidden = false;
+      } else {
+        $("empty").hidden = true;
+      }
+      drawMore();
     }
-    drawMore();
     updatePresetActive();
+  }
+
+  function updateModeUi() {
+    var recommend = state.mode === "recommend";
+    var panel = $("controlsPanel");
+    panel.classList.toggle("mode-recommend", recommend);
+    panel.classList.toggle("mode-deadlines", !recommend);
+    $("modeRecommend").setAttribute("aria-pressed", String(recommend));
+    $("modeDeadlines").setAttribute("aria-pressed", String(!recommend));
+  }
+
+  function setMode(mode) {
+    state.mode = mode === "recommend" ? "recommend" : "deadlines";
+    updateModeUi();
+    writeUrl();
+    render();
   }
 
   function readUrl() {
     var p = new URLSearchParams(window.location.search);
+    state.mode = p.get("mode") === "recommend" ? "recommend" : "deadlines";
     state.q = p.get("q") || "";
     state.kind = KIND_LABEL[p.get("kind")] ? p.get("kind") : "";
     var rawRank = p.get("rank");
@@ -1459,6 +1608,7 @@ footer a:hover { text-decoration: underline; }
 
   function writeUrl() {
     var p = new URLSearchParams();
+    p.set("mode", state.mode);
     if (state.q) p.set("q", state.q);
     if (state.kind) p.set("kind", state.kind);
     if (state.rank) p.set("rank", state.rank);
@@ -1659,8 +1809,10 @@ footer a:hover { text-decoration: underline; }
   });
   catsBox.addEventListener("change", apply);
   $("more").addEventListener("click", drawMore);
+  $("modeRecommend").addEventListener("click", () => setMode("recommend"));
+  $("modeDeadlines").addEventListener("click", () => setMode("deadlines"));
   $("reset").addEventListener("click", () => {
-    state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
+    state = { mode: state.mode, q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     $("paperText").value = "";
     setPrimaryRecord({});
     $("paperReferences").value = "";
@@ -1687,6 +1839,7 @@ footer a:hover { text-decoration: underline; }
   }
 
   readUrl();
+  updateModeUi();
   toForm();
   render();
 })();
