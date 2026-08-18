@@ -851,9 +851,9 @@ conferences:
   `node --experimental-strip-types src/fetch-primary.ts --apply`（一次ソース自動抽出）→
   `node --experimental-strip-types src/cli.ts build --out public` →
   `data/snapshot.json` / `data/primary_overrides.yaml` のどちらかに実質差分が
-  あれば両方コミット（`scripts/compare-head.ts` が `generated_at` / `_comment` の
-  日付変化を無視して判定）→ `actions/upload-pages-artifact@v3` →
-  `actions/deploy-pages@v4`
+ あれば両方コミット（`scripts/compare-head.ts` が `generated_at` / `_comment` の
+ 日付変化を無視して判定）→ `actions/upload-pages-artifact@v5` →
+ `actions/deploy-pages@v5`
 - 上流取得に失敗しても §3.5 の退避経路でサイトを壊さない。
 - GITHUB_TOKEN による push は workflow を再起動しない（公式明記）ため、
   無限ループは起きない。`[skip ci]` は不要だが付けても害は無い。
