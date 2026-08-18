@@ -745,10 +745,78 @@ describe("venue-level evidence fusion", () => {
 describe("score labels and transient UI state", () => {
   it("keeps ordinal score labels out of percentage language", () => {
     const template = readFileSync(join(REPO_ROOT, "site/template.html"), "utf8");
-    expect(template).toContain('"適合度 " + r._matchScore + "点');
+    expect(template).toContain('"適合度 " + (r._fitLabel || "candidate")');
     expect(template).not.toContain('"適合度 " + r._matchScore + "%');
     expect(template).toContain("r._boosted = false;");
     expect(template).toContain("return (ar === br ? 0 : ar > br ? 1 : -1) * mult;");
+  });
+});
+
+describe("venue recommendation fusion", () => {
+  const row = (key: string, title: string, t = NOW, cats: string[] = ["hpc"]) => ({
+    conf: { key, title, full_name: title, tags: [] },
+    cats,
+    kind: "paper",
+    t,
+    tLast: t,
+    est: false,
+  });
+
+  it("unions a semantic-only venue with lexical candidates", () => {
+    const result = R.venueRecommendations(
+      [row("lexical", "GPU Systems"), row("semantic", "Distributed Inference")],
+      R.parsePaperLines("GPU scheduling | gpu"),
+      { lexical: 0.1, semantic: 0.99 },
+      NOW,
+      { topN: 1 },
+    );
+    expect(result.map((item: any) => item.venueKey).sort()).toEqual(["lexical", "semantic"]);
+    const semantic = result.find((item: any) => item.venueKey === "semantic");
+    expect(semantic.fit.lexicalRank).toBeNull();
+    expect(semantic.fit.semanticRank).toBe(1);
+    expect(semantic.fit.evidence.some((item: any) => item.type === "semantic")).toBe(true);
+  });
+
+  it("falls back to lexical fit and keeps one availability row per venue", () => {
+    const result = R.venueRecommendations(
+      [row("same", "GPU Systems", NOW + 20), row("same", "GPU Systems", NOW + 10)],
+      R.parsePaperLines("GPU scheduling | gpu"),
+      null,
+      NOW,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].fit.semanticRank).toBeNull();
+    expect(result[0].fit.score).toBe(result[0].fit.lexicalScore);
+    expect(result[0].availability).toMatchObject({ kind: "paper", status: "open" });
+    expect(result[0].fit).not.toHaveProperty("timestamp");
+  });
+
+  it("reports accepted-paper evidence separately from venue-name evidence", () => {
+    const result = R.venueRecommendations(
+      [
+        {
+          ...row("icml", "ICML"),
+          conf: { key: "icml", title: "ICML", full_name: "", tags: [], papers: ["Bandits"] },
+        },
+      ],
+      R.parsePaperLines("Batched Dueling Bandits | bandits"),
+      null,
+      NOW,
+    );
+    const types = result[0].fit.evidence.map((item: any) => item.type);
+    expect(types).toContain("accepted-paper");
+    expect(types).not.toContain("venue-name");
+  });
+
+  it("uses deterministic key ordering for equal lexical ranks", () => {
+    const result = R.venueRecommendations(
+      [row("zeta", "GPU Systems"), row("alpha", "GPU Systems")],
+      R.parsePaperLines("GPU scheduling | gpu"),
+      null,
+      NOW,
+    );
+    expect(result.map((item: any) => item.venueKey)).toEqual(["alpha", "zeta"]);
+    expect(result.map((item: any) => item.fit.lexicalRank)).toEqual([1, 2]);
   });
 });
 
@@ -1598,7 +1666,7 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(b.score).toBe(0);
     expect(b.venueHit).toBe(false);
     expect(b.perLine).toEqual([]);
-    expect(b.agg).toEqual({ domain: 0, name: 0, jp: 0, tags: 0, venue: 0 });
+    expect(b.agg).toEqual({ domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 });
   });
 
   it("autoDetectCats and breakdown do not inject 'undefined' into matching when properties are omitted (#304)", () => {

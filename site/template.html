@@ -1097,31 +1097,36 @@ footer a:hover { text-decoration: underline; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
 
       r._boosted = false;
-      r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
-      r._vocabScore = r._match ? (r._match.venueScore ?? r._match.score) : 0;
-      r._matchScore = r._vocabScore;
-      r._semScore = 0;
-      // セマンティック（AI 埋め込み）スコア: 語彙スコアと合成。
-      // 英語は内容語数で適応（短いクエリは語彙が疎なのでセマンティック寄り）、
-      // 日本語は 0.6/0.4 — ベンチマーク A/B で最良を実測
-      if (pLines.length && semQuery && semEmbeddings && Rec) {
-        r._semScore = Rec.semanticScore(r.conf.key, semQuery, semEmbeddings);
-        r._matchScore = Rec.blendScore(r._vocabScore, r._semScore, { jp: isJp, len: lastLen });
-      }
-      // 掲載先タグの会議と同カテゴリなら +10（例: RTSS タグ → RTAS/ECRTS も僅かに優先）
-      if (r._match && venueCats.length && !r._match.venueHit) {
-        var sharedCat = (r.cats || []).some((k) => venueCats.indexOf(k) >= 0);
-        if (sharedCat) {
-          r._matchScore = Math.min(100, r._matchScore + 10);
-          r._boosted = true; // 展開表示用: 同分野ブーストを適用したことを記録
-        }
-      }
-      // 除外判定: 英語は語彙スコア基準（セマンティックは順序付けに使う）。
-      // 日本語は英語会議名と単語が一致しにくく語彙が疎なため、合成スコアで判定する
-      if (pLines.length && (isJp ? r._matchScore < 10 : r._vocabScore < 10)) return false;
-
       return true;
     });
+
+    if (pLines.length && Rec) {
+      var semanticScores = null;
+      if (semQuery && semEmbeddings) {
+        semanticScores = {};
+        out.forEach((r) => {
+          var key = r.conf && r.conf.key;
+          if (key && !Object.prototype.hasOwnProperty.call(semanticScores, key)) {
+            semanticScores[key] = Rec.semanticScore(key, semQuery, semEmbeddings);
+          }
+        });
+      }
+      out = Rec.venueRecommendations(out, pLines, semanticScores, now, { venueCats: venueCats })
+        .filter((recommendation) => recommendation.fit.score >= 10)
+        .map((recommendation) => {
+          var r = recommendation.row;
+          r._boosted = recommendation.boosted;
+          r._match = recommendation.match;
+          r._vocabScore = recommendation.fit.lexicalScore;
+          r._matchScore = recommendation.fit.score;
+          r._fitLabel = recommendation.fit.label;
+          r._lexicalRank = recommendation.fit.lexicalRank;
+          r._semanticRank = recommendation.fit.semanticRank;
+          r._semScore = recommendation.fit.semanticScore;
+          r._availability = recommendation.availability;
+          return r;
+        });
+    }
 
     // Custom Sorting
     out.sort((a, b) => {
@@ -1138,11 +1143,6 @@ footer a:hover { text-decoration: underline; }
       }
       return (a.t - b.t) * mult;
     });
-
-    // 論文モード: 会議単位に代表行へ集約（締切行優先 → 未来締切優先 → 早い締切 / 直近過去）
-    if (pLines.length && Rec && out.length > 1) {
-      out = Rec.pickRepresentative(out, now);
-    }
 
     return out;
   }
@@ -1221,12 +1221,13 @@ footer a:hover { text-decoration: underline; }
     if (r._matchScore && r._matchScore >= 10) {
       var ms = document.createElement("span");
       // match-trigger: クリックで行内展開（この会議が選ばれた理由の内訳）
-      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + r._matchScore + "点 ▾";
+      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + (r._fitLabel || "candidate") + " ▾";
       if (r._match && r._match.agg) {
         var a = r._match.agg;
         var parts = [];
         if (a.domain > 0) parts.push("分野シグナル +" + a.domain);
-        if (a.name > 0) parts.push("会議名一致 +" + a.name);
+        if ((a.venueName || 0) > 0) parts.push("会議名一致 +" + a.venueName);
+        if (a.paper > 0) parts.push("採択論文一致 +" + a.paper);
         if (a.jp > 0) parts.push("日本語一致 +" + a.jp);
         if (a.tags > 0) parts.push("領域タグ +" + a.tags);
         if (a.venue > 0) parts.push("掲載先一致 +" + a.venue);
@@ -1313,7 +1314,7 @@ footer a:hover { text-decoration: underline; }
     var td = document.createElement("td");
     td.colSpan = 7;
     var m = r._match || {};
-    var agg = m.agg || { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
+    var agg = m.agg || { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 };
     var lines = [];
     var pe = $("paperText");
     if (pe && pe.value.trim() && Recommender) {
@@ -1322,21 +1323,20 @@ footer a:hover { text-decoration: underline; }
 
     var chips = [];
     if (agg.domain > 0) chips.push(["分野シグナル", "+" + agg.domain, "会議のカテゴリと論文キーワードが一致（HPC/AI/Security 等）"]);
-    if (agg.name > 0) chips.push(["会議名一致", "+" + agg.name, "会議名の内容語が論文タイトル・キーワードに含まれる"]);
+    if ((agg.venueName || 0) > 0) chips.push(["会議名一致", "+" + agg.venueName, "会議名の内容語が論文タイトル・キーワードに含まれる"]);
+    if (agg.paper > 0) chips.push(["採択論文一致", "+" + agg.paper, "この会議の代表採択論文の語彙と一致"]);
     if (agg.jp > 0) chips.push(["日本語一致", "+" + agg.jp, "日本語の会議名・論文語が一致"]);
     if (agg.tags > 0) chips.push(["領域タグ", "+" + agg.tags, "会議の領域タグ（real-time 等）が論文に含まれる"]);
     if (agg.venue > 0) chips.push(["掲載先一致", "+" + agg.venue, "論文の掲載先タグとこの会議が一致（強いシグナル）"]);
-    var chipW = Recommender.vocabWeight(lastLen, lastIsJp);
-    if (r._semScore > 0) chips.push(["AI類似度", r._semScore + "点", "埋め込みベクトルの類似度（語彙スコアと " + chipW.toFixed(2) + ":" + (1 - chipW).toFixed(2) + " で合成）"]);
+    if (r._semScore > 0) chips.push(["semantic 候補", "rank " + (r._semanticRank || "—"), "埋め込み検索の候補順位を RRF に加算"]);
     if (r._boosted) chips.push(["同分野ブースト", "+10", "掲載先タグから推定した分野とこの会議が一致"]);
     if (!chips.length) chips.push(["一致要素なし", "—", "低スコアでも閾値を超えたため表示"]);
 
     var html = '<div class="detail-inner">';
-    html += '<div class="detail-head">適合度 ' + r._matchScore + '点の内訳 — この会議が選ばれた理由</div>';
-    var w = Recommender.vocabWeight(lastLen, lastIsJp);
+    html += '<div class="detail-head">適合度 ' + esc(r._fitLabel || "candidate") + ' の内訳 — この会議が選ばれた理由</div>';
     var comp;
-    if (r._semScore > 0) {
-      comp = '語彙 ' + r._vocabScore + '点 × ' + w.toFixed(2) + ' + AI類似度 ' + r._semScore + '点 × ' + (1 - w).toFixed(2) + ' → 適合度 ' + r._matchScore + '点';
+    if (r._semanticRank) {
+      comp = 'RRF: 語彙 rank ' + (r._lexicalRank || '—') + ' + semantic rank ' + r._semanticRank + ' → 適合度 ' + esc(r._fitLabel || "candidate");
     } else if (semState === "loading") {
       comp = '語彙スコア ' + r._vocabScore + '点（AI 類似度 計算中…）';
     } else if (semState === "error") {
@@ -1344,7 +1344,7 @@ footer a:hover { text-decoration: underline; }
     } else {
       comp = '語彙スコア ' + r._vocabScore + '点';
     }
-    html += '<div class="detail-comp">' + comp + (m.evidence && m.evidence.length > 1 ? '（' + m.evidence.length + '本の evidence を RRF 集約）' : '') + '</div>';
+    html += '<div class="detail-comp">' + comp + (m.evidence && m.evidence.some(function (e) { return e.rank; }) ? '（rank evidence を RRF 集約）' : '') + '</div>';
     html += '<div class="reason-chips">' + chips.map((c) => '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>').join("") + '</div>';
 
     if (lines.length > 1) {
@@ -1357,6 +1357,7 @@ footer a:hover { text-decoration: underline; }
         if (pl) {
           if (pl.details.domain > 0) parts.push("分野 +" + pl.details.domain);
           if (pl.details.name > 0) parts.push("会議名 +" + pl.details.name);
+          if (pl.details.paper > 0) parts.push("採択論文 +" + pl.details.paper);
           if (pl.details.jp > 0) parts.push("日本語 +" + pl.details.jp);
           if (pl.details.tags > 0) parts.push("タグ +" + pl.details.tags);
           if (pl.details.venue > 0) parts.push("掲載先 +" + pl.details.venue);
