@@ -276,6 +276,7 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
 
 interface DiscoverArgs {
   out: string | null;
+  candidateOut: string | null;
   categories: string | null;
   minYear: number;
   dryRun: boolean;
@@ -302,7 +303,9 @@ export function discoverWriteAction(
 }
 
 export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
-  const { NicheDiscoverer, formatDiscoveredYaml } = await import("./discover.ts");
+  const { NicheDiscoverer, formatCandidateYaml, formatDiscoveredYaml } = await import(
+    "./discover.ts"
+  );
   const categories = args.categories ? args.categories.split(",").map((c) => c.trim()) : null;
   const discoverer = new NicheDiscoverer(ROOT);
   console.log(
@@ -316,6 +319,7 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
   }
 
   const yamlText = formatDiscoveredYaml(candidates);
+  const candidateYaml = formatCandidateYaml(candidates);
   const action = discoverWriteAction(candidates.length, args.append, args.out, args.dryRun);
 
   if (action === "append") {
@@ -337,6 +341,13 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
     const outPath = isAbsolute(args.out!) ? args.out! : join(ROOT, args.out!);
     writeTextFile(outPath, yamlText);
     console.log(`\nSaved candidates YAML to ${outPath}`);
+  }
+  if (!args.dryRun) {
+    const candidatePath = args.candidateOut ?? join(ROOT, "data", "discovered_candidates.yaml");
+    writeTextFile(
+      isAbsolute(candidatePath) ? candidatePath : join(ROOT, candidatePath),
+      candidateYaml,
+    );
   }
   return 0;
 }
@@ -365,6 +376,7 @@ function writeTextFile(path: string, text: string): void {
 export interface CliArgs {
   command?: string;
   out?: string;
+  candidateOut?: string | null;
   config?: string;
   offline?: boolean;
   now?: string | null;
@@ -393,6 +405,7 @@ export function usage(): string {
     "    --no-embeddings       埋め込み (embeddings.json) を生成しない（テスト用・高速化）",
     "  discover 穴場の会議・ジャーナルを自律探索する",
     "    -o, --out <path>      出力YAMLパス（未指定時は標準出力表示）",
+    "    --candidate-out <path> 候補ライフサイクル artifact (default: data/discovered_candidates.yaml)",
     "    --categories <s>      カンマ区切りの対象カテゴリ（例: hpc,systems）",
     `    -y, --min-year <n>    対象の最小年 (default: ${DEFAULT_MIN_YEAR})`,
     "    -d, --dry-run         ファイル出力せず結果をプレビュー表示",
@@ -445,6 +458,8 @@ export function parseArgs(argv: string[] | null | undefined): CliArgs {
       args.help = true;
     } else if (a === "--out" || a === "-o") {
       args.out = nextVal() ?? "public";
+    } else if (a === "--candidate-out") {
+      args.candidateOut = nextVal() ?? join(ROOT, "data", "discovered_candidates.yaml");
     } else if (a === "--config" || a === "-c") {
       args.config = nextVal() ?? "config.yaml";
     } else if (a === "--cache") {
@@ -529,6 +544,7 @@ export async function main(argv: string[] | null | undefined): Promise<number> {
   if (args.command === "discover") {
     return cmdDiscover({
       out: args.out ?? null,
+      candidateOut: args.candidateOut ?? null,
       categories: args.categories ?? null,
       minYear: args.minYear ?? DEFAULT_MIN_YEAR,
       dryRun: Boolean(args.dryRun),

@@ -156,7 +156,8 @@ export function runReviewCandidates(
     return;
   }
   const data = (loadYaml(text) as Record<string, any>) ?? {};
-  const cands = (data.conferences as unknown[] | null) ?? [];
+  const cands =
+    (data.candidates as unknown[] | null) ?? (data.conferences as unknown[] | null) ?? [];
 
   const tracked = loadTrackedTitles(root);
   const enriched: Enriched[] = cands

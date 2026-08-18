@@ -584,7 +584,7 @@ node --experimental-strip-types src/cli.ts build [--out public] [--config config
                               [--offline] [--now 2026-08-09T00:00:00Z] [--cache .cache]
                               [--no-embeddings]
 node --experimental-strip-types src/cli.ts discover [--out path] [--categories hpc,systems]
-                              [--min-year 2026] [--dry-run] [--append]
+                              [--candidate-out path] [--min-year 2026] [--dry-run] [--append]
 node --experimental-strip-types src/cli.ts review [--candidates data/discovered_candidates.yaml]
                               [--limit 60] [--now 2026-08-09T00:00:00Z]
 ```
