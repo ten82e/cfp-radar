@@ -1,0 +1,77 @@
+{
+  "version": 2,
+  "venue_profiles": [
+    {
+      "key": "hpc",
+      "title": "High Performance Computing",
+      "profile": "parallel accelerator memory"
+    },
+    {
+      "key": "systems",
+      "title": "Distributed Systems",
+      "profile": "consensus replication storage"
+    },
+    {
+      "key": "networking",
+      "title": "Computer Networking",
+      "profile": "routing latency congestion"
+    },
+    { "key": "security", "title": "Computer Security", "profile": "privacy cryptography enclave" }
+  ],
+  "queries": [
+    {
+      "id": "synthetic-1",
+      "split": "synthetic",
+      "time": "2024-01-01",
+      "title": "Parallel GPU scheduling",
+      "keywords": "cuda accelerator",
+      "key": "hpc",
+      "semantic": { "hpc": 0.98, "systems": 0.2, "networking": 0.1, "security": 0.1 }
+    },
+    {
+      "id": "synthetic-2",
+      "split": "synthetic",
+      "time": "2024-02-01",
+      "title": "Consensus replication",
+      "keywords": "distributed systems",
+      "key": "systems",
+      "semantic": { "hpc": 0.1, "systems": 0.97, "networking": 0.2, "security": 0.2 }
+    },
+    {
+      "id": "dev-1",
+      "split": "dev",
+      "time": "2025-01-01",
+      "title": "Low latency routing",
+      "keywords": "congestion control",
+      "key": "networking",
+      "semantic": { "hpc": 0.1, "systems": 0.2, "networking": 0.96, "security": 0.1 }
+    },
+    {
+      "id": "dev-2",
+      "split": "dev",
+      "time": "2025-02-01",
+      "title": "Enclave privacy",
+      "keywords": "cryptography protection",
+      "key": "security",
+      "semantic": { "hpc": 0.1, "systems": 0.1, "networking": 0.1, "security": 0.95 }
+    },
+    {
+      "id": "heldout-1",
+      "split": "heldout",
+      "time": "2026-01-01",
+      "title": "Collective communication",
+      "keywords": "parallel accelerator",
+      "key": "hpc",
+      "semantic": { "hpc": 0.94, "systems": 0.2, "networking": 0.3, "security": 0.1 }
+    },
+    {
+      "id": "heldout-2",
+      "split": "heldout",
+      "time": "2026-02-01",
+      "title": "Fault tolerant consensus",
+      "keywords": "replication protocol",
+      "key": "systems",
+      "semantic": { "hpc": 0.1, "systems": 0.93, "networking": 0.2, "security": 0.2 }
+    }
+  ]
+}
