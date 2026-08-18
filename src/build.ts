@@ -680,6 +680,7 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "- data.json — 正規化データ全体（機械可読の正）。",
     "- catalog.json — 締切画面向けの現在・近日期間カタログ。",
     "- recommendation-index.json — 投稿先推薦の会議プロフィールと埋め込み参照。",
+    "- app.js — ブラウザUI runtime（TypeScript の allowJs 対象）。",
     "- data.csv — 1 行 1 締切のフラット表。",
     `- upcoming.md — 直近 ${String((safeConfig.site as Record<string, unknown> | null)?.upcoming_days ?? 180)} 日の締切と開催の表。`,
   ];
@@ -893,6 +894,20 @@ export async function buildAll(
     }
     if (recContent !== null) {
       write("recommender.js", recContent);
+    }
+    const app = join(dirname(templatePath), "app.js");
+    let appContent: string | null = null;
+    try {
+      appContent = readFileSync(app, "utf8");
+    } catch {
+      try {
+        appContent = readFileSync(join(ROOT, "site", "app.js"), "utf8");
+      } catch {
+        console.warn(`warning: app.js が無い。index.html の src 参照が 404 になる`);
+      }
+    }
+    if (appContent !== null) {
+      write("app.js", appContent);
     }
   } else {
     console.warn(`warning: ${templatePath} が無いので index.html を生成しない`);
