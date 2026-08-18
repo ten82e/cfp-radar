@@ -172,6 +172,8 @@
   /* 1行: "タイトル | キーワード | 掲載先(任意)" または "タイトル<TAB>キーワード<TAB>掲載先" */
   function parsePaperLines(text) {
     if (!text) return [];
+    var structured = parseStructuredPapers(text);
+    if (structured) return structured;
     return String(text)
       .split(/\r?\n/)
       .map((l) => l.trim())
@@ -186,6 +188,56 @@
         };
       })
       .filter((p) => p.title);
+  }
+
+  function parseStructuredPapers(text) {
+    var raw = String(text).trim();
+    if (!raw) return [];
+    if (raw[0] === "{" || raw[0] === "[") {
+      try {
+        var parsed = JSON.parse(raw);
+        var records = Array.isArray(parsed) ? parsed : [parsed];
+        var jsonRows = records.map(normalizePaperRecord).filter(Boolean);
+        return jsonRows.length ? jsonRows : null;
+      } catch (_error) {
+        return null;
+      }
+    }
+    if (!/^\s*title\s*:/im.test(raw)) return null;
+    var fields = { title: "", abstract: "", keywords: "", venue: "" };
+    var current = "";
+    raw.split(/\r?\n/).forEach((line) => {
+      var match = /^\s*(title|abstract|keywords?|venue)\s*:\s*(.*)$/i.exec(line);
+      if (match) {
+        current = match[1].toLowerCase().replace(/^keyword$/, "keywords");
+        fields[current] = match[2].trim();
+      } else if (current && line.trim()) {
+        fields[current] += (fields[current] ? "\n" : "") + line.trim();
+      }
+    });
+    var labeled = normalizePaperRecord(fields);
+    return labeled ? [labeled] : null;
+  }
+
+  function normalizePaperRecord(record) {
+    if (!record || typeof record !== "object") return null;
+    var value = (name) => record[name] ?? "";
+    var list = (name) => {
+      var item = value(name);
+      return Array.isArray(item) ? item.filter(Boolean).join(", ") : String(item || "").trim();
+    };
+    var title = String(value("title") || value("title_text") || value("name") || "").trim();
+    if (!title) return null;
+    return {
+      title: title,
+      abstract: String(value("abstract") || value("summary") || "").trim(),
+      keywords: list("keywords") || list("keyword"),
+      venue: String(value("venue") || value("conference") || "").trim(),
+    };
+  }
+
+  function paperText(p) {
+    return [p && p.title, p && p.abstract, p && p.keywords].filter(Boolean).join(" ").trim();
   }
 
   /* 掲載先・会議名の照合用正規化。機能語（the/of/and/& 等）を除いて
@@ -385,7 +437,7 @@
   function autoDetectCats(lines) {
     if (!lines || !lines.length) return [];
     var text = lines
-      .map((p) => (((p && p.title) || "") + " " + ((p && p.keywords) || "")).trim())
+      .map((p) => paperText(p))
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
@@ -407,7 +459,7 @@
         venueHit: false,
         details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
       };
-    var pt = ((p.title || "") + " " + (p.keywords || "")).trim().toLowerCase();
+    var pt = paperText(p).toLowerCase();
     if (!pt)
       return {
         score: 0,
@@ -1182,9 +1234,7 @@
    * （参考論文のノイズに自分の論文が埋没しないように）。
    */
   function queryText(lines) {
-    var all = (lines || []).map((p) =>
-      ((p.title || "") + " " + (p.keywords || "")).replace(/\s+/g, " ").trim(),
-    );
+    var all = (lines || []).map((p) => paperText(p).replace(/\s+/g, " ").trim());
     var joined = all.filter(Boolean).join(" ").trim();
     var primary = all[0] ? all[0] : "";
     return (primary ? primary + " " : "") + joined;
