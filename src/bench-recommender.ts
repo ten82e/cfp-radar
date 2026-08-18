@@ -21,15 +21,16 @@
 import { readFileSync } from "node:fs";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
 import { EMBEDDING_MODEL, EMBEDDING_MULTI_MODEL, VENUE_PAPERS } from "./embeddings.ts";
+import {
+  loadRecommender,
+  type RecommenderApi,
+  type VenueRecommendation,
+} from "./recommender-api.ts";
 
-// recommender.js は UMD で、package type:module の下では module.exports が無いため
-// globalThis.Recommender に露出する（サイドエフェクト import でロード）。
-// @ts-expect-error - no declaration file for plain-JS recommender.js
-await import("../site/recommender.js");
-const Recommender = (globalThis as { Recommender?: unknown }).Recommender as any;
+const Recommender: RecommenderApi = await loadRecommender();
 
-const STOP = Recommender.STOPWORDS as Set<string>;
-const GEN_PAPER = (Recommender.GENERIC_PAPER_WORDS ?? new Set<string>()) as Set<string>;
+const STOP = Recommender.STOPWORDS;
+const GEN_PAPER = Recommender.GENERIC_PAPER_WORDS ?? new Set<string>();
 
 export interface BenchArgs {
   data: string;
@@ -389,7 +390,7 @@ export function runBenchmarkV2(fixture: BenchV2Fixture): BenchV2Result {
       query.semantic,
       Date.parse(query.time),
       { topN: rows.length },
-    ) as any[];
+    ) as VenueRecommendation[];
     const rank = (mode: "lexical" | "semantic" | "fused"): number | null => {
       const ordered =
         mode === "fused"
