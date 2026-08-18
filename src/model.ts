@@ -48,6 +48,15 @@ export interface Deadline {
   comment: string | null;
 }
 
+export interface DeadlineEstimate {
+  point_estimate: string;
+  window_start: string;
+  window_end: string;
+  source_editions: number[];
+  method: "median-interval";
+  confidence: "low" | "medium";
+}
+
 export interface Edition {
   year: number;
   edition_id: string;
@@ -59,6 +68,7 @@ export interface Edition {
   event_end: Date | null;
   deadlines: Deadline[];
   estimated: boolean;
+  estimate?: DeadlineEstimate;
   source: string;
 }
 
@@ -828,6 +838,32 @@ function toStringArray(val: unknown): string[] {
   return [];
 }
 
+function deadlineEstimateOf(value: unknown): DeadlineEstimate | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Record<string, unknown>;
+  const sourceEditions = Array.isArray(raw.source_editions)
+    ? raw.source_editions.map(Number).filter(Number.isInteger)
+    : [];
+  if (
+    typeof raw.point_estimate !== "string" ||
+    typeof raw.window_start !== "string" ||
+    typeof raw.window_end !== "string" ||
+    sourceEditions.length === 0 ||
+    raw.method !== "median-interval" ||
+    (raw.confidence !== "low" && raw.confidence !== "medium")
+  ) {
+    return undefined;
+  }
+  return {
+    point_estimate: raw.point_estimate,
+    window_start: raw.window_start,
+    window_end: raw.window_end,
+    source_editions: sourceEditions,
+    method: "median-interval",
+    confidence: raw.confidence,
+  };
+}
+
 /** Rebuild conferences from a `data.json`-shaped payload. */
 export function conferencesFromJson(
   payload: Record<string, unknown> | null | undefined,
@@ -868,6 +904,7 @@ export function conferencesFromJson(
         event_end: asDate(ed.event_end),
         deadlines,
         estimated: Boolean(ed.estimated),
+        ...(deadlineEstimateOf(ed.estimate) ? { estimate: deadlineEstimateOf(ed.estimate) } : {}),
         source: String(ed.source ?? ""),
       });
     }

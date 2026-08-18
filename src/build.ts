@@ -93,6 +93,8 @@ const CSV_COLUMNS = [
   "place",
   "date_text",
   "estimated",
+  "estimate_window_start",
+  "estimate_window_end",
   "sources",
   "link",
 ];
@@ -342,6 +344,7 @@ export function toJson(
         event_start: ed.event_start ? fmtDate(ed.event_start) : null,
         event_end: ed.event_end ? fmtDate(ed.event_end) : null,
         estimated: ed.estimated,
+        ...(ed.estimate ? { estimate: { ...ed.estimate } } : {}),
         source: ed.source,
         deadlines: sortedDeadlines(ed).map((dl) => ({
           kind: dl.kind,
@@ -415,6 +418,8 @@ export function toCsv(records: DataRecord[] | null | undefined): string {
         ed.place ?? "",
         ed.date_text ?? "",
         ed.estimated ? "true" : "false",
+        ed.estimate?.window_start ?? "",
+        ed.estimate?.window_end ?? "",
         conf.sources.join(";"),
         ed.link || conf.link || "",
       ]
@@ -485,7 +490,10 @@ export function toUpcomingMd(
           left = `${mins}分`;
         }
       }
-      const when = aoeText(dl.at_utc);
+      const when =
+        ed.estimated && ed.estimate
+          ? `推定期間 ${ed.estimate.window_start}〜${ed.estimate.window_end}`
+          : aoeText(dl.at_utc);
       const kindText = escapeMdCell(rec.kind_label);
       const roundText = `R${dl.round}`;
       rows.push(
@@ -580,6 +588,8 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "    - date_text: string — 上流の自由文の会期表記。構造化されていないことがある。",
     "    - event_start / event_end: string|null — 'YYYY-MM-DD'。パース不能なら null。",
     "    - estimated: boolean — true は過去実績からの推定。実データではない。",
+    "    - estimate: object|null — 推定版の点推定・日付窓・根拠版・信頼度。確定版には無い。",
+    "      window_start / window_end は表示用の日付範囲であり、公式締切ではない。",
     "    - source: string — この開催回を提供した出典名。",
     "    - deadlines: array — 各要素は次の形である。",
     "      - kind: string — 'abstract'|'paper'|'supplementary'|'notification'" +
@@ -595,7 +605,7 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "## 利用上の注意",
     "",
     "- 締切の比較は必ず deadlines[].utc で行う。aoe は表示用である。",
-    "- estimated=true の版は推定であり、公式サイトで締切を確認してから利用する。",
+    "- estimated=true の版は推定窓であり、公式サイトで締切を確認してから利用する。",
     "- data.csv は 1 行 1 締切のフラット表で、data.json の部分集合である。",
     "  comment・tags・thcpl ランクは列に無い。全情報が要るときは data.json を使う。",
     "- 権威は上流と各会議の公式サイトである。重要な判断の前に link 先を確認すること。",
