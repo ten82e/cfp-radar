@@ -48,6 +48,7 @@ export interface BenchArgs {
   sw: string | null;
   goldenEn: boolean;
   paperMax: boolean;
+  v2: string | null;
 }
 
 // 不正な数値（負・非整数・非数値）を既定値へフォールバック。
@@ -113,6 +114,7 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     // R16: usenix-security の論文個別ベクトルを semanticScore の max 類似度に使う
     // （英語のみ）。実測で golden EN top1 15.8→26.3 / top5 63.2→71.9。既定オン。
     paperMax: true,
+    v2: null,
   };
   if (!argv || !Array.isArray(argv)) return args;
 
@@ -165,6 +167,7 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     else if (a === "--golden-en") args.goldenEn = parseBool(eqVal, true);
     else if (a === "--paper-max") args.paperMax = parseBool(eqVal, true);
     else if (a === "--no-paper-max") args.paperMax = false;
+    else if (a === "--v2" || a === "--bench-v2") args.v2 = nextVal() ?? null;
     else if (a === "--sw") {
       args.sw = nextVal() ?? null;
       // 例: "name=25,venue=80,domain=0,tags=0" または "nameOnce"（会議名一致を先頭 1 語のみ）
@@ -201,6 +204,230 @@ export interface BenchQuery {
   conf?: Conf;
   qid?: string;
   golden?: boolean;
+}
+
+const BENCH_V2_SPLITS = ["synthetic", "dev", "heldout"] as const;
+type BenchV2Split = (typeof BENCH_V2_SPLITS)[number];
+
+export interface BenchV2Profile {
+  key: string;
+  title: string;
+  profile: string;
+}
+
+export interface BenchV2Query {
+  id: string;
+  split: BenchV2Split;
+  time: string;
+  title: string;
+  keywords: string;
+  key: string;
+  semantic: Record<string, number>;
+}
+
+export interface BenchV2Fixture {
+  version: number;
+  venue_profiles: BenchV2Profile[];
+  queries: BenchV2Query[];
+}
+
+export interface BenchV2Metrics {
+  mrr: number;
+  top1Accuracy: number;
+  coverage: number;
+  "recall@1": number;
+  "recall@5": number;
+  "recall@10": number;
+  "ndcg@5": number;
+  "ndcg@10": number;
+}
+
+export interface BenchV2ModeResult extends BenchV2Metrics {
+  queries: number;
+}
+
+export interface BenchV2Result {
+  version: 2;
+  splits: Record<
+    BenchV2Split,
+    {
+      queries: number;
+      modes: Record<"lexical" | "semantic" | "fused", BenchV2ModeResult>;
+    }
+  >;
+}
+
+function benchV2Text(value: unknown): string {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
+
+function benchV2Round(value: number): number {
+  return Number(value.toFixed(6));
+}
+
+function validateBenchV2(fixture: BenchV2Fixture): void {
+  if (fixture?.version !== 2) throw new Error("bench v2 version must be 2");
+  if (!Array.isArray(fixture.venue_profiles) || fixture.venue_profiles.length === 0) {
+    throw new Error("bench v2 venue_profiles must be non-empty");
+  }
+  if (!Array.isArray(fixture.queries) || fixture.queries.length === 0) {
+    throw new Error("bench v2 queries must be non-empty");
+  }
+  const profiles = new Map<string, BenchV2Profile>();
+  for (const profile of fixture.venue_profiles) {
+    if (!profile?.key || profiles.has(profile.key)) throw new Error("bench v2 duplicate venue key");
+    if (!profile.title || !profile.profile)
+      throw new Error(`bench v2 profile ${profile.key} is incomplete`);
+    profiles.set(profile.key, profile);
+  }
+  const ids = new Set<string>();
+  const titles = new Set<string>();
+  const times = new Map<BenchV2Split, number[]>();
+  for (const split of BENCH_V2_SPLITS) times.set(split, []);
+  for (const query of fixture.queries) {
+    if (!BENCH_V2_SPLITS.includes(query.split))
+      throw new Error(`bench v2 invalid split: ${query.split}`);
+    if (!query.id || ids.has(query.id)) throw new Error("bench v2 duplicate query id");
+    ids.add(query.id);
+    const title = benchV2Text(query.title);
+    if (!title || titles.has(title)) throw new Error("bench v2 duplicate or leaked query title");
+    titles.add(title);
+    const time = Date.parse(query.time);
+    if (!Number.isFinite(time)) throw new Error(`bench v2 invalid query time: ${query.id}`);
+    times.get(query.split)?.push(time);
+    if (!profiles.has(query.key)) throw new Error(`bench v2 unknown target venue: ${query.key}`);
+    if (
+      [...profiles.values()].some((profile) =>
+        [profile.title, profile.profile, profile.key].map(benchV2Text).includes(title),
+      )
+    ) {
+      throw new Error(`bench v2 profile/query leakage: ${query.id}`);
+    }
+    if (!query.semantic || Object.keys(query.semantic).some((key) => !profiles.has(key))) {
+      throw new Error(`bench v2 semantic scores have unknown venue: ${query.id}`);
+    }
+    for (const key of profiles.keys()) {
+      if (!Number.isFinite(query.semantic[key]))
+        throw new Error(`bench v2 semantic score missing: ${query.id}/${key}`);
+    }
+  }
+  for (const split of BENCH_V2_SPLITS) {
+    if (!times.get(split)?.length) throw new Error(`bench v2 split is empty: ${split}`);
+  }
+  const syntheticEnd = Math.max(...times.get("synthetic")!);
+  const devStart = Math.min(...times.get("dev")!);
+  const devEnd = Math.max(...times.get("dev")!);
+  const heldoutStart = Math.min(...times.get("heldout")!);
+  if (!(syntheticEnd < devStart && devEnd < heldoutStart)) {
+    throw new Error("bench v2 splits must be strictly time ordered");
+  }
+}
+
+function benchV2Metrics(ranks: Array<number | null>): BenchV2ModeResult {
+  const n = ranks.length;
+  const ranked = ranks.filter((rank): rank is number => rank !== null);
+  const mean = (values: number[]): number => values.reduce((sum, value) => sum + value, 0) / n;
+  const recall = (k: number): number =>
+    ranks.filter((rank) => rank !== null && rank <= k).length / n;
+  const ndcg = (k: number): number =>
+    mean(ranks.map((rank) => (rank !== null && rank <= k ? 1 / Math.log2(rank + 1) : 0)));
+  return {
+    queries: n,
+    mrr: benchV2Round(mean(ranked.map((rank) => 1 / rank))),
+    top1Accuracy: benchV2Round(ranks.filter((rank) => rank === 1).length / n),
+    coverage: benchV2Round(ranked.length / n),
+    "recall@1": benchV2Round(recall(1)),
+    "recall@5": benchV2Round(recall(5)),
+    "recall@10": benchV2Round(recall(10)),
+    "ndcg@5": benchV2Round(ndcg(5)),
+    "ndcg@10": benchV2Round(ndcg(10)),
+  };
+}
+
+export function runBenchmarkV2(fixture: BenchV2Fixture): BenchV2Result {
+  validateBenchV2(fixture);
+  const rows = fixture.venue_profiles.map((profile) => ({
+    conf: {
+      key: profile.key,
+      title: profile.title,
+      full_name: profile.title,
+      tags: [],
+      papers: [],
+    },
+    cats: [],
+    kind: "paper",
+    t: Date.parse("2099-01-01"),
+    tLast: Date.parse("2099-01-01"),
+    est: false,
+  }));
+  const bySplit = Object.fromEntries(
+    BENCH_V2_SPLITS.map((split) => [
+      split,
+      {
+        queries: 0,
+        ranks: {
+          lexical: [] as Array<number | null>,
+          semantic: [] as Array<number | null>,
+          fused: [] as Array<number | null>,
+        },
+      },
+    ]),
+  ) as Record<
+    BenchV2Split,
+    { queries: number; ranks: Record<"lexical" | "semantic" | "fused", Array<number | null>> }
+  >;
+  for (const query of fixture.queries) {
+    const lines = Recommender.parsePaperLines(
+      JSON.stringify([{ title: query.title, abstract: "", keywords: query.keywords, venue: "" }]),
+    );
+    const recommendations = Recommender.venueRecommendations(
+      rows,
+      lines,
+      query.semantic,
+      Date.parse(query.time),
+      { topN: rows.length },
+    ) as any[];
+    const rank = (mode: "lexical" | "semantic" | "fused"): number | null => {
+      const ordered =
+        mode === "fused"
+          ? recommendations
+          : recommendations
+              .filter((item) =>
+                mode === "lexical" ? item.fit.lexicalScore > 0 : item.fit.semanticScore > 0,
+              )
+              .sort(
+                (a, b) =>
+                  (mode === "lexical"
+                    ? b.fit.lexicalScore - a.fit.lexicalScore
+                    : b.fit.semanticScore - a.fit.semanticScore) ||
+                  a.venueKey.localeCompare(b.venueKey),
+              );
+      const index = ordered.findIndex((item) => item.venueKey === query.key);
+      return index < 0 ? null : index + 1;
+    };
+    bySplit[query.split].queries += 1;
+    for (const mode of ["lexical", "semantic", "fused"] as const)
+      bySplit[query.split].ranks[mode].push(rank(mode));
+  }
+  return {
+    version: 2,
+    splits: Object.fromEntries(
+      BENCH_V2_SPLITS.map((split) => [
+        split,
+        {
+          queries: bySplit[split].queries,
+          modes: Object.fromEntries(
+            (Object.keys(bySplit[split].ranks) as Array<"lexical" | "semantic" | "fused">).map(
+              (mode) => [mode, benchV2Metrics(bySplit[split].ranks[mode])],
+            ),
+          ),
+        },
+      ]),
+    ) as BenchV2Result["splits"],
+  };
 }
 
 export function norm(s: string | null | undefined): string {
@@ -859,11 +1086,23 @@ export async function main(argv: string[] | null | undefined = process.argv): Pr
   const rawArgs = extractArgvRest(safeArgv);
   if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
     console.log(
-      "usage: node src/bench-recommender.ts [--data <path>] [--emb <path>] [--samples <n>] [--failures <n>] [--topk <n>] [--lang <en|jp>] [--golden-en] [--no-idf]",
+      "usage: node src/bench-recommender.ts [--data <path>] [--emb <path>] [--v2 <fixture>] [--samples <n>] [--failures <n>] [--topk <n>] [--lang <en|jp>] [--golden-en] [--no-idf]",
     );
     return 0;
   }
   const args = parseBenchArgs(safeArgv);
+  if (args.v2) {
+    try {
+      const fixture = JSON.parse(readFileSync(args.v2, "utf8")) as BenchV2Fixture;
+      console.log(JSON.stringify(runBenchmarkV2(fixture), null, 2));
+      return 0;
+    } catch (error) {
+      process.stderr.write(
+        `bench v2 failed: ${error instanceof Error ? error.message : String(error)}\n`,
+      );
+      return 1;
+    }
+  }
   let dataRaw: string;
   let embRaw: string;
   try {

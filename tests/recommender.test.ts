@@ -14,6 +14,7 @@ import {
   contentWords,
   norm,
   parseBenchArgs,
+  runBenchmarkV2,
   topicWords,
 } from "../src/bench-recommender.ts";
 import { main as embeddingsMain, venuePapersHash } from "../src/embeddings.ts";
@@ -1548,6 +1549,48 @@ describe("GOLDEN_EN と VENUE_PAPERS のリークなし設計 (R12–R17)", () =
 });
 
 describe("bench-recommender argument parsing and helper utilities", () => {
+  it("parseBenchArgs accepts the versioned benchmark fixture", () => {
+    expect(
+      parseBenchArgs(["node", "bench-recommender.ts", "--v2", "tests/fixtures/bench-v2.json"]).v2,
+    ).toBe("tests/fixtures/bench-v2.json");
+  });
+
+  it("runBenchmarkV2 reports deterministic venue-level ranking metrics", () => {
+    const fixture = JSON.parse(
+      readFileSync(join(REPO_ROOT, "tests", "fixtures", "bench-v2.json"), "utf8"),
+    );
+    const result = runBenchmarkV2(fixture);
+    expect(result.version).toBe(2);
+    for (const split of ["synthetic", "dev", "heldout"] as const) {
+      expect(result.splits[split].queries).toBeGreaterThan(0);
+      for (const mode of ["lexical", "semantic", "fused"] as const) {
+        expect(result.splits[split].modes[mode]).toEqual(
+          expect.objectContaining({
+            mrr: expect.any(Number),
+            top1Accuracy: expect.any(Number),
+            coverage: expect.any(Number),
+            "recall@1": expect.any(Number),
+            "recall@5": expect.any(Number),
+            "recall@10": expect.any(Number),
+            "ndcg@5": expect.any(Number),
+            "ndcg@10": expect.any(Number),
+          }),
+        );
+      }
+    }
+    expect(result.splits.heldout.queries).toBe(2);
+    expect(result.splits.heldout.modes.fused.coverage).toBeGreaterThan(0);
+    expect(result).toEqual(runBenchmarkV2(JSON.parse(JSON.stringify(fixture))));
+  });
+
+  it("runBenchmarkV2 rejects duplicate query titles as leakage", () => {
+    const fixture = JSON.parse(
+      readFileSync(join(REPO_ROOT, "tests", "fixtures", "bench-v2.json"), "utf8"),
+    );
+    fixture.queries[1].title = fixture.queries[0].title;
+    expect(() => runBenchmarkV2(fixture)).toThrow(/leak|duplicate|split/);
+  });
+
   it("parseBenchArgs parses flags and equal-joined options", () => {
     const args = parseBenchArgs([
       "node",
