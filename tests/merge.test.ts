@@ -896,6 +896,14 @@ describe("rollforward", () => {
     expect(paper.length).toBeGreaterThan(0);
     const expected = new Date(utc(2025, 9, 12, 11, 59, 0).getTime() + 364 * 86_400_000);
     expect(paper[0].at_utc.getTime()).toBe(expected.getTime());
+    expect(estimated[0].estimate).toMatchObject({
+      point_estimate: "2026-09-11",
+      window_start: "2026-06-12",
+      window_end: "2026-12-11",
+      source_editions: [2025],
+      method: "median-interval",
+      confidence: "low",
+    });
   });
 
   it("estimated edition year agrees with the dates it carries", () => {

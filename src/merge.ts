@@ -11,8 +11,10 @@ import {
   cmpStr,
   DAY_MS,
   type Deadline,
+  type DeadlineEstimate,
   dateOnly,
   type Edition,
+  fmtDate,
   parseDateRange,
 } from "./model.ts";
 import { deadlinesOf } from "./sources/local.ts";
@@ -671,6 +673,18 @@ function estimateEdition(
       comment: `Estimated from the ${last.edition.year} edition`,
     }));
   if (deadlines.length === 0) return null;
+  const point =
+    deadlines.find((deadline) => deadline.kind === "paper")?.at_utc ??
+    deadlines.slice().sort((a, b) => a.at_utc.getTime() - b.at_utc.getTime())[0].at_utc;
+  const windowDays = Math.max(14, pyRound(interval / 4 / 7) * 7);
+  const estimate: DeadlineEstimate = {
+    point_estimate: fmtDate(dateOnly(point)),
+    window_start: fmtDate(dateOnly(addDays(point, -windowDays))),
+    window_end: fmtDate(dateOnly(addDays(point, windowDays))),
+    source_editions: dated.slice(-lookback).map(({ edition }) => edition.year),
+    method: "median-interval",
+    confidence: dated.length >= 3 ? "medium" : "low",
+  };
   return {
     year,
     edition_id: `${conf.key}${String(year % 100).padStart(2, "0")}-est`,
@@ -681,6 +695,7 @@ function estimateEdition(
     event_end: null,
     deadlines,
     estimated: true,
+    estimate,
     source: last.edition.source,
   };
 }
