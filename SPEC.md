@@ -229,6 +229,7 @@ kamiyobi/
 │   └── cli.ts                   # エントリポイント                        [担当C]
 ├── site/
 │   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
+│   ├── app.js                   # 型検査対象のブラウザUI runtime       [担当D]
 │   ├── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
 │   └── recommender.d.ts         # 推薦ランタイムのグローバル型宣言       [担当C]
 ├── scripts/
@@ -621,6 +622,7 @@ predatory 疑い付きで一覧する。
 | `llms.txt` | エージェント向け出力索引 |
 | `embeddings.json` | 会議スコープの埋め込み（§10）。`--no-embeddings` で省略可 |
 | `recommender.js` | サイトの推薦ロジック |
+| `app.js` | ブラウザUI runtime（TypeScript の `allowJs` 対象） |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
 `index.html` に埋め込む JSON は `catalog.json` と同一である。推薦モードは
@@ -831,9 +833,10 @@ on:
 
 ## 7. 静的サイト（`site/template.html`・担当D）
 
-- **コア UI は単一ファイル**。表・絞り込み・テーマ・フォントは外部 CDN・
+- **コア UI は静的テンプレートと checked runtime に分離**。表・絞り込み・テーマ・フォントは外部 CDN・
   Web フォント・外部画像を使わない（#223）。sibling の `recommender.js`（§10）は
-  ビルドが `index.html` と同じディレクトリへ同梱する。
+  ビルドが `index.html` と同じディレクトリへ同梱する。UI runtime は `app.js` として
+  同梱し、TypeScript のプログラムへ `allowJs` で含める。
 - 推薦機能だけ、オフライン時フォールバック付きの任意 CDN を遅延ロードしてよい。
   許可するのは次の 3 URL に限る。
   `https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm`、

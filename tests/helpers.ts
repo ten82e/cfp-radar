@@ -23,6 +23,7 @@ export const PUBLIC_FILES = [
   "data.json",
   "catalog.json",
   "recommendation-index.json",
+  "app.js",
   "data.csv",
   "upcoming.md",
   "llms.txt",

@@ -502,6 +502,7 @@ it("index.html has the data injected", () => {
   const text = readFileSync(join(site, "index.html"), "utf8");
   expect(text).not.toContain("/*__DATA__*/null");
   expect(text).toContain("conferences");
+  expect(readFileSync(join(site, "app.js"), "utf8")).toContain("__KAMIYOBI_DATA__");
 });
 
 it("build splits catalog, recommendation, and historical payloads (#468)", () => {
@@ -543,7 +544,10 @@ it("conferences without deadlines keep their meeting dates", () => {
 });
 
 it("index.html has no meeting rows", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   expect(html).not.toContain('event: "開催"');
   expect(html).toContain("KIND_LABEL[r.kind]");
   expect(html).toMatch(/r\.kind !== "abstract" && r\.kind !== "paper"/);
@@ -561,7 +565,10 @@ it("SPEC §8 no longer claims meeting-only conferences appear as index.html rows
 });
 
 it("index.html 7d preset uses a real 7-day window", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 「締切直近 (7日以内)」プリセットは 7 日窓で動作し、ドロップダウンに 7d がある
   expect(html).toContain("applyPreset('7d')");
   expect(html).toContain("if (type === '7d') state.win = \"7d\";");
@@ -571,7 +578,10 @@ it("index.html 7d preset uses a real 7-day window", () => {
 });
 
 it("index.html has domestic filter and tag", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   expect(html).toContain('id="domestic"');
   expect(html).toContain("domestic-jp");
   expect(html).toContain('textContent = "国内"');
@@ -831,7 +841,10 @@ function jsFunction(html: string, name: string): string {
 }
 
 it("default filter shows only submission deadlines", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   const filterSrc = jsFunction(html, "filter");
   const script = [
     "const DAY = 86400000;",
@@ -859,7 +872,10 @@ it("default filter shows only submission deadlines", () => {
 });
 
 it("sortable headers are keyboard-operable and expose sort state (aria-sort)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 静的検証: ソート可能 4 ヘッダーに tabindex / aria-sort / data-sort がある
   const ths = [...html.matchAll(/<th([^>]*data-sort="([^"]+)"[^>]*)>/g)];
   expect(ths.length).toBe(4);
@@ -900,7 +916,10 @@ it("sortable headers are keyboard-operable and expose sort state (aria-sort)", (
 });
 
 it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
   expect(style).toContain("color-scheme: light dark");
   const root = style.match(/:root\s*\{([^}]*)\}/)?.[1] ?? "";
@@ -930,7 +949,10 @@ it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () =>
 });
 
 it("drawer closes only on ✕ / backdrop click, not on inner elements", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 静的検証: BUTTON 判定の除去と名前付き関数化がビルド成果に反映されている
   expect(html).toContain("function closeDrawer(e)");
   expect(html).not.toContain('e.target.tagName === "BUTTON"');
@@ -964,7 +986,10 @@ it("drawer closes only on ✕ / backdrop click, not on inner elements", () => {
 });
 
 it("narrow screens fall back to card layout (SPEC §7)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 狭幅向けメディアクエリが存在し、ブレークポイントが 640px 以下
   const mq = html.match(/@media \(max-width: (\d+)px\) \{/);
   expect(mq, "@media (max-width: ...) が存在しない").not.toBeNull();
@@ -977,7 +1002,10 @@ it("narrow screens fall back to card layout (SPEC §7)", () => {
 });
 
 it("deadline display includes AoE notation (SPEC §7)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 静的検証: 表の日時セルとドロワーの両方に AoE 併記がある
   expect(html).toContain('line(c1, fmtAoE(d), "sub nowrap")');
   expect(html).toContain("fmtAoE(new Date(r.t))");
@@ -996,7 +1024,10 @@ it("deadline display includes AoE notation (SPEC §7)", () => {
 });
 
 it("past-deadline toggle reveals past rows (SPEC §7)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 静的検証: トグル UI と URL 状態の配線がある
   expect(html).toContain('id="past"');
   expect(html).toContain('state.past = p.get("past") === "1"');
@@ -1027,7 +1058,10 @@ it("past-deadline toggle reveals past rows (SPEC §7)", () => {
 });
 
 it("drawer is a keyboard-operable modal dialog with focus management (#218)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   // 静的検証: dialog セマンティクス・無名アイコンボタンのラベル・キーボード経路・ヒント表記
   expect(html).toContain('role="dialog" aria-modal="true" aria-labelledby="drawerTitle"');
   expect(html).toContain('aria-label="閉じる"');
@@ -1087,7 +1121,10 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
 });
 
 it("meeting past rule is wired to the end date", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
   expect(html).not.toContain('kind: "event"');
   expect(html).not.toContain('event: "開催"');
 });
@@ -1173,12 +1210,14 @@ it("toLlmsTxt documents outputs and categories correctly", () => {
   expect(text).toContain("upcoming.md");
   expect(text).toContain("catalog.json");
   expect(text).toContain("recommendation-index.json");
+  expect(text).toContain("app.js");
   expect(text).not.toMatch(/\.ics/);
   expect(text).toContain("実在値: systems");
 });
 
 it("site template statUpcoming counts confirmed submission deadlines only", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
   expect(template).toMatch(/Content-Security-Policy/);
   expect(template).toMatch(
     /script-src 'self' 'unsafe-inline' https:\/\/cdn\.jsdelivr\.net https:\/\/cdnjs\.cloudflare\.com/,
@@ -1188,19 +1227,20 @@ it("site template statUpcoming counts confirmed submission deadlines only", () =
   );
   expect(template).not.toMatch(/script-src[^>]*\*/);
   // statUpcoming の計算が投稿締切 (abstract/paper) かつ非推定 (!r.est) のみに限定されていること
-  expect(template).toContain(
+  expect(runtime).toContain(
     'rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est',
   );
 });
 
 it("site template lazy-loads recommendation data outside the catalog shell (#468)", () => {
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  expect(template).toContain('fetch("recommendation-index.json")');
-  expect(template).toContain("setRecommendationProfile(data)");
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
+  expect(runtime).toContain('fetch("recommendation-index.json")');
+  expect(runtime).toContain("setRecommendationProfile(data)");
 });
 
 it("site template localized shortcuts label and preset button active sync", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
   // SPEC §7: 日本語 UI。Shortcuts: ではなく ショートカット:
   expect(template).toContain("ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択");
   expect(template).not.toContain("Shortcuts: <kbd>j</kbd>");
@@ -1209,7 +1249,7 @@ it("site template localized shortcuts label and preset button active sync", () =
   expect(template).toContain('data-preset="a_star"');
   expect(template).toContain('data-preset="hpc_sys"');
   expect(template).toContain('data-preset="domestic"');
-  expect(template).toContain("function updatePresetActive()");
+  expect(runtime).toContain("function updatePresetActive()");
 });
 
 it("site template does not include external Google Fonts per SPEC §7 (#223)", () => {
@@ -1225,24 +1265,25 @@ it("site template does not include external Google Fonts per SPEC §7 (#223)", (
 
 it("site template exposes independent recommendation and deadline render paths (#466)", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
   expect(template).toContain('id="modeRecommend"');
   expect(template).toContain('id="modeDeadlines"');
   expect(template).toContain('aria-pressed="false"');
   expect(template).toContain('id="deadlineTableWrap"');
   expect(template).toContain('id="recommendationCards"');
-  expect(template).toContain("function setMode(mode)");
-  expect(template).toContain("renderRecommendationCards(paperMode ? shown : [])");
+  expect(runtime).toContain("function setMode(mode)");
+  expect(runtime).toContain("renderRecommendationCards(paperMode ? shown : [])");
   expect(template).toContain("mode-recommend .deadline-only");
   expect(template).toContain("mode-deadlines .recommend-only");
 });
 
 it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  const start = template.indexOf("function openDrawer");
-  const end = template.indexOf("window.openDrawer", start);
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
+  const start = runtime.indexOf("function openDrawer");
+  const end = runtime.indexOf("window.openDrawer", start);
   expect(start).toBeGreaterThanOrEqual(0);
   expect(end).toBeGreaterThan(start);
-  const body = template.slice(start, end);
+  const body = runtime.slice(start, end);
   expect(body).toContain("esc(r.ed.place");
   expect(body).toContain("esc(r.ed.date_text");
   expect(body).toContain("safeExternalUrl(r.ed.link || r.conf.link)");
@@ -1250,12 +1291,12 @@ it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
 });
 
 it("openDrawer escapes KIND_LABEL fallback kind (#396)", () => {
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  const start = template.indexOf("function openDrawer");
-  const end = template.indexOf("window.openDrawer", start);
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
+  const start = runtime.indexOf("function openDrawer");
+  const end = runtime.indexOf("window.openDrawer", start);
   expect(start).toBeGreaterThanOrEqual(0);
   expect(end).toBeGreaterThan(start);
-  const body = template.slice(start, end);
+  const body = runtime.slice(start, end);
   expect(body).toMatch(/esc\(\s*KIND_LABEL\[r\.kind\]/);
   expect(body).not.toMatch(/\+ \(KIND_LABEL\[r\.kind\] \|\| r\.kind\) \+/);
 });
@@ -1265,9 +1306,9 @@ it("repolink URL is sanitised via safeExternalUrl (#419)", () => {
   // 経由していないと、javascript:alert(1) 等の不正スキーマがクロスサイト
   // スクリプティングの原因になる。ビルド成果が safeExternalUrl(localSrc.url)
   // を使うことを静的に検証する。
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  expect(template).toContain("safeExternalUrl(localSrc.url)");
-  expect(template).not.toMatch(/a\.href\s*=\s*localSrc\.url[^)]/);
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
+  expect(runtime).toContain("safeExternalUrl(localSrc.url)");
+  expect(runtime).not.toMatch(/a\.href\s*=\s*localSrc\.url[^)]/);
 });
 
 it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
@@ -1281,6 +1322,7 @@ it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#
   expect(section7).toMatch(/フォールバック/);
 
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
   const allowed = [
     "https://cdn.jsdelivr.net",
     "https://cdnjs.cloudflare.com",
@@ -1290,7 +1332,7 @@ it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
   ];
-  const urls = [...template.matchAll(/https:\/\/[^\s"'`]+/g)].map((m) => m[0]);
+  const urls = [...(template + runtime).matchAll(/https:\/\/[^\s"'`]+/g)].map((m) => m[0]);
   const cdnLike = urls
     .map((u) => u.replace(/[;,]+$/, ""))
     .filter((u) => /cdn\.|jsdelivr|unpkg|cdnjs|googleapis|gstatic|esm\.sh/i.test(u));

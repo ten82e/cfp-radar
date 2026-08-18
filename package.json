@@ -13,7 +13,7 @@
     "bench": "node src/bench-recommender.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "biome check src tests && biome check site/recommender.js --files-ignore-unknown=false --javascript-linter-enabled=false --javascript-formatter-enabled=false",
+    "check": "biome check src tests && biome check site/recommender.js site/app.js --files-ignore-unknown=false --javascript-linter-enabled=false --javascript-formatter-enabled=false",
     "format": "biome format --write src tests"
   },
   "license": "MIT",
