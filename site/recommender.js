@@ -457,17 +457,17 @@
       return {
         score: 0,
         venueHit: false,
-        details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
+        details: { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 },
       };
     var pt = paperText(p).toLowerCase();
     if (!pt)
       return {
         score: 0,
         venueHit: false,
-        details: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
+        details: { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 },
       };
     var score = 0;
-    var details = { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
+    var details = { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 };
     // 内側ブロックで使う var は関数ルートに宣言を集約（biome noInnerDeclarations）
     var wgt;
     var jpHay;
@@ -549,7 +549,7 @@
           ? Math.max(2, Math.round(SIG_WEIGHTS.paper * idfMap.paper[w]))
           : SIG_WEIGHTS.paper;
       score += wgt;
-      details.name += wgt;
+      details.paper += wgt;
     });
 
     // 日本語の部分一致: 論文の日本語チャンク（4 文字以上）が会議名の日本語に含まれれば加点
@@ -787,12 +787,12 @@
         venueHit: false,
         perLine: [],
         evidence: [],
-        agg: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
+        agg: { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 },
       };
     var conf = confHay(r);
     var perLine = [];
     var venueHitAny = false;
-    var agg = { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 };
+    var agg = { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 };
     for (var i = 0; i < (lines || []).length; i++) {
       var s = scoreLine(r, lines[i], conf);
       if (s.venueHit) venueHitAny = true;
@@ -802,12 +802,28 @@
       });
     }
     var venue = venueEvidence(perLine, lines);
+    var signalEvidence = [];
+    var evidenceTypes = {
+      domain: "domain",
+      name: "venue-name",
+      paper: "accepted-paper",
+      jp: "venue-name",
+      tags: "topic-tag",
+      venue: "prior-venue",
+    };
+    Object.keys(evidenceTypes).forEach((kind) => {
+      if (agg[kind] > 0) signalEvidence.push({ type: evidenceTypes[kind], contribution: agg[kind] });
+    });
+    var venueName = agg.name;
+    agg.name += agg.paper;
+    agg.venueName = venueName;
     return {
       score: scorePapers(r, lines),
       venueScore: venue.score,
       venueHit: venueHitAny,
       perLine: perLine,
       evidence: venue.evidence,
+      signalEvidence: signalEvidence,
       agg: agg,
     };
   }
@@ -845,6 +861,102 @@
     var score = Math.round(100 * k * fused);
     if (venueHit) score += SIG_WEIGHTS.venue;
     return { score: Math.min(100, score), evidence: evidence };
+  }
+
+  function fitLabel(score) {
+    if (score >= 70) return "strong candidate";
+    if (score >= 40) return "candidate";
+    return "peripheral candidate";
+  }
+
+  function availability(row, now) {
+    var time = row && Number.isFinite(row.t) ? row.t : null;
+    var future = row && row.kind === "journal"
+      ? true
+      : row && row.kind === "event"
+        ? now < (row.tLast || row.t) + 86400000
+        : time !== null && time >= now;
+    return {
+      kind: (row && row.kind) || "unknown",
+      status: row && row.kind === "journal" ? "ongoing" : future ? "open" : "past",
+      timestamp: time,
+      estimated: !!(row && row.est),
+    };
+  }
+
+  /* Fuse candidate ranks once per venue. Deadline rows are availability records,
+   * not independent fit votes. */
+  function venueRecommendations(rows, lines, semanticScores, now, options) {
+    var groups = {};
+    var opts = options || {};
+    var safeNow = Number.isFinite(now) ? now : Date.now();
+    (rows || []).forEach((row) => {
+      var key = normKey(row && row.conf && row.conf.key);
+      if (key) (groups[key] || (groups[key] = [])).push(row);
+    });
+    var entries = Object.keys(groups).map((key) => {
+      var row = pickRepresentative(groups[key], safeNow)[0];
+      var match = breakdown(row, lines);
+      var boosted = false;
+      var lexicalScore = match.venueScore;
+      if (!match.venueHit && Array.isArray(opts.venueCats) && opts.venueCats.length &&
+          (row.cats || []).some((cat) => opts.venueCats.indexOf(cat) >= 0)) {
+        lexicalScore = Math.min(100, lexicalScore + 10);
+        boosted = true;
+      }
+      var semantic = semanticScores && Number.isFinite(semanticScores[key])
+        ? semanticScores[key]
+        : 0;
+      return { key, row, match, lexicalScore, semantic, boosted };
+    });
+    var lexical = entries.slice().sort((a, b) => b.lexicalScore - a.lexicalScore || a.key.localeCompare(b.key));
+    var semantic = entries
+      .filter((entry) => entry.semantic > 0)
+      .sort((a, b) => b.semantic - a.semantic || a.key.localeCompare(b.key));
+    var topN = Number.isInteger(opts.topN) && opts.topN > 0 ? opts.topN : 50;
+    var lexicalRanks = {};
+    var semanticRanks = {};
+    lexical.filter((entry) => entry.lexicalScore > 0).slice(0, topN).forEach((entry, index) => {
+      lexicalRanks[entry.key] = index + 1;
+    });
+    semantic.slice(0, topN).forEach((entry, index) => {
+      semanticRanks[entry.key] = index + 1;
+    });
+    var hasSemantic = Object.keys(semanticRanks).length > 0;
+    var keys = Object.keys(lexicalRanks);
+    Object.keys(semanticRanks).forEach((key) => {
+      if (keys.indexOf(key) < 0) keys.push(key);
+    });
+    var k = 60;
+    return keys.map((key) => {
+      var entry = entries.find((item) => item.key === key);
+      var lexicalRank = lexicalRanks[key] || null;
+      var semanticRank = semanticRanks[key] || null;
+      var rrf = (lexicalRank ? 1 / (k + lexicalRank) : 0) +
+        (semanticRank ? 1 / (k + semanticRank) : 0);
+      var score = hasSemantic
+        ? Math.round(Math.min(100, rrf * 100 * (k + 1) / 2))
+        : entry.lexicalScore;
+      var evidence = (entry.match.signalEvidence || entry.match.evidence).slice();
+      if (semanticRank) evidence.push({ type: "semantic", rank: semanticRank, contribution: entry.semantic });
+      return {
+        venueKey: key,
+        row: entry.row,
+        fit: {
+          score,
+          label: fitLabel(score),
+          lexicalScore: entry.lexicalScore,
+          semanticScore: entry.semantic,
+          lexicalRank,
+          semanticRank,
+          rrf: Number(rrf.toFixed(8)),
+          evidence,
+        },
+        availability: availability(entry.row, safeNow),
+        match: entry.match,
+        boosted: entry.boosted,
+      };
+    }).sort((a, b) => b.fit.score - a.fit.score || a.venueKey.localeCompare(b.venueKey));
   }
 
   /* 掲載先タグ（例: "IEEE RTSS"）に一致する会議のリストを返す。
@@ -1259,6 +1371,8 @@
     venueCategories: venueCategories,
     scorePapers: scorePapers,
     breakdown: breakdown,
+    venueRecommendations: venueRecommendations,
+    fitLabel: fitLabel,
     journalRows: journalRows,
     rankMatches: rankMatches,
     pastRepresentatives: pastRepresentatives,
