@@ -9,7 +9,7 @@
  * 検証する（parse 失敗はビルドで警告のうえ静かにスキップされるため）。
  *
  * #382: 会期 date_text も同じ理由で検査する。#376 は締切検査だけでは緑のまま
- * ICS / upcoming から落ちた。
+ * JSON / upcoming から落ちた。
  */
 
 import { readFileSync } from "node:fs";

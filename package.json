@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "HPC・ネットワーク・システム・AI・セキュリティ会議の締切を ICS/JSON/Pages で配信",
+  "description": "HPC・ネットワーク・システム・AI・セキュリティ会議の締切を JSON/CSV/Pages で配信",
   "engines": {
     "node": ">=24"
   },

@@ -539,14 +539,14 @@ describe("snapshot fallback", () => {
     expect(data.conferences.find((c) => c.key === "sc")).toBeDefined();
   });
 
-  it("build aborts instead of publishing a gutted calendar", async () => {
+  it("build aborts instead of publishing gutted data", async () => {
     const root = isolatedRepo();
     setRoot(root);
     allUpstreamsDown();
     const outdir = join(mkdtempSync("/tmp/cfp-snap-out2-"), "out");
     const code = await cmdBuild(args(outdir));
     expect(code).not.toBe(0);
-    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+    expect(existsSync(join(outdir, "data.json"))).toBe(false);
   });
 
   it("partial upstream failure continues when live is nonempty even if snapshot is not larger (#410)", async () => {
@@ -682,7 +682,7 @@ describe("snapshot fallback", () => {
     );
     const outdir = join(mkdtempSync("/tmp/cfp-snap-out5-"), "out");
     await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*overrides\.yaml/);
-    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+    expect(existsSync(join(outdir, "data.json"))).toBe(false);
   });
 
   it("build aborts when hand-edited data/extra.yaml is unparsable", async () => {
@@ -695,7 +695,7 @@ describe("snapshot fallback", () => {
     );
     const outdir = join(mkdtempSync("/tmp/cfp-snap-out7-"), "out");
     await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*extra\.yaml/);
-    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+    expect(existsSync(join(outdir, "data.json"))).toBe(false);
   });
 
   it("build aborts when hand-edited config.yaml is unparsable", async () => {
@@ -704,7 +704,7 @@ describe("snapshot fallback", () => {
     writeFileSync(join(root, "config.yaml"), "categories:\n  hpc: [unclosed\n", "utf8");
     const outdir = join(mkdtempSync("/tmp/cfp-snap-out6-"), "out");
     await expect(cmdBuild(args(outdir))).rejects.toThrow(/cannot parse .*config\.yaml/);
-    expect(existsSync(join(outdir, "all.ics"))).toBe(false);
+    expect(existsSync(join(outdir, "data.json"))).toBe(false);
   });
 
   it("auto-generated primary_overrides.yaml keeps warn-and-continue", async () => {

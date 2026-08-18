@@ -26,7 +26,6 @@ import {
 import { main as cliMain, parseArgs as parseCliArgs, usage } from "../src/cli.ts";
 import { main as embeddingsMain, profileTexts, venuePapersHash } from "../src/embeddings.ts";
 import {
-  icsPhysicalLines,
   makeConference,
   makeDeadline,
   makeEdition,
@@ -36,10 +35,6 @@ import {
   runCli,
   utc,
 } from "./helpers.ts";
-
-const ICS_FEEDS = PUBLIC_FILES.filter((f) => f.endsWith(".ics"));
-const ESTIMATED_FEEDS = ICS_FEEDS.filter((f) => f.endsWith("-estimated.ics"));
-const CONFIRMED_FEEDS = ICS_FEEDS.filter((f) => !f.endsWith("-estimated.ics"));
 
 let site: string;
 let data: Record<string, any>;
@@ -63,22 +58,6 @@ it.each(PUBLIC_FILES)("public file is generated: %s", (name) => {
   expect(require("node:fs").existsSync(path), `${name} missing from public/`).toBe(true);
   if (name !== ".nojekyll") {
     expect(require("node:fs").statSync(path).size, `${name} is empty`).toBeGreaterThan(0);
-  }
-});
-
-it("site template feed picker covers every confirmed feed (PR #16 events.ics regression)", () => {
-  // ビルド生成物の検証に加え、フロントページの購読 UI（site/template.html の
-  // FEEDS 配列）が確定フィード全 12 本（all + カテゴリ 9 + deadlines + events）
-  // を参照していることを静的に検証する。events.ics は生成・文書化されていたが
-  // テンプレに追加されていなかった（#21）。推定フィードは「確定情報ではない」
-  // ため UI には載せない判断（README のみ）を維持する。
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  const fileRefs = [...template.matchAll(/file: "([^"]+\.ics)"/g)].map((m) => m[1]);
-  expect(fileRefs.length, `template FEEDS refs (${fileRefs.join(", ")})`).toBe(
-    CONFIRMED_FEEDS.length,
-  );
-  for (const feed of CONFIRMED_FEEDS) {
-    expect(fileRefs, `template FEEDS missing ${feed}`).toContain(feed);
   }
 });
 
@@ -259,96 +238,6 @@ it("no deadline is in the far future by accident", () => {
   }
 });
 
-// --- calendars -------------------------------------------------------------
-
-function events(name: string): Array<Record<string, string>> {
-  const text = readFileSync(join(site, name), "utf8");
-  const lines = text
-    .replace(/\r\n /g, "")
-    .replace(/\r\n\t/g, "")
-    .split("\r\n");
-  const blocks: Array<Record<string, string>> = [];
-  let current: Record<string, string> | null = null;
-  for (const line of lines) {
-    if (line === "BEGIN:VEVENT") {
-      current = {};
-    } else if (line === "END:VEVENT") {
-      if (current !== null) blocks.push(current);
-      current = null;
-    } else if (current !== null) {
-      const idx = line.indexOf(":");
-      if (idx >= 0) current[line.slice(0, idx).split(";", 1)[0]] = line.slice(idx + 1);
-    }
-  }
-  return blocks;
-}
-
-it.each(ICS_FEEDS)("every feed parses: %s", (name) => {
-  const text = readFileSync(join(site, name), "utf8");
-  expect(text.startsWith("BEGIN:VCALENDAR")).toBe(true);
-  for (const ev of events(name)) {
-    expect(ev.UID).toBeTruthy();
-    expect(ev.DTSTART).toBeTruthy();
-  }
-});
-
-it("vevent counts match data.json", () => {
-  let expectedDeadlines = 0;
-  let expectedEvents = 0;
-  let expectedEstimated = 0;
-  for (const c of data.conferences) {
-    for (const ed of c.editions) {
-      if (ed.estimated) {
-        expectedEstimated += ed.deadlines.length;
-        continue;
-      }
-      expectedDeadlines += ed.deadlines.length;
-      if (ed.event_start) expectedEvents += 1;
-    }
-  }
-  expect(events("deadlines.ics").length).toBe(expectedDeadlines);
-  expect(events("all-estimated.ics").length).toBe(expectedEstimated);
-  expect(events("all.ics").length).toBe(expectedDeadlines + expectedEvents);
-});
-
-it("category feeds partition all", () => {
-  const everything = new Set(events("all.ics").map((e) => e.UID));
-  const union = new Set<string>();
-  for (const name of ["hpc.ics", "networking.ics", "systems.ics", "ai.ics", "security.ics"]) {
-    const uids = new Set(events(name).map((e) => e.UID));
-    for (const u of uids) {
-      expect(everything.has(u), `${name} has unknown UID ${u}`).toBe(true);
-      union.add(u);
-    }
-  }
-  for (const u of union) {
-    expect(everything.has(u)).toBe(true);
-  }
-});
-
-it("hpc-fabrics-2026 は networking カテゴリで配信される (#269 回帰)", () => {
-  // extra.yaml のカテゴリ typo（networks → networking 修正前）は classify の
-  // 既知カテゴリフィルタで黙って落ち、networking フィードから欠落していた。
-  const conf = data.conferences.find((c: any) => c.key === "hpc-fabrics-2026");
-  expect(conf).toBeTruthy();
-  expect(conf.categories).toContain("networking");
-  const uids = new Set(events("networking.ics").map((e) => e.UID));
-  expect(
-    [...uids].some((u) => String(u).startsWith("hpc-fabrics-2026-")),
-    "hpc-fabrics-2026 missing from networking.ics",
-  ).toBe(true);
-});
-
-it("feeds use CRLF and fold at 75 octets", () => {
-  for (const name of ICS_FEEDS) {
-    const raw = readFileSync(join(site, name));
-    for (const line of icsPhysicalLines(raw)) {
-      // 75 オクテット折り返し（UTF-8 日本語 3 バイト文字を壊さない）
-      expect(Buffer.byteLength(line, "utf8")).toBeLessThanOrEqual(75);
-    }
-  }
-});
-
 // --- other artefacts -------------------------------------------------------
 
 it("CSV is one row per deadline", () => {
@@ -372,17 +261,17 @@ it("upcoming.md is a table", () => {
   expect(text).toMatch(/^\|?\s*-{3,}/m);
 });
 
-it("llms.txt indexes the feeds", () => {
+it("llms.txt indexes generated outputs", () => {
   const text = readFileSync(join(site, "llms.txt"), "utf8");
-  for (const name of ["all.ics", "data.json", "all-estimated.ics"]) {
+  for (const name of ["data.json", "data.csv", "upcoming.md"]) {
     expect(text).toContain(name);
   }
+  expect(text).not.toMatch(/\.ics/);
 });
 
 it("README links every machine-readable output file (data.csv regression)", () => {
   // #245: README「機械可読の出力」の案内で data.csv だけが URL 無しだった。
-  // llms.txt / data.json / upcoming.md / 全 ICS フィードはリンクがある一方、
-  // data.csv は README 全体で URL が 1 箇所も無かった。
+  // llms.txt / data.json / upcoming.md / data.csv を案内する。
   // この節の対象読者は「エージェントや自作の道具」— まさに URL を必要とする層。
   const config = (loadYaml(readFileSync(join(REPO_ROOT, "config.yaml"), "utf8")) ?? {}) as Record<
     string,
@@ -409,14 +298,14 @@ it("llms.txt URLs match the published site", () => {
     .split("\n")
     .filter((l) => l.startsWith("- http"))
     .map((l) => l.slice(2).split(" ", 1)[0]);
-  expect(urls.length).toBeGreaterThanOrEqual(ICS_FEEDS.length);
+  expect(urls.length).toBe(0);
   for (const u of urls) {
     expect(u.startsWith(`${base}/`)).toBe(true);
   }
   const readme = join(REPO_ROOT, "README.md");
   try {
     const text = readFileSync(readme, "utf8");
-    for (const name of ["all.ics", "data.json", "llms.txt"]) {
+    for (const name of ["data.json", "llms.txt"]) {
       expect(text).toContain(`${base}/${name}`);
     }
   } catch {
@@ -436,11 +325,11 @@ it("llms.txt title follows config site.title (not a stale hard-coded name)", () 
   expect(text.split("\n")[0]).toBe(`# ${title}`);
   expect(text).not.toContain("# conf-deadlines");
   // デッドコンフィグ再発防止: カスタム site.title が toLlmsTxt の出力に反映される
-  const custom = toLlmsTxt("https://example.com", null, {
-    site: { title: "custom-feed" },
+  const custom = toLlmsTxt({
+    site: { title: "custom-site" },
     categories: {},
   });
-  expect(custom.split("\n")[0]).toBe("# custom-feed");
+  expect(custom.split("\n")[0]).toBe("# custom-site");
 });
 
 it("llms.txt schema summary documents every key data.json actually emits (site/papers/url)", () => {
@@ -451,7 +340,7 @@ it("llms.txt schema summary documents every key data.json actually emits (site/p
   // 乖離をここで回帰検査する。
   const text = readFileSync(join(site, "llms.txt"), "utf8");
   const summary = text.slice(text.indexOf("## data.json のスキーマ要約"));
-  // トップレベル site キー（base_url がフィード絶対 URL の基準）
+  // トップレベル site キー（base_url が公開 URL の基準）
   expect(summary).toMatch(/- site: object — \{domain: string, base_url: string\}/);
   expect(summary).toMatch(/base_url/);
   // 出典の url キー
@@ -593,7 +482,7 @@ it("SPEC §4 documents every file a standard build generates (embeddings.json/re
   // 生成される全ファイルが §4 節に現れることをここで回帰検査する。
   // （buildAll が書く .nojekyll は PUBLIC_FILES に含まれないが、§4 には既に記載済み。）
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
-  const section4 = spec.slice(spec.indexOf("## 4. 生成物"), spec.indexOf("### 4.1 ICS の要求"));
+  const section4 = spec.slice(spec.indexOf("## 4. 生成物"), spec.indexOf("## 5."));
   expect(section4.length).toBeGreaterThan(0);
   const generated = [...PUBLIC_FILES, "embeddings.json", "recommender.js"];
   for (const name of generated) {
@@ -616,69 +505,6 @@ it("generated_at follows the --now argument", () => {
   expect(payload.generated_at).not.toBe(data.generated_at);
   expect(NOW.toISOString()).toBe("2026-08-09T00:00:00.000Z");
 }, 300_000);
-
-// --- per-category estimated feeds (SPEC.md 4) ------------------------------
-
-it("the single estimated feed is gone", () => {
-  expect(require("node:fs").existsSync(join(site, "estimated.ics"))).toBe(false);
-});
-
-it("every category has its own estimated feed", () => {
-  for (const name of [
-    "all-estimated.ics",
-    "hpc-estimated.ics",
-    "networking-estimated.ics",
-    "systems-estimated.ics",
-    "ai-estimated.ics",
-    "security-estimated.ics",
-  ]) {
-    expect(ESTIMATED_FEEDS).toContain(name);
-    expect(require("node:fs").existsSync(join(site, name))).toBe(true);
-  }
-});
-
-it.each(ESTIMATED_FEEDS)("estimated feed is a subset of all-estimated: %s", (name) => {
-  const everything = new Set(events("all-estimated.ics").map((e) => e.UID));
-  for (const e of events(name)) {
-    expect(everything.has(e.UID)).toBe(true);
-  }
-});
-
-it("estimated feed routes by category", () => {
-  const expected: Record<string, Set<string>> = {};
-  for (const c of data.conferences) {
-    for (const ed of c.editions) {
-      if (!ed.estimated) continue;
-      for (const cat of c.categories) {
-        if (!expected[cat]) expected[cat] = new Set();
-        expected[cat].add(`${c.key}:${ed.year}`);
-      }
-    }
-  }
-  expect(Object.keys(expected).length).toBeGreaterThan(0);
-  for (const [cat, pairs] of Object.entries(expected)) {
-    const uids = events(`${cat}-estimated.ics`).map((e) => e.UID);
-    for (const pair of pairs) {
-      const [key, year] = pair.split(":");
-      expect(uids.some((u) => u.startsWith(`${key}-${year}-`))).toBe(true);
-    }
-  }
-});
-
-it.each(CONFIRMED_FEEDS)("confirmed feed carries no estimate: %s", (name) => {
-  const estimated = new Set<string>();
-  for (const c of data.conferences) {
-    for (const ed of c.editions) {
-      if (ed.estimated) estimated.add(`${c.key}-${ed.year}-`);
-    }
-  }
-  expect(estimated.size).toBeGreaterThan(0);
-  for (const ev of events(name)) {
-    for (const prefix of estimated) {
-      expect(String(ev.UID).startsWith(prefix)).toBe(false);
-    }
-  }
-});
 
 // --- meeting-only conferences keep dates; site table stays paper-only (SPEC §7/§8) ---
 
@@ -708,7 +534,6 @@ it("SPEC §8 no longer claims meeting-only conferences appear as index.html rows
   const section8 = spec.slice(spec.indexOf("## 8."), spec.indexOf("## 9."));
   expect(section8).not.toMatch(/開催回が index\.html に届いている/);
   expect(section8).toMatch(/index\.html has no meeting rows/);
-  expect(section8).toMatch(/events\.ics/);
   expect(section8).toMatch(/upcoming\.md/);
 });
 
@@ -743,18 +568,6 @@ it("index.html has domestic filter and tag", () => {
 
 // --- coincident deadlines are told apart (SPEC.md 3.6) ---------------------
 
-function summariesOf(text: string): string[] {
-  const lines = text
-    .replace(/\r\n /g, "")
-    .replace(/\r\n\t/g, "")
-    .split("\r\n");
-  const out: string[] = [];
-  for (const line of lines) {
-    if (line.startsWith("SUMMARY:")) out.push(line.slice(8));
-  }
-  return out;
-}
-
 it("coincident deadlines get distinguishable titles", async () => {
   const at = utc(2026, 9, 21, 22, 0, 0);
   const confs = [
@@ -777,21 +590,10 @@ it("coincident deadlines get distinguishable titles", async () => {
       ],
     }),
   ];
-  const outdir = mkdtempSync(join(tmpdir(), "cfp-sig-"));
-  await buildAll(confs, { categories: { ai: "AI" } }, outdir, NOW, { noEmbeddings: true });
-  // 回帰ガード: noEmbeddings が第5引数で効いていれば埋め込みは生成されない
-  expect(existsSync(join(outdir, "embeddings.json"))).toBe(false);
-  const summaries = summariesOf(readFileSync(join(outdir, "all.ics"), "utf8"));
-  expect([...summaries].sort()).toEqual(
-    [
-      "SIGGRAPH 2026 論文締切: Appy Hour deadline",
-      "SIGGRAPH 2026 論文締切: Posters deadline",
-      "SIGGRAPH 2026 論文締切",
-    ].sort(),
+  const records = recordsOf(confs);
+  expect(records.map((r) => r.kind_label).sort()).toEqual(
+    ["論文締切", "論文締切: Appy Hour deadline", "論文締切: Posters deadline"].sort(),
   );
-  expect(new Set(summaries).size).toBe(summaries.length);
-  const upcoming = readFileSync(join(outdir, "upcoming.md"), "utf8");
-  expect(upcoming).toContain("論文締切: Posters deadline");
 });
 
 it("title ending with the edition year is not duplicated in SUMMARY/upcoming", async () => {
@@ -827,14 +629,7 @@ it("title ending with the edition year is not duplicated in SUMMARY/upcoming", a
       ],
     }),
   ];
-  const outdir = mkdtempSync(join(tmpdir(), "cfp-yeardup-"));
-  await buildAll(confs, { categories: { hpc: "HPC" } }, outdir, NOW, { noEmbeddings: true });
-  const summaries = summariesOf(readFileSync(join(outdir, "all.ics"), "utf8"));
-  // 年が二重にならない（CANOPIE-HPC 2026 2026 は不可）、年なしタイトルは年が付く
-  expect(summaries.some((s) => s.startsWith("CANOPIE-HPC 2026 論文締切"))).toBe(true);
-  expect(summaries.some((s) => s.startsWith("CANOPIE-HPC 2026 2026"))).toBe(false);
-  expect(summaries.some((s) => s.startsWith("PLAIN 2026 論文締切"))).toBe(true);
-  const upcoming = readFileSync(join(outdir, "upcoming.md"), "utf8");
+  const upcoming = toUpcomingMd(recordsOf(confs), NOW);
   expect(upcoming).toContain("[CANOPIE-HPC 2026](http");
   expect(upcoming).not.toContain("[CANOPIE-HPC 2026 2026]");
   expect(upcoming).toContain("[PLAIN 2026](");
@@ -1034,69 +829,6 @@ it("sortable headers are keyboard-operable and expose sort state (aria-sort)", (
   expect(JSON.parse(r3)).toEqual(["none", "descending", "none", "none"]);
 });
 
-it("copy button falls back to selectable text when clipboard is unavailable (SPEC §7)", () => {
-  const html = readFileSync(join(site, "index.html"), "utf8");
-  // 静的検証: SPEC §7 のフォールバック文言と名前付き関数がビルド成果に残る
-  expect(html).toContain("コピーできません — URL を選択しました");
-  expect(html).toContain("function copyToClipboard(text)");
-  const src = jsFunction(html, "copyToClipboard");
-  // 実行検証: fake navigator（undefined / reject / resolve）でフォールバックの有無を確認する。
-  // フォールバックは一時 textarea を body に append するので、append された要素で観測する。
-  // node -e のグローバル navigator は上書き不可のため、new Function のパラメータとして環境を
-  // 注入し、シナリオごとにブロックスコープで独立させる（async 発火が後続シナリオへ漏れない）。
-  const fakeEl = "{ value: '', setAttribute() {}, select() {}, setSelectionRange() {}, style: {} }";
-  const script = [
-    "const realSetTimeout = setTimeout;",
-    `const src = ${JSON.stringify(src)};`,
-    "const mk = new Function('navigator', 'document', '$', 'setTimeout', src + '\\nreturn copyToClipboard;');",
-    "const obs = { A: [], B: [], C: [], toast: [] };",
-    // A: navigator.clipboard が無い環境（file:// 等）→ 同期フォールバック、例外なし
-    "{",
-    "  const navigator = {};",
-    "  const document = {",
-    `    createElement: () => (${fakeEl}),`,
-    "    body: { appendChild: (el) => { obs.A.push(el); } },",
-    "    getElementById: () => null,",
-    "  };",
-    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), realSetTimeout);",
-    "  copyToClipboard('https://x/y.ics');",
-    "}",
-    // B: writeText が reject → 同じフォールバックへ分岐（マイクロタスクで発火）
-    "{",
-    "  const navigator = { clipboard: { writeText: () => Promise.reject(new Error('denied')) } };",
-    "  const document = {",
-    `    createElement: () => (${fakeEl}),`,
-    "    body: { appendChild: (el) => { obs.B.push(el); } },",
-    "    getElementById: () => null,",
-    "  };",
-    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), realSetTimeout);",
-    "  copyToClipboard('https://x/b.ics');",
-    "}",
-    // C: writeText が resolve → トーストのみ、フォールバックを出さない
-    "{",
-    "  const navigator = { clipboard: { writeText: () => Promise.resolve() } };",
-    "  const document = {",
-    `    createElement: () => (${fakeEl}),`,
-    "    body: { appendChild: (el) => { obs.C.push(el); } },",
-    "    getElementById: (id) => id === 'toast' ?",
-    "      { textContent: '', classList: { add: (c) => obs.toast.push(c), remove() {} } } : null,",
-    "  };",
-    // 成功時のトースト消去 2 秒タイマーはスキップしてプロセスを速やかに終わらせる
-    "  const setTimeout = (fn, ms) => { if (ms >= 1000) { return; } realSetTimeout(fn, ms); };",
-    "  const copyToClipboard = mk(navigator, document, (id) => document.getElementById(id), setTimeout);",
-    "  copyToClipboard('https://x/c.ics');",
-    "}",
-    // マイクロタスク（B の reject / C の resolve）の実行後にまとめて検証する
-    "realSetTimeout(() => {",
-    "  const val = (a) => (a[0] ? a[0].value : 'none');",
-    "  console.log('A:' + obs.A.length + ':' + val(obs.A) + '|B:' + obs.B.length + ':' + val(obs.B) + '|C:' + obs.C.length + ':' + obs.toast.join(','));",
-    "}, 50);",
-  ].join("\n");
-  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
-  expect(proc.status, proc.stderr).toBe(0);
-  expect(proc.stdout.trim()).toBe("A:1:https://x/y.ics|B:1:https://x/b.ics|C:0:show");
-});
-
 it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
@@ -1127,7 +859,7 @@ it("dark theme via prefers-color-scheme overrides the palette (SPEC §7)", () =>
   expect(lum(darkVars["--bg"])).toBeLessThan(lum(darkVars["--fg"]));
 });
 
-it("drawer closes only on ✕ / backdrop click, not on inner buttons", () => {
+it("drawer closes only on ✕ / backdrop click, not on inner elements", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   // 静的検証: BUTTON 判定の除去と名前付き関数化がビルド成果に反映されている
   expect(html).toContain("function closeDrawer(e)");
@@ -1148,7 +880,7 @@ it("drawer closes only on ✕ / backdrop click, not on inner buttons", () => {
     // 2. バックドロップの直接クリック → 閉じる
     "closeDrawer({ target: backdrop });",
     "const r2 = removals.length;",
-    // 3. ドロワー内の button（Markdown 参照コピー）→ 閉じない（#207 回帰）
+    // 3. ドロワー内の button → 閉じない（#207 回帰）
     "closeDrawer({ target: { tagName: 'BUTTON' } });",
     "const r3 = removals.length;",
     // 4. ドロワー内の通常クリック → 閉じない
@@ -1263,7 +995,7 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
     "onKeydown({ key: 'd', preventDefault() {}, target: { tagName: 'BODY' } });",
     "const dOpened = calls.open.length === 1 && calls.open[0] === 'B';",
     "const dFocusedRow = calls.focus[calls.focus.length - 1] === 'row1';",
-    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'esc', 'safeExternalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '', (s) => String(s ?? ''), (s) => String(s ?? ''));",
+    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'esc', 'safeExternalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', (s) => String(s ?? ''), (s) => String(s ?? ''));",
     "document.activeElement = prevEl;",
     "openDrawer({ kind: 'journal', conf: { title: 'X' }, ed: { place: 'P', date_text: 'D' } });",
     "const focusedClose = document.activeElement === closeBtn;",
@@ -1288,14 +1020,6 @@ it("meeting past rule is wired to the end date", () => {
   const html = readFileSync(join(site, "index.html"), "utf8");
   expect(html).not.toContain('kind: "event"');
   expect(html).not.toContain('event: "開催"');
-});
-
-it("two meetings in one year get distinct event UIDs", () => {
-  const uids = new Set(events("all.ics").map((e) => e.UID));
-  expect(uids.has("ipsj-sigdps-2026-event@conf-deadlines.github.io")).toBe(true);
-  expect(uids.has("ipsj-sigdps-2026-event-2@conf-deadlines.github.io")).toBe(true);
-  expect(uids.has("sigcomm-2026-event@conf-deadlines.github.io")).toBe(true);
-  expect(uids.has("sigcomm-2026-event-1@conf-deadlines.github.io")).toBe(false);
 });
 
 it("upcoming.md window honors config site.upcoming_days", async () => {
@@ -1371,11 +1095,13 @@ it("toUpcomingMd outputs fallback row when no upcoming deadlines match", () => {
   expect(md).toContain("| - | - | 該当なし | - | - | - | - |");
 });
 
-it("toLlmsTxt documents feeds and categories correctly", () => {
-  const text = toLlmsTxt("https://conf-deadlines.github.io", [["all.ics", "全フィード"]], {
+it("toLlmsTxt documents outputs and categories correctly", () => {
+  const text = toLlmsTxt({
     categories: { systems: "Systems" },
   });
-  expect(text).toContain("https://conf-deadlines.github.io/all.ics — 全フィード");
+  expect(text).toContain("data.json");
+  expect(text).toContain("upcoming.md");
+  expect(text).not.toMatch(/\.ics/);
   expect(text).toContain("実在値: systems");
 });
 
@@ -1445,19 +1171,6 @@ it("repolink URL is sanitised via safeExternalUrl (#419)", () => {
   expect(template).not.toMatch(/a\.href\s*=\s*localSrc\.url[^)]/);
 });
 
-it("FEEDS list does not interpolate url or name into innerHTML (#394)", () => {
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  const start = template.indexOf("FEEDS.forEach");
-  const end = template.indexOf("feedsBox.appendChild", start);
-  expect(start).toBeGreaterThanOrEqual(0);
-  expect(end).toBeGreaterThan(start);
-  const body = template.slice(start, end);
-  expect(body).not.toContain("div.innerHTML");
-  expect(body).not.toMatch(/onclick=["']copyToClipboard/);
-  expect(body).toMatch(/textContent\s*=\s*f\.name/);
-  expect(body).toContain("copyToClipboard(url)");
-});
-
 it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#370)", () => {
   const spec = readFileSync(join(REPO_ROOT, "SPEC.md"), "utf8");
   const section7 = spec.slice(spec.indexOf("## 7."), spec.indexOf("## 8."));
@@ -1481,13 +1194,6 @@ it("SPEC §7 carves out recommender CDNs and the site stays on that allowlist (#
   for (const url of cdnLike) {
     expect(allowed).toContain(url);
   }
-});
-
-it("site template copyMarkdownRef delegates to Recommender.formatMarkdownRef (#228)", () => {
-  const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
-  expect(template).toContain("window.Recommender.formatMarkdownRef");
-  const recommenderJs = readFileSync(join(REPO_ROOT, "site", "recommender.js"), "utf8");
-  expect(recommenderJs).toContain("formatMarkdownRef: formatMarkdownRef");
 });
 
 it("escapeMdCell escapes pipe characters and collapses newlines (#236)", () => {
@@ -1526,17 +1232,9 @@ it("toUpcomingMd escapes pipe characters in title and place preserving 7-column 
         round: 1,
         comment: null,
       },
-      entry: {
-        uid: "pipe-uid",
-        summary: "Test | Workshop 2026 論文締切",
-        description: "",
-        url: "https://example.com",
-        categories: ["ai"],
-        all_day: false,
-        start: new Date("2026-08-20T11:30:00Z"),
-        end: new Date("2026-08-20T12:00:00Z"),
-        alarms: [],
-      },
+      all_day: false,
+      start: new Date("2026-08-20T11:30:00Z"),
+      end: new Date("2026-08-20T12:00:00Z"),
     },
     {
       type: "event" as const,
@@ -1560,17 +1258,9 @@ it("toUpcomingMd escapes pipe characters in title and place preserving 7-column 
         link: "https://example.com",
       }),
       deadline: null,
-      entry: {
-        uid: "pipe-ev-uid",
-        summary: "Symposium | Special Track 2026",
-        description: "",
-        url: "https://example.com",
-        categories: ["ai"],
-        all_day: true,
-        start: new Date("2026-08-25T00:00:00Z"),
-        end: new Date("2026-08-27T00:00:00Z"),
-        alarms: [],
-      },
+      all_day: true,
+      start: new Date("2026-08-25T00:00:00Z"),
+      end: new Date("2026-08-27T00:00:00Z"),
     },
   ];
   const md = toUpcomingMd(records, new Date("2026-08-10T00:00:00Z"));
@@ -1653,17 +1343,9 @@ it("toUpcomingMd escapes pipe characters in URLs and preserves 7 table columns (
         round: 1,
         comment: null,
       },
-      entry: {
-        uid: "pipe-url-2026-paper-1@conf-deadlines.github.io",
-        summary: "PipeUrlConf 2026 論文締切",
-        description: "description",
-        url: "https://example.com/cfp?track=main|poster",
-        categories: ["networking", "paper"],
-        all_day: false,
-        start: new Date("2026-08-20T23:29:59Z"),
-        end: new Date("2026-08-20T23:59:59Z"),
-        alarms: [],
-      },
+      all_day: false,
+      start: new Date("2026-08-20T23:29:59Z"),
+      end: new Date("2026-08-20T23:59:59Z"),
     },
   ];
   const md = toUpcomingMd(records, new Date("2026-08-10T00:00:00Z"));
@@ -1743,7 +1425,7 @@ it("buildAll handles null and undefined arguments safely and setRoot works (#336
   expect(stats.deadlines).toBe(0);
   expect(existsSync(join(tmpDir, "data.json"))).toBe(true);
   expect(existsSync(join(tmpDir, "data.csv"))).toBe(true);
-  expect(existsSync(join(tmpDir, "all.ics"))).toBe(true);
+  expect(readdirSync(tmpDir).some((name) => name.endsWith(".ics"))).toBe(false);
 });
 
 it("parseCliArgs and cliMain handle null/undefined and auto-detect argv offset (#340)", async () => {

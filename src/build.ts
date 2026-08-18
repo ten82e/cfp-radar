@@ -1,5 +1,5 @@
 /**
- * Output generation: ICS / JSON / CSV / Markdown / llms.txt / HTML.
+ * Output generation: JSON / CSV / Markdown / llms.txt / HTML.
  *
  * Everything under public/ is produced here.  Rendering is a pure function of
  * (conferences, config, now) so that two runs with the same input are byte
@@ -64,8 +64,6 @@ export const DEFAULT_SOURCES = [
   { name: "local", repo: "data/extra.yaml", license: "MIT" },
 ];
 
-const ALARM_TRIGGERS = ["-P7D", "-P1D", "-PT3H"];
-
 const CSV_COLUMNS = [
   "key",
   "title",
@@ -92,56 +90,6 @@ const CSV_COLUMNS = [
 
 const TEMPLATE_MARKER = "/*__DATA__*/null";
 
-// SPEC.md 4.1: the UID right-hand side is frozen.
-export const UID_DOMAIN = "conf-deadlines.github.io";
-
-// --- ICS primitives ----------------------------------------------------------
-
-/** RFC 5545 TEXT escaping.  ':' is deliberately NOT escaped (breaks URLs). */
-export function escapeText(value: string | null | undefined): string {
-  if (!value) return "";
-  let out = String(value).replace(/\\/g, "\\\\");
-  out = out.replace(/;/g, "\\;").replace(/,/g, "\\,");
-  out = out.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n/g, "\\n");
-  return out;
-}
-
-/** A URI property value: strip control characters, escape nothing else. */
-export function uriValue(value: string | null | undefined): string {
-  if (!value) return "";
-  return [...String(value).trim()].filter((ch) => ch > " " && ch !== "\u007f").join("");
-}
-
-/** Fold a content line at 75 octets, never splitting a UTF-8 sequence. */
-export function foldLine(line: string): string {
-  const encoder = new TextEncoder();
-  const raw = encoder.encode(line);
-  if (raw.length <= 75) return line;
-  const pieces: string[] = [];
-  const decoder = new TextDecoder();
-  let start = 0;
-  let limit = 75; // first line: 75 octets; continuations carry a leading space
-  while (start < raw.length) {
-    let end = Math.min(start + limit, raw.length);
-    if (end < raw.length) {
-      // back off to a UTF-8 character boundary
-      while (end > start && (raw[end] & 0xc0) === 0x80) end -= 1;
-    }
-    pieces.push(decoder.decode(raw.slice(start, end)));
-    start = end;
-    limit = 74;
-  }
-  return pieces.join("\r\n ");
-}
-
-function fmtUtc(d: Date): string {
-  return fmtUTC(d, "%Y%m%dT%H%M%SZ");
-}
-
-function fmtDateIcs(d: Date): string {
-  return fmtUTC(d, "%Y%m%d");
-}
-
 /**
  * タイトル + 開催年を組み立てる。タイトルが既にその年（例: `CANOPIE-HPC 2026`）
  * または短縮年（例: `SC '26`, `SC ’26`）で終わっている場合は年を二重に付けない（#93, #276）。
@@ -165,76 +113,6 @@ export function titleWithYear(
     return t;
   }
   return `${t} ${year}`;
-}
-
-export interface IcsEntry {
-  uid: string;
-  dtstamp?: Date;
-  all_day?: boolean;
-  start: Date;
-  end: Date;
-  summary: string;
-  description?: string;
-  url?: string;
-  categories?: string[];
-  alarms?: string[];
-}
-
-/**
- * Render calendar entries as an RFC 5545 stream (CRLF terminated).
- * No `METHOD` is emitted (SPEC.md 4.1).
- */
-export function renderIcs(
-  entries: IcsEntry[] | null | undefined,
-  options?: { calname?: string; caldesc?: string } | null,
-): string {
-  const calname = options?.calname ?? "";
-  const caldesc = options?.caldesc ?? "";
-  const lines: string[] = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//conf-deadlines//conf-deadlines//EN",
-    "CALSCALE:GREGORIAN",
-    `X-WR-CALNAME:${escapeText(calname)}`,
-    `X-WR-CALDESC:${escapeText(caldesc)}`,
-    "X-WR-TIMEZONE:UTC",
-    "REFRESH-INTERVAL;VALUE=DURATION:PT12H",
-    "X-PUBLISHED-TTL:PT12H",
-  ];
-  for (const entry of entries ?? []) {
-    if (!entry || typeof entry !== "object") continue;
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${escapeText(entry.uid)}`);
-    lines.push(`DTSTAMP:${fmtUtc(entry.dtstamp ?? new Date(0))}`);
-    if (entry.all_day) {
-      lines.push(`DTSTART;VALUE=DATE:${fmtDateIcs(entry.start)}`);
-      // RFC 5545: DTEND is exclusive for DATE values
-      lines.push(`DTEND;VALUE=DATE:${fmtDateIcs(addDays(entry.end, 1))}`);
-    } else {
-      lines.push(`DTSTART:${fmtUtc(entry.start)}`);
-      lines.push(`DTEND:${fmtUtc(entry.end)}`);
-    }
-    lines.push(`SUMMARY:${escapeText(entry.summary)}`);
-    if (entry.description) {
-      lines.push(`DESCRIPTION:${escapeText(entry.description)}`);
-    }
-    if (entry.url) {
-      lines.push(`URL:${uriValue(entry.url)}`);
-    }
-    if (entry.categories && entry.categories.length > 0) {
-      lines.push(`CATEGORIES:${entry.categories.map((c) => escapeText(c)).join(",")}`);
-    }
-    for (const trigger of entry.alarms ?? []) {
-      lines.push("BEGIN:VALARM");
-      lines.push("ACTION:DISPLAY");
-      lines.push(`DESCRIPTION:${escapeText(entry.summary)}`);
-      lines.push(`TRIGGER:${trigger}`);
-      lines.push("END:VALARM");
-    }
-    lines.push("END:VEVENT");
-  }
-  lines.push("END:VCALENDAR");
-  return lines.map((line) => `${foldLine(line)}\r\n`).join("");
 }
 
 /**
@@ -265,14 +143,6 @@ function aoeText(atUtc: Date): string {
   return `${fmtUTC(addDays(atUtc, -0.5), "%Y-%m-%d %H:%M:%S")} AoE`;
 }
 
-function rankText(rank: Record<string, string>): string {
-  return Object.entries(rank)
-    .filter(([, v]) => v)
-    .sort(([a], [b]) => cmpStr(a, b))
-    .map(([k, v]) => `${k.toUpperCase()} ${v}`)
-    .join(", ");
-}
-
 function sortedDeadlines(edition: Edition): Deadline[] {
   return [...edition.deadlines].sort(
     (a, b) =>
@@ -281,73 +151,6 @@ function sortedDeadlines(edition: Edition): Deadline[] {
       cmpStr(a.kind, b.kind) ||
       cmpStr(a.label ?? "", b.label ?? ""),
   );
-}
-
-/**
- * Number deadlines 1.. within each (year, kind), ordered by `at_utc`
- * (SPEC.md 4.1).
- */
-function deadlineOrdinals(editions: Edition[]): Map<number, Map<number, number>> {
-  const groups = new Map<
-    string,
-    Array<{ at: Date; editionId: string; round: number; label: string; i: number; j: number }>
-  >();
-  editions.forEach((ed, i) => {
-    sortedDeadlines(ed).forEach((dl, j) => {
-      const key = `${ed.year}\u0000${dl.kind}`;
-      const list = groups.get(key) ?? [];
-      list.push({
-        at: dl.at_utc,
-        editionId: ed.edition_id,
-        round: dl.round,
-        label: dl.label ?? "",
-        i,
-        j,
-      });
-      groups.set(key, list);
-    });
-  });
-  const out = new Map<number, Map<number, number>>();
-  for (const items of groups.values()) {
-    const sorted = [...items].sort(
-      (a, b) =>
-        a.at.getTime() - b.at.getTime() ||
-        cmpStr(a.editionId, b.editionId) ||
-        a.round - b.round ||
-        cmpStr(a.label, b.label) ||
-        a.i - b.i ||
-        a.j - b.j,
-    );
-    sorted.forEach((item, n) => {
-      const perEdition = out.get(item.i) ?? new Map<number, number>();
-      perEdition.set(item.j, n + 1);
-      out.set(item.i, perEdition);
-    });
-  }
-  return out;
-}
-
-/** Number the meetings of one (key, year) by `event_start` (SPEC.md 4.1). */
-function eventOrdinals(editions: Edition[]): Map<number, number> {
-  const groups = new Map<number, Array<{ start: Date; editionId: string; i: number }>>();
-  editions.forEach((ed, i) => {
-    if (ed.event_start) {
-      const list = groups.get(ed.year) ?? [];
-      list.push({ start: ed.event_start, editionId: ed.edition_id, i });
-      groups.set(ed.year, list);
-    }
-  });
-  const out = new Map<number, number>();
-  for (const items of groups.values()) {
-    const sorted = [...items].sort(
-      (a, b) =>
-        a.start.getTime() - b.start.getTime() || cmpStr(a.editionId, b.editionId) || a.i - b.i,
-    );
-    sorted.forEach((item, n) => {
-      out.set(item.i, n + 1);
-    });
-  }
-  return out;
 }
 
 /** `(year, kind, at_utc)` groups holding more than one deadline. */
@@ -366,11 +169,7 @@ function collisions(editions: Edition[]): Set<string> {
   return out;
 }
 
-function eventSuffix(ordinal: number): string {
-  return ordinal === 1 ? "" : `-${ordinal}`;
-}
-
-export interface CalendarRecord {
+export interface DataRecord {
   type: "deadline" | "event";
   categories: string[];
   kind_label: string;
@@ -378,57 +177,30 @@ export interface CalendarRecord {
   conf: Conference;
   edition: Edition;
   deadline: Deadline | null;
-  entry: IcsEntry;
+  all_day: boolean;
+  start: Date;
+  end: Date;
 }
 
-/** Flatten conferences into calendar records (entry + routing metadata). */
-export function recordsOf(confs: Conference[] | null | undefined): CalendarRecord[] {
+/** Flatten conferences into rows for CSV and upcoming.md. */
+export function recordsOf(confs: Conference[] | null | undefined): DataRecord[] {
   if (!confs || !Array.isArray(confs)) return [];
-  const records: CalendarRecord[] = [];
-  const usedUids = new Map<string, number>();
-
-  const uid = (base: string): string => {
-    const n = (usedUids.get(base) ?? 0) + 1;
-    usedUids.set(base, n);
-    if (n === 1) return base;
-    const at = base.indexOf("@");
-    const local = at >= 0 ? base.slice(0, at) : base;
-    const dom = at >= 0 ? base.slice(at) : "";
-    return `${local}-${n}${dom}`;
-  };
-
+  const records: DataRecord[] = [];
   for (const conf of [...confs].sort((a, b) => cmpStr(a?.key ?? "", b?.key ?? ""))) {
     if (!conf || typeof conf !== "object") continue;
     const cats = Array.isArray(conf.categories) ? [...conf.categories] : [];
-    const rank = rankText(conf.rank ?? {});
     const editions = (Array.isArray(conf.editions) ? [...conf.editions] : [])
       .filter((e) => e && typeof e === "object")
       .sort(
         (a, b) => (a.year ?? 0) - (b.year ?? 0) || cmpStr(a.edition_id ?? "", b.edition_id ?? ""),
       );
-    const ordinals = deadlineOrdinals(editions);
-    const eventOrds = eventOrdinals(editions);
     const collides = collisions(editions);
-    editions.forEach((ed, edIndex) => {
-      const link = ed.link || conf.link;
-      sortedDeadlines(ed).forEach((dl, dlIndex) => {
+    editions.forEach((ed) => {
+      sortedDeadlines(ed).forEach((dl) => {
         let labelJa = KIND_LABEL_JA[dl.kind] ?? KIND_LABEL_JA.other;
         if (collides.has(`${ed.year}\u0000${dl.kind}\u0000${dl.at_utc.getTime()}`) && dl.label) {
           labelJa = `${labelJa}: ${dl.label}`;
         }
-        const desc = [
-          conf.full_name || conf.title,
-          `${dl.label || labelJa}: ${aoeText(dl.at_utc)} / ${fmtUTC(dl.at_utc, "%Y-%m-%d %H:%M:%S")} UTC (元表記 ${dl.tz_raw || "UTC"})`,
-          `ラウンド: ${dl.round}`,
-        ];
-        if (rank) desc.push(`ランク: ${rank}`);
-        if (ed.place) desc.push(`開催地: ${ed.place}`);
-        if (ed.date_text) desc.push(`会期: ${ed.date_text}`);
-        if (link) desc.push(`リンク: ${link}`);
-        if (dl.comment) desc.push(`備考: ${dl.comment}`);
-        if (ed.estimated) desc.push("※ 推定日程（上流に未掲載のため過去実績から算出）");
-        desc.push(`出典: ${ed.source || conf.sources.join(",")}`);
-        const ord = ordinals.get(edIndex)?.get(dlIndex) ?? 1;
         records.push({
           type: "deadline",
           categories: cats,
@@ -437,26 +209,12 @@ export function recordsOf(confs: Conference[] | null | undefined): CalendarRecor
           conf,
           edition: ed,
           deadline: dl,
-          entry: {
-            uid: uid(`${conf.key}-${ed.year}-${dl.kind}-${ord}@${UID_DOMAIN}`),
-            summary: `${titleWithYear(conf.title, ed.year)} ${labelJa}${ed.estimated ? "（推定）" : ""}`,
-            description: desc.join("\n"),
-            url: link,
-            categories: [...cats, dl.kind],
-            all_day: false,
-            start: new Date(dl.at_utc.getTime() - 30 * 60_000),
-            end: dl.at_utc,
-            alarms: [...ALARM_TRIGGERS],
-          },
+          all_day: false,
+          start: new Date(dl.at_utc.getTime() - 30 * 60_000),
+          end: dl.at_utc,
         });
       });
       if (ed.event_start && !ed.estimated) {
-        const desc = [conf.full_name || conf.title];
-        if (ed.date_text) desc.push(`会期: ${ed.date_text}`);
-        if (ed.place) desc.push(`開催地: ${ed.place}`);
-        if (rank) desc.push(`ランク: ${rank}`);
-        if (link) desc.push(`リンク: ${link}`);
-        desc.push(`出典: ${ed.source || conf.sources.join(",")}`);
         records.push({
           type: "event",
           categories: cats,
@@ -465,19 +223,9 @@ export function recordsOf(confs: Conference[] | null | undefined): CalendarRecor
           conf,
           edition: ed,
           deadline: null,
-          entry: {
-            uid: uid(
-              `${conf.key}-${ed.year}-event${eventSuffix(eventOrds.get(edIndex) ?? 1)}@${UID_DOMAIN}`,
-            ),
-            summary: titleWithYear(conf.title, ed.year),
-            description: desc.join("\n"),
-            url: link,
-            categories: [...cats, "event"],
-            all_day: true,
-            start: ed.event_start,
-            end: ed.event_end ?? ed.event_start,
-            alarms: [],
-          },
+          all_day: true,
+          start: ed.event_start,
+          end: ed.event_end ?? ed.event_start,
         });
       }
     });
@@ -485,11 +233,10 @@ export function recordsOf(confs: Conference[] | null | undefined): CalendarRecor
   return records;
 }
 
-function sortKey(rec: CalendarRecord): [number, string] {
-  const start = rec.entry.start;
+function sortKey(rec: DataRecord): [number, string] {
   // Python: all_day はその日の 00:00 UTC、それ以外は正確な時刻で stamp。
-  const stamp = rec.entry.all_day ? dateOnly(start).getTime() : start.getTime();
-  return [stamp, rec.entry.uid];
+  const stamp = rec.all_day ? dateOnly(rec.start).getTime() : rec.start.getTime();
+  return [stamp, `${rec.conf.key}:${rec.deadline?.kind ?? "event"}:${rec.start.getTime()}`];
 }
 
 // --- serialisation -----------------------------------------------------------
@@ -567,7 +314,7 @@ export function csvField(value: string | number | boolean | null | undefined): s
   return s;
 }
 
-export function toCsv(records: CalendarRecord[] | null | undefined): string {
+export function toCsv(records: DataRecord[] | null | undefined): string {
   const lines: string[] = [];
   lines.push(CSV_COLUMNS.join(","));
   for (const rec of records ?? []) {
@@ -626,7 +373,7 @@ export function escapeMdUrl(url: string | null | undefined): string {
 }
 
 export function toUpcomingMd(
-  records: CalendarRecord[] | null | undefined,
+  records: DataRecord[] | null | undefined,
   now: Date | null | undefined,
   days = 180,
 ): string {
@@ -710,11 +457,7 @@ export function toUpcomingMd(
   return `${[...head, ...rows].join("\n")}\n`;
 }
 
-export function toLlmsTxt(
-  baseUrl: string,
-  feeds: Array<[string, string]> | null | undefined,
-  config: Record<string, unknown> | null | undefined,
-): string {
+export function toLlmsTxt(config: Record<string, unknown> | null | undefined): string {
   const safeConfig = config ?? {};
   const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
   const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
@@ -726,20 +469,15 @@ export function toLlmsTxt(
     `# ${siteTitle}`,
     "",
     "HPC・ネットワーク・システム・AI 系の国際会議の投稿締切と開催日を、",
-    "上流の公開データから日次で正規化して配信する静的フィード集である。",
+    "上流の公開データから日次で正規化して配信する静的データ集である。",
     "サーバは無く、GitHub Pages 上の静的ファイルだけで構成される。",
     "",
-    "## 更新頻度",
+    "## 出力一覧",
     "",
-    "毎日 20:17 UTC（05:17 JST）に GitHub Actions が上流を取得して再生成する。",
-    "各 ICS は REFRESH-INTERVAL / X-PUBLISHED-TTL に PT12H を宣言している。",
-    "",
-    "## フィード一覧（絶対 URL）",
-    "",
+    "- data.json — 正規化データ全体（機械可読の正）。",
+    "- data.csv — 1 行 1 締切のフラット表。",
+    `- upcoming.md — 直近 ${String((safeConfig.site as Record<string, unknown> | null)?.upcoming_days ?? 180)} 日の締切と開催の表。`,
   ];
-  for (const [name, meaning] of feeds ?? []) {
-    lines.push(`- ${baseUrl}/${name} — ${meaning}`);
-  }
   lines.push(
     "",
     "## data.json のスキーマ要約",
@@ -748,7 +486,7 @@ export function toLlmsTxt(
     "",
     "- generated_at: string — 生成時刻。'YYYY-MM-DDTHH:MM:SSZ'（UTC）。",
     "- site: object — {domain: string, base_url: string}。配信サイトの所在。",
-    "  フィードやデータの絶対 URL を組み立てるには base_url を基準にする。",
+    "  公開サイトの絶対 URL を組み立てるには base_url を基準にする。",
     "- sources: array of {name, repo, license, url} — 出典と授権。",
     "- categories: object — カテゴリ ID から英語名への写像。",
     `  実在値: ${[...Object.keys(categories)].sort().join(", ")}。`,
@@ -784,8 +522,7 @@ export function toLlmsTxt(
     "## 利用上の注意",
     "",
     "- 締切の比較は必ず deadlines[].utc で行う。aoe は表示用である。",
-    "- estimated=true の版は推定であり、all.ics と分野別 ICS には含まれない。" +
-      "推定は all-estimated.ics と <カテゴリ>-estimated.ics にのみ出る。",
+    "- estimated=true の版は推定であり、公式サイトで締切を確認してから利用する。",
     "- data.csv は 1 行 1 締切のフラット表で、data.json の部分集合である。",
     "  comment・tags・thcpl ランクは列に無い。全情報が要るときは data.json を使う。",
     "- 権威は上流と各会議の公式サイトである。重要な判断の前に link 先を確認すること。",
@@ -855,13 +592,7 @@ export async function buildAll(
   const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
   const nowUtc = new Date(safeNow.getTime());
   // DTSTAMP is derived from --now (floored to the day).
-  const dtstamp = new Date(
-    Date.UTC(nowUtc.getUTCFullYear(), nowUtc.getUTCMonth(), nowUtc.getUTCDate()),
-  );
-
   const site = (safeConfig.site as Record<string, unknown>) ?? {};
-  const domain = String(site.domain ?? "conf-deadlines");
-  const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
   // config.yaml の site.upcoming_days（既定 180）: upcoming.md の窓を決める。
   // これまで宣言のみで読まれず 180 に固定されていた（#95）。
   const rawUpcomingDays = Number(site.upcoming_days ?? 180);
@@ -869,74 +600,18 @@ export async function buildAll(
     Number.isFinite(rawUpcomingDays) && Number.isInteger(rawUpcomingDays) && rawUpcomingDays > 0
       ? rawUpcomingDays
       : 180;
-  const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
 
   const records = recordsOf(safeConfs);
   records.sort((a, b) => {
     const [sa, sb] = [sortKey(a), sortKey(b)];
     return sa[0] - sb[0] || cmpStr(sa[1], sb[1]);
   });
-  for (const rec of records) {
-    rec.entry.dtstamp = dtstamp;
-  }
-
-  const live = (r: CalendarRecord): boolean => !r.estimated;
-  const feeds: Array<[string, string, string, IcsEntry[]]> = [
-    [
-      "all.ics",
-      "会議締切・開催日（全カテゴリ）",
-      "全カテゴリ・全種別の締切と開催日。推定は含まない。",
-      records.filter(live).map((r) => r.entry),
-    ],
-  ];
-  for (const cat of Object.keys(categories).sort()) {
-    feeds.push([
-      `${cat}.ics`,
-      `会議締切・開催日（${categories[cat] ?? cat}）`,
-      `カテゴリ ${cat} の締切と開催日。推定は含まない。`,
-      records.filter((r) => live(r) && r.categories.includes(cat)).map((r) => r.entry),
-    ]);
-  }
-  feeds.push([
-    "deadlines.ics",
-    "会議締切のみ",
-    "投稿・通知などの締切のみ。開催日は含まない。",
-    records.filter((r) => live(r) && r.type === "deadline").map((r) => r.entry),
-  ]);
-  // 開催日のみの終日イベント（README / SPEC の events.ics 契約）。イベントは
-  // recordsOf が非推定版の event_start からしか作らないため推定判定は不要。
-  feeds.push([
-    "events.ics",
-    "会議開催日のみ",
-    "会期の終日イベントのみ。締切は含まない。",
-    records.filter((r) => r.type === "event").map((r) => r.entry),
-  ]);
-  const est = (r: CalendarRecord): boolean => r.estimated && r.type === "deadline";
-  feeds.push([
-    "all-estimated.ics",
-    "推定締切（全カテゴリ・未確定）",
-    "上流に未掲載のため過去実績から推定した締切。確定情報ではない。",
-    records.filter(est).map((r) => r.entry),
-  ]);
-  for (const cat of Object.keys(categories).sort()) {
-    feeds.push([
-      `${cat}-estimated.ics`,
-      `推定締切（${categories[cat] ?? cat}・未確定）`,
-      `カテゴリ ${cat} の推定締切のみ。確定情報ではない。`,
-      records.filter((r) => est(r) && r.categories.includes(cat)).map((r) => r.entry),
-    ]);
-  }
-
   const written: string[] = [];
 
   const write = (name: string, text: string): void => {
     writeFileSync(join(outdir, name), text, "utf8");
     written.push(name);
   };
-
-  for (const [name, calname, caldesc, ents] of feeds) {
-    write(name, renderIcs(ents, { calname, caldesc }));
-  }
 
   const data = toJson(safeConfs, safeConfig, nowUtc);
   const jsonText = JSON.stringify(data, null, 2);
@@ -972,19 +647,7 @@ export async function buildAll(
     }
   }
 
-  write(
-    "llms.txt",
-    toLlmsTxt(
-      baseUrl,
-      [
-        ...feeds.map((f) => [f[0], f[2]] as [string, string]),
-        ["data.json", "正規化データ全体（機械可読の正）"],
-        ["data.csv", "1 行 1 締切のフラット表"],
-        ["upcoming.md", `直近 ${upcomingDays} 日の締切と開催の表`],
-      ],
-      safeConfig,
-    ),
-  );
+  write("llms.txt", toLlmsTxt(safeConfig));
   write(".nojekyll", "");
 
   const template = String(safeConfig.template ?? "site/template.html");

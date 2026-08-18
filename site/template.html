@@ -135,47 +135,6 @@ header {
 .stat-item { display: flex; align-items: center; gap: 8px; }
 .stat-item strong { font-family: var(--font-mono); color: var(--fg); font-size: 0.95rem; }
 
-/* Feeds Bar */
-.section-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-.feeds-panel {
-  margin-bottom: 32px;
-}
-.feeds {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.feed {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.82rem;
-}
-.feed strong { font-weight: 500; color: var(--fg); }
-.feed button {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  background: var(--chip);
-  color: var(--fg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.feed button:hover { background: var(--panel-hover); }
-
 /* Quick Preset Filter Bar */
 .presets-bar {
   display: flex;
@@ -483,23 +442,6 @@ footer {
 footer a { color: var(--accent); text-decoration: none; }
 footer a:hover { text-decoration: underline; }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: #26262a;
-  color: #f4f4f5;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  border: 1px solid #3f3f46;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(60px);
-  opacity: 0;
-  transition: all 0.2s ease;
-  z-index: 200;
-}
-.toast.show { transform: translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
@@ -526,12 +468,6 @@ footer a:hover { text-decoration: underline; }
       <div class="stat-item"><span>国内研究会:</span> <strong id="statDomestic">--</strong></div>
     </div>
   </header>
-
-  <!-- Feeds Bar -->
-  <div class="feeds-panel">
-    <div class="section-title">カレンダー自動同期フィード (ICS Feeds)</div>
-    <div class="feeds" id="feeds"></div>
-  </div>
 
   <!-- Filter & Controls Toolbar -->
   <div class="panel">
@@ -648,8 +584,6 @@ footer a:hover { text-decoration: underline; }
   </div>
 </div>
 
-<div class="toast" id="toast">コピーしました</div>
-
 <script src="recommender.js"></script>
 <script>
 (() => {
@@ -742,39 +676,6 @@ footer a:hover { text-decoration: underline; }
     return t + " " + year;
   }
 
-  // Toast Notify
-  // SPEC §7: クリップボード API が使えない環境（file://・非 HTTPS）や拒否時は、
-  // URL を選択状態の一時 textarea に置き、手動コピーできるようにフォールバックする。
-  function copyToClipboard(text) {
-    var done = () => {
-      var t = $("toast");
-      if (t) {
-        t.classList.add("show");
-        setTimeout(() => { t.classList.remove("show"); }, 2000);
-      }
-    };
-    var fallback = () => {
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      ta.setSelectionRange(0, text.length);
-      var t = $("toast");
-      if (t) {
-        t.textContent = "コピーできません — URL を選択しました";
-        t.classList.add("show");
-        setTimeout(() => { t.classList.remove("show"); }, 4000);
-      }
-    };
-    var cb = navigator.clipboard;
-    if (!cb || typeof cb.writeText !== "function") { fallback(); return; }
-    cb.writeText(text).then(done, fallback);
-  }
-  window.copyToClipboard = copyToClipboard;
-
   // Quick Presets
   function updatePresetActive() {
     var p7d = state.win === "7d" && !state.q && !state.cats.length && !state.kind && !state.rank && !state.est && !state.domestic && !state.past;
@@ -835,51 +736,6 @@ footer a:hover { text-decoration: underline; }
     });
   });
 
-  // Google Calendar URL Generator
-  function getGCalUrl(r) {
-    if (window.Recommender && window.Recommender.getGCalUrl) {
-      return window.Recommender.getGCalUrl(r, KIND_LABEL);
-    }
-    var dl = r.dl || {};
-    var round = r.round || dl.round;
-    var label = (KIND_LABEL[r.kind] || r.kind) + (round && round > 1 ? " (R" + round + ")" : "");
-    var title = encodeURIComponent("[" + (r.conf.title || r.conf.key) + "] " + label);
-    var pad = function(n) { return (n < 10 ? "0" : "") + n; };
-    var dates = "";
-    if (r.kind === "event") {
-      var dStart = new Date(r.t);
-      var dEnd = new Date((r.tLast || r.t) + 86400000);
-      var fmtDateGCal = function(d) {
-        return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
-      };
-      dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
-    } else {
-      var dEnd = new Date(r.t);
-      var dStart = new Date(r.t - 1800000);
-      var isoStart = dStart.toISOString().replace(/-|:|\.\d\d\d/g, "");
-      var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
-      dates = isoStart + "/" + isoEnd;
-    }
-    var descParts = [];
-    if (r.conf.full_name || r.conf.title) descParts.push(r.conf.full_name || r.conf.title);
-    var comment = r.comment || dl.comment;
-    if (comment) descParts.push("備考: " + comment);
-    if (round && round > 1) descParts.push("ラウンド: Round " + round);
-    var cfpLink = r.ed && r.ed.link ? r.ed.link : (r.conf.link || "");
-    if (cfpLink) descParts.push("CFP Link: " + cfpLink);
-    var details = encodeURIComponent(descParts.join("\n"));
-    var location = encodeURIComponent(r.ed && r.ed.place ? r.ed.place : "");
-    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&dates=" + dates + "&details=" + details + "&location=" + location;
-  }
-
-  // Copy Markdown Reference
-  window.copyMarkdownRef = (r) => {
-    var text = (window.Recommender && window.Recommender.formatMarkdownRef)
-      ? window.Recommender.formatMarkdownRef(r)
-      : "[" + (r.conf.title || r.conf.key) + (r.ed && r.ed.year ? " '" + String(r.ed.year).slice(-2) : "") + "]" + ((r.ed && (r.ed.date_text || r.ed.event_start)) ? " " + (r.ed.date_text || r.ed.event_start) : "") + ((r.ed && r.ed.link) || r.conf.link ? " " + (r.ed.link || r.conf.link) : "");
-    copyToClipboard(text);
-  };
-
   // Drawer Controls
   function openDrawer(r) {
     // フォーカス管理: 開く直前の要素を保存し、ドロワー内（閉じるボタン）へフォーカスを移す（#218）。
@@ -900,10 +756,7 @@ footer a:hover { text-decoration: underline; }
     if (r.kind === "journal") {
       actionRow = '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">常時受付のジャーナル（締切なし）です。投稿規程を公式サイトで確認してください。</div>';
     } else {
-      actionRow = '<div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">' +
-        '<a href="' + esc(getGCalUrl(r)) + '" target="_blank" style="flex: 1; text-align: center; background: var(--chip); color: var(--fg); text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border);">Google カレンダーに追加</a>' +
-        '<button onclick="copyMarkdownRef(window._activeRef)" style="flex: 1; font-size: 0.82rem;">Markdown 参照コピー</button>' +
-        '</div>';
+      actionRow = '<div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">投稿前に公式サイトで最新の募集要項と締切を確認してください。</div>';
     }
     html += actionRow;
 
@@ -925,7 +778,7 @@ footer a:hover { text-decoration: underline; }
   window.openDrawer = openDrawer;
 
   // 閉じるのは ✕ ボタン（自前 onclick 経由、引数なし）とバックドロップの直接クリックのみ。
-  // ドロワー内の button（Markdown 参照コピー等）がバブルしても閉じない（#207）。
+  // ドロワー内の button がバブルしても閉じない（#207）。
   function closeDrawer(e) {
     if (!e || e.target === $("drawerBackdrop")) {
       $("drawerBackdrop").classList.remove("active");
@@ -985,44 +838,6 @@ footer a:hover { text-decoration: underline; }
       trs[selectedIndex].scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }
-
-  // ---- FEEDS ----
-  var feedsBox = $("feeds");
-  var FEEDS = [
-    { name: "全フィード", file: "all.ics" },
-    { name: "HPC", file: "hpc.ics" },
-    { name: "Networking", file: "networking.ics" },
-    { name: "Systems", file: "systems.ics" },
-    { name: "AI", file: "ai.ics" },
-    { name: "Security", file: "security.ics" },
-    { name: "DB", file: "db.ics" },
-    { name: "Graphics", file: "graphics.ics" },
-    { name: "HCI", file: "hci.ics" },
-    { name: "Theory", file: "theory.ics" },
-    { name: "締切のみ", file: "deadlines.ics" },
-    { name: "開催日のみ", file: "events.ics" }
-  ];
-  var siteBase = ((DATA.site || {}).base_url || "").replace(/\/$/, "");
-
-  FEEDS.forEach((f) => {
-    var url = siteBase
-      ? siteBase + "/" + f.file
-      : typeof window !== "undefined" && window.location && window.location.href
-        ? new URL(f.file, window.location.href).href
-        : f.file;
-    var div = document.createElement("div");
-    div.className = "feed";
-    var strong = document.createElement("strong");
-    strong.textContent = f.name;
-    var btn = document.createElement("button");
-    btn.textContent = "URL コピー";
-    btn.addEventListener("click", function () {
-      copyToClipboard(url);
-    });
-    div.appendChild(strong);
-    div.appendChild(btn);
-    feedsBox.appendChild(div);
-  });
 
   // ---- CATEGORIES ----
   var catsBox = $("cats");
