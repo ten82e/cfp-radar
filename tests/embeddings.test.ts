@@ -2,8 +2,15 @@
  * Embeddings generator and CLI tests.
  */
 
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { main, profileTexts } from "../src/embeddings.ts";
+import {
+  main,
+  profileTexts,
+  serializeVenueProfiles,
+  VENUE_PAPERS,
+  venuePapersHash,
+} from "../src/embeddings.ts";
 
 describe("profileTexts", () => {
   const confs = [
@@ -90,6 +97,21 @@ describe("profileTexts", () => {
     expect(res.keys).toEqual(["clean-conf"]);
     expect(res.texts[0]).toContain("Clean Conf");
     expect(res.texts[0]).toContain("hpc");
+  });
+});
+
+describe("generated venue profile artifact", () => {
+  it("is canonical, versioned, and hash-compatible with runtime profiles", () => {
+    const artifactText = readFileSync(
+      new URL("../data/venue-profiles.json", import.meta.url),
+      "utf8",
+    );
+    const artifact = JSON.parse(artifactText);
+    expect(artifact.schema).toBe(1);
+    expect(artifact.profiles_hash).toBe(venuePapersHash());
+    expect(artifact.profiles).toEqual(VENUE_PAPERS);
+    expect(artifactText).toBe(serializeVenueProfiles(VENUE_PAPERS));
+    expect(Object.keys(artifact.profiles)).toEqual([...Object.keys(artifact.profiles)].sort());
   });
 });
 
