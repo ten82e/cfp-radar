@@ -1,11 +1,11 @@
 # kamiyobi 設計仕様（実装の正）
 
 HPC・ネットワーク・システム・AI 系会議の投稿締切と開催日を、GitHub Actions だけで
-日次に自動収集し、ICS / JSON / CSV / Markdown / 静的サイトとして公開する。
+日次に自動収集し、JSON / CSV / Markdown / 静的サイトとして公開する。
 サーバも外部サービスも使わない。GitHub 内で完結する。
 
 この文書は実装の契約である。ここに書かれた型・関数シグネチャ・ファイル分担から逸脱しない。
-プロジェクト名は kamiyobi（旧称 conf-deadlines / cfp-radar）。ICS の UID ドメインと PRODID は購読互換のため conf-deadlines のまま固定する（§4.1）。
+プロジェクト名は kamiyobi（旧称 conf-deadlines / cfp-radar）。
 
 ## 0. 改訂
 
@@ -14,7 +14,6 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 
 - `kind_of` に ccfddl の主キー `deadline` の規則が無く、本文締切 1591 件が `other` に落ちていた（§3）
 - `edition_id` が上流で一意でない（`ica3pp` が 4 版で同一、`fse23`〜`fse26` が別会議で重複）。
-  UID の基底を `key + year + kind + 序数` に変更（§4.1）
 - 突き合わせキー `(year, round, kind)` で hf の締切 473 件中 127 件が消えていた（§3）
 - `slug(title)` が別会議を潰す組が実在（`FSE` × 2、`SEC` × 2）。曖昧性解消表を導入（§3, §5）
 - rank_filter で HotNets・APNet が落ち、MX 分野（MLSys, RTSS, EMSOFT）が丸ごと落ちていた（§5）
@@ -22,7 +21,6 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 - **MLSys は上流 ccfddl の `MX/mlsys.yml` に実在する。** extra.yaml に重複登録しない（§5）
 - snapshot からの復旧経路が §3 に存在せず、§6 の障害耐性が実現不能だった（§3, §6）
 - サイトへの差し込みマーカーが 2 通り書かれていた（§7）
-- `REFRESH-INTERVAL` は RFC 5545 ではなく RFC 7986。`X-PUBLISHED-TTL` は非標準（§4.1）
 
 **rev.11（§2 scripts）。** `scripts/compare-head.ts` は update.yml の実質差分検出。
 分担ツリーに足す（#380）。
@@ -37,10 +35,10 @@ rev.1 には実データ走査で確認された欠陥が 30 件あった。主�
 
 **rev.8（§8 の開催行契約）。** §8 の `build_golden.test.ts` 行が、rev.4 以前の
 「開催回が index.html に届いている」を残していた。実装固定は
-`index.html has no meeting rows`。開催日は `events.ics` / `upcoming.md`（#372）。
+`index.html has no meeting rows`。開催日は `upcoming.md`（#372）。
 
 **rev.7（推薦 CDN の例外）。** §7 の「外部 CDN・依存ライブラリなし」はコア UI
-（表・絞り込み・コピー・システムフォント）に限る。§10 の推薦は sibling の
+（表・絞り込み・システムフォント）に限る。§10 の推薦は sibling の
 `recommender.js` と、任意の CDN 遅延ロード（transformers.js / pdf.js）を使う。
 未接続時は語彙スコアと TXT 入力へフォールバックする（#370）。
 
@@ -59,7 +57,7 @@ SPEC §7 を実装・テスト固定（`tests/build_golden.test.ts`「index.html
 と整合させた。
 
 - サイト表は投稿締切（概要・論文）のみ表示し、開催・採否通知・カメラレディ等の行を
-  出さない（§7）。開催日は `events.ics` フィードと `upcoming.md`（§4）で配信する
+  出さない（§7）。開催日は `upcoming.md`（§4）で配信する
 - 開催行の過去判定（終了日 + 1 日）・残り日数表示の規則は `upcoming.md` 側（§4）に
   定めるものとし、§7 からはその参照に改めた
 
@@ -74,7 +72,6 @@ SPEC §7 を実装・テスト固定（`tests/build_golden.test.ts`「index.html
 - 開催回の過去判定が開始日だったため、会期初日から最終日まで一覧から消えていた。
   終了日 + 1 日で判定する（§7）
 - `upcoming.md` に開催回が 1 行も無かった（§4）
-- 開催 UID が同一年 2 回開催を表現できていなかった（§4.1）
 
 ---
 
@@ -117,7 +114,7 @@ Git API のファイル単位取得はレート制限に当たるので使わな
    会議ファイルではない）を除外する。結果は 353 本 / 1150 版。
 2. `timeline` は配列で **複数ラウンドあり**（NSDI は年 2 回）。
    ただし **timeline は締切昇順とは限らない**（`sac26`・`issre23` で逆順）。
-   配列添字を UID に使わない（§4.1 参照）。
+   配列添字で会議を識別しない。
 3. **キー `abstract deadline`（空白入り）が実データにちょうど 1 件**存在する。
    `abstract_deadline` と同義に扱う。
 4. **本文締切のキー名は `deadline`**（1591 件）。`kind_of` はこれを `paper` に落とすこと。
@@ -139,7 +136,7 @@ Git API のファイル単位取得はレート制限に当たるので使わな
    `ica3pp` は 2022/2023/2025/2026 の 4 版すべてが同じ `id: ica3pp`（年が入っていない）。
    `fse23` `fse24` `fse25` `fse26` は `SC/fse.yml`（Fast Software Encryption）と
    `SE/fse.yml`（Foundations of Software Engineering）という **別会議**が同じ id を使う。
-   **UID の基底に edition_id を使わない。**
+   `edition_id` は表示用であり、会議の識別には使わない。
 9. `year` と `date` の年がずれる版がある（`ICA3PP 2023` は `date: 'October 20-22, 2022'`）。
    `parse_date_range` は date 中の明示年を優先するので、開催日が過去年になる。許容する。
 10. rank 値 `'N'` はランク無しの意味（`ccf: N` 33 件、`core: N` 78 件）。
@@ -200,13 +197,13 @@ Git API のファイル単位取得はレート制限に当たるので使わな
 ```
 kamiyobi/
 ├── SPEC.md                      # 本書
-├── README.md                    # 購読手順（手書き。自動更新しない）      [担当E]
+├── README.md                    # 利用手順（手書き。自動更新しない）      [担当E]
 ├── LICENSE                      # MIT                                    [担当E]
 ├── NOTICE.md                    # 上流 MIT の帰属表示                     [担当E]
 ├── package.json                 # 依存・スクリプト (npm test / build)     [担当E]
 ├── tsconfig.json                # TS 設定                                [担当E]
 ├── biome.json                   # lint/format                            [担当E]
-├── config.yaml                  # 収録範囲・カテゴリ・フィード定義        [担当B]
+├── config.yaml                  # 収録範囲・カテゴリ定義                [担当B]
 ├── data/
 │   ├── extra.yaml               # 上流に無い会議                          [担当B]
 │   ├── overrides.yaml           # 上流の訂正・別名・カテゴリ上書き        [担当B]
@@ -227,7 +224,7 @@ kamiyobi/
 │   ├── review-candidates.ts     # 候補レビュー支援                       [担当G]
 │   ├── embeddings.ts            # 埋め込み生成                           [担当C]
 │   ├── bench-recommender.ts            # 推薦ベンチ                             [担当C]
-│   ├── build.ts                 # ICS/JSON/CSV/MD/llms.txt/HTML 出力      [担当C]
+│   ├── build.ts                 # JSON/CSV/MD/llms.txt/HTML 出力          [担当C]
 │   └── cli.ts                   # エントリポイント                        [担当C]
 ├── site/
 │   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
@@ -268,13 +265,13 @@ class Deadline:
     label: str                 # 表示用（例 'Paper submission'）。上流の label を優先
     at_utc: datetime           # tz-aware, UTC。必ず aware
     tz_raw: str                # 元の文字列（'AoE' 等）
-    round: int = 1             # 1 起点。複数投稿ラウンド。UID には使わない
+    round: int = 1             # 1 起点。複数投稿ラウンド
     comment: str | None = None
 
 @dataclass
 class Edition:
     year: int
-    edition_id: str            # 'sigcomm26'。表示用。上流で一意ではないので UID に使わない
+    edition_id: str            # 'sigcomm26'。表示用。上流で一意ではない
     link: str
     place: str                 # 'Denver, Colorado, USA'
     date_text: str             # 'August 17 - 21, 2026'（自由文のまま保持）
@@ -324,8 +321,8 @@ export function slug(title: string): string;
 
 **新たな衝突が上流に生じたら CI を落とす。** `tests/merge.test.ts` で
 「同じ key を共有する会議が 0 件（sub 分割後）」を検査する。
-自動で `-{sub}` を付けて回避してはならない（既存 key が動いて UID が変わり、
-購読者のカレンダーにイベントが重複登録される）。
+自動で `-{sub}` を付けて回避してはならない（既存 key が動いて識別子が変わり、
+公開データの識別子が変わる）。
 
 ccfddl と hf で同一会議が別 title になっている組は `data/overrides.yaml` の
 `aliases` で寄せる。実データで確認済みの 3 組を初期値とする:
@@ -437,10 +434,10 @@ export async function fetchTarball(
 2. **全 Source が失敗した場合に限り** `data/snapshot.json` から
    `restoreSnapshot()` で復元し、警告を出して処理を継続する（サイトを壊さない）。
 3. 一部の Source だけ失敗した場合は、成功した分に snapshot の該当分をマージして継続する。
-4. snapshot も空なら異常終了する（黙って空のカレンダーを公開しない）。
+4. snapshot も空なら異常終了する（黙って空の公開データを公開しない）。
 
 snapshot の書き込みは build の最後に `data.json` を `data/snapshot.json` へ
-コピーする（`generated_at` を含まない・§4.2 と同一スキーマ）。
+コピーする（`generated_at` を含まない・§4.1 と同一スキーマ）。
 
 **退避時の local 再適用**: snapshot は「最後に健全な online ビルドが生成した
 時点」のデータなので、その後に `data/extra.yaml`（local source）へ追加された
@@ -554,7 +551,7 @@ WACV は Round 1 と Round 2 の通知を同一時刻に置く）。源を問わ
 **畳んだ後に残る同時刻の重複**
 
 同一源の別トラックは残るので、同一 Edition・同一 `kind`・同一 `at_utc` に 2 件以上
-並ぶことがある。このとき ICS の `SUMMARY` と `upcoming.md` の種別欄、サイトの種別欄には
+並ぶことがある。このとき `upcoming.md` の種別欄とサイトの種別欄には
 `論文締切: Posters deadline` のように `label` を添えて**区別できるようにする**。
 区別できない同一表題の重複を出力に残してはならない。
 
@@ -580,10 +577,6 @@ export async function buildAll(
   outdir: string,
   now: Date,
 ): Promise<BuildStats>;
-export function renderIcs(
-  entries: { title: string; kind: string; label: string; at: Date; comment: string; uid: string }[],
-  opts: { calname: string; caldesc: string },
-): string;
 ```
 
 ```sh
@@ -611,96 +604,28 @@ predatory 疑い付きで一覧する。
 
 ## 4. 生成物（`public/` 配下）
 
+標準ビルドは次のファイルを生成する。推定値は `data.json` と `data.csv` に含め、
+`estimated` フラグで確定値と区別する。
+
 | ファイル | 内容 |
 |---|---|
-| `index.html` | 静的サイト（担当D のテンプレートに JSON を埋め込み） |
-| `all.ics` | 全カテゴリ・全種別（推定は含めない） |
-| `hpc.ics` `networking.ics` `systems.ics` `ai.ics` `security.ics` `db.ics` `graphics.ics` `hci.ics` `theory.ics` | カテゴリ別（config.yaml `categories` の 9 分野） |
-| `deadlines.ics` | 締切のみ |
-| `events.ics` | 開催日のみ（終日イベント） |
-| `all-estimated.ics` | 推定締切のみ・全カテゴリ（別フィード。`all.ics` には混ぜない） |
-| `hpc-estimated.ics` `networking-estimated.ics` `systems-estimated.ics` `ai-estimated.ics` `security-estimated.ics` `db-estimated.ics` `graphics-estimated.ics` `hci-estimated.ics` `theory-estimated.ics` | 推定締切のカテゴリ別 |
-| `data.json` | 正規化データ全体（機械可読の正）。**推定版も含む** |
-| `data.csv` | 1 行 1 締切のフラット表。**推定版も含み `estimated` 列で区別** |
-| `upcoming.md` | 直近 N 日の締切と開催の表（N は `config.yaml` の `site.upcoming_days`、既定 180）。推定行は「推定」列で区別する |
-| `llms.txt` | エージェント向け索引 |
-| `embeddings.json` | 会議スコープのセマンティック埋め込み（§10）。`--no-embeddings` で省略可 |
-| `recommender.js` | サイトの推薦ロジック（`site/template.html` から同梱） |
+| `index.html` | 静的サイト（テンプレートに正規化データを埋め込む） |
+| `data.json` | 正規化データ全体（機械可読の正）。推定版も含む |
+| `data.csv` | 1 行 1 締切の平坦な表。推定版も含む |
+| `upcoming.md` | 直近 N 日の締切と開催日の表（N は `site.upcoming_days`、既定 180） |
+| `llms.txt` | エージェント向け出力索引 |
+| `embeddings.json` | 会議スコープの埋め込み（§10）。`--no-embeddings` で省略可 |
+| `recommender.js` | サイトの推薦ロジック |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
-確定フィード（`all.ics` とカテゴリ別 9 本、`deadlines.ics`、`events.ics`）に
-推定を混ぜてはならない。推定は `*-estimated.ics` にのみ出す。
-
-**推定フィードをカテゴリ別に割る理由（実測）**: 2026-08-09 時点で `hpc.ics` に
-未来の確定締切を持つ会議は IPDPS の 1 件しかない。SC・HPDC・ICPP・CLUSTER・PPoPP・
-Euro-Par・CCGRID・ICS・PACT・SPAA・ICPADS は上流が次回版を持たず推定扱いになる。
-単一の `estimated.ics` だと、HPC の利用者が推定を足すために AI を含む全分野の
-推定を丸ごと購読することになる。
-
-サイトに埋め込む JSON は `data.json` と同一（推定を含む）。
-§7 の「推定の表示切替」はサイト側の絞り込みで行う。
+サイトに埋め込む JSON は `data.json` と同一で、推定の表示切替はサイト側の絞り込みで行う。
+`upcoming.md` には締切と開催日の両方を載せる。締切を持たない会議も開催行で確認できる。
 
 **`upcoming.md` の行の選び方**: 締切行は `at_utc` が `now` から N 日以内のもの。
-開催行は**開始日が N 日以内**で、かつ**最終日をまだ過ぎていない**もの
-（開催は終了日 + 1 日で過去になる）。N は `config.yaml` の `site.upcoming_days`
-（既定 180）で、`upcoming.md` のヘッダと `llms.txt` の説明は N を表示する。
-README が最初に案内する表なので、締切を持たない会議（HOTI・P4 Workshop・LPC・
-情報処理学会 HPC 研究会など）がここに現れないと事実上どこからも見えない。開催行の
-「残り」欄は開始前が日数、開始日が `本日開催`、会期中が `開催中(残りN日)`
-（当日を含めた残り日数）。
+開催行は開始日が N 日以内で、最終日をまだ過ぎていないものを載せる。
+開催行の「残り」欄は開始前が日数、開始日が `本日開催`、会期中が `開催中(残りN日)`。
 
-### 4.1 ICS の要求（担当C）
-
-**準拠先の区別**: 基本構造は RFC 5545。`REFRESH-INTERVAL` は **RFC 7986 §5.7** の拡張。
-`X-PUBLISHED-TTL` は Microsoft 由来の**非標準**プロパティで、[MS-OXCICAL] 自身が
-「読み込み時は無視すべき」と規定している。いずれも主要クライアントが尊重する保証は無い。
-README に「12 時間ごとに更新される」と書かない。
-
-- 改行は **CRLF**。行は 75 オクテットで折り返し、継続行は先頭 1 空白。
-  マルチバイト文字を UTF-8 バイト境界で割らないこと。
-- テキスト値のエスケープ: `\` → `\\`、`;` → `\;`、`,` → `\,`、改行 → `\n`。
-  **`:` はエスケープしない**（RFC 5545 §3.3.11 が明示的に禁じている。URL が壊れる）。
-- カレンダープロパティ: `BEGIN:VCALENDAR` / `VERSION:2.0` /
-  `PRODID:-//conf-deadlines//conf-deadlines//EN` / `CALSCALE:GREGORIAN` /
-  `X-WR-CALNAME` / `X-WR-CALDESC` / `X-WR-TIMEZONE:UTC` /
-  `REFRESH-INTERVAL;VALUE=DURATION:PT12H` / `X-PUBLISHED-TTL:PT12H`。
-  **`METHOD:PUBLISH` は出力しない。** METHOD を出すと RFC 5546 §2.1.5 により
-  DTSTAMP が新旧判定に使われるが、本仕様は DTSTAMP を固定するため両立しない。
-  METHOD を出さなければ DTSTAMP は RFC 5545 §3.8.7.2 により LAST-MODIFIED 相当となり、
-  固定してよい。
-- 締切イベント: `DTSTART` = 締切時刻 − 30 分（UTC 形式 `YYYYMMDDTHHMMSSZ`）、
-  `DTEND` = 締切時刻。`SUMMARY` は `SIGCOMM 2026 論文締切` のような形。
-  `DESCRIPTION` に AoE 表記・ラウンド・ランク・開催地・リンク・出典を入れる。
-  `URL` に会議リンク。`CATEGORIES` にカテゴリと種別。
-- 開催イベント: 終日。`DTSTART;VALUE=DATE:YYYYMMDD`、
-  `DTEND;VALUE=DATE:` は **終了日 + 1 日**（RFC 5545 §3.6.1 の排他終端）。VALARM は付けない。
-- `VALARM`（DISPLAY）を締切イベントにのみ `-P7D`・`-P1D`・`-PT3H` の 3 本。
-  **実効性はクライアント依存**。Apple カレンダーは購読時にアラート取り込みを選べる。
-  Google カレンダーの URL 購読では通知が出ない可能性がある。仕様上の保証にしない。
-
-#### UID の規則（衝突と不安定性を両方避ける）
-
-```
-締切: {key}-{year}-{kind}-{ordinal}@conf-deadlines.github.io
-開催: {key}-{year}-event[-{ordinal}]@conf-deadlines.github.io
-```
-
-- `key` は §3.1 の会議キー。`edition_id` は上流で一意でないので**使わない**。
-- `ordinal` は 1 起点の連番。締切は同一 `(key, year, kind)` 内で `at_utc` 昇順に振る。
-  timeline の配列添字（`round`）は上流の並べ替えで動くので使わない。
-- 開催の `ordinal` は同一 `(key, year)` 内で `event_start` 昇順に振り、
-  **`ordinal` が 1 のものは接尾辞ごと省略する**（`-1` を付けない）。
-  1 年に 2 回開催する会議が実在するため
-  （`data/extra.yaml` の情報処理学会 DPS 研究会は 2026 年に 9 月と 11 月の 2 回）、
-  接尾辞の無い形だけでは表現できない。省略規則があるので、
-  年 1 回の会議の UID は 2 回目が増えても変わらない。
-- `@` 以降のドメインは **`conf-deadlines.github.io` に固定**する。
-  リポジトリ名やカスタムドメインを変えてもここは変えない。
-  変更は購読者のカレンダーに全イベントを重複登録させる破壊的変更である。
-- `DTSTAMP` は `--now` を丸めた値を使い、内容が変わらない限り出力が bit 一致するようにする。
-- `LAST-MODIFIED` と `SEQUENCE` は使わない。
-
-### 4.2 `data.json` の形
+### 4.1 `data.json` の形
 
 ```json
 {
@@ -888,8 +813,7 @@ on:
 
 - job `test`（ネットワーク非依存）:
   `npm ci` → `npm run typecheck` → `npm run check` → `npm test`。
-  テスト側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含め、
-  生成 ICS は `node-ical` で読み直して構文検証する（自前パーサで検証しない）。
+  テスト側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含める。
 - job `smoke`（`continue-on-error: true`・ネットワーク依存）:
   実際の上流を取りにいく `node --experimental-strip-types src/cli.ts build --out /tmp/site --now 2026-08-09T00:00:00Z`。
 - `paths-ignore` でスキップされたジョブは required check として Pending のまま残るため、
@@ -899,7 +823,7 @@ on:
 
 ## 7. 静的サイト（`site/template.html`・担当D）
 
-- **コア UI は単一ファイル**。表・絞り込み・コピー・テーマ・フォントは外部 CDN・
+- **コア UI は単一ファイル**。表・絞り込み・テーマ・フォントは外部 CDN・
   Web フォント・外部画像を使わない（#223）。sibling の `recommender.js`（§10）は
   ビルドが `index.html` と同じディレクトリへ同梱する。
 - 推薦機能だけ、オフライン時フォールバック付きの任意 CDN を遅延ロードしてよい。
@@ -924,11 +848,10 @@ on:
   開催・採否通知・カメラレディ等の行は出さない（種別の絞り込みにも含めない）。
   開催日だけを持つ会議（ISC High Performance・HOTI・情報処理学会 HPC 研究会・
   P4 Workshop・Netdev・LPC など）がサイト表から消えるのは仕様であり、利用者は
-  `events.ics` フィード（このページの購読 UI に掲載）か `upcoming.md`（§4）で開催日を追う。
+  `upcoming.md`（§4）で開催日を追う。
   開催行の過去判定（終了日 + 1 日）と残り日数の表示規則は §4 に定める。
   推定版には開催日を持たせないので、開催行が推定になることはない。
 - 過去の締切は既定で非表示、トグルで表示。既定の並びは締切が近い順。
-- ICS 購読 URL のコピーボタン（失敗時は選択可能なテキストにフォールバック）。
 - ライト/ダーク両対応（`prefers-color-scheme`）。表は `overflow-x: auto` の中でだけ
   横スクロールし、body は横スクロールさせない。狭い画面ではカード表示に落とす。
 - 日本語 UI。ラテン文字の英単語を不必要に混ぜない
@@ -960,19 +883,14 @@ on:
   源間の round 表現差）がそれぞれ 1 件に畳まれること。
   NSDI 型の数か月離れたラウンドと、許容幅の外側（3601 秒差）が畳まれないこと。
   締切も開催日も持たない会議が `select` で落ちること。
-- `ics.test.ts`: CRLF、75 オクテット折り返し（**日本語 3 バイト文字を壊さない**）、
-  エスケープ（`,` `;` `\` と `:` を区別）、終日イベントの `DTEND` が +1 日、
-  `METHOD` を出力しないこと、UID が §4.1 の形であること、
-  **UID が全 VEVENT で一意であること**、同一入力で 2 回生成した出力が bit 一致すること。
-  物理行分割（`icsPhysicalLines`）で読み直して検証する。
 - `snapshot.test.ts`: build の最後に `data.json` → `snapshot.json` のコピーで
   情報が落ちないこと。全 Source が失敗したとき snapshot から復旧すること。
 - `build_golden.test.ts`: 小さな固定入力から `--now` 固定でビルドし、
-  ファイル一式が生成されること・JSON スキーマが §4.2 どおりであること。
-  推定フィードがカテゴリ別に分かれ、確定フィードに推定が混ざらないこと。
+  ファイル一式が生成されること・JSON スキーマが §4.1 どおりであること。
+  推定値が `estimated` フラグで確定値と区別されること。
   サイト表は投稿締切のみ（`index.html has no meeting rows`）。締切を持たない会議
   （ISC High Performance・HOTI・情報処理学会 HPC 研究会）の開催日は
-  `events.ics` と `upcoming.md` に出し、index.html の表には開催行を出さない。
+  `upcoming.md` に出し、index.html の表には開催行を出さない。
 
 `tests/fixtures/` に上流 YAML の**縮小版**を置く（ネットワーク不要）。
 実物から次のエッジケースを含む代表を抜く:
@@ -989,7 +907,7 @@ aaai（**rebuttal_start と rebuttal_end が別日**）、hf 旧形式 1 本、
 - WikiCFP など HTML スクレイピング（壊れやすく、利得が小さい）。
 - 会議の採択率・査読統計。
 - ユーザ登録・購読管理。
-- 上流に無い会議の締切を推測で書くこと（推定は `estimated` 版としてのみ、別フィードで扱う）。
+- 上流に無い会議の締切を推測で確定値として書くこと（推定は `estimated` フラグで区別する）。
 - ANCS の収録（2021 年以降開催されていない）。
 - README の締切テーブル自動更新（ビルドが他担当の所有ファイルを書き換える設計を避ける。
   README からは `public/upcoming.md` へリンクする）。

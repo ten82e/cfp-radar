@@ -16,34 +16,10 @@ export const FIXTURES = join(import.meta.dirname, "fixtures");
 export const NOW = new Date("2026-08-09T00:00:00Z");
 export const NOW_ARG = "2026-08-09T00:00:00Z";
 
-// public/ contents required by SPEC.md section 4.
-// config.yaml の categories 9 分野すべての live / estimated フィードと events.ics を含む
-// （9 分野拡大・events.ics 導入に合わせて 2026-08-13 に拡張）。embeddings.json は
-// golden テストが --no-embeddings で走るためここには含めない。
+// public/ contents required by SPEC.md section 4. embeddings.json は golden テストが
+// --no-embeddings で走るためここには含めない。
 export const PUBLIC_FILES = [
   "index.html",
-  "all.ics",
-  "hpc.ics",
-  "networking.ics",
-  "systems.ics",
-  "ai.ics",
-  "security.ics",
-  "db.ics",
-  "graphics.ics",
-  "hci.ics",
-  "theory.ics",
-  "deadlines.ics",
-  "events.ics",
-  "all-estimated.ics",
-  "hpc-estimated.ics",
-  "networking-estimated.ics",
-  "systems-estimated.ics",
-  "ai-estimated.ics",
-  "security-estimated.ics",
-  "db-estimated.ics",
-  "graphics-estimated.ics",
-  "hci-estimated.ics",
-  "theory-estimated.ics",
   "data.json",
   "data.csv",
   "upcoming.md",
@@ -158,51 +134,4 @@ export function runCli(
     timeout: 300_000,
   });
   return { status: proc.status, stdout: proc.stdout, stderr: proc.stderr };
-}
-
-// --- ICS helpers ---------------------------------------------------------------
-
-/** Split an ICS byte string into physical lines on CRLF. */
-export function icsPhysicalLines(raw: Buffer | string): string[] {
-  let body = typeof raw === "string" ? Buffer.from(raw) : raw;
-  if (body.length >= 2 && body.subarray(-2).toString() === "\r\n") {
-    body = body.subarray(0, -2);
-  }
-  return body.toString().split("\r\n");
-}
-
-/** RFC 5545 unfolding: a CRLF followed by a single space/tab is removed. */
-export function unfoldIcs(text: string): string[] {
-  return text
-    .replace(/\r\n /g, "")
-    .replace(/\r\n\t/g, "")
-    .split("\r\n");
-}
-
-/** Values of every occurrence of a property (unfolded lines expected). */
-export function icsProperty(lines: string[], name: string): string[] {
-  const out: string[] = [];
-  for (const line of lines) {
-    if (line.startsWith(`${name}:`) || line.startsWith(`${name};`)) {
-      const idx = line.indexOf(":");
-      out.push(idx >= 0 ? line.slice(idx + 1) : "");
-    }
-  }
-  return out;
-}
-
-export function veventBlocks(lines: string[]): string[][] {
-  const blocks: string[][] = [];
-  let current: string[] | null = null;
-  for (const line of lines) {
-    if (line === "BEGIN:VEVENT") {
-      current = [];
-    } else if (line === "END:VEVENT") {
-      if (current !== null) blocks.push(current);
-      current = null;
-    } else if (current !== null) {
-      current.push(line);
-    }
-  }
-  return blocks;
 }

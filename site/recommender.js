@@ -1101,128 +1101,6 @@
     return (primary ? primary + " " : "") + joined;
   }
 
-  /* Google Calendar 追加用 URL 生成。
-   * - 終日イベント (kind === "event"): YYYYMMDD/YYYYMMDD (終了日は翌日の排他日)
-   * - 締切 (kind !== "event"): 締切時刻 (r.t) を終了日時とし、30分前を開始日時とする
-   */
-  function getGCalUrl(r, kindLabels) {
-    if (!r || !r.conf) return "";
-    var t =
-      typeof r.t === "number" && !isNaN(r.t)
-        ? r.t
-        : r.t instanceof Date && !isNaN(r.t.getTime())
-          ? r.t.getTime()
-          : 0;
-    if (!t) return "";
-    var kl = kindLabels || {
-      abstract: "概要締切",
-      paper: "論文締切",
-      supplementary: "補足資料締切",
-      notification: "採否通知",
-      camera_ready: "カメラレディ締切",
-      rebuttal_start: "反論期間開始",
-      rebuttal_end: "反論期間終了",
-      review_release: "査読結果公開",
-      registration: "登録締切",
-      event: "開催",
-      other: "締切",
-    };
-    var ed = r.ed || {};
-    var dl = r.dl || {};
-    var round = r.round || dl.round;
-    var label = kl[r.kind] || r.kind || "締切";
-    var title = encodeURIComponent(
-      "[" +
-        (r.conf.title || r.conf.key || "") +
-        "] " +
-        label +
-        (round && round > 1 ? " (R" + round + ")" : ""),
-    );
-    var pad = (n) => (n < 10 ? "0" : "") + n;
-    var dates = "";
-    if (r.kind === "event") {
-      var tStart = t;
-      var tEnd =
-        typeof r.tLast === "number" && !isNaN(r.tLast)
-          ? r.tLast
-          : r.tLast instanceof Date && !isNaN(r.tLast.getTime())
-            ? r.tLast.getTime()
-            : tStart;
-      var dStart = new Date(tStart);
-      var dEnd = new Date(tEnd + 86400000);
-      var fmtDateGCal = (d) => d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate());
-      dates = fmtDateGCal(dStart) + "/" + fmtDateGCal(dEnd);
-    } else {
-      var dEnd = new Date(t);
-      var dStart = new Date(t - 1800000); // 30 分前
-      var isoStart = dStart.toISOString().replace(/-|:|\.\d\d\d/g, "");
-      var isoEnd = dEnd.toISOString().replace(/-|:|\.\d\d\d/g, "");
-      dates = isoStart + "/" + isoEnd;
-    }
-    var descParts = [];
-    if (r.conf.full_name || r.conf.title) {
-      descParts.push(r.conf.full_name || r.conf.title);
-    }
-    var comment = r.comment || dl.comment;
-    if (comment) {
-      descParts.push("備考: " + comment);
-    }
-    if (round && round > 1) {
-      descParts.push("ラウンド: Round " + round);
-    }
-    var cfpLink = ed.link || r.conf.link || "";
-    if (cfpLink) {
-      descParts.push("CFP Link: " + cfpLink);
-    }
-    var details = encodeURIComponent(descParts.join("\n"));
-    var location = encodeURIComponent(ed.place || "");
-    return (
-      "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
-      title +
-      "&dates=" +
-      dates +
-      "&details=" +
-      details +
-      "&location=" +
-      location
-    );
-  }
-
-  /* Markdown 参照表記の生成。
-   * 例: [SIGCOMM '26] August 17-21, 2026 https://...
-   * タイトルが既に '26 や 2026 等の開催年を含んでいる場合は二重に年を付与しない。
-   * 開催年が無い場合は末尾に孤立したアポストロフィを付けない。
-   */
-  function formatMarkdownRef(r) {
-    if (!r || !r.conf) return "";
-    var ed = r.ed || {};
-    var title = String(r.conf.title || r.conf.key || "").trim();
-    var year = ed.year ? String(ed.year) : "";
-    var shortYear = year ? "'" + year.slice(-2) : "";
-    var titleWithRef;
-    if (shortYear) {
-      var normT = title.normalize ? title.normalize("NFKC").trim() : title;
-      var yy = year.slice(-2);
-      var hasYear =
-        (year && normT.endsWith(year)) ||
-        normT.endsWith(shortYear) ||
-        (yy && new RegExp("(?:20" + yy + "|['’]?" + yy + ")$").test(normT));
-      if (hasYear) {
-        titleWithRef = title;
-      } else {
-        titleWithRef = title + " " + shortYear;
-      }
-    } else {
-      titleWithRef = title;
-    }
-    var datePart = ed.date_text || (ed.event_start ? String(ed.event_start) : "");
-    var linkPart = ed.link || r.conf.link || "";
-    var parts = ["[" + titleWithRef + "]"];
-    if (datePart) parts.push(datePart);
-    if (linkPart) parts.push(linkPart);
-    return parts.join(" ");
-  }
-
   function safeExternalUrl(value) {
     var text = String(value == null ? "" : value).trim();
     if (!text) return "";
@@ -1265,8 +1143,6 @@
     expandJp: expandJp,
     setExpandEnabled: setExpandEnabled,
     queryText: queryText,
-    getGCalUrl: getGCalUrl,
-    formatMarkdownRef: formatMarkdownRef,
     wordInText: wordInText,
   };
 

@@ -656,7 +656,7 @@ export function parseDateRange(
     if (one === null) {
       // Impossible calendar date (e.g. September 31, non-leap February 29):
       // fail closed like the range branch, and warn instead of silently
-      // dropping the event from every feed.
+      // dropping the event from every output.
       warn(`unparsable event date ${JSON.stringify(String(text))}`);
       return [null, null];
     }

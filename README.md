@@ -1,7 +1,7 @@
 # kamiyobi
 
 高性能計算・ネットワーク・システム・人工知能・セキュリティ・データベース・グラフィックス・HCI・理論の国際会議および穴場ワークショップ・ジャーナルについて、論文投稿の締切と開催日を全自動で探知・配信する。
-毎日 1 回自動で上流データを取得・自律探索し、ICS / JSON / CSV / Markdown と静的サイトを生成して GitHub Pages で公開する。
+毎日 1 回自動で上流データを取得・自律探索し、JSON / CSV / Markdown と静的サイトを生成して GitHub Pages で公開する。
 サーバも外部サービスも使わず、GitHub の中だけで完結している。
 
 公開先は https://ten82e.github.io/kamiyobi/ である。
@@ -12,96 +12,11 @@
 締切を持たず開催日だけがわかっている会議も、開催の行としてここに出る。
 この README は手書きで、ビルドが書き換えることはない。
 
-## カレンダーを購読する
+## 生成物
 
-購読すると、締切がカレンダーアプリに自動で流れ込み、更新も自動で追随する。
-以下では代表として全部入りの `all.ics` を例に使う。
-分野を絞りたいときは、後述のフィード一覧から別の URL に読み替える。
-
-```
-https://ten82e.github.io/kamiyobi/all.ics
-```
-
-`all.ics` と分野別フィードには、上流が募集要項を公開した確定の締切だけが入る。
-そのため、次回の募集がまだ出ていない時期には主要会議が 1 件も流れてこない。
-
-**分野によっては確定フィードが薄いので、推定フィードの併用を勧める。**
-高性能計算 (`hpc.ics`) などの確定フィードは、上流が次回版を公開した会議に限られる。主要会議でも次回版が未公開の間は確定締切がなく、推定フィードにのみ現れることがある。
-
-推定は分野ごとに別フィードへ分けてあるので、高性能計算の利用者は `hpc.ics` と `hpc-estimated.ics` の 2 本を購読すればよい（人工知能の推定まで抱え込む必要はない）。
-カレンダーアプリ側で推定のほうを別の色にしておくと区別しやすい。
-推定は前年実績からの機械的な外挿であり、確定情報ではない。
-
-### Google カレンダー
-
-1. パソコンのブラウザで https://calendar.google.com を開く。
-2. 左側の「他のカレンダー」の右にある「+」を押す。
-3. 「URL で追加」を選ぶ。
-4. 上の URL を貼り付けて「カレンダーを追加」を押す。
-5. 追加後、左側の一覧に現れたカレンダーの名前と色を好みに変える。
-
-スマートフォンのアプリからは追加できない。
-先にブラウザで追加すれば、同じアカウントのスマートフォンにも同期される。
-Google 側の取得間隔は数時間から 24 時間程度で、こちらからは制御できない。
-
-### Apple カレンダー
-
-macOS の場合。
-
-1. カレンダーアプリを開く。
-2. メニューバーの「ファイル」から「新規照会カレンダー」を選ぶ。
-3. 上の URL を貼り付けて「照会」を押す。
-4. 「自動更新」を「1 時間ごと」に設定し、「通知」は好みに応じて外す。
-5. 「OK」を押す。
-
-iOS と iPadOS の場合。
-
-1. 「設定」から「アプリ」、「カレンダー」、「アカウント」と進む。
-2. 「アカウントを追加」から「その他」を選ぶ。
-3. 「照会するカレンダーを追加」を選ぶ。
-4. 上の URL を貼り付けて「次へ」、「保存」と進む。
-
-### Outlook
-
-ブラウザ版の場合。
-
-1. https://outlook.office.com/calendar を開く。
-2. 左側の「カレンダーの追加」を押す。
-3. 「インターネットから定期受信」を選ぶ。
-4. 上の URL とカレンダー名を入力して「インポート」を押す。
-
-デスクトップ版の Outlook では、ブラウザ版で追加したものが同期されるのを待つのが確実である。
-
-## フィード一覧
-
-| フィード | URL | 内容 |
-|---|---|---|
-| 全部 | `https://ten82e.github.io/kamiyobi/all.ics` | 全分野・全種別の締切と開催日。推定は含まない |
-| 高性能計算 | `https://ten82e.github.io/kamiyobi/hpc.ics` | `hpc` 分野のみ |
-| ネットワーク | `https://ten82e.github.io/kamiyobi/networking.ics` | `networking` 分野のみ |
-| システム | `https://ten82e.github.io/kamiyobi/systems.ics` | `systems` 分野のみ |
-| 人工知能 | `https://ten82e.github.io/kamiyobi/ai.ics` | `ai` 分野のみ |
-| セキュリティ | `https://ten82e.github.io/kamiyobi/security.ics` | `security` 分野のみ |
-| データベース | `https://ten82e.github.io/kamiyobi/db.ics` | `db` 分野のみ |
-| グラフィックス | `https://ten82e.github.io/kamiyobi/graphics.ics` | `graphics` 分野のみ |
-| HCI | `https://ten82e.github.io/kamiyobi/hci.ics` | `hci` 分野のみ |
-| 理論 | `https://ten82e.github.io/kamiyobi/theory.ics` | `theory` 分野のみ |
-| 締切のみ | `https://ten82e.github.io/kamiyobi/deadlines.ics` | 投稿・査読応答などの締切だけ |
-| 開催日のみ | `https://ten82e.github.io/kamiyobi/events.ics` | 会期の終日イベントだけ |
-| 推定・全分野 | `https://ten82e.github.io/kamiyobi/all-estimated.ics` | 前年からの推定で作った締切。確定フィードには混ぜていない |
-| 推定・高性能計算 | `https://ten82e.github.io/kamiyobi/hpc-estimated.ics` | `hpc` 分野の推定締切のみ |
-| 推定・ネットワーク | `https://ten82e.github.io/kamiyobi/networking-estimated.ics` | `networking` 分野の推定締切のみ |
-| 推定・システム | `https://ten82e.github.io/kamiyobi/systems-estimated.ics` | `systems` 分野の推定締切のみ |
-| 推定・人工知能 | `https://ten82e.github.io/kamiyobi/ai-estimated.ics` | `ai` 分野の推定締切のみ |
-| 推定・セキュリティ | `https://ten82e.github.io/kamiyobi/security-estimated.ics` | `security` 分野の推定締切のみ |
-| 推定・データベース | `https://ten82e.github.io/kamiyobi/db-estimated.ics` | `db` 分野の推定締切のみ |
-| 推定・グラフィックス | `https://ten82e.github.io/kamiyobi/graphics-estimated.ics` | `graphics` 分野の推定締切のみ |
-| 推定・HCI | `https://ten82e.github.io/kamiyobi/hci-estimated.ics` | `hci` 分野の推定締切のみ |
-| 推定・理論 | `https://ten82e.github.io/kamiyobi/theory-estimated.ics` | `theory` 分野の推定締切のみ |
-
-締切のイベントは締切時刻の 30 分前から締切時刻までの予定として作られる。
-7 日前・1 日前・3 時間前の 3 本の通知が入っている。
-開催日は終日イベントで、通知は付かない。
+投稿判断に使う正規化データは `data.json`、締切だけを扱う表は `data.csv`、直近の締切と開催日は
+`upcoming.md` にある。静的サイトでは会議名・締切・公式サイトを検索でき、推薦機能は論文の PDF/TXT を
+ブラウザ内で処理する。
 
 ## 機械可読の出力
 
@@ -109,7 +24,7 @@ iOS と iPadOS の場合。
 
 | ファイル | 用途 |
 |---|---|
-| `https://ten82e.github.io/kamiyobi/llms.txt` | 各フィードの URL と意味、データの形を 1 枚にまとめた索引。まずここを読む |
+| `https://ten82e.github.io/kamiyobi/llms.txt` | 出力ファイルとデータの形を 1 枚にまとめた索引。まずここを読む |
 | `https://ten82e.github.io/kamiyobi/data.json` | 正規化済みの全データ。会議・版・締切の三層構造。締切時刻は UTC と AoE 表記を併記 |
 
 他に、1 行 1 締切の平坦な表 [`data.csv`](https://ten82e.github.io/kamiyobi/data.csv) と、直近 180 日の締切と開催の表 `upcoming.md` がある。
@@ -182,7 +97,7 @@ node src/cli.ts review
 同時に `data/snapshot.json` を更新してコミットする。
 このスナップショットは上流が落ちたときの退避先を兼ねており、取得に失敗した日は前回の内容から生成を続ける。
 スナップショットでも補えないほど収集が縮退した日は、ビルドが非ゼロで終了して配信を行わない。
-その日は前回配信した内容がそのまま残る（縮退した内容で上書きすると、購読者のカレンダーから予定が消えるため）。
+その日は前回配信した内容がそのまま残る（縮退した内容で上書きすると、公開データが消えるため）。
 
 自動コミットは `github-actions[bot]` 名義で、メッセージに `[skip ci]` が付く。
 
@@ -266,12 +181,11 @@ rank_filter:
 締切情報は上流データに依存しており、正確性を保証しない。
 投稿の前に必ず各会議の公式サイトで確認すること。
 
-推定締切は前年の同種の締切から機械的に作ったものである。
-`all.ics` や分野別フィードには入れず、`all-estimated.ics` と分野別の推定フィードにだけ出している。
-サイト上でも推定であることを明示している。
-根拠のない締切を本体のフィードに混ぜない方針を採っている。
+推定締切は前年の同種の締切から機械的に作ったものである。`data.json` と `data.csv` に含めるが、
+`estimated` フラグで確定値と区別している。サイト上でも推定であることを明示している。
+根拠のない締切を確定値として扱わない方針を採っている。
 
-締切を持たず開催日だけがわかっている会議（ISC High Performance・HOTI・P4 Workshop・Linux Plumbers Conference・情報処理学会 HPC 研究会など）は、種別「開催」の項目としてサイト・`upcoming.md`・`events.ics` に出る。
+締切を持たず開催日だけがわかっている会議（ISC High Performance・HOTI・P4 Workshop・Linux Plumbers Conference・情報処理学会 HPC 研究会など）は、種別「開催」の項目としてサイトと `upcoming.md` に出る。
 開催の行は会期の最終日を過ぎるまで既定の表示に残る。
 締切も開催日も裏が取れていない会議は、どこにも出さない（`data/extra.yaml` には未確認である旨のコメントだけを残してある）。
 国内の研究会・シンポジウム（`tags: [domestic-jp]`）は通しやすい発表枠として local 源で維持している。サイトの「国内研究会・国内シンポジウムのみ」で絞れる（`?domestic=1`）。
