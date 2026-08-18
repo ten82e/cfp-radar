@@ -932,15 +932,16 @@ footer a:hover { text-decoration: underline; }
   // Paper Text Matching Score — ロジックは recommender.js (Recommender.breakdown) に移管
 
   // ---- SEMANTIC MATCH (AI 補助: transformers.js + embeddings.json) ----
-  // embeddings.json は build 時に生成（scripts/embeddings.py）。
+  // embeddings.json は build 時に生成（src/embeddings.ts）。
   // ブラウザでは transformers.js でユーザー入力を埋め込み、語彙スコアと合成する。
-  var EMBEDDINGS = null;       // {model, dim, embeddings, multi:{...}}（言語別の埋め込み表）
+  var EMBEDDINGS = null;       // manifest + 言語別の埋め込み表
   var semQuery = null;         // 現在のユーザー入力の埋め込みベクトル
   var semModel = null;         // transformers.js の pipeline
   var semLoadedModel = "";    // ロード済みモデル ID（言語適応で切り替え）
   var semEmbeddings = null;   // 言語に応じた埋め込み表（en / multi）
   var semBusy = false;
   var semState = "idle";       // idle | loading | ready | error（AI 状態の表示用）
+  var semProbeCache = {};       // model@revision -> probe compatibility
   var semLastText = "";       // 最後に埋め込み計算したテキスト（再計算判定用）
   var lastIsJp = false;        // 直近の論文テキストが日本語か（合成比・閾値の表示用）
   var lastLen = 0;             // 直近の論文テキストの内容語数（英語の合成比の適応用）
@@ -953,16 +954,34 @@ footer a:hover { text-decoration: underline; }
       .catch(() => { cb(); }); // 無ければ語彙スコアのみで動作
   }
 
-  function loadTransformers(modelId, cb) {
-    if (semLoadedModel === modelId) { cb(); return; }
+  function loadTransformers(modelMeta, cb) {
+    var modelId = modelMeta.model;
+    var revision = modelMeta.revision;
+    var modelKey = modelId + "@" + revision;
+    if (semLoadedModel === modelKey) { cb(); return; }
     if (semState === "error") { cb(); return; } // 失敗は再試行しない（リロードで復帰）
     semState = "loading";
     // jsdelivr の素のパッケージ URL は Node 向けバンドルで window.transformers を
     // 公開しない（実行しても undefined になる）。ESM ビルド（+esm）を動的 import する。
     import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm")
-      .then((m) => m.pipeline("feature-extraction", modelId))
-      .then((mdl) => { semModel = mdl; semLoadedModel = modelId; semState = "ready"; cb(); })
+      .then((m) => m.pipeline("feature-extraction", modelId, { revision: revision }))
+      .then((mdl) => { semModel = mdl; semLoadedModel = modelKey; semState = "ready"; cb(); })
       .catch(() => { semState = "error"; cb(); });
+  }
+
+  function checkSemanticProbe(modelMeta, cb) {
+    var modelKey = modelMeta.model + "@" + modelMeta.revision;
+    if (Object.prototype.hasOwnProperty.call(semProbeCache, modelKey)) {
+      cb(semProbeCache[modelKey]);
+      return;
+    }
+    semModel(modelMeta.probe.text, { pooling: "mean", normalize: true })
+      .then((out) => {
+        var ok = Recommender.embeddingProbeMatches(modelMeta, Array.from(out.data));
+        semProbeCache[modelKey] = ok;
+        cb(ok);
+      })
+      .catch(() => { semProbeCache[modelKey] = false; cb(false); });
   }
 
   // 論文テキストが変わったら埋め込みを再計算し、完了後に render する。
@@ -976,13 +995,17 @@ footer a:hover { text-decoration: underline; }
     loadEmbeddings(() => {
       if (!EMBEDDINGS) return;
       var isJp = Recommender.hasJapanese(text);
-      var modelId = isJp ? "Xenova/paraphrase-multilingual-MiniLM-L12-v2" : "Xenova/all-MiniLM-L6-v2";
-      var embSet = isJp && EMBEDDINGS.multi ? EMBEDDINGS.multi : EMBEDDINGS; // multi 無ければ en で縮退
-      loadTransformers(modelId, () => {
-        if (semLoadedModel !== modelId || !semModel) return;
+      var language = isJp && EMBEDDINGS.multi ? "multi" : "en";
+      var embSet = language === "multi" ? EMBEDDINGS.multi : EMBEDDINGS;
+      if (!Recommender.embeddingSetCompatible(EMBEDDINGS, language)) return;
+      var modelMeta = EMBEDDINGS.manifest.models[language];
+      loadTransformers(modelMeta, () => {
+        if (semLoadedModel !== modelMeta.model + "@" + modelMeta.revision || !semModel) return;
         semBusy = true;
-        var q = Recommender.queryText(Recommender.parsePaperLines(text));
-        semModel(q, { pooling: "mean", normalize: true })
+        checkSemanticProbe(modelMeta, (probeOk) => {
+          if (!probeOk) { semBusy = false; return; }
+          var q = Recommender.queryText(Recommender.parsePaperLines(text));
+          semModel(q, { pooling: "mean", normalize: true })
           .then((out) => {
             semQuery = Array.from(out.data);
             // 擬似関連性フィードバック（PRF）: 掲載先タグ付き論文がある場合、
@@ -1018,6 +1041,7 @@ footer a:hover { text-decoration: underline; }
             var pe2 = $("paperText");
             if (pe2 && pe2.value.trim() && pe2.value !== semLastText) { scheduleSemantic(); }
           });
+        });
       });
     });
   }

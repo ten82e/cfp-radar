@@ -24,7 +24,15 @@ import {
   toUpcomingMd,
 } from "../src/build.ts";
 import { main as cliMain, parseArgs as parseCliArgs, usage } from "../src/cli.ts";
-import { main as embeddingsMain, profileTexts, venuePapersHash } from "../src/embeddings.ts";
+import {
+  EMBEDDING_DIM,
+  EMBEDDING_MODEL,
+  EMBEDDING_MULTI_MODEL,
+  embeddingManifest,
+  main as embeddingsMain,
+  profileTexts,
+  venuePapersHash,
+} from "../src/embeddings.ts";
 import {
   makeConference,
   makeDeadline,
@@ -635,25 +643,72 @@ it("title ending with the edition year is not duplicated in SUMMARY/upcoming", a
   expect(upcoming).toContain("[PLAIN 2026](");
 });
 
-it("embeddingsStale はキー集合の一致で判定する（数比較の穴）", () => {
-  // venuePapersHash は実データ依存のため、実ハッシュを入れてキー集合の
-  // 比較だけを検証する（ハッシュ差分は R29 の別検証でカバー）。
-  const emb = (keys: string[]): Record<string, unknown> => ({
-    venuePapersHash: venuePapersHash(),
-    embeddings: Object.fromEntries(keys.map((k) => [k, [0.1]])),
-  });
+it("embeddingsStale は profile と manifest の不一致を再生成する", () => {
+  const make = (keys: string[]) => {
+    const data = {
+      categories: {},
+      conferences: keys.map((key) => ({
+        key,
+        title: key,
+        full_name: key,
+        categories: [],
+        tags: [],
+      })),
+    };
+    const probe = new Array(EMBEDDING_DIM).fill(0);
+    const manifest = embeddingManifest(data, { en: probe, multi: probe });
+    return {
+      data,
+      file: {
+        model: EMBEDDING_MODEL,
+        dim: EMBEDDING_DIM,
+        venuePapersHash: venuePapersHash(),
+        embeddings: Object.fromEntries(keys.map((k) => [k, probe])),
+        multi: {
+          model: EMBEDDING_MULTI_MODEL,
+          dim: EMBEDDING_DIM,
+          embeddings: Object.fromEntries(keys.map((k) => [k, probe])),
+        },
+        paperVecs: {},
+        manifest,
+      },
+    };
+  };
+  const emb = (keys: string[]) => make(keys);
+  const fresh = emb(["a", "b", "c"]);
   // 同一キー集合 → stale でない
-  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b", "c"])).toBe(false);
+  expect(embeddingsStale(fresh.file, fresh.data)).toBe(false);
   // 数が同じでもキーが入れ替わったら stale（数比較だと見逃す）
-  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b", "d"])).toBe(true);
-  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "c", "b"])).toBe(false); // 順序は無関係
+  expect(embeddingsStale(fresh.file, emb(["a", "b", "d"]).data)).toBe(true);
+  expect(embeddingsStale(fresh.file, emb(["a", "c", "b"]).data)).toBe(false); // 順序は無関係
   // 数が変わったら stale
-  expect(embeddingsStale(emb(["a", "b", "c"]), ["a", "b"])).toBe(true);
-  expect(embeddingsStale(emb(["a", "b"]), ["a", "b", "c"])).toBe(true);
+  expect(embeddingsStale(fresh.file, emb(["a", "b"]).data)).toBe(true);
+  expect(embeddingsStale(emb(["a", "b"]).file, fresh.data)).toBe(true);
+  // プロファイルの title/full_name/tags/category 変更も stale
+  const changed = structuredClone(fresh.data);
+  changed.conferences[0].title = "changed";
+  expect(embeddingsStale(fresh.file, changed)).toBe(true);
+  // manifest / multilingual / model metadata が無い旧形式は stale
   // embeddings が無い既存データ → stale
-  expect(embeddingsStale({}, ["a"])).toBe(true);
-  expect(embeddingsStale(null, ["a"])).toBe(true);
-  expect(embeddingsStale(undefined, ["a"])).toBe(true);
+  expect(embeddingsStale({}, fresh.data)).toBe(true);
+  expect(embeddingsStale({ ...fresh.file, manifest: undefined }, fresh.data)).toBe(true);
+  expect(embeddingsStale({ ...fresh.file, multi: undefined }, fresh.data)).toBe(true);
+  expect(embeddingsStale({ ...fresh.file, model: "wrong" }, fresh.data)).toBe(true);
+  expect(
+    embeddingsStale(
+      {
+        ...fresh.file,
+        manifest: {
+          ...fresh.file.manifest,
+          models: {
+            ...fresh.file.manifest.models,
+            en: { ...fresh.file.manifest.models.en, revision: "wrong" },
+          },
+        },
+      },
+      fresh.data,
+    ),
+  ).toBe(true);
 });
 
 it("DEFAULT_CATEGORIES contains all 9 taxonomy domains", () => {
