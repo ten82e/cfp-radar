@@ -222,13 +222,15 @@ kamiyobi/
 │   ├── discover.ts              # 穴場会議・ジャーナル自律探索           [担当G]
 │   ├── fetch-primary.ts         # 一次ソース自動抽出                     [担当E]
 │   ├── review-candidates.ts     # 候補レビュー支援                       [担当G]
+│   ├── recommender-api.ts       # 推薦ランタイムの型境界                 [担当C]
 │   ├── embeddings.ts            # 埋め込み生成                           [担当C]
 │   ├── bench-recommender.ts            # 推薦ベンチ                             [担当C]
 │   ├── build.ts                 # JSON/CSV/MD/llms.txt/HTML 出力          [担当C]
 │   └── cli.ts                   # エントリポイント                        [担当C]
 ├── site/
 │   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
-│   └── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
+│   ├── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
+│   └── recommender.d.ts         # 推薦ランタイムのグローバル型宣言       [担当C]
 ├── scripts/
 │   └── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
 ├── public/                      # 生成物(git 管理外)

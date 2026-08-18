@@ -1423,12 +1423,14 @@ describe("GOLDEN_EN と VENUE_PAPERS のリークなし設計 (R12–R17)", () =
         .replace(/[^a-z0-9]+/g, " ")
         .trim();
     const benchSrc = readFileSync(join(REPO_ROOT, "src", "bench-recommender.ts"), "utf8");
-    const embSrc = readFileSync(join(REPO_ROOT, "src", "embeddings.ts"), "utf8");
+    const profileArtifact = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "venue-profiles.json"), "utf8"),
+    ) as { profiles: Record<string, string[]> };
     // 保守性のため正規表現で抽出（構造変化時はここを更新）
     const goldenTitles = [...benchSrc.matchAll(/title: "([^"]+)",\s*key: "([a-z-]+)"/g)].map((m) =>
       norm(m[1]),
     );
-    const paperTitles = [...embSrc.matchAll(/"([^"]+)",?\s*\n/g)].map((m) => norm(m[1]));
+    const paperTitles = Object.values(profileArtifact.profiles).flat().map(norm);
     expect(goldenTitles.length).toBeGreaterThan(50); // GOLDEN_EN が実在する
     const overlap = goldenTitles.filter((t) => t.length > 10 && paperTitles.includes(t));
     expect(overlap).toEqual([]); // 完全分離
