@@ -383,6 +383,128 @@ export function toJson(
   };
 }
 
+type JsonRecord = Record<string, unknown>;
+
+function jsonRecords(value: unknown): JsonRecord[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is JsonRecord => Boolean(item && typeof item === "object"))
+    : [];
+}
+
+function jsonTime(value: unknown): number | null {
+  const time = Date.parse(String(value ?? ""));
+  return Number.isFinite(time) ? time : null;
+}
+
+function compactEdition(edition: JsonRecord, deadlines: JsonRecord[]): JsonRecord {
+  return {
+    year: edition.year,
+    id: edition.id,
+    link: edition.link,
+    place: edition.place,
+    date_text: edition.date_text,
+    event_start: edition.event_start,
+    event_end: edition.event_end,
+    estimated: edition.estimated,
+    ...(edition.estimate ? { estimate: edition.estimate } : {}),
+    source: edition.source,
+    deadlines,
+  };
+}
+
+function compactConference(
+  conf: JsonRecord,
+  editions: JsonRecord[],
+  withPapers: boolean,
+): JsonRecord {
+  return {
+    key: conf.key,
+    title: conf.title,
+    full_name: conf.full_name,
+    categories: conf.categories,
+    rank: conf.rank,
+    link: conf.link,
+    tags: conf.tags,
+    sources: conf.sources,
+    editions,
+    ...(withPapers ? { papers: conf.papers ?? [] } : {}),
+  };
+}
+
+/** The deadline UI payload: metadata plus only the current/near deadline window. */
+export function toCatalog(
+  data: Record<string, unknown>,
+  now: Date | null | undefined,
+  days = 180,
+): Record<string, unknown> {
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
+  const horizon = safeNow.getTime() + Math.max(1, days) * DAY_MS;
+  const lookback = safeNow.getTime() - 30 * DAY_MS;
+  const conferences = jsonRecords(data.conferences).map((conf) => {
+    const editions = jsonRecords(conf.editions)
+      .map((edition) => {
+        const deadlines = jsonRecords(edition.deadlines).filter((deadline) => {
+          const time = jsonTime(deadline.utc);
+          return time !== null && time >= lookback && time <= horizon;
+        });
+        const eventStart = jsonTime(edition.event_start);
+        const eventEnd = jsonTime(edition.event_end ?? edition.event_start);
+        const inWindow =
+          eventStart !== null && eventEnd !== null && eventEnd >= lookback && eventStart <= horizon;
+        return inWindow || deadlines.length ? compactEdition(edition, deadlines) : null;
+      })
+      .filter((edition): edition is JsonRecord => edition !== null);
+    return compactConference(conf, editions, false);
+  });
+  return {
+    generated_at: data.generated_at,
+    site: data.site,
+    sources: data.sources,
+    categories: data.categories,
+    window: { lookback_days: 30, upcoming_days: Math.max(1, days) },
+    history_ref: "data.json",
+    recommendation_ref: "recommendation-index.json",
+    conferences,
+  };
+}
+
+/** The recommendation payload: venue profiles and one representative availability record. */
+export function toRecommendationIndex(
+  data: Record<string, unknown>,
+  now: Date | null | undefined,
+): Record<string, unknown> {
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
+  const conferences = jsonRecords(data.conferences).map((conf) => {
+    const editions = jsonRecords(conf.editions)
+      .map((edition) => {
+        const deadlines = jsonRecords(edition.deadlines)
+          .filter((deadline) => ["abstract", "paper"].includes(String(deadline.kind)))
+          .sort(
+            (a, b) =>
+              (jsonTime(a.utc) ?? Number.MAX_SAFE_INTEGER) -
+              (jsonTime(b.utc) ?? Number.MAX_SAFE_INTEGER),
+          );
+        if (!deadlines.length) return null;
+        const future = deadlines.find(
+          (deadline) => (jsonTime(deadline.utc) ?? 0) >= safeNow.getTime(),
+        );
+        return compactEdition(edition, [future ?? deadlines[deadlines.length - 1]]);
+      })
+      .filter((edition): edition is JsonRecord => edition !== null);
+    return compactConference(conf, editions, true);
+  });
+  return {
+    generated_at: data.generated_at,
+    site: data.site,
+    sources: data.sources,
+    categories: data.categories,
+    history_ref: "data.json",
+    embedding_ref: "embeddings.json",
+    embedding_manifest: embeddingManifest(data as Parameters<typeof embeddingManifest>[0]),
+    conferences,
+  };
+}
+
 export function csvField(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined) return "";
   const s = String(value);
@@ -556,6 +678,8 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "## 出力一覧",
     "",
     "- data.json — 正規化データ全体（機械可読の正）。",
+    "- catalog.json — 締切画面向けの現在・近日期間カタログ。",
+    "- recommendation-index.json — 投稿先推薦の会議プロフィールと埋め込み参照。",
     "- data.csv — 1 行 1 締切のフラット表。",
     `- upcoming.md — 直近 ${String((safeConfig.site as Record<string, unknown> | null)?.upcoming_days ?? 180)} 日の締切と開催の表。`,
   ];
@@ -699,6 +823,11 @@ export async function buildAll(
   const data = toJson(safeConfs, safeConfig, nowUtc);
   const jsonText = JSON.stringify(data, null, 2);
   write("data.json", `${jsonText}\n`);
+  write("catalog.json", `${JSON.stringify(toCatalog(data, nowUtc, upcomingDays), null, 2)}\n`);
+  write(
+    "recommendation-index.json",
+    `${JSON.stringify(toRecommendationIndex(data, nowUtc), null, 2)}\n`,
+  );
   write("data.csv", toCsv(records));
   write("upcoming.md", toUpcomingMd(records, nowUtc, upcomingDays));
 
@@ -744,7 +873,10 @@ export async function buildAll(
         `warning: ${templatePath} に ${TEMPLATE_MARKER} が見つからない。index.html を素通しする`,
       );
     } else {
-      templateText = templateText.replace(TEMPLATE_MARKER, embedJson(pyJsonCompact(data)));
+      templateText = templateText.replace(
+        TEMPLATE_MARKER,
+        embedJson(pyJsonCompact(toCatalog(data, nowUtc, upcomingDays))),
+      );
     }
     write("index.html", templateText);
     // recommender.js をテンプレートと同じ場所から同梱（ブラウザから src 参照。無ければ site/recommender.js へフォールバック）
