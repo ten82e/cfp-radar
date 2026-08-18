@@ -1097,7 +1097,7 @@ footer a:hover { text-decoration: underline; }
       if (q && r.hay.indexOf(q) < 0) { return false; }
 
       r._match = pLines.length ? (Rec ? Rec.breakdown(r, pLines) : { score: 0, venueHit: false }) : null;
-      r._vocabScore = r._match ? r._match.score : 0;
+      r._vocabScore = r._match ? (r._match.venueScore ?? r._match.score) : 0;
       r._matchScore = r._vocabScore;
       r._semScore = 0;
       // セマンティック（AI 埋め込み）スコア: 語彙スコアと合成。
@@ -1341,7 +1341,7 @@ footer a:hover { text-decoration: underline; }
     } else {
       comp = '語彙スコア ' + r._vocabScore + '%';
     }
-    html += '<div class="detail-comp">' + comp + '</div>';
+    html += '<div class="detail-comp">' + comp + (m.evidence && m.evidence.length > 1 ? '（' + m.evidence.length + '本の evidence を RRF 集約）' : '') + '</div>';
     html += '<div class="reason-chips">' + chips.map((c) => '<span class="reason-chip" title="' + esc(c[2]) + '"><b>' + esc(c[0]) + '</b><em>' + esc(c[1]) + '</em></span>').join("") + '</div>';
 
     if (lines.length > 1) {

@@ -663,6 +663,51 @@ describe("venueCategories", () => {
   });
 });
 
+describe("venue-level evidence fusion", () => {
+  const row = {
+    conf: { key: "hpc-test", title: "HPC Test", full_name: "", tags: [] },
+    cats: ["hpc"],
+  };
+
+  it("aggregates multiple positive paper lines with stable ranks", () => {
+    const lines = R.parsePaperLines(
+      "GPU scheduling | gpu\nParallel kernels | parallel\nUnrelated text",
+    );
+    const b = R.breakdown(row, lines);
+    expect(b.venueScore).toBeGreaterThan(R.breakdown(row, [lines[0]]).venueScore);
+    expect(b.evidence).toHaveLength(2);
+    expect(b.evidence.map((e: { rank: number }) => e.rank)).toEqual([1, 2]);
+  });
+
+  it("is independent of input order after score/key tie-breaking", () => {
+    const lines = R.parsePaperLines("GPU scheduling | gpu\nParallel kernels | parallel");
+    const forward = R.breakdown(row, lines);
+    const reverse = R.breakdown(row, lines.slice().reverse());
+    expect(reverse.venueScore).toBe(forward.venueScore);
+  });
+
+  it("does not retrieve a venue without positive evidence", () => {
+    const b = R.breakdown(row, R.parsePaperLines("Unrelated title | unrelated"));
+    expect(b.venueScore).toBe(0);
+    expect(b.evidence).toEqual([]);
+  });
+
+  it("keeps a venue-tag hit above ordinary lexical evidence", () => {
+    const tagged = {
+      conf: { key: "rtss", title: "RTSS", full_name: "Real-Time Systems Symposium", tags: [] },
+      cats: ["systems"],
+    };
+    const lexical = {
+      conf: { key: "systems-test", title: "Systems Test", full_name: "", tags: [] },
+      cats: ["systems"],
+    };
+    const lines = R.parsePaperLines("A paper | kw | RTSS");
+    expect(R.breakdown(tagged, lines).venueScore).toBeGreaterThan(
+      R.breakdown(lexical, R.parsePaperLines("real-time systems")).venueScore,
+    );
+  });
+});
+
 // ---- セマンティック（埋め込み） ----
 
 describe("semantic functions", () => {

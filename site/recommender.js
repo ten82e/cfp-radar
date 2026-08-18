@@ -731,8 +731,10 @@
     if (!r)
       return {
         score: 0,
+        venueScore: 0,
         venueHit: false,
         perLine: [],
+        evidence: [],
         agg: { domain: 0, name: 0, jp: 0, tags: 0, venue: 0 },
       };
     var conf = confHay(r);
@@ -747,7 +749,50 @@
         agg[k] += s.details[k];
       });
     }
-    return { score: scorePapers(r, lines), venueHit: venueHitAny, perLine: perLine, agg: agg };
+    var venue = venueEvidence(perLine, lines);
+    return {
+      score: scorePapers(r, lines),
+      venueScore: venue.score,
+      venueHit: venueHitAny,
+      perLine: perLine,
+      evidence: venue.evidence,
+      agg: agg,
+    };
+  }
+
+  /* Venue-level retrieval: fuse positive paper evidence by reciprocal rank.
+   * K=60 keeps one evidence line close to its existing score while rewarding
+   * independent matching lines. A tagged venue retains its absolute +venue signal. */
+  function venueEvidence(perLine, lines) {
+    var evidence = (perLine || [])
+      .map((line, index) => ({
+        lineIndex: index,
+        score: line.score,
+        venueHit: line.venueHit,
+        details: line.details,
+        key: [lines && lines[index] && lines[index].title, lines && lines[index] && lines[index].keywords, lines && lines[index] && lines[index].venue]
+          .map((value) => String(value || "").toLowerCase())
+          .join("\u0000"),
+      }))
+      .filter((line) => line.score > 0)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (a.key < b.key) return -1;
+        if (a.key > b.key) return 1;
+        return a.lineIndex - b.lineIndex;
+      });
+    var k = 60;
+    var fused = 0;
+    var venueHit = false;
+    evidence.forEach((line, index) => {
+      fused += (line.score / 100) / (k + index + 1);
+      if (line.venueHit) venueHit = true;
+      line.rank = index + 1;
+      delete line.key;
+    });
+    var score = Math.round(100 * k * fused);
+    if (venueHit) score += SIG_WEIGHTS.venue;
+    return { score: Math.min(100, score), evidence: evidence };
   }
 
   /* 掲載先タグ（例: "IEEE RTSS"）に一致する会議のリストを返す。
