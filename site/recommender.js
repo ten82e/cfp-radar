@@ -392,7 +392,7 @@
     var hits = [];
     var hay = expandJp(text) + " " + text;
     Object.keys(DOMAIN_SIGNAL).forEach((dom) => {
-      var n = DOMAIN_SIGNAL[dom].filter((kw) => hay.indexOf(kw) !== -1).length;
+      var n = DOMAIN_SIGNAL[dom].filter((kw) => signalInText(hay, kw)).length;
       if (n > 0) hits.push({ dom: dom, n: n });
     });
     hits.sort((a, b) => b.n - a.n);
@@ -438,7 +438,7 @@
     // ヒット数ではなく「カテゴリにヒットしたか」で +SIG_WEIGHTS.domain（累積しない）。
     Object.keys(DOMAIN_SIGNAL).forEach((dom) => {
       if ((r.cats || []).indexOf(dom) === -1) return;
-      var hit = DOMAIN_SIGNAL[dom].some((kw) => pt.indexOf(kw) !== -1);
+      var hit = DOMAIN_SIGNAL[dom].some((kw) => signalInText(pt, kw));
       if (hit) {
         score += SIG_WEIGHTS.domain;
         details.domain += SIG_WEIGHTS.domain;
@@ -516,7 +516,7 @@
     // tags 語彙一致（data-mining 等の領域タグ。GENERIC_TAGS は属性なので除外）
     conf.tags.forEach((t) => {
       if (!t || GENERIC_TAGS.has(t) || t.length <= 3) return;
-      if (pt.indexOf(t) !== -1) {
+      if (signalInText(pt, t)) {
         score += SIG_WEIGHTS.tags;
         details.tags += SIG_WEIGHTS.tags;
       }
@@ -923,6 +923,25 @@
     return new RegExp("\\b" + re + "\\b", "i").test(String(hay));
   }
 
+  /* Domain/tag signals use token boundaries so short signals such as "ai" do not
+   * match unrelated words. Hyphenated phrases are equivalent to space-separated
+   * phrases; Japanese signals retain substring matching. */
+  function signalInText(hay, signal) {
+    if (!hay || !signal) return false;
+    var normalize = (value) =>
+      String(value)
+        .toLowerCase()
+        .replace(/[\u2010-\u2015\u2212-]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    var text = normalize(hay);
+    var needle = normalize(signal);
+    if (!text || !needle) return false;
+    if (/[\u3000-\u9fff]/.test(needle)) return text.indexOf(needle) !== -1;
+    var escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp("(?:^|[^a-z0-9])" + escaped + "(?=$|[^a-z0-9])", "i").test(text);
+  }
+
   /* クエリの内容語数（英語）。ブレンドの語彙重みの適応に使う。
    * 一般語（STOPWORDS）と短語は数えない — 入力が短いほど語彙シグナルが疎なので
    * セマンティック寄りに倒すべき、という実測の根拠になる。 */
@@ -1171,6 +1190,7 @@
     setExpandEnabled: setExpandEnabled,
     queryText: queryText,
     wordInText: wordInText,
+    signalInText: signalInText,
   };
 
   if (typeof module !== "undefined" && module.exports) {

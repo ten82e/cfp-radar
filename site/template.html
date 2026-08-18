@@ -615,17 +615,6 @@ footer a:hover { text-decoration: underline; }
   if (Recommender && Recommender.buildNameIdf && DATA.conferences.length) {
     Recommender.setNameIdf(Recommender.buildNameIdf(DATA.conferences));
   }
-  var DOMAIN_SIGNAL = (Recommender && Recommender.DOMAIN_SIGNAL) || {
-    hpc: ["hpc", "supercomputing", "parallel", "gpu", "fpga", "cuda", "mpi", "interconnect", "cluster", "ハイパフォーマンス", "スーパーコンピュータ", "並列"],
-    systems: ["storage", "nvme", "cxl", "rdma", "kernel", "operating system", "memory", "virtual", "compiler", "real-time", "realtime", "embedded", "deterministic", "tsn", "ストレージ", "カーネル", "分散システム", "ミドルウェア", "オペレーティングシステム"],
-    networking: ["network", "sdn", "p4", "protocol", "wireless", "5g", "routing", "bpf", "ebpf", "packet", "ネットワーク", "通信", "ルーティング", "無線"],
-    ai: ["machine learning", "deep learning", "neural", "sysml", "gnn", "transformer", "llm", "ai", "機械学習", "深層学習", "ニューラル", "生成"],
-    security: ["security", "privacy", "crypto", "vulnerability", "binary", "enclave", "sgx", "confidential", "セキュリティ", "プライバシー", "暗号"],
-    db: ["database", "query", "sql", "index", "data mining", "data management", "key-value", "oltp", "olap", "vector", "データベース", "クエリ", "データマイニング"],
-    graphics: ["graphics", "rendering", "mesh", "animation", "multimedia", "video", "audio", "image processing", "computer vision", "3d", "ビジュアライゼーション", "可視化", "映像", "グラフィックス"],
-    hci: ["human-computer", "user interface", "usability", "interaction", "accessibility", "touch", "augmented reality", "virtual reality", "ヒューマン", "ユーザインタフェース", "ユーザビリティ"],
-    theory: ["algorithm", "complexity", "automata", "graph theory", "approximation", "lower bound", "combinatorial", "formal", "verification", "アルゴリズム", "計算量", "複雑性"]
-  };
 
   var state = {
     q: "", cats: [], kind: "", rank: "", win: "all",
