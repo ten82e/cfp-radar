@@ -22500,3 +22500,23 @@ conferences:
         place: Belgrade, Serbia
         date_text: Nov 17, 2026
         deadlines: []
+  - key: acm-eset-2026
+    title: ACM ESET 2026
+    full_name: >-
+      ACM--2026 The 10th International Conference on E-Society, E-Education and
+      E-Technology (ESET 2026)
+    link: >-
+      https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194136&copyownerid=13881
+    categories:
+      - internet
+    tags:
+      - niche
+      - wikicfp
+    editions:
+      - year: 2026
+        id: acm-eset-202626
+        link: >-
+          https://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=194136&copyownerid=13881
+        place: Hakodate, Hokkaido, Japan
+        date_text: Sep 20, 2026
+        deadlines: []
