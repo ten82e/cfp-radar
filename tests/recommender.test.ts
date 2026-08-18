@@ -96,6 +96,45 @@ describe("parsePaperLines", () => {
   });
 });
 
+describe("bounded PDF paper extraction", () => {
+  const item = (str: string, size: number, y: number, x = 0) => ({
+    str,
+    transform: [size, 0, 0, size, x, y],
+  });
+
+  it("prefers metadata title and stops sections before references", () => {
+    const pages = [
+      [
+        item("Large visual title", 24, 800),
+        item("Abstract", 12, 740),
+        item("We study scheduling systems.", 10, 720),
+        item("Keywords: scheduling, systems", 10, 680),
+        item("1 Introduction", 12, 640),
+        item("References", 12, 100),
+      ],
+    ];
+    expect(R.pdfPaperRecord({ info: { Title: "Metadata title" } }, pages, "filename.pdf")).toEqual({
+      title: "Metadata title",
+      abstract: "We study scheduling systems.",
+      keywords: "scheduling, systems",
+      venue: "",
+    });
+  });
+
+  it("uses font-aware title fallback and preserves x reading order", () => {
+    const pages = [
+      [item("right", 10, 700, 100), item("Title", 20, 800, 100), item("left", 10, 700, 0)],
+    ];
+    expect(R.pdfTextLines(pages)).toEqual(["Title", "left right"]);
+    expect(R.pdfPaperRecord({}, pages, "fallback.pdf").title).toBe("Title");
+  });
+
+  it("bounds an empty or malformed extraction to a filename fallback", () => {
+    expect(R.pdfPaperRecord({}, [[]], "fallback.pdf").title).toBe("fallback.pdf");
+    expect(R.pdfPaperRecord({}, null, "").title).toBe("");
+  });
+});
+
 describe("safeExternalUrl", () => {
   it.each(["http://example.com/cfp", "https://example.com/cfp", "/cfp", "//example.com/cfp"])(
     "accepts %s",
@@ -749,6 +788,12 @@ describe("score labels and transient UI state", () => {
     expect(template).not.toContain('"適合度 " + r._matchScore + "%');
     expect(template).toContain("r._boosted = false;");
     expect(template).toContain("return (ar === br ? 0 : ar > br ? 1 : -1) * mult;");
+    expect(template).toContain('var PDFJS_VERSION = "3.11.174";');
+    expect(template).toContain("var PDF_PAGE_LIMIT = 3;");
+    expect(template).toContain("var PDF_MAX_BYTES = 20 * 1024 * 1024;");
+    expect(template).toContain("new AbortController()");
+    expect(template).toContain('id="paperPrimaryTitle"');
+    expect(template).toContain('id="paperReferences"');
   });
 });
 

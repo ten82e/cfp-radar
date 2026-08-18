@@ -509,12 +509,19 @@ footer a:hover { text-decoration: underline; }
       <span style="font-size: 0.78rem; color: var(--muted); font-weight: 500;">投稿先レコメンド</span>
       <div style="margin-top: 4px;">
         <label style="display: inline-block; cursor: pointer; padding: 8px 14px; border: 1px dashed var(--border); border-radius: 8px; font-size: 0.85rem; color: var(--accent);">
-          📄 読んだ論文・投稿予定の論文を選ぶ（PDF / TXT・複数可）
+          📄 投稿予定の論文を選ぶ（PDF / TXT・複数可。1件目が投稿予定、残りは参考論文）
           <input type="file" id="paperFiles" accept=".pdf,.txt" multiple style="display: none;">
         </label>
         <span id="paperFileLabel" style="font-size: 0.72rem; color: var(--muted); margin-left: 8px;">未選択</span>
+        <button id="cancelPdf" type="button" hidden>PDF読み込みをキャンセル</button>
       </div>
-      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">PDF はタイトルとアブストラクトを自動で読み取って会議をランク付けします（TXT も可）。CDN 未接続時は PDF が読めないため TXT のみ対応。</div>
+      <div style="font-size: 0.7rem; color: var(--muted); margin-top: 2px;">PDF は先頭3ページのタイトル・Abstract・Keywordsだけを読み取ります。抽出結果は編集してから推薦できます。</div>
+      <div style="display: grid; gap: 8px; margin-top: 8px;">
+        <label>投稿予定タイトル<input id="paperPrimaryTitle" type="text" placeholder="投稿予定論文のタイトル"></label>
+        <label>投稿予定 Abstract<textarea id="paperPrimaryAbstract" rows="4" placeholder="投稿予定論文の Abstract"></textarea></label>
+        <label>投稿予定 Keywords<input id="paperPrimaryKeywords" type="text" placeholder="keyword, keyword"></label>
+        <label>参考論文<textarea id="paperReferences" rows="3" placeholder="参考論文（1行1件: title | keywords | venue）"></textarea></label>
+      </div>
       <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">
         <span style="font-size: 0.7rem; color: var(--muted); align-self: center;">動作確認用サンプル:</span>
         <button class="sample-btn" type="button" data-sample="Time-Sensitive Networking Scheduling for Deterministic Industrial Networks | tsn, real-time, scheduling, deterministic | IEEE RTSS">TSN スケジューリング</button>
@@ -1496,54 +1503,125 @@ footer a:hover { text-decoration: underline; }
     render();
   }
 
-  // ---- paper file upload（PDF/TXT → 1行「タイトル | 本文」へ整形し既存パイプラインに流す） ----
+  // ---- paper file upload（PDF/TXT → editable structured records） ----
+  var PDFJS_VERSION = "3.11.174";
+  var PDFJS_SCRIPT = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  var PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  var PDF_MAX_BYTES = 20 * 1024 * 1024;
+  var PDF_MAX_PAGES = 100;
+  var PDF_PAGE_LIMIT = 3;
+  var PDF_TIMEOUT_MS = 15000;
+  var pdfAbortController = null;
+  var pdfJob = 0;
+  var paperPrimaryVenue = "";
+
   function loadPdfJs(cb) {
-    if (window.pdfjsLib) { cb(true); return; }
+    if (PDFJS_SCRIPT.indexOf("/" + PDFJS_VERSION + "/") < 0 || PDFJS_WORKER.indexOf("/" + PDFJS_VERSION + "/") < 0) { cb(false); return; }
+    if (window.pdfjsLib) { cb(String(window.pdfjsLib.version || PDFJS_VERSION) === PDFJS_VERSION); return; }
     var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.src = PDFJS_SCRIPT;
     s.onload = () => {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
       cb(true);
     };
     s.onerror = () => { cb(false); };
     document.head.appendChild(s);
   }
-  function fileToLine(name, text) {
-    var ls = String(text).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-    var title = ls[0] || name.replace(/\.[^.]+$/, "");
-    var body = ls.slice(1).join(" ").replace(/\s+/g, " ").slice(0, 1500);
-    return title + " | " + body;
+  function abortError() {
+    var error = new Error("PDF extraction cancelled");
+    error.name = "AbortError";
+    return error;
   }
-  function readPdf(buf) {
-    return window.pdfjsLib.getDocument({ data: buf }).promise.then((doc) => {
-      var pages = [];
-      for (var i = 1; i <= doc.numPages; i++) {
-        pages.push(doc.getPage(i).then((pg) => pg.getTextContent().then((tc) => tc.items.map((it) => it.str).join(" "))));
-      }
-      return Promise.all(pages).then((arr) => arr.join("\n"));
+  function readPdf(buf, signal) {
+    var task = window.pdfjsLib.getDocument({ data: buf });
+    var timer;
+    var stop = () => { if (task.destroy) task.destroy(); };
+    return new Promise((resolve, reject) => {
+      var finish = (fn, value) => {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", onAbort);
+        fn(value);
+      };
+      var onAbort = () => { stop(); finish(reject, abortError()); };
+      if (signal.aborted) { onAbort(); return; }
+      signal.addEventListener("abort", onAbort, { once: true });
+      timer = setTimeout(() => { stop(); finish(reject, new Error("PDF extraction timed out")); }, PDF_TIMEOUT_MS);
+      task.promise.then((doc) => {
+        if (doc.numPages > PDF_MAX_PAGES) throw new Error("PDF has too many pages");
+        var pages = [];
+        for (var i = 1; i <= Math.min(doc.numPages, PDF_PAGE_LIMIT); i++) {
+          pages.push(doc.getPage(i).then((page) => page.getTextContent().then((content) => content.items)));
+        }
+        return Promise.all([
+          Promise.all(pages),
+          doc.getMetadata().catch(() => ({ info: {} })),
+        ]);
+      }).then(([pages, metadata]) => finish(resolve, { pages, metadata }), (error) => finish(reject, error));
     });
   }
+  function textRecord(name, text) {
+    var lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    var items = lines.map((line, index) => ({ str: line, transform: [12, 0, 0, 12, 0, 1000 - index] }));
+    return Recommender.pdfPaperRecord({}, [items], name);
+  }
+  function readPaperFile(file, signal) {
+    if (file.size > PDF_MAX_BYTES) return Promise.reject(new Error("file is too large"));
+    if (/\.txt$/i.test(file.name)) return file.text().then((text) => textRecord(file.name, text));
+    return file.arrayBuffer().then((buf) => readPdf(buf, signal)).then((result) =>
+      Recommender.pdfPaperRecord(result.metadata, result.pages, file.name),
+    );
+  }
+  function syncPaperText() {
+    var primary = {
+      title: $("paperPrimaryTitle").value.trim(),
+      abstract: $("paperPrimaryAbstract").value.trim(),
+      keywords: $("paperPrimaryKeywords").value.trim(),
+      venue: paperPrimaryVenue,
+    };
+    var records = primary.title || primary.abstract || primary.keywords ? [primary] : [];
+    records = records.concat(Recommender.parsePaperLines($("paperReferences").value));
+    $("paperText").value = records.length ? JSON.stringify(records) : "";
+  }
+  function setPrimaryRecord(record) {
+    $("paperPrimaryTitle").value = record && record.title || "";
+    $("paperPrimaryAbstract").value = record && record.abstract || "";
+    $("paperPrimaryKeywords").value = record && record.keywords || "";
+    paperPrimaryVenue = record && record.venue || "";
+  }
   var paperFiles = document.getElementById("paperFiles");
+  var cancelPdf = document.getElementById("cancelPdf");
+  cancelPdf.addEventListener("click", () => {
+    if (pdfAbortController) pdfAbortController.abort();
+  });
   paperFiles.addEventListener("change", function () {
     var files = Array.prototype.slice.call(this.files);
     if (!files.length) return;
     var label = document.getElementById("paperFileLabel");
     label.textContent = "読み込み中…";
-    var jobs = files.map((f) => {
-      if (/\.txt$/i.test(f.name)) {
-        return f.text().then((t) => fileToLine(f.name, t));
-      }
-      return new Promise((res, rej) => {
-        loadPdfJs((ok) => { ok ? res() : rej(new Error("pdfjs unavailable")); });
-      }).then(() => f.arrayBuffer().then(readPdf).then((t) => fileToLine(f.name, t)));
-    });
-    Promise.all(jobs).then((lines) => {
-      document.getElementById("paperText").value = lines.filter(Boolean).join("\n");
+    cancelPdf.hidden = false;
+    var job = ++pdfJob;
+    pdfAbortController = new AbortController();
+    var signal = pdfAbortController.signal;
+    var load = files.some((file) => !/\.txt$/i.test(file.name))
+      ? new Promise((resolve, reject) => loadPdfJs((ok) => ok ? resolve() : reject(new Error("pdfjs unavailable"))))
+      : Promise.resolve();
+    load.then(() => Promise.all(files.map((file) => readPaperFile(file, signal)))).then((records) => {
+      if (job !== pdfJob || signal.aborted) throw abortError();
+      setPrimaryRecord(records[0] || {});
+      $("paperReferences").value = records.slice(1).map((record) =>
+        [record.title, record.keywords, record.venue].filter(Boolean).join(" | "),
+      ).join("\n");
+      syncPaperText();
       label.textContent = files.map((f) => f.name).join(", ");
       apply();
       scheduleSemantic();
-    }).catch(() => {
-      label.textContent = "PDF 読込に失敗しました（CDN 未接続時は TXT のみ対応）";
+    }).catch((error) => {
+      label.textContent = error.name === "AbortError" ? "PDF 読込をキャンセルしました" : "PDF 読込に失敗しました: " + error.message;
+    }).finally(() => {
+      if (job === pdfJob) {
+        pdfAbortController = null;
+        cancelPdf.hidden = true;
+      }
     });
     this.value = "";
   });
@@ -1558,9 +1636,19 @@ footer a:hover { text-decoration: underline; }
     clearTimeout(timer);
     timer = setTimeout(() => { apply(); scheduleSemantic(); }, 200);
   });
+  ["paperPrimaryTitle", "paperPrimaryAbstract", "paperPrimaryKeywords", "paperReferences"].forEach((id) => {
+    $(id).addEventListener("input", () => {
+      syncPaperText();
+      clearTimeout(timer);
+      timer = setTimeout(() => { apply(); scheduleSemantic(); }, 200);
+    });
+  });
   Array.prototype.forEach.call(document.querySelectorAll(".sample-btn"), (b) => {
     b.addEventListener("click", () => {
-      $("paperText").value = b.getAttribute("data-sample");
+      var sample = Recommender.parsePaperLines(b.getAttribute("data-sample"))[0] || {};
+      setPrimaryRecord(sample);
+      $("paperReferences").value = "";
+      syncPaperText();
       apply();
       scheduleSemantic();
     });
@@ -1573,6 +1661,8 @@ footer a:hover { text-decoration: underline; }
   $("reset").addEventListener("click", () => {
     state = { q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     $("paperText").value = "";
+    setPrimaryRecord({});
+    $("paperReferences").value = "";
     paperFiles.value = "";
     document.getElementById("paperFileLabel").textContent = "未選択";
     toForm();
