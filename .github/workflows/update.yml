@@ -24,10 +24,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -90,14 +90,14 @@ jobs:
       # その日の配信ごと落とさない。
       - name: Upload Pages artifact
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、
   # data/discovered_candidates.yaml に追記する。収録(snapshot/サイト)には
@@ -108,10 +108,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
