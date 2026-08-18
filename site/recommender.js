@@ -219,6 +219,57 @@
     return labeled ? [labeled] : null;
   }
 
+  function pdfTextLines(pages) {
+    var pageList = Array.isArray(pages) && Array.isArray(pages[0]) ? pages : [pages || []];
+    return pageList.flatMap((items) => {
+      var groups = {};
+      (items || []).forEach((item) => {
+        var text = String(item && item.str || "").replace(/\s+/g, " ").trim();
+        if (!text) return;
+        var transform = item && item.transform || [];
+        var y = Number(transform[5]);
+        var x = Number(transform[4]);
+        var key = Number.isFinite(y) ? Math.round(y / 2) * 2 : Object.keys(groups).length;
+        (groups[key] || (groups[key] = [])).push({ text, x: Number.isFinite(x) ? x : 0 });
+      });
+      return Object.keys(groups).sort((a, b) => Number(b) - Number(a)).map((key) =>
+        groups[key].sort((a, b) => a.x - b.x).map((item) => item.text).join(" ").trim(),
+      );
+    }).filter(Boolean);
+  }
+
+  function pdfPaperRecord(metadata, pages, fallbackText) {
+    var pageList = Array.isArray(pages) && Array.isArray(pages[0]) ? pages : [pages || []];
+    var lines = pdfTextLines(pageList);
+    var info = (metadata && (metadata.info || metadata)) || {};
+    var title = String(info.Title || info.title || "").trim();
+    if (!title) {
+      var first = pageList[0] || [];
+      var sizes = first.map((item) => Math.abs(Number((item && item.transform || [])[0]) || Number(item && item.height) || 0));
+      var max = Math.max.apply(null, sizes.concat([0]));
+      if (max > 0) {
+        title = first.filter((item, index) => sizes[index] >= max * 0.9).map((item) => String(item.str || "").trim()).filter(Boolean).join(" ");
+      }
+    }
+    var fallback = String(fallbackText || "").trim();
+    if (!title) title = lines[0] || fallback.slice(0, 200);
+    title = title.replace(/\s+/g, " ").slice(0, 240);
+    var normalized = lines.map((line) => line.replace(/\s+/g, " ").trim());
+    var abstractAt = normalized.findIndex((line) => /^abstract\s*[:.]?/i.test(line) || /^概要\s*[:：]?/.test(line));
+    var keywordsAt = normalized.findIndex((line) => /^(keywords?|index terms|キーワード)\s*[:：]?/i.test(line));
+    var sectionEnd = (start) => normalized.findIndex((line, index) => index > start && /^(keywords?|index terms|introduction|references|参考文献|1\.?\s+introduction)\b/i.test(line));
+    var abstract = "";
+    if (abstractAt >= 0) {
+      var abstractStart = normalized[abstractAt].replace(/^abstract\s*[:.]?/i, "").replace(/^概要\s*[:：]?/, "").trim();
+      var abstractEnd = sectionEnd(abstractAt);
+      abstract = [abstractStart].concat(normalized.slice(abstractAt + 1, abstractEnd < 0 ? (keywordsAt > abstractAt ? keywordsAt : normalized.length) : abstractEnd)).filter(Boolean).join(" ");
+    }
+    var keywords = keywordsAt >= 0
+      ? normalized[keywordsAt].replace(/^(keywords?|index terms|キーワード)\s*[:：]?/i, "").trim()
+      : "";
+    return { title, abstract: abstract.slice(0, 6000), keywords: keywords.slice(0, 1000), venue: "" };
+  }
+
   function normalizePaperRecord(record) {
     if (!record || typeof record !== "object") return null;
     var value = (name) => record[name] ?? "";
@@ -1367,6 +1418,8 @@
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     STOPWORDS: STOPWORDS,
     parsePaperLines: parsePaperLines,
+    pdfTextLines: pdfTextLines,
+    pdfPaperRecord: pdfPaperRecord,
     autoDetectCats: autoDetectCats,
     venueCategories: venueCategories,
     scorePapers: scorePapers,
