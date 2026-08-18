@@ -3,7 +3,7 @@
  * Ported from tests/test_fetch_primary.py.
  */
 
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -20,6 +20,7 @@ import {
   runFetchPrimary,
   toLines,
 } from "../src/fetch-primary.ts";
+import { REPO_ROOT } from "./helpers.ts";
 
 let stderrSpy: ReturnType<typeof vi.spyOn> | null = null;
 
@@ -33,6 +34,12 @@ function spyStderr(): void {
 }
 
 describe("fetch-primary extraction", () => {
+  it("keeps TLS certificate verification enabled (#422)", () => {
+    const source = readFileSync(join(REPO_ROOT, "src", "fetch-primary.ts"), "utf8");
+    expect(source).not.toContain("rejectUnauthorized: false");
+    expect(source).not.toContain("CERT_NONE");
+  });
+
   it("easychair style", () => {
     // SETTA 2026 の実例: "Submission deadline May 10, 2026"
     expect(extractDeadline("Submission deadline May 10, 2026", 2026)).toEqual({
