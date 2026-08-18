@@ -17,6 +17,11 @@
     "format": "biome format --write src tests"
   },
   "license": "MIT",
+  "overrides": {
+    "adm-zip": "0.6.0",
+    "onnxruntime-node": "1.27.0",
+    "sharp": "0.35.3"
+  },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",
     "html-entities": "^2.6.0",
