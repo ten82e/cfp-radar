@@ -104,6 +104,47 @@ describe("autoDetectCats", () => {
   });
 });
 
+describe("domain and topic signal boundaries", () => {
+  it.each([
+    ["training failure availability maintain", "ai", false],
+    ["AI-assisted scheduling", "ai", true],
+    ["machine-learning scheduler", "machine learning", true],
+    ["real time systems", "real-time", true],
+    ["eBPF packet processing", "ebpf", true],
+    ["networking systems", "network", false],
+  ])("matches %s against %s -> %s", (text, signal, expected) => {
+    expect(R.signalInText(text, signal)).toBe(expected);
+  });
+
+  it("uses the same boundary matcher for auto detection and domain scoring", () => {
+    const aiRow = {
+      conf: { key: "ai-test", title: "AI Test", full_name: "", tags: [] },
+      cats: ["ai"],
+    };
+    expect(
+      R.autoDetectCats(R.parsePaperLines("Training failure and availability | storage")),
+    ).not.toContain("ai");
+    expect(R.autoDetectCats(R.parsePaperLines("AI-assisted scheduling"))).toContain("ai");
+    expect(
+      R.breakdown(aiRow, R.parsePaperLines("Training failure detection in storage")).agg.domain,
+    ).toBe(0);
+    expect(
+      R.breakdown(aiRow, R.parsePaperLines("AI-assisted scheduling")).agg.domain,
+    ).toBeGreaterThan(0);
+  });
+
+  it("normalizes hyphenated topic tags", () => {
+    const row = {
+      conf: { key: "ml-test", title: "ML Test", full_name: "", tags: ["machine-learning"] },
+      cats: [],
+    };
+    expect(R.breakdown(row, R.parsePaperLines("A machine learning scheduler")).agg.tags).toBe(10);
+    expect(readFileSync(join(REPO_ROOT, "site/template.html"), "utf8")).not.toContain(
+      "var DOMAIN_SIGNAL",
+    );
+  });
+});
+
 describe("name matching stopwords", () => {
   it("generic words like processing do not match conference names", () => {
     // Signal Processing 等の会議名に含まれる一般語が内容語として加点されない
