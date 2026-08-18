@@ -9,6 +9,7 @@
  *   autoDetectCats(lines)      → [catKey, ...]  分野自動判定（ヒット数の降順、0 件なら []）
  *   scorePapers(r, lines)      → number 0..100  (行平均。掲載先タグ一致はブースト)
  *   breakdown(r, lines)        → {score, venueHit, perLine: [...]}  デバッグ/表示用
+ *   safeExternalUrl(value)     → HTTP/HTTPS または相対 URL、不正な URL は ""
  */
 ((root) => {
   /* 既存 template.html の DOMAIN_SIGNAL と同一（ここが正典）
@@ -1222,6 +1223,17 @@
     return parts.join(" ");
   }
 
+  function safeExternalUrl(value) {
+    var text = String(value == null ? "" : value).trim();
+    if (!text) return "";
+    try {
+      var url = new URL(text, "https://kamiyobi.invalid/");
+      return url.protocol === "http:" || url.protocol === "https:" ? text : "";
+    } catch (_error) {
+      return "";
+    }
+  }
+
   var api = {
     DOMAIN_SIGNAL: DOMAIN_SIGNAL,
     STOPWORDS: STOPWORDS,
@@ -1235,6 +1247,7 @@
     pastRepresentatives: pastRepresentatives,
     pickRepresentative: pickRepresentative,
     comparePapers: comparePapers,
+    safeExternalUrl: safeExternalUrl,
     matchVenueTag: matchVenueTag,
     blendVectors: blendVectors,
     cosine: cosine,

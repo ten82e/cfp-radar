@@ -1263,7 +1263,7 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
     "onKeydown({ key: 'd', preventDefault() {}, target: { tagName: 'BODY' } });",
     "const dOpened = calls.open.length === 1 && calls.open[0] === 'B';",
     "const dFocusedRow = calls.focus[calls.focus.length - 1] === 'row1';",
-    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'esc', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '', (s) => String(s ?? ''));",
+    "const openDrawer = new Function('window', 'document', '$', 'KIND_LABEL', 'titleWithYear', 'fmtDate', 'fmtJst', 'fmtAoE', 'getGCalUrl', 'esc', 'safeExternalUrl', 'return (' + OPEN + ')')(window, document, $, {}, (t) => t, () => '', () => '', () => '', () => '', (s) => String(s ?? ''), (s) => String(s ?? ''));",
     "document.activeElement = prevEl;",
     "openDrawer({ kind: 'journal', conf: { title: 'X' }, ed: { place: 'P', date_text: 'D' } });",
     "const focusedClose = document.activeElement === closeBtn;",
@@ -1420,9 +1420,8 @@ it("openDrawer escapes place, date_text, and official-site href (#390)", () => {
   const body = template.slice(start, end);
   expect(body).toContain("esc(r.ed.place");
   expect(body).toContain("esc(r.ed.date_text");
-  expect(body).toMatch(
-    /esc\(\s*(r\.ed\.link\s*\|\|\s*r\.conf\.link|r\.conf\.link\s*\|\|\s*r\.ed\.link)/,
-  );
+  expect(body).toContain("safeExternalUrl(r.ed.link || r.conf.link)");
+  expect(body).toContain("esc(officialLink)");
 });
 
 it("openDrawer escapes KIND_LABEL fallback kind (#396)", () => {
