@@ -204,6 +204,8 @@ export const WIKICFP_CATEGORY_MAP: Record<string, string[]> = {
   ],
 };
 
+export type CandidateStatus = "discovered" | "reviewed" | "accepted" | "rejected" | "superseded";
+
 export interface Candidate {
   key: string;
   title: string;
@@ -213,6 +215,9 @@ export interface Candidate {
   tags: string[];
   source_type: string; // 'conference' | 'journal' | 'special_issue'
   evidence_url: string;
+  status: CandidateStatus;
+  discovered_at: string;
+  review_notes?: string;
   date_text: string;
   /** 開催年。パース時にタイトル等から判明した正しい年 (date_text は締切日で開催年と
    * 1 年ずれうるため、toYamlDict はこれを優先する)。無ければ date_text から導出。 */
@@ -236,6 +241,8 @@ export function makeCandidate(
     tags: ["niche"],
     source_type: "conference",
     evidence_url: "",
+    status: "discovered",
+    discovered_at: "",
     date_text: "",
     place: "",
     deadlines: [],
@@ -273,6 +280,31 @@ export function toYamlDict(c: Candidate | null | undefined): Record<string, unkn
   }
   entry.editions = editions;
   return entry;
+}
+
+/** Serialize discovery-only records; these are not publication-ready conferences. */
+export function formatCandidateYaml(candidates: Candidate[] | null | undefined): string {
+  const seenKeys = new Set<string>();
+  const seenEvidence = new Set<string>();
+  const records = (Array.isArray(candidates) ? candidates : [])
+    .filter((candidate) => {
+      const key = String(candidate?.key ?? "").trim();
+      const evidence = String(candidate?.evidence_url ?? "").trim();
+      if (!key || seenKeys.has(key) || (evidence && seenEvidence.has(evidence))) return false;
+      seenKeys.add(key);
+      if (evidence) seenEvidence.add(evidence);
+      return true;
+    })
+    .sort((a, b) => String(a.key).localeCompare(String(b.key)))
+    .map((c) => ({
+      ...toYamlDict(c),
+      status: c.status,
+      discovered_at: c.discovered_at,
+      ...(c.year ? { target_year: c.year } : {}),
+      ...(c.review_notes ? { review_notes: c.review_notes } : {}),
+      evidence_url: c.evidence_url,
+    }));
+  return dumpYaml({ schema: 1, candidates: records }, { skipInvalid: true }) as string;
 }
 
 /** Date.UTC は不正な年月日を繰り上げてしまうため、暦の妥当性を検証してから返す。 */
@@ -1064,11 +1096,13 @@ export async function discoverFromImap(minYear: number): Promise<Array<Record<st
 
 export class NicheDiscoverer {
   private readonly rootDir: string;
+  private readonly discoveredAt: string;
   readonly knownKeys = new Set<string>();
   private readonly knownTitles = new Set<string>();
 
-  constructor(rootDir: string = ROOT) {
+  constructor(rootDir: string = ROOT, discoveredAt = new Date().toISOString()) {
     this.rootDir = rootDir;
+    this.discoveredAt = discoveredAt;
     this.loadKnownVenues();
   }
 
@@ -1450,7 +1484,8 @@ export class NicheDiscoverer {
         categories: ["systems", "security"],
         tags: ["niche", "workshop"],
         place: "Europe",
-        date_text: "September 14, 2026",
+        date_text: `September 14, ${minYear}`,
+        year: minYear,
       }),
       makeCandidate({
         key: "netpl",
@@ -1460,7 +1495,8 @@ export class NicheDiscoverer {
         categories: ["networking", "systems"],
         tags: ["niche", "workshop"],
         place: "Virtual",
-        date_text: "October 10, 2026",
+        date_text: `October 10, ${minYear}`,
+        year: minYear,
       }),
       makeCandidate({
         key: "taco-special",
@@ -1481,9 +1517,11 @@ export class NicheDiscoverer {
 
     // Filter by requested categories if specified
     if (categories) {
-      return results.filter((c) => c.categories.some((cat) => categories.includes(cat)));
+      return results
+        .filter((c) => c.categories.some((cat) => categories.includes(cat)))
+        .map((c) => ({ ...c, discovered_at: c.discovered_at || this.discoveredAt }));
     }
-    return results;
+    return results.map((c) => ({ ...c, discovered_at: c.discovered_at || this.discoveredAt }));
   }
 }
 

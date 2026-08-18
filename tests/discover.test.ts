@@ -3,12 +3,14 @@
  * Ported from tests/test_discover.py.
  */
 
+import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
 import {
   cleanDbworldTitle,
   deadlineIsFuture,
   easyChairEntriesFromRows,
   extractDeadlinesFromText,
+  formatCandidateYaml,
   formatDiscoveredYaml,
   inDomain,
   makeCandidate,
@@ -152,6 +154,50 @@ describe("formatDiscoveredYaml", () => {
     expect(text).toContain("key: nvmw");
     expect(text).toContain("title: NVMW");
     expect(text).toContain("Non-Volatile Memories Workshop");
+  });
+});
+
+describe("formatCandidateYaml", () => {
+  it("writes lifecycle metadata, stable ordering, and removes duplicate keys/evidence", () => {
+    const first = makeCandidate({
+      key: "zeta",
+      title: "Zeta Workshop",
+      full_name: "Zeta Workshop",
+      link: "https://zeta.example/",
+      categories: ["systems"],
+      evidence_url: "https://evidence.example/zeta",
+      discovered_at: "2026-08-19T00:00:00.000Z",
+      year: 2027,
+      status: "reviewed",
+      review_notes: "official CFP found",
+    });
+    const duplicateKey = makeCandidate({
+      key: "zeta",
+      title: "Duplicate",
+      full_name: "Duplicate",
+      link: "https://duplicate.example/",
+      categories: ["systems"],
+      evidence_url: "https://evidence.example/duplicate",
+    });
+    const alpha = makeCandidate({
+      key: "alpha",
+      title: "Alpha Workshop",
+      full_name: "Alpha Workshop",
+      link: "https://alpha.example/",
+      categories: ["hpc"],
+      evidence_url: "https://evidence.example/zeta",
+    });
+    const parsed = loadYaml(formatCandidateYaml([first, duplicateKey, alpha])) as any;
+    expect(parsed.schema).toBe(1);
+    expect(parsed.candidates).toHaveLength(1);
+    expect(parsed.candidates[0]).toMatchObject({
+      key: "zeta",
+      status: "reviewed",
+      discovered_at: "2026-08-19T00:00:00.000Z",
+      target_year: 2027,
+      review_notes: "official CFP found",
+      evidence_url: "https://evidence.example/zeta",
+    });
   });
 });
 
