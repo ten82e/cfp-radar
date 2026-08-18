@@ -60,6 +60,40 @@ describe("parsePaperLines", () => {
   it("handles empty input", () => {
     expect(R.parsePaperLines("  \n\n ")).toEqual([]);
   });
+
+  it("accepts structured JSON records and includes abstract text in scoring", () => {
+    const rows = R.parsePaperLines(
+      JSON.stringify({
+        title: "A paper",
+        abstract: "GPU scheduling for parallel systems",
+        keywords: ["latency", "kernel"],
+        venue: "SC",
+      }),
+    );
+    expect(rows).toEqual([
+      {
+        title: "A paper",
+        abstract: "GPU scheduling for parallel systems",
+        keywords: "latency, kernel",
+        venue: "SC",
+      },
+    ]);
+    expect(R.autoDetectCats(rows)).toContain("hpc");
+  });
+
+  it("accepts JSON arrays and labeled metadata, but malformed JSON falls back safely", () => {
+    expect(R.parsePaperLines('[{"title":"A"},{"title":"B","venue":"RTSS"}]')).toHaveLength(2);
+    expect(
+      R.parsePaperLines(
+        "Title: A paper\nAbstract: GPU scheduling\nKeywords: hpc, kernel\nVenue: SC",
+      ),
+    ).toEqual([
+      { title: "A paper", abstract: "GPU scheduling", keywords: "hpc, kernel", venue: "SC" },
+    ]);
+    expect(R.parsePaperLines('{"title":')).toEqual([
+      { title: '{"title":', keywords: "", venue: "" },
+    ]);
+  });
 });
 
 describe("safeExternalUrl", () => {
