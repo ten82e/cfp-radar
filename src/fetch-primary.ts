@@ -52,13 +52,9 @@ const LABELS: Record<string, string> = {
   rebuttal_end: "Rebuttal deadline",
 };
 
-// 検証不能なサイトが多いので証明書検証を迂回する (Python 版の CERT_NONE 相当)。
-import { Agent } from "undici";
-
 export async function fetchPage(url: string, timeout = 30_000): Promise<string> {
   const res = await fetch(url, {
     headers: { "User-Agent": UA },
-    dispatcher: new Agent({ connect: { rejectUnauthorized: false } }),
     signal: AbortSignal.timeout(timeout),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
