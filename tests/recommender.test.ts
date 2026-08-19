@@ -797,6 +797,14 @@ describe("score labels and transient UI state", () => {
     expect(template).toContain("new AbortController()");
     expect(template).toContain('id="paperPrimaryTitle"');
     expect(template).toContain('id="paperReferences"');
+    expect(template).toContain('if (a.status === "open" && a.timestamp)');
+    expect(template).toContain('var isPastOnly = a.status === "past";');
+    expect(template).toContain(
+      'titleWithYear(r.conf.title || r.conf.key || "", isPastOnly ? null : r.ed.year)',
+    );
+    expect(template).toContain(
+      "safeExternalUrl(isPastOnly ? r.conf.link : (r.ed.link || r.conf.link))",
+    );
   });
 });
 
@@ -865,6 +873,57 @@ describe("venue recommendation fusion", () => {
     );
     expect(result.map((item: any) => item.venueKey)).toEqual(["alpha", "zeta"]);
     expect(result.map((item: any) => item.fit.lexicalRank)).toEqual([1, 2]);
+  });
+
+  it("past-only venue reports status=past, not open (#477)", () => {
+    const result = R.venueRecommendations(
+      [row("past-only", "RTSS", NOW - 1000, ["systems"])],
+      R.parsePaperLines("real-time scheduling | systems"),
+      null,
+      NOW,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].availability).toMatchObject({ status: "past" });
+    expect(result[0].availability.timestamp).toBe(NOW - 1000);
+  });
+
+  it("future-plus-past venue prefers the future row (#477)", () => {
+    const result = R.venueRecommendations(
+      [
+        row("fut-past", "SIGCOMM", NOW + 1000, ["networking"]),
+        row("fut-past", "SIGCOMM", NOW - 1000, ["networking"]),
+      ],
+      R.parsePaperLines("network protocol | networking"),
+      null,
+      NOW,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].availability).toMatchObject({ kind: "paper", status: "open" });
+    expect(result[0].row.t).toBe(NOW + 1000); // future row, not past
+  });
+
+  it("estimated future deadline retains estimated flag (#477)", () => {
+    const estRow = { ...row("est", "SC", NOW + 2000, ["hpc"]), est: true };
+    const result = R.venueRecommendations(
+      [estRow],
+      R.parsePaperLines("parallel computing | hpc"),
+      null,
+      NOW,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].availability).toMatchObject({ status: "open", estimated: true });
+  });
+
+  it("past-only availability shows ongoing for journals (#477)", () => {
+    const journalRow = { ...row("j", "TOCS", NOW, ["systems"]), kind: "journal" };
+    const result = R.venueRecommendations(
+      [journalRow],
+      R.parsePaperLines("TOCS | systems"),
+      null,
+      NOW,
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].availability).toMatchObject({ status: "ongoing" });
   });
 });
 
