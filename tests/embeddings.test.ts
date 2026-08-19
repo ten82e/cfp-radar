@@ -5,6 +5,14 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  EMBEDDING_MODEL,
+  EMBEDDING_MULTI_MODEL,
+  EMBEDDING_MULTI_REVISION,
+  EMBEDDING_REVISION,
+  EMBEDDING_RUNTIME_VERSION,
+  embeddingBundleKey,
+  embeddingManifest,
+  embeddingProfileHash,
   main,
   profileTexts,
   serializeVenueProfiles,
@@ -112,6 +120,42 @@ describe("generated venue profile artifact", () => {
     expect(artifact.profiles).toEqual(VENUE_PAPERS);
     expect(artifactText).toBe(serializeVenueProfiles(VENUE_PAPERS));
     expect(Object.keys(artifact.profiles)).toEqual([...Object.keys(artifact.profiles)].sort());
+  });
+});
+
+describe("recommendation bundle contract", () => {
+  it("pins model revisions and derives a complete cache key", () => {
+    expect(EMBEDDING_REVISION).toMatch(/^[0-9a-f]{40}$/);
+    expect(EMBEDDING_MULTI_REVISION).toMatch(/^[0-9a-f]{40}$/);
+    expect(EMBEDDING_REVISION).not.toBe("main");
+    expect(EMBEDDING_MULTI_REVISION).not.toBe("main");
+    const data = { categories: {}, conferences: [] };
+    const manifest = embeddingManifest(data);
+    expect(manifest.runtime_version).toBe(EMBEDDING_RUNTIME_VERSION);
+    expect(manifest.models.en).toMatchObject({
+      model: EMBEDDING_MODEL,
+      revision: EMBEDDING_REVISION,
+    });
+    expect(manifest.models.multi).toMatchObject({
+      model: EMBEDDING_MULTI_MODEL,
+      revision: EMBEDDING_MULTI_REVISION,
+    });
+    expect(embeddingBundleKey(embeddingProfileHash(data))).toBe(
+      [
+        "kamiyobi-recommendation",
+        embeddingProfileHash(data),
+        EMBEDDING_REVISION,
+        EMBEDDING_MULTI_REVISION,
+        EMBEDDING_RUNTIME_VERSION,
+      ].join("-"),
+    );
+  });
+
+  it("promotes generated JSON through a temporary file and rename", () => {
+    const source = readFileSync(new URL("../src/embeddings.ts", import.meta.url), "utf8");
+    const dollar = String.fromCharCode(36);
+    expect(source).toContain(`const tempPath = \`${dollar}{outPath}.tmp.${dollar}{process.pid}\`;`);
+    expect(source).toContain("renameSync(tempPath, outPath);");
   });
 });
 

@@ -11,23 +11,22 @@
  */
 
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
 
 export const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
 export const EMBEDDING_MULTI_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 export const EMBEDDING_DIM = 384;
-export const EMBEDDING_REVISION = "main";
+export const EMBEDDING_REVISION = "751bff37182d3f1213fa05d7196b954e230abad9";
+export const EMBEDDING_MULTI_REVISION = "2c4055b12046f11709e9df2c122e59ffbdc2f900";
+export const EMBEDDING_RUNTIME_VERSION = "transformers-4.2.0";
 export const EMBEDDING_SCHEMA_VERSION = 1;
 export const EMBEDDING_PROBE = "kamiyobi embedding compatibility probe";
 
 const extractorPromises = new Map<string, Promise<FeatureExtractionPipeline>>();
 
-function getExtractor(
-  model: string,
-  revision = EMBEDDING_REVISION,
-): Promise<FeatureExtractionPipeline> {
+function getExtractor(model: string, revision: string): Promise<FeatureExtractionPipeline> {
   const cacheKey = `${model}@${revision}`;
   let p = extractorPromises.get(cacheKey);
   if (!p) {
@@ -196,7 +195,7 @@ async function embedSet(
   model: string,
   texts: string[],
   keys: string[],
-  revision = EMBEDDING_REVISION,
+  revision: string,
 ): Promise<Record<string, number[]>> {
   const extractor = await getExtractor(model, revision);
   const sums = new Map<string, number[]>();
@@ -240,11 +239,7 @@ async function embedSet(
 }
 
 /** 各テキストを個別ベクトルとして埋め込む（平均しない）。max 類似度用。 */
-async function embedEach(
-  model: string,
-  texts: string[],
-  revision = EMBEDDING_REVISION,
-): Promise<number[][]> {
+async function embedEach(model: string, texts: string[], revision: string): Promise<number[][]> {
   const extractor = await getExtractor(model, revision);
   const out: number[][] = [];
   const batch = 128;
@@ -283,6 +278,7 @@ export type EmbeddingModelManifest = {
 
 export type EmbeddingManifest = {
   schema: number;
+  runtime_version: string;
   profile_hash: string;
   keys: string[];
   venue_papers_hash: string;
@@ -325,10 +321,10 @@ function expectedPaperKeys(data: EmbeddingData | null | undefined): string[] {
     .sort();
 }
 
-function modelManifest(model: string, probe: number[]): EmbeddingModelManifest {
+function modelManifest(model: string, revision: string, probe: number[]): EmbeddingModelManifest {
   return {
     model,
-    revision: EMBEDDING_REVISION,
+    revision,
     dim: EMBEDDING_DIM,
     probe: { text: EMBEDDING_PROBE, vector: probe },
   };
@@ -338,9 +334,10 @@ function modelManifest(model: string, probe: number[]): EmbeddingModelManifest {
 export function embeddingProfileHash(data: EmbeddingData | null | undefined): string {
   const profile = {
     schema: EMBEDDING_SCHEMA_VERSION,
+    runtime_version: EMBEDDING_RUNTIME_VERSION,
     models: {
-      en: modelManifest(EMBEDDING_MODEL, []),
-      multi: modelManifest(EMBEDDING_MULTI_MODEL, []),
+      en: modelManifest(EMBEDDING_MODEL, EMBEDDING_REVISION, []),
+      multi: modelManifest(EMBEDDING_MULTI_MODEL, EMBEDDING_MULTI_REVISION, []),
     },
     categories: data?.categories ?? {},
     conferences: dataConferences(data).map((c) => ({
@@ -360,6 +357,16 @@ export function embeddingProfileHash(data: EmbeddingData | null | undefined): st
     .slice(0, 16);
 }
 
+export function embeddingBundleKey(profileHash: string): string {
+  return [
+    "kamiyobi-recommendation",
+    profileHash,
+    EMBEDDING_REVISION,
+    EMBEDDING_MULTI_REVISION,
+    EMBEDDING_RUNTIME_VERSION,
+  ].join("-");
+}
+
 export function embeddingManifest(
   data: EmbeddingData | null | undefined,
   probes: { en?: number[]; multi?: number[] } = {},
@@ -367,12 +374,13 @@ export function embeddingManifest(
   const keys = dataConferences(data).map((c) => String(c.key));
   return {
     schema: EMBEDDING_SCHEMA_VERSION,
+    runtime_version: EMBEDDING_RUNTIME_VERSION,
     profile_hash: embeddingProfileHash(data),
     keys,
     venue_papers_hash: venuePapersHash(),
     models: {
-      en: modelManifest(EMBEDDING_MODEL, probes.en ?? []),
-      multi: modelManifest(EMBEDDING_MULTI_MODEL, probes.multi ?? []),
+      en: modelManifest(EMBEDDING_MODEL, EMBEDDING_REVISION, probes.en ?? []),
+      multi: modelManifest(EMBEDDING_MULTI_MODEL, EMBEDDING_MULTI_REVISION, probes.multi ?? []),
     },
     paper_vecs: { keys: expectedPaperKeys(data), dim: EMBEDDING_DIM },
   };
@@ -399,13 +407,13 @@ export async function buildEmbeddings(
     EMBEDDING_MULTI_MODEL,
     multiTexts.texts,
     multiTexts.keys,
-    EMBEDDING_REVISION,
+    EMBEDDING_MULTI_REVISION,
   );
   const [enProbe] = await embedEach(EMBEDDING_MODEL, [EMBEDDING_PROBE], EMBEDDING_REVISION);
   const [multiProbe] = await embedEach(
     EMBEDDING_MULTI_MODEL,
     [EMBEDDING_PROBE],
-    EMBEDDING_REVISION,
+    EMBEDDING_MULTI_REVISION,
   );
 
   // skipEmb 会議（rtss/ecrts/usenix-security）の論文個別ベクトル（R16）。
@@ -437,23 +445,31 @@ export async function buildEmbeddings(
   }
 
   mkdirSync(dirname(outPath), { recursive: true });
-  writeFileSync(
-    outPath,
-    JSON.stringify({
-      model: EMBEDDING_MODEL,
+  const tempPath = `${outPath}.tmp.${process.pid}`;
+  const payload = JSON.stringify({
+    model: EMBEDDING_MODEL,
+    dim: EMBEDDING_DIM,
+    venuePapersHash: venuePapersHash(),
+    manifest: embeddingManifest(data, { en: enProbe, multi: multiProbe }),
+    embeddings: out,
+    multi: {
+      model: EMBEDDING_MULTI_MODEL,
       dim: EMBEDDING_DIM,
-      venuePapersHash: venuePapersHash(),
-      manifest: embeddingManifest(data, { en: enProbe, multi: multiProbe }),
-      embeddings: out,
-      multi: {
-        model: EMBEDDING_MULTI_MODEL,
-        dim: EMBEDDING_DIM,
-        embeddings: multi,
-      },
-      paperVecs,
-    }),
-    "utf8",
-  );
+      embeddings: multi,
+    },
+    paperVecs,
+  });
+  try {
+    writeFileSync(tempPath, payload, "utf8");
+    renameSync(tempPath, outPath);
+  } catch (error) {
+    try {
+      unlinkSync(tempPath);
+    } catch {
+      // Preserve the original error when cleanup also fails.
+    }
+    throw error;
+  }
   return out;
 }
 

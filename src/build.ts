@@ -16,7 +16,6 @@ import {
   EMBEDDING_DIM,
   EMBEDDING_MODEL,
   EMBEDDING_MULTI_MODEL,
-  EMBEDDING_REVISION,
   embeddingManifest,
   embeddingProfileHash,
   VENUE_PAPERS,
@@ -135,6 +134,7 @@ type EmbeddingFile = {
   paperVecs?: Record<string, unknown>;
   manifest?: {
     schema?: unknown;
+    runtime_version?: unknown;
     profile_hash?: unknown;
     keys?: unknown;
     venue_papers_hash?: unknown;
@@ -151,9 +151,18 @@ function sameKeys(have: Record<string, unknown> | undefined, want: string[]): bo
   return keys.length === want.length && keys.every((key, i) => key === want[i]);
 }
 
-function vectorsHaveDim(vectors: Record<string, unknown> | undefined, dim: number): boolean {
+function flatVectorMapHasDim(vectors: Record<string, unknown> | undefined, dim: number): boolean {
   return Object.values(vectors ?? {}).every(
     (vector) => Array.isArray(vector) && vector.length === dim,
+  );
+}
+
+function nestedVectorMapHasDim(vectors: Record<string, unknown> | undefined, dim: number): boolean {
+  return Object.values(vectors ?? {}).every(
+    (list) =>
+      Array.isArray(list) &&
+      list.length > 0 &&
+      list.every((vector) => Array.isArray(vector) && vector.length === dim),
   );
 }
 
@@ -168,7 +177,11 @@ export function embeddingsStale(
   const en = manifest?.models?.en;
   const multi = manifest?.models?.multi;
   if (!manifest || !en || !multi) return true;
-  if (manifest.schema !== expected.schema || manifest.profile_hash !== expected.profile_hash)
+  if (
+    manifest.schema !== expected.schema ||
+    manifest.runtime_version !== expected.runtime_version ||
+    manifest.profile_hash !== expected.profile_hash
+  )
     return true;
   if (manifest.profile_hash !== embeddingProfileHash(data)) return true;
   if (
@@ -189,11 +202,11 @@ export function embeddingsStale(
     return true;
   }
   if (
-    en.model !== EMBEDDING_MODEL ||
-    en.revision !== EMBEDDING_REVISION ||
+    en.model !== expected.models.en.model ||
+    en.revision !== expected.models.en.revision ||
     en.dim !== EMBEDDING_DIM ||
-    multi.model !== EMBEDDING_MULTI_MODEL ||
-    multi.revision !== EMBEDDING_REVISION ||
+    multi.model !== expected.models.multi.model ||
+    multi.revision !== expected.models.multi.revision ||
     multi.dim !== EMBEDDING_DIM ||
     !Array.isArray(en.probe?.vector) ||
     en.probe.vector.length !== EMBEDDING_DIM ||
@@ -202,9 +215,10 @@ export function embeddingsStale(
   ) {
     return true;
   }
-  if (!vectorsHaveDim(existing.embeddings, EMBEDDING_DIM)) return true;
-  if (!vectorsHaveDim(existing.multi?.embeddings, EMBEDDING_DIM)) return true;
-  if (!vectorsHaveDim(existing.paperVecs, EMBEDDING_DIM)) return true;
+  if (!flatVectorMapHasDim(existing.embeddings, EMBEDDING_DIM)) return true;
+  if (!flatVectorMapHasDim(existing.multi?.embeddings, EMBEDDING_DIM)) return true;
+  if (!sameKeys(existing.paperVecs, expected.paper_vecs.keys)) return true;
+  if (!nestedVectorMapHasDim(existing.paperVecs, EMBEDDING_DIM)) return true;
   if (JSON.stringify(manifest.paper_vecs?.keys) !== JSON.stringify(expected.paper_vecs.keys))
     return true;
   if (manifest.paper_vecs?.dim !== EMBEDDING_DIM) return true;
