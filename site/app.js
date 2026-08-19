@@ -24,6 +24,57 @@
   var recommendationData = null;
   var recommendationPromise = null;
   var recommendationError = false;
+  var historyStatus = "idle";
+
+  function createHistoryLoader(fetchJson, onState) {
+    var requestId = 0;
+    var pending = null;
+    var value = null;
+    var status = "idle";
+
+    function notify() {
+      if (onState) onState(status);
+    }
+
+    return {
+      get data() { return value; },
+      get status() { return status; },
+      cancel: function() {
+        requestId += 1;
+        pending = null;
+        if (status === "loading") {
+          status = "idle";
+        }
+      },
+      load: function(ref) {
+        if (value) return Promise.resolve(value);
+        if (pending) return pending;
+        var id = ++requestId;
+        status = "loading";
+        notify();
+        var next = Promise.resolve().then(() => fetchJson(ref)).then((data) => {
+          if (id !== requestId) return null;
+          if (!data || typeof data !== "object" || !Array.isArray(data.conferences) ||
+              data.conferences.some((conf) => !conf || typeof conf !== "object" || !Array.isArray(conf.editions))) {
+            throw new Error("invalid history data");
+          }
+          value = data;
+          pending = null;
+          status = "ready";
+          notify();
+          return data;
+        }).catch(() => {
+          if (id !== requestId) return null;
+          pending = null;
+          status = "error";
+          notify();
+          return null;
+        });
+        pending = next;
+        return next;
+      }
+    };
+  }
 
   // R12: 会議名 + 代表採択論文語彙の IDF 重みを実行時に計算して有効化する。
   // 実測（golden EN）: 実論文タイトルで正解会議 top1 が 25.0→37.5% に改善。
@@ -108,6 +159,8 @@
     if (type === 'a_star') state.rank = "A*";
     if (type === 'hpc_sys') state.cats = ["hpc", "systems"];
     if (type === 'domestic') state.domestic = true;
+    stopHistoryLoad();
+    if (state.mode === "deadlines") setDeadlineProfile(DATA);
     toForm();
     writeUrl();
     render();
@@ -329,6 +382,30 @@
     return out;
   }
   var rows = buildRows(DATA);
+
+  function setDeadlineProfile(data) {
+    activeData = data;
+    rows = buildRows(data);
+  }
+
+  function syncHistoryState() {
+    historyStatus = historyLoader.status;
+    if (historyStatus === "ready" && historyLoader.data && state.mode === "deadlines" && state.past) {
+      setDeadlineProfile(historyLoader.data);
+    } else if (historyStatus === "error" && state.mode === "deadlines") {
+      setDeadlineProfile(DATA);
+    }
+    render();
+  }
+
+  function fetchHistoryJson(ref) {
+    return fetch(ref).then((response) => {
+      if (!response.ok) throw new Error("history " + response.status);
+      return response.json();
+    });
+  }
+
+  var historyLoader = createHistoryLoader(fetchHistoryJson, syncHistoryState);
 
   // Update Summary Dashboard Stats
   $("statConfs").textContent = String((DATA.conferences || []).length);
@@ -1004,6 +1081,8 @@
       ? "あなたの論文に合う投稿先 " + shown.length + " 件"
       : recMode ? "投稿先を探すには論文情報を入力してください"
       : shown.length + " 件 / 全 " + rows.length + " 件";
+    if (!recMode && state.past && historyStatus === "loading") cnt += " ｜ 全履歴を読み込み中…";
+    if (!recMode && state.past && historyStatus === "error") cnt += " ｜ 全履歴を読み込めませんでした";
     if (paperMode) {
       var _lines = Recommender.parsePaperLines(pe.value);
       var _auto = _lines.length ? Recommender.autoDetectCats(_lines) : [];
@@ -1015,6 +1094,14 @@
       else if (semState === "error") { cnt += " ｜ AI 類似度 利用不可（オフラインのため語彙のみ）"; }
     }
     $("count").textContent = cnt;
+    var showHistoryStatus = !recMode && state.past && (historyStatus === "loading" || historyStatus === "error");
+    $("historyStatus").hidden = !showHistoryStatus;
+    if (showHistoryStatus) {
+      $("historyStatusText").textContent = historyStatus === "loading"
+        ? "過去の締切を読み込んでいます…"
+        : "全履歴を読み込めませんでした。表示中のカタログは利用できます。";
+      $("historyRetry").hidden = historyStatus !== "error";
+    }
     if (recMode) {
       $("deadlineTableWrap").hidden = true;
       $("recommendationCards").hidden = false;
@@ -1057,16 +1144,54 @@
       .catch(() => { recommendationError = true; render(); });
   }
 
+  function resolveHistoryRef() {
+    var ref = DATA && DATA.history_ref;
+    if (typeof ref !== "string" || !ref.trim()) return "";
+    try {
+      var url = new URL(ref, window.location.href);
+      if (url.origin !== window.location.origin) return "";
+      return url.href;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function stopHistoryLoad() {
+    historyLoader.cancel();
+    historyStatus = historyLoader.status;
+  }
+
+  function loadHistoryData() {
+    if (state.mode !== "deadlines" || !state.past) return;
+    if (historyLoader.data) {
+      historyStatus = historyLoader.status;
+      setDeadlineProfile(historyLoader.data);
+      return;
+    }
+    var ref = resolveHistoryRef();
+    if (!ref) {
+      historyStatus = "error";
+      setDeadlineProfile(DATA);
+      render();
+      return;
+    }
+    historyLoader.load(ref);
+  }
+
   function setMode(mode) {
     state.mode = mode === "recommend" ? "recommend" : "deadlines";
-    if (state.mode === "recommend") {
-      if (recommendationData) setRecommendationProfile(recommendationData);
-      else loadRecommendationData();
-    } else {
-      setRecommendationProfile(DATA);
-    }
     updateModeUi();
     writeUrl();
+    if (state.mode === "recommend") {
+      stopHistoryLoad();
+      if (recommendationData) setRecommendationProfile(recommendationData);
+      else loadRecommendationData();
+    } else if (state.past) {
+      loadHistoryData();
+    } else {
+      stopHistoryLoad();
+      setDeadlineProfile(DATA);
+    }
     render();
   }
 
@@ -1121,6 +1246,7 @@
     state.win = $("win").value;
     state.est = $("est").checked;
     state.domestic = $("domestic").checked;
+    state.past = $("past").checked;
     state.cats = [];
     Array.prototype.forEach.call(catsBox.querySelectorAll("input"), (chk) => {
       if (chk.checked) state.cats.push(chk.value);
@@ -1130,6 +1256,12 @@
   function apply() {
     fromForm();
     writeUrl();
+    if (state.mode === "deadlines" && state.past) {
+      loadHistoryData();
+    } else {
+      stopHistoryLoad();
+      if (state.mode === "deadlines") setDeadlineProfile(DATA);
+    }
     render();
   }
 
@@ -1293,6 +1425,11 @@
   $("more").addEventListener("click", drawMore);
   $("modeRecommend").addEventListener("click", () => setMode("recommend"));
   $("modeDeadlines").addEventListener("click", () => setMode("deadlines"));
+  $("historyRetry").addEventListener("click", () => {
+    if (state.mode !== "deadlines" || !state.past) return;
+    loadHistoryData();
+    render();
+  });
   $("reset").addEventListener("click", () => {
     state = { mode: state.mode, q: "", cats: [], kind: "", rank: "", win: "all", est: false, domestic: false, past: false };
     $("paperText").value = "";
@@ -1300,6 +1437,8 @@
     $("paperReferences").value = "";
     paperFiles.value = "";
     document.getElementById("paperFileLabel").textContent = "未選択";
+    stopHistoryLoad();
+    if (state.mode === "deadlines") setDeadlineProfile(DATA);
     invalidateSemantic();
     toForm();
     writeUrl();
@@ -1324,5 +1463,6 @@
   readUrl();
   updateModeUi();
   toForm();
+  if (state.mode === "deadlines" && state.past) loadHistoryData();
   render();
 })();

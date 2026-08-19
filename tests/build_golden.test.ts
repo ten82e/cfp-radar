@@ -1361,6 +1361,61 @@ it("site template lazy-loads recommendation data outside the catalog shell (#468
   expect(runtime).toContain("setRecommendationProfile(data)");
 });
 
+it("site runtime lazy-loads deadline history with retry and stale-response guards (#491)", () => {
+  const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");
+  expect(runtime).toContain("function createHistoryLoader(fetchJson, onState)");
+  expect(runtime).toContain("function resolveHistoryRef()");
+  expect(runtime).toContain('if (state.mode === "deadlines" && state.past) loadHistoryData();');
+  expect(runtime).toContain('if (state.mode !== "deadlines" || !state.past) return;');
+  expect(runtime).toContain('if (!response.ok) throw new Error("history " + response.status);');
+
+  const loaderSrc = jsFunction(runtime, "createHistoryLoader");
+  const script = [
+    `const createHistoryLoader = ${loaderSrc};`,
+    "const flush = () => new Promise((resolve) => setImmediate(resolve));",
+    "const requests = [];",
+    "const states = [];",
+    "const loader = createHistoryLoader((ref) => new Promise((resolve, reject) => requests.push({ ref, resolve, reject })), (status) => states.push(status));",
+    "(async () => {",
+    '  const first = loader.load("data.json");',
+    '  const same = loader.load("data.json");',
+    "  await flush();",
+    "  requests[0].resolve({ conferences: [{ editions: [] }] });",
+    "  const value = await first;",
+    '  const cached = await loader.load("data.json");',
+    "  const retryRequests = [];",
+    "  const retryStates = [];",
+    "  const retryLoader = createHistoryLoader((ref) => new Promise((resolve, reject) => retryRequests.push({ ref, resolve, reject })), (status) => retryStates.push(status));",
+    '  const bad = retryLoader.load("data.json");',
+    "  await flush();",
+    '  retryRequests[0].resolve({ conferences: "malformed" });',
+    "  await bad;",
+    '  const retried = retryLoader.load("data.json");',
+    "  await flush();",
+    "  retryRequests[1].resolve({ conferences: [] });",
+    "  const recovered = await retried;",
+    "  const staleRequests = [];",
+    "  const staleStates = [];",
+    "  const staleLoader = createHistoryLoader((ref) => new Promise((resolve, reject) => staleRequests.push({ ref, resolve, reject })), (status) => staleStates.push(status));",
+    '  const stale = staleLoader.load("data.json");',
+    "  await flush();",
+    "  staleLoader.cancel();",
+    '  const current = staleLoader.load("data.json");',
+    "  await flush();",
+    '  staleRequests[0].resolve({ conferences: [{ editions: [] }], marker: "old" });',
+    '  staleRequests[1].resolve({ conferences: [], marker: "new" });',
+    "  const staleValue = await stale;",
+    "  const currentValue = await current;",
+    "  console.log([value === cached, first === same, requests.length, states.join('|'), retryStates.join('|'), recovered && retryLoader.status, staleValue === null, currentValue.marker, staleStates.join('|')].join('|'));",
+    "})();",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe(
+    "true|true|1|loading|ready|loading|error|loading|ready|ready|true|new|loading|loading|ready",
+  );
+});
+
 it("site template localized shortcuts label and preset button active sync", () => {
   const template = readFileSync(join(REPO_ROOT, "site", "template.html"), "utf8");
   const runtime = readFileSync(join(REPO_ROOT, "site", "app.js"), "utf8");

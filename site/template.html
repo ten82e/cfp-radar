@@ -593,6 +593,10 @@ footer a:hover { text-decoration: underline; }
     <span id="count"></span>
     <span style="font-family: var(--font-mono); font-size: 0.75rem;">ショートカット: <kbd>j</kbd>/<kbd>k</kbd> 選択 | <kbd>Enter</kbd> 開く | <kbd>d</kbd> 詳細 | <kbd>Esc</kbd> 閉じる | <kbd>/</kbd> 検索</span>
   </div>
+  <div id="historyStatus" hidden style="padding: 0 0 12px; text-align: center; color: var(--muted);">
+    <span id="historyStatusText"></span>
+    <button id="historyRetry" type="button" hidden>過去の締切を再試行</button>
+  </div>
 
   <!-- Table Container -->
   <div class="tablewrap" id="deadlineTableWrap">

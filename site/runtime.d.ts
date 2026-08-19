@@ -122,6 +122,8 @@ interface SiteCatalog {
   sources: Array<Record<string, unknown>>;
   categories: Record<string, string>;
   conferences: SiteConference[];
+  history_ref?: string;
+  recommendation_ref?: string;
 }
 
 interface PdfTextItem {
