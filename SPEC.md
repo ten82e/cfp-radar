@@ -235,7 +235,8 @@ kamiyobi/
 │   ├── recommender.d.ts         # 推薦ランタイムのグローバル型宣言       [担当C]
 │   └── runtime.d.ts             # ブラウザ・生成データの型境界           [担当D]
 ├── scripts/
-│   └── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
+│   ├── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
+│   └── generate-venue-profiles.ts # provenance付き profile artifact の再生成 [担当C]
 ├── public/                      # 生成物(git 管理外)
 ├── tests/                       # vitest                                 [担当F]
 └── .github/workflows/
@@ -955,21 +956,28 @@ aaai（**rebuttal_start と rebuttal_end が別日**）、hf 旧形式 1 本、
 - `--golden-en`: 実採択論文タイトル（`GOLDEN_EN`、DBLP 由来・n=92）で真の精度を
   測る（top1 26.1% / top5 70.7% / top10 82.6%）。スコア改変の回帰検出に使用。
 
-### 10.3 会議プロファイル拡充手順（`VENUE_PAPERS`）
+### 10.3 会議プロファイル拡充手順（`data/venue-profiles.json`）
 
-失敗会議（golden で top5 外）の語彙を補う代表論文リスト。**拡充手順**:
+失敗会議（golden で top5 外）の語彙を補う代表論文リストは、schema 2 の
+provenance-bearing artifact から生成する。各論文は `title` / `year` / `source` /
+`source_url` / `collected_at` を持ち、`selection` の `method` /
+`max_prototypes` / `source_year_max` は全会議で共通でなければならない。
+現在の共通方針は、出典リスト順を保つ `source-order-first`、上限 26、source year
+上限 2025 である。`VENUE_PAPERS` はこの artifact から派生する互換ビューであり、
+直接編集しない。
 
-1. 失敗会議の採択リストを dblp から取得（`https://dblp.org/db/conf/<key>/<key>2025.html`）
-2. `GOLDEN_EN`（テストセット）と重複しない論文のみ `VENUE_PAPERS` に追加
+**拡充手順**:
+
+1. 失敗会議の採択リストを一次出典または dblp から取得し、入力 JSON に出典 URL と
+   収集時刻を付ける。
+2. `node scripts/generate-venue-profiles.ts <input.json> data/venue-profiles.json`
+   で正規化・検証・hash 付与する。空の provenance、重複タイトル、混在 cutoff、
+   cutoff 超過、収集時点より未来の年は失敗させる。
+3. `GOLDEN_EN`（テストセット）と重複しない論文だけを採用する
    （**同一タイトルを両方に入れるとリークになり、A/B が偽陽性になる** — R26 事故）。
-   `html.unescape` で `&#38;` 等を正規化し、タイトルは取得リストと機械照合する
-   （補完・捏造防止、R24 事故）。
-3. `npx vitest run tests/recommender.test.ts -t "リークなし"` が PASS すること
-   （**FAIL のままコミットしない**）。
-4. `npm run bench -- --golden-en` で A/B。**net プラス（実数）のみ採用**。
-   既存から top5 を奪う場合（直接衝突・IDF 希釈）は不採用（R25/R26 実績:
-   hpca net 0・sigcomm net -1 は revert、eurosys/ppopp net +3〜+5 は採用）。
-5. 副作用は golden と合成ベンチの両方で確認する（R28 教訓）。
+4. `npx vitest run tests/recommender.test.ts -t "リークなし"` と
+   `npm run bench -- --golden-en` で副作用を確認する。失敗例を見て個別に継ぎ足さず、
+   同じ選定方針で artifact を再生成する。
 
 適用済み: usenix-security / rtss / rtas / icdcs / ndss / osdi / sosp / icml /
 eurosys / ppopp（R22-R24）。rtss・usenix-security は論文個別ベクトル

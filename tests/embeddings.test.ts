@@ -15,8 +15,10 @@ import {
   embeddingProfileHash,
   main,
   profileTexts,
-  serializeVenueProfiles,
+  serializeVenueProfileArtifact,
   VENUE_PAPERS,
+  VENUE_PROFILE_ARTIFACT,
+  validateVenueProfileArtifact,
   venuePapersHash,
 } from "../src/embeddings.ts";
 
@@ -114,12 +116,58 @@ describe("generated venue profile artifact", () => {
       new URL("../data/venue-profiles.json", import.meta.url),
       "utf8",
     );
-    const artifact = JSON.parse(artifactText);
-    expect(artifact.schema).toBe(1);
+    const artifact = JSON.parse(artifactText) as {
+      schema: number;
+      profiles_hash: string;
+      policy: { method: string; max_prototypes: number; source_year_max: number };
+      profiles: Record<
+        string,
+        {
+          papers: Array<{
+            title: string;
+            year: number;
+            source: string;
+            source_url: string;
+            collected_at: string;
+          }>;
+          selection: { method: string; max_prototypes: number; source_year_max: number };
+        }
+      >;
+    };
+    expect(artifact.schema).toBe(2);
     expect(artifact.profiles_hash).toBe(venuePapersHash());
-    expect(artifact.profiles).toEqual(VENUE_PAPERS);
-    expect(artifactText).toBe(serializeVenueProfiles(VENUE_PAPERS));
+    expect(artifact).toEqual(VENUE_PROFILE_ARTIFACT);
+    expect(
+      Object.fromEntries(
+        Object.entries(artifact.profiles).map(([key, profile]) => [
+          key,
+          profile.papers.map((paper: { title: string }) => paper.title),
+        ]),
+      ),
+    ).toEqual(VENUE_PAPERS);
+    expect(artifactText).toBe(serializeVenueProfileArtifact(artifact));
     expect(Object.keys(artifact.profiles)).toEqual([...Object.keys(artifact.profiles)].sort());
+    expect(
+      new Set(Object.values(artifact.profiles).map((profile) => JSON.stringify(profile.selection)))
+        .size,
+    ).toBe(1);
+  });
+
+  it("rejects malformed provenance and protects the full-artifact hash", () => {
+    const artifact = JSON.parse(
+      readFileSync(new URL("../data/venue-profiles.json", import.meta.url), "utf8"),
+    );
+    const changed = JSON.parse(JSON.stringify(artifact));
+    changed.profiles.ches.papers[0].source_url = "https://example.test/changed";
+    expect(() => validateVenueProfileArtifact(changed)).toThrow(/hash mismatch/);
+
+    const mixed = JSON.parse(JSON.stringify(artifact));
+    mixed.profiles.ches.selection.source_year_max -= 1;
+    expect(() => serializeVenueProfileArtifact(mixed)).toThrow(/mixed|cutoff/);
+
+    const future = JSON.parse(JSON.stringify(artifact));
+    future.profiles.ches.papers[0].year = 2026;
+    expect(() => serializeVenueProfileArtifact(future)).toThrow(/cutoff|future/);
   });
 });
 

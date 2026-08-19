@@ -73,53 +73,210 @@ function hasJapanese(text: string): boolean {
  * **完全に重複しないタイトルだけを使う**（リークなし検証）。
  */
 /** Versioned venue-profile artifact loaded by both embedding and benchmark consumers. */
-type VenueProfileArtifact = {
-  schema: number;
-  profiles_hash: string;
-  profiles: Record<string, unknown>;
+export const VENUE_PROFILE_SCHEMA_VERSION = 2;
+
+export type VenueProfilePaper = {
+  title: string;
+  year: number;
+  source: string;
+  source_url: string;
+  collected_at: string;
 };
 
-/** Canonical generator for the versioned venue-profile artifact. */
-export function serializeVenueProfiles(profiles: Record<string, string[]>): string {
-  const ordered: Record<string, string[]> = {};
-  for (const key of Object.keys(profiles).sort()) {
-    const papers = profiles[key];
-    if (
-      !key ||
-      !Array.isArray(papers) ||
-      papers.some((paper) => typeof paper !== "string" || !paper.trim())
-    ) {
-      throw new Error(`invalid venue profile entries: ${key}`);
-    }
-    ordered[key] = papers.slice();
-  }
-  const profiles_hash = createHash("sha256")
-    .update(JSON.stringify(ordered))
-    .digest("hex")
-    .slice(0, 16);
-  return `${JSON.stringify({ schema: 1, profiles_hash, profiles: ordered }, null, 2)}\n`;
+export type VenueProfileSelection = {
+  method: string;
+  max_prototypes: number;
+  source_year_max: number;
+};
+
+export type VenueProfileEntry = {
+  papers: VenueProfilePaper[];
+  selection: VenueProfileSelection;
+};
+
+export type VenueProfileArtifact = {
+  schema: typeof VENUE_PROFILE_SCHEMA_VERSION;
+  profiles_hash: string;
+  policy: VenueProfileSelection;
+  profiles: Record<string, VenueProfileEntry>;
+};
+
+type VenueProfileArtifactInput = {
+  schema?: number;
+  profiles_hash?: string;
+  policy: VenueProfileSelection;
+  profiles: Record<string, VenueProfileEntry>;
+};
+
+function venueProfileTitleKey(title: string): string {
+  return title.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function loadVenueProfiles(): Record<string, string[]> {
+function venueProfileSelection(value: unknown, context: string): VenueProfileSelection {
+  if (!value || typeof value !== "object") {
+    throw new Error(`invalid venue profile selection: ${context}`);
+  }
+  const selection = value as Record<string, unknown>;
+  if (typeof selection.method !== "string" || !selection.method.trim()) {
+    throw new Error(`invalid venue profile selection method: ${context}`);
+  }
+  if (!Number.isInteger(selection.max_prototypes) || Number(selection.max_prototypes) < 1) {
+    throw new Error(`invalid venue profile max_prototypes: ${context}`);
+  }
+  if (!Number.isInteger(selection.source_year_max) || Number(selection.source_year_max) < 1900) {
+    throw new Error(`invalid venue profile source_year_max: ${context}`);
+  }
+  return {
+    method: selection.method.trim(),
+    max_prototypes: Number(selection.max_prototypes),
+    source_year_max: Number(selection.source_year_max),
+  };
+}
+
+function venueProfilePaper(value: unknown, context: string): VenueProfilePaper {
+  if (!value || typeof value !== "object")
+    throw new Error(`invalid venue profile paper: ${context}`);
+  const paper = value as Record<string, unknown>;
+  if (typeof paper.title !== "string" || !paper.title.trim()) {
+    throw new Error(`invalid venue profile title: ${context}`);
+  }
+  if (!Number.isInteger(paper.year) || Number(paper.year) < 1900) {
+    throw new Error(`invalid venue profile year: ${context}`);
+  }
+  if (typeof paper.source !== "string" || !paper.source.trim()) {
+    throw new Error(`invalid venue profile source: ${context}`);
+  }
+  if (typeof paper.source_url !== "string" || !paper.source_url.trim()) {
+    throw new Error(`invalid venue profile source_url: ${context}`);
+  }
+  try {
+    const url = new URL(paper.source_url);
+    if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("protocol");
+  } catch {
+    throw new Error(`invalid venue profile source_url: ${context}`);
+  }
+  if (typeof paper.collected_at !== "string" || !paper.collected_at.trim()) {
+    throw new Error(`invalid venue profile collected_at: ${context}`);
+  }
+  const collected = new Date(paper.collected_at);
+  if (!Number.isFinite(collected.getTime()) || collected.toISOString() !== paper.collected_at) {
+    throw new Error(`invalid venue profile collected_at: ${context}`);
+  }
+  if (Number(paper.year) > collected.getUTCFullYear()) {
+    throw new Error(`future venue profile record: ${context}`);
+  }
+  return {
+    title: paper.title.trim(),
+    year: Number(paper.year),
+    source: paper.source.trim(),
+    source_url: paper.source_url.trim(),
+    collected_at: paper.collected_at,
+  };
+}
+
+function normalizedVenueProfileData(input: VenueProfileArtifactInput): {
+  schema: typeof VENUE_PROFILE_SCHEMA_VERSION;
+  policy: VenueProfileSelection;
+  profiles: Record<string, VenueProfileEntry>;
+} {
+  if (input.schema !== undefined && input.schema !== VENUE_PROFILE_SCHEMA_VERSION) {
+    throw new Error("invalid venue profile artifact schema");
+  }
+  const policy = venueProfileSelection(input.policy, "policy");
+  if (!input.profiles || typeof input.profiles !== "object" || Array.isArray(input.profiles)) {
+    throw new Error("invalid venue profile artifact profiles");
+  }
+  const profiles: Record<string, VenueProfileEntry> = {};
+  const seenTitles = new Map<string, string>();
+  for (const key of Object.keys(input.profiles).sort()) {
+    if (!key.trim()) throw new Error("invalid venue profile key");
+    const raw = input.profiles[key];
+    if (!raw || typeof raw !== "object" || !Array.isArray(raw.papers)) {
+      throw new Error(`invalid venue profile entries: ${key}`);
+    }
+    const selection = venueProfileSelection(raw.selection, key);
+    if (JSON.stringify(selection) !== JSON.stringify(policy)) {
+      throw new Error(`mixed venue profile selection policy: ${key}`);
+    }
+    if (raw.papers.length === 0 || raw.papers.length > selection.max_prototypes) {
+      throw new Error(`invalid venue profile paper count: ${key}`);
+    }
+    const papers = raw.papers.map((paper, index) => {
+      const normalized = venueProfilePaper(paper, `${key}[${index}]`);
+      if (normalized.year > selection.source_year_max) {
+        throw new Error(`venue profile paper exceeds source cutoff: ${key}[${index}]`);
+      }
+      const titleKey = venueProfileTitleKey(normalized.title);
+      const previous = seenTitles.get(titleKey);
+      if (previous) throw new Error(`duplicate venue profile paper: ${key} / ${previous}`);
+      seenTitles.set(titleKey, `${key}[${index}]`);
+      return normalized;
+    });
+    profiles[key] = { papers, selection };
+  }
+  if (Object.keys(profiles).length === 0) throw new Error("venue profile artifact is empty");
+  return { schema: VENUE_PROFILE_SCHEMA_VERSION, policy, profiles };
+}
+
+function venueProfilePayload(input: VenueProfileArtifactInput): string {
+  return JSON.stringify(normalizedVenueProfileData(input));
+}
+
+function venueProfileHash(input: VenueProfileArtifactInput): string {
+  return createHash("sha256").update(venueProfilePayload(input)).digest("hex").slice(0, 16);
+}
+
+/** Validate and normalize the provenance-bearing artifact. */
+export function validateVenueProfileArtifact(value: unknown): VenueProfileArtifact {
+  if (!value || typeof value !== "object") throw new Error("invalid venue profile artifact");
+  const raw = value as VenueProfileArtifactInput;
+  const normalized = normalizedVenueProfileData(raw);
+  const expected = venueProfileHash(raw);
+  if (raw.profiles_hash !== expected) throw new Error("venue profile artifact hash mismatch");
+  return { ...normalized, profiles_hash: expected };
+}
+
+/** Canonical generator for the versioned venue-profile artifact. */
+export function serializeVenueProfileArtifact(input: VenueProfileArtifactInput): string {
+  const normalized = normalizedVenueProfileData(input);
+  const profiles_hash = venueProfileHash(normalized);
+  return `${JSON.stringify({ ...normalized, profiles_hash }, null, 2)}\n`;
+}
+
+/** Compatibility helper retained for callers that already hold the profile map. */
+export function serializeVenueProfiles(
+  profiles: Record<string, VenueProfileEntry>,
+  policy?: VenueProfileSelection,
+): string {
+  const first = Object.values(profiles)[0]?.selection;
+  return serializeVenueProfileArtifact({
+    schema: VENUE_PROFILE_SCHEMA_VERSION,
+    policy: policy ??
+      first ?? { method: "source-order-first", max_prototypes: 1, source_year_max: 2100 },
+    profiles,
+  });
+}
+
+function loadVenueProfiles(): VenueProfileArtifact {
   const artifact = JSON.parse(
     readFileSync(new URL("../data/venue-profiles.json", import.meta.url), "utf8"),
   ) as VenueProfileArtifact;
-  if (artifact.schema !== 1 || !artifact.profiles || typeof artifact.profiles !== "object") {
-    throw new Error("invalid venue profile artifact schema");
-  }
-  const canonical = serializeVenueProfiles(artifact.profiles as Record<string, string[]>);
-  const normalized = JSON.parse(canonical) as VenueProfileArtifact;
-  if (artifact.profiles_hash !== normalized.profiles_hash) {
-    throw new Error("venue profile artifact hash mismatch");
-  }
-  return normalized.profiles as Record<string, string[]>;
+  return validateVenueProfileArtifact(artifact);
 }
 
-export const VENUE_PAPERS = loadVenueProfiles();
+export const VENUE_PROFILE_ARTIFACT = loadVenueProfiles();
 
-/** Stable hash of the generated venue profile data (embedding invalidation key). */
+/** Derived compatibility view used by lexical and embedding consumers. */
+export const VENUE_PAPERS: Record<string, string[]> = Object.fromEntries(
+  Object.entries(VENUE_PROFILE_ARTIFACT.profiles).map(([key, profile]) => [
+    key,
+    profile.papers.map((paper) => paper.title),
+  ]),
+);
+
+/** Stable hash of the complete provenance-bearing artifact (embedding invalidation key). */
 export function venuePapersHash(): string {
-  return createHash("sha256").update(JSON.stringify(VENUE_PAPERS)).digest("hex").slice(0, 16);
+  return VENUE_PROFILE_ARTIFACT.profiles_hash;
 }
 
 function toStringArray(val: unknown): string[] {
