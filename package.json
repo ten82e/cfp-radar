@@ -12,7 +12,7 @@
     "discover": "node src/cli.ts discover",
     "bench": "node src/bench-recommender.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p site/tsconfig.json",
     "check": "biome check src tests && biome check site/recommender.js site/app.js --files-ignore-unknown=false --javascript-linter-enabled=false --javascript-formatter-enabled=false",
     "format": "biome format --write src tests"
   },
