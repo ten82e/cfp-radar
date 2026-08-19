@@ -1131,9 +1131,7 @@
     });
   }
   function textRecord(name, text) {
-    var lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    var items = lines.map((line, index) => ({ str: line, transform: [12, 0, 0, 12, 0, 1000 - index] }));
-    return Recommender.pdfPaperRecord({}, [items], name);
+    return Recommender.textPaperRecord(text, name);
   }
   function readPaperFile(file, signal) {
     if (file.size > PDF_MAX_BYTES) return Promise.reject(new Error("file is too large"));

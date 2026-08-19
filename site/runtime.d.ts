@@ -101,6 +101,7 @@ interface SiteRecommenderApi {
   comparePapers(a: SiteRow, b: SiteRow, now: number): number;
   safeExternalUrl(value: unknown): string;
   pdfPaperRecord(metadata: unknown, pages: unknown[], fallbackText: string): SitePaperRecord;
+  textPaperRecord(text: string, fallbackText: string): SitePaperRecord;
   parsePaperLines(text: string): SitePaperRecord[];
   contentWordCount(text: string): number;
   semanticScore(key: string, vector: number[], embeddings: Record<string, number[]>): number;
