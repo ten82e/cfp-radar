@@ -849,18 +849,23 @@
   function recommendationAvailability(r) {
     var a = r._availability || {};
     if (a.status === "ongoing") return "常時受付";
-    if (a.timestamp) {
+    if (a.status === "open" && a.timestamp) {
       return "次回締切: " + fmtDate(new Date(a.timestamp)) + " UTC / " + fmtAoE(new Date(a.timestamp)) + (a.estimated ? "（推定）" : "");
     }
-    return a.status === "past" ? "締切済み（次回情報なし）" : "受付状況不明";
+    if (a.status === "past") {
+      return a.timestamp ? "締切済み" : "締切済み（次回情報なし）";
+    }
+    return "受付状況不明";
   }
 
   function makeRecommendationCard(r) {
     var card = document.createElement("article");
     card.className = "recommendation-card";
+    var a = r._availability || {};
+    var isPastOnly = a.status === "past";
     var title = document.createElement("h3");
-    var name = titleWithYear(r.conf.title || r.conf.key || "", r.ed.year);
-    var href = safeExternalUrl(r.ed.link || r.conf.link);
+    var name = titleWithYear(r.conf.title || r.conf.key || "", isPastOnly ? null : r.ed.year);
+    var href = safeExternalUrl(isPastOnly ? r.conf.link : (r.ed.link || r.conf.link));
     if (href) {
       var link = document.createElement("a");
       link.href = href;
