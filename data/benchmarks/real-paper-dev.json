@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "split": "dev",
+  "profile_year_max": 2023,
+  "records": [
+    {
+      "paper_id": "nsdi24-mlt",
+      "year": 2024,
+      "title": "Towards Domain-Specific Network Transport for Distributed DNN Training",
+      "abstract": "A domain-specific transport for distributed deep neural network training uses gradient-aware priority queueing and bounded-loss tolerance to reduce tail latency and training time.",
+      "keywords": ["network transport", "distributed training", "DNN", "tail latency"],
+      "primary_venue": "nsdi",
+      "acceptable_venues": ["nsdi", "osdi"],
+      "language": "en",
+      "domains": ["networking", "ai", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.usenix.org/conference/nsdi24/presentation/wang-hao"
+    },
+    {
+      "paper_id": "osdi24-parrot",
+      "year": 2024,
+      "title": "Parrot: Efficient Serving of LLM-based Applications with Semantic Variable",
+      "abstract": "A serving system for large language model applications uses semantic variables and data-flow analysis to optimize pipelines across multiple requests.",
+      "keywords": ["LLM serving", "semantic variables", "data flow", "cloud systems"],
+      "primary_venue": "osdi",
+      "acceptable_venues": ["osdi", "nsdi"],
+      "language": "en",
+      "domains": ["ai", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.usenix.org/conference/osdi24/presentation/lin-chaofan"
+    },
+    {
+      "paper_id": "ndss24-ros2-ifc",
+      "year": 2024,
+      "title": "Decentralized Information-Flow Control for ROS2",
+      "abstract": "A decentralized information-flow control design for ROS2 enforces security policies over nodes and messages in robotic systems.",
+      "keywords": ["ROS2", "information flow", "access control", "robotics security"],
+      "primary_venue": "ndss",
+      "acceptable_venues": ["ndss", "usenix-security"],
+      "language": "en",
+      "domains": ["security", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.ndss-symposium.org/ndss2024/accepted-papers/"
+    },
+    {
+      "paper_id": "osdi24-flock",
+      "year": 2024,
+      "title": "Flock: A Framework for Deploying On-Demand Distributed Trust",
+      "abstract": "A framework deploys distributed-trust applications on demand and evaluates latency and cost across major cloud providers.",
+      "keywords": ["distributed trust", "cloud deployment", "latency", "cost"],
+      "primary_venue": "osdi",
+      "acceptable_venues": ["osdi", "nsdi"],
+      "language": "en",
+      "domains": ["systems", "security", "networking"],
+      "venue_kind": "conference",
+      "source": "https://www.usenix.org/conference/osdi24/presentation/kaviani"
+    },
+    {
+      "paper_id": "ndss24-wireguard",
+      "year": 2024,
+      "title": "A Unified Symbolic Analysis of WireGuard",
+      "abstract": "A symbolic analysis models the WireGuard protocol and checks its security properties under protocol-level adversarial behavior.",
+      "keywords": ["WireGuard", "symbolic analysis", "protocol security", "cryptography"],
+      "primary_venue": "ndss",
+      "acceptable_venues": ["ndss", "usenix-security"],
+      "language": "en",
+      "domains": ["security", "networking", "theory"],
+      "venue_kind": "conference",
+      "source": "https://www.ndss-symposium.org/ndss2024/accepted-papers/"
+    }
+  ]
+}

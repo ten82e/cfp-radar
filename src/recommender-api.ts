@@ -13,6 +13,7 @@ export interface VenueRecommendation {
     score: number;
     lexicalScore: number;
     semanticScore: number;
+    [key: string]: unknown;
   };
   [key: string]: unknown;
 }
@@ -27,8 +28,9 @@ export interface RecommenderApi {
   blendVectors(left: number[], right: number[], weight: number): number[];
   contentWordCount(text: string): number;
   englishRatio(row: unknown): number;
+  buildNameIdf(confs: unknown[]): Record<string, unknown>;
   setExpandEnabled(enabled: boolean): void;
-  setNameIdf(value: Record<string, unknown>): void;
+  setNameIdf(value: Record<string, unknown> | null): void;
   setPaperVecs(value: Record<string, number[][]> | null): void;
   setSigWeights(value: Record<string, number | boolean>): void;
   venueRecommendations(
