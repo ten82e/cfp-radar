@@ -24,7 +24,7 @@ candidates:
         date_text: 1 January 2027
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
     evidence_url: ''
   - key: 3dia
@@ -38,7 +38,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dica/
   - key: 3dph
     title: 3DPH
@@ -51,7 +51,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dph/
   - key: 3dpvt
     title: 3DPVT
@@ -64,7 +64,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dpvt/
   - key: 3dtv
     title: 3DTV
@@ -77,7 +77,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dtv/
   - key: 4or-quarterly-journal-of-operations-research
     title: '4OR: Quarterly Journal of Operations Research'
@@ -90,7 +90,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/4or/
   - key: 5gwf
     title: 5GWF
@@ -103,7 +103,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/5gwf/
   - key: 6g-summit
     title: 6G SUMMIT
@@ -116,7 +116,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/6gsummit/
   - key: aaai-fall-symposium-series
     title: AAAI Fall Symposium Series
@@ -129,7 +129,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaifs/
   - key: aaai-mobile-robot-competition
     title: AAAI Mobile Robot Competition
@@ -142,7 +142,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/mrc/
   - key: aaai-spring-symposium-series
     title: AAAI Spring Symposium Series
@@ -155,7 +155,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaiss/
   - key: aaai-summer-symposium-series
     title: AAAI Summer Symposium Series
@@ -168,7 +168,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaisus/
   - key: acis-international-journal-of-computer-information-science
     title: ACIS International Journal of Computer & Information Science
@@ -181,7 +181,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/acisj/
   - key: acm-communications-in-computer-algebra
     title: ACM Communications in Computer Algebra
@@ -194,7 +194,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/cca/
   - key: acm-computing-surveys
     title: ACM Computing Surveys
@@ -207,7 +207,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/csur/
   - key: acm-inroads
     title: ACM Inroads
@@ -220,7 +220,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/inroads/
   - key: acm-journal-on-computing-and-cultural-heritage
     title: ACM Journal on Computing and Cultural Heritage
@@ -233,7 +233,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jocch/
   - key: acm-journal-on-emerging-technologies-in-computing-systems
     title: ACM Journal on Emerging Technologies in Computing Systems
@@ -246,7 +246,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jetc/
   - key: acm-queue
     title: ACM Queue
@@ -259,7 +259,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/queue/
   - key: acm-sigaccess-accessibility-and-computing
     title: ACM SIGACCESS Accessibility and Computing
@@ -272,7 +272,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigaccess/
   - key: acm-sigapl-apl-quote-quad
     title: ACM SIGAPL APL Quote Quad
@@ -285,7 +285,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigapl/
   - key: acm-sigchi-bulletin
     title: ACM SIGCHI Bulletin
@@ -298,7 +298,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigchi/
   - key: acm-sigcse-bulletin
     title: ACM SIGCSE Bulletin
@@ -311,7 +311,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigcse/
   - key: acm-siglog-news
     title: ACM SIGLOG News
@@ -324,7 +324,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/siglog/
   - key: acm-sigme-symposium
     title: ACM SIGME Symposium
@@ -337,7 +337,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/sigme/
   - key: acm-sigmis-database
     title: ACM SIGMIS Database
@@ -350,7 +350,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/db/
   - key: acm-sigmod-digital-review
     title: ACM SIGMOD Digital Review
@@ -363,7 +363,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/dr/
   - key: acm-sigmod-digital-symposium-collection
     title: ACM SIGMOD Digital Symposium Collection
@@ -376,7 +376,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/disc/
   - key: >-
       agentic-ai-enabled-networking-for-heterogeneous-unmanned-systems-in-low-altitude-environments-ieee-wireless-communications
@@ -402,7 +402,7 @@ candidates:
         date_text: 1 September 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ai-50
@@ -416,7 +416,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/ai50/
   - key: >-
       ai-empowered-cognitive-digital-twin-for-future-network-ecosystems-ieee-network
@@ -440,7 +440,7 @@ candidates:
         date_text: 31 October 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: >-
@@ -467,7 +467,7 @@ candidates:
         date_text: 1 November 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: >-
@@ -492,7 +492,7 @@ candidates:
         date_text: 30 September 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: aiide
@@ -508,7 +508,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aiide/
   - key: ccgrid2027
     title: CCGrid2027
@@ -527,7 +527,7 @@ candidates:
         date_text: May 24, 2027
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
     evidence_url: https://easychair.org/cfp/
   - key: chi-play
@@ -543,7 +543,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/chiplay/
   - key: compass
     title: COMPASS
@@ -556,7 +556,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/dev/
   - key: >-
       distributed-intelligence-and-collaborative-inference-for-foundation-models-over-wireless-edge-ieee-network
@@ -580,7 +580,7 @@ candidates:
         date_text: 31 December 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: divanet
@@ -596,7 +596,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/divanet/
   - key: enchires
     title: EnCHIReS
@@ -609,7 +609,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/eics/
   - key: evolve
     title: EVOLVE
@@ -624,7 +624,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/evolve/
   - key: haskell
     title: Haskell
@@ -637,7 +637,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/haskell/
   - key: hcomp
     title: HCOMP
@@ -650,7 +650,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/hcomp/
   - key: >-
       high-reliability-and-low-latency-communications-for-6g-network-isac-enabled-architectures-networking-and-services-ieee-network
@@ -674,7 +674,7 @@ candidates:
         date_text: 31 August 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: icbinb
@@ -688,22 +688,8 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/icbinb/
-  - key: ieee-cic-cogmi-risc-tps-2026
-    title: IEEE CIC/CogMI/RISC/TPS 2026
-    full_name: IEEE CIC/CogMI/RISC/TPS 2026
-    link: >-
-      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;d7d50c94.2608
-    categories: []
-    tags:
-      - niche
-      - dbworld
-    editions: []
-    status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
-    target_year: 2026
-    evidence_url: https://dbworld.sigmod.org/browse.html
   - key: >-
       in-orbit-computing-striding-into-the-era-of-space-centric-intelligence-ieee-wireless-communications
     title: >-
@@ -728,7 +714,7 @@ candidates:
         date_text: 1 November 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: >-
@@ -755,7 +741,7 @@ candidates:
         date_text: 1 February 2027
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
     evidence_url: ''
   - key: ipsj-27-l
@@ -774,7 +760,7 @@ candidates:
         date_text: '2026-08-28'
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ipsj-27-m
@@ -793,7 +779,7 @@ candidates:
         date_text: '2026-11-27'
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ipsj-27-n
@@ -809,10 +795,10 @@ candidates:
         id: ipsj-27-n26
         link: https://www.ipsj.or.jp/journal/cfp/27-N.html
         place: ''
-        date_text: '2026-08-21'
+        date_text: '2026-08-28'
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ipsj-27-p
@@ -831,7 +817,7 @@ candidates:
         date_text: '2026-12-04'
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ipsj-27-r
@@ -854,7 +840,7 @@ candidates:
         date_text: '2026-12-01'
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ispd
@@ -868,7 +854,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/ispd/
   - key: isvc
     title: ISVC
@@ -881,7 +867,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/isvc/
   - key: jcd
     title: JCD
@@ -894,7 +880,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jcd/
   - key: jcss
     title: JCSS
@@ -907,7 +893,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/acmjcss/
   - key: jea
     title: JEA
@@ -920,7 +906,7 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jea/
   - key: login
     title: ';login:'
@@ -933,7 +919,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/usenix-login/
   - key: loplas
     title: LOPLAS
@@ -946,7 +932,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/loplas/
   - key: maps
     title: MAPS
@@ -959,7 +945,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/maps/
   - key: mobiwac
     title: MobiWac
@@ -974,7 +960,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/mobiwac/
   - key: netpl
     title: NetPL
@@ -994,7 +980,7 @@ candidates:
         date_text: October 10, 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: q2swinet
@@ -1010,7 +996,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/q2swinet/
   - key: radio-protocols-for-6g-ieee-communications-magazine
     title: Radio protocols for 6G（IEEE Communications Magazine 特集号）
@@ -1030,7 +1016,7 @@ candidates:
         date_text: 1 October 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: resound
@@ -1053,7 +1039,7 @@ candidates:
         date_text: September 14, 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: >-
@@ -1080,7 +1066,7 @@ candidates:
         date_text: 1 November 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: smile
@@ -1094,7 +1080,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/smile/
   - key: sosr
     title: SOSR
@@ -1107,7 +1093,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/sosr/
   - key: spaca
     title: SPACA
@@ -1122,7 +1108,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/spaca/
   - key: splash
     title: SPLASH
@@ -1137,7 +1123,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/splash/
   - key: ssp-2026
     title: SSP 2026
@@ -1158,7 +1144,7 @@ candidates:
         date_text: Aug 24, 2026 (Aug 17, 2026)
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: https://www.wikicfp.com
   - key: taco-special
@@ -1175,8 +1161,27 @@ candidates:
       - journal
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
+  - key: >-
+      third-international-workshop-on-integrated-wireless-networking-and-computing-2026
+    title: >-
+      Third International Workshop on Integrated Wireless Networking and
+      Computing 2026
+    full_name: >-
+      Third International Workshop on Integrated Wireless Networking and
+      Computing 2026
+    link: >-
+      https://listserv.acm.org/SCRIPTS/WA-ACMLPX.CGI?A2=MOD-DBWORLD;49ad3807.2608
+    categories: []
+    tags:
+      - niche
+      - dbworld
+    editions: []
+    status: discovered
+    discovered_at: '2026-08-19T20:44:41.199Z'
+    target_year: 2026
+    evidence_url: https://dbworld.sigmod.org/browse.html
   - key: >-
       towards-intellicise-agent-communication-networks-autonomous-integration-and-evolution-of-humans-and-networks-ieee-network
     title: >-
@@ -1199,7 +1204,7 @@ candidates:
         date_text: 30 November 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
   - key: ubicomp
@@ -1215,7 +1220,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/huc/
   - key: vecos
     title: VECoS
@@ -1230,7 +1235,7 @@ candidates:
       - conference
     editions: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/vecos/
   - key: >-
       wireless-endogenous-security-for-ai-native-next-generation-wireless-networks-ieee-wireless-communications
@@ -1256,6 +1261,6 @@ candidates:
         date_text: 1 September 2026
         deadlines: []
     status: discovered
-    discovered_at: '2026-08-18T20:39:37.811Z'
+    discovered_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
     evidence_url: ''
