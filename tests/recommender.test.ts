@@ -136,6 +136,57 @@ describe("bounded PDF paper extraction", () => {
   });
 });
 
+describe("TXT paper extraction", () => {
+  it("keeps labeled fields separate", () => {
+    expect(
+      R.textPaperRecord(
+        "Title: A paper\nAbstract: GPU scheduling\nKeywords: hpc, kernel\nVenue: SC",
+        "paper.txt",
+      ),
+    ).toEqual({
+      title: "A paper",
+      abstract: "GPU scheduling",
+      keywords: "hpc, kernel",
+      venue: "SC",
+    });
+  });
+
+  it("uses the existing JSON record normalization", () => {
+    expect(
+      R.textPaperRecord(
+        '{"title":"A paper","abstract":"GPU scheduling","venue":"SC"}',
+        "paper.txt",
+      ),
+    ).toEqual({
+      title: "A paper",
+      abstract: "GPU scheduling",
+      keywords: "",
+      venue: "SC",
+    });
+  });
+
+  it("uses only the first non-empty line as an unlabeled title", () => {
+    expect(R.textPaperRecord("A paper title\nAbstract\nGPU scheduling", "paper.txt")).toEqual({
+      title: "A paper title",
+      abstract: "Abstract GPU scheduling",
+      keywords: "",
+      venue: "",
+    });
+  });
+
+  it("falls back to the filename and preserves reference fields", () => {
+    const records = [
+      R.textPaperRecord("", "primary.txt"),
+      R.textPaperRecord("Reference title\nReference abstract", "reference.txt"),
+    ];
+    expect(records[0].title).toBe("primary.txt");
+    expect(records[1]).toMatchObject({ title: "Reference title", abstract: "Reference abstract" });
+    expect(readFileSync(join(REPO_ROOT, "site/app.js"), "utf8")).toContain(
+      "return Recommender.textPaperRecord(text, name);",
+    );
+  });
+});
+
 describe("safeExternalUrl", () => {
   it.each(["http://example.com/cfp", "https://example.com/cfp", "/cfp", "//example.com/cfp"])(
     "accepts %s",

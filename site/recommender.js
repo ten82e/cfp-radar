@@ -287,6 +287,20 @@
     };
   }
 
+  function textPaperRecord(text, fallbackText) {
+    var raw = String(text || "").trim();
+    var structured = parseStructuredPapers(raw);
+    if (structured && structured.length) return structured[0];
+    var lines = raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    var title = lines.shift() || String(fallbackText || "").trim();
+    return {
+      title: title.slice(0, 240),
+      abstract: lines.join(" ").slice(0, 6000),
+      keywords: "",
+      venue: "",
+    };
+  }
+
   function paperText(p) {
     return [p && p.title, p && p.abstract, p && p.keywords].filter(Boolean).join(" ").trim();
   }
@@ -1420,6 +1434,7 @@
     parsePaperLines: parsePaperLines,
     pdfTextLines: pdfTextLines,
     pdfPaperRecord: pdfPaperRecord,
+    textPaperRecord: textPaperRecord,
     autoDetectCats: autoDetectCats,
     venueCategories: venueCategories,
     scorePapers: scorePapers,
