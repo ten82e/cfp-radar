@@ -877,6 +877,42 @@ it("default filter shows only submission deadlines", () => {
   expect(JSON.parse(proc.stdout)).toEqual(["paper", "abstract"]);
 });
 
+it("recommendation filter ignores deadline-only state", () => {
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
+  const filterSrc = jsFunction(html, "filter");
+  const script = [
+    "const DAY = 86400000;",
+    `const FILTER = ${JSON.stringify(filterSrc)};`,
+    'const now = Date.parse("2026-08-10T00:00:00Z");',
+    "class FakeDate extends Date { static now() { return now; } }",
+    "const paper = { value: '' };",
+    "const document = {};",
+    "function $(id) { return id === 'paperText' ? paper : null; }",
+    "const window = {};",
+    "function row(hay, t, rank, cats, tags) {",
+    "  return { kind: 'paper', est: false, cats, rankPairs: [rank], hay, tags, t, tLast: t, ed: { deadlines: [] } };",
+    "}",
+    "const rows = [",
+    "  row('topic', now + 86400000, 'A', ['hpc'], ['domestic-jp']),",
+    "  row('other', now + 30 * 86400000, 'B', ['systems'], []),",
+    "];",
+    "const state = { mode: 'deadlines', q: 'topic', cats: ['hpc'], kind: 'paper', rank: 'A', win: '1', est: false, domestic: true, past: false };",
+    "const filter = new Function('Date', 'DAY', 'rows', 'state', 'sortAsc', 'sortKey',",
+    "  'return (' + FILTER + ')')(FakeDate, DAY, rows, state, true, 'rem');",
+    "const deadline = filter().length;",
+    "state.mode = 'recommend';",
+    "paper.value = 'topic';",
+    "const recommend = filter().length;",
+    "console.log(deadline + '|' + recommend);",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", script], { encoding: "utf8", timeout: 60_000 });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(proc.stdout.trim()).toBe("1|2");
+});
+
 it("sortable headers are keyboard-operable and expose sort state (aria-sort)", () => {
   const html =
     readFileSync(join(site, "index.html"), "utf8") +
@@ -1124,6 +1160,34 @@ it("drawer is a keyboard-operable modal dialog with focus management (#218)", ()
     savedPrev: true,
     restored: true,
   });
+});
+
+it("global shortcuts respect editable targets and recommendation mode", () => {
+  const html =
+    readFileSync(join(site, "index.html"), "utf8") +
+    "\n" +
+    readFileSync(join(site, "app.js"), "utf8");
+  const keySrc = jsFunction(html, "onKeydown");
+  const script = [
+    "const calls = { prevented: 0, focused: 0, opened: 0 };",
+    "const state = { mode: 'recommend' };",
+    "const window = {};",
+    "const document = {};",
+    "function $(id) { return id === 'q' ? { focus() { calls.focused++; } } : null; }",
+    "const onKeydown = new Function('state', 'window', 'document', '$', 'selectedIndex', 'shown', 'openDrawer', 'closeDrawer', 'return (' + KEY + ')')(state, window, document, $, 0, [], () => { calls.opened++; }, () => {});",
+    "function event(key, target) { onKeydown({ key, target, preventDefault() { calls.prevented++; } }); }",
+    "event('j', { tagName: 'TEXTAREA', isContentEditable: false });",
+    "event('j', { tagName: 'DIV', isContentEditable: true });",
+    "event('j', { tagName: 'BODY', isContentEditable: false });",
+    "event('/', { tagName: 'BODY', isContentEditable: false });",
+    "console.log(JSON.stringify(calls));",
+  ].join("\n");
+  const proc = spawnSync("node", ["-e", `const KEY = ${JSON.stringify(keySrc)};\n${script}`], {
+    encoding: "utf8",
+    timeout: 60_000,
+  });
+  expect(proc.status, proc.stderr).toBe(0);
+  expect(JSON.parse(proc.stdout)).toEqual({ prevented: 2, focused: 1, opened: 0 });
 });
 
 it("meeting past rule is wired to the end date", () => {

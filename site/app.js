@@ -205,8 +205,17 @@
 
   // Keyboard Navigation (j/k/Enter/Esc//)
   function onKeydown(e) {
-    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") {
+    var tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
+        tag === "BUTTON" || e.target.isContentEditable) {
       if (e.key === "Escape") { e.target.blur(); }
+      return;
+    }
+    // 推薦モードでは非表示の締切表用ショートカットを無効化する。
+    if (typeof state !== "undefined" && state.mode === "recommend" &&
+        (e.key === "d" || e.key === "j" || e.key === "k" || e.key === "Enter" ||
+         e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      e.preventDefault();
       return;
     }
     if (e.key === "/") {
@@ -497,8 +506,12 @@
       pool = rows.concat(Rec.journalRows(activeData.conferences, now));
     }
 
+    // 推薦モード（論文入力あり）では締切画面用の検索/種別/ランク/期間/分野/国内/推定/過去フィルタを
+    // 適用しない。pool は既に未来締切+常時受付+過去代表行で構成済み。
+    var inRecommend = state.mode === "recommend" && pLines.length > 0;
+
     var out = pool.filter((r) => {
-      if (!state.est && r.est && !pLines.length) { return false; }
+      if (!inRecommend && !state.est && r.est && !pLines.length) { return false; }
       // 過去行は通常モードで除外（「過去の締切も表示」トグルで表示）。
       // 論文モードでは「締切済みだが次回予定あり」の会議として許容
       if (r.t < now && !pLines.length && !state.past) { return false; }
@@ -507,23 +520,23 @@
       // 投稿締切（概要・論文）以外の種別（開催・採否通知等）は表示しない。
       // 論文モードまたは種別指定時のみ常時受付ジャーナル（kind: journal）を許容する。
       if (r.kind !== "abstract" && r.kind !== "paper" && !((pLines.length || state.kind === "journal") && r.kind === "journal")) { return false; }
-      if (r.t > limit) { return false; }
-      if (state.kind && r.kind !== state.kind) { return false; }
+      if (!inRecommend && r.t > limit) { return false; }
+      if (!inRecommend && state.kind && r.kind !== state.kind) { return false; }
       // ランクはグレード厳密比較（indexOf の部分一致だと A が core:A* に誤マッチする）
-      if (state.rank) {
+      if (!inRecommend && state.rank) {
         var rankHit = Rec ? Rec.rankMatches(r.rankPairs, state.rank)
           : r.rankPairs.indexOf(state.rank) >= 0;
         if (!rankHit) { return false; }
       }
-      if (cats.length) {
+      if (!inRecommend && cats.length) {
         var hit = false;
         for (var i = 0; i < cats.length; i++) {
           if (r.cats.indexOf(cats[i]) >= 0) { hit = true; break; }
         }
         if (!hit) { return false; }
       }
-      if (state.domestic && (r.tags || []).indexOf("domestic-jp") < 0) { return false; }
-      if (q && r.hay.indexOf(q) < 0) { return false; }
+      if (!inRecommend && state.domestic && (r.tags || []).indexOf("domestic-jp") < 0) { return false; }
+      if (!inRecommend && q && r.hay.indexOf(q) < 0) { return false; }
 
       r._boosted = false;
       return true;
