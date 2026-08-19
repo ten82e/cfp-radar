@@ -834,6 +834,24 @@ describe("venue-level evidence fusion", () => {
 });
 
 describe("score labels and transient UI state", () => {
+  it("rejects delayed semantic results from an old generation or text", () => {
+    const app = readFileSync(join(REPO_ROOT, "site/app.js"), "utf8");
+    const start = app.indexOf("function semanticIsCurrent(");
+    const end = app.indexOf("\n  function clearSemantic", start);
+    const guard = app.slice(start, end);
+    const isCurrent = new Function(
+      "semGeneration",
+      "currentPaperText",
+      `${guard}; return semanticIsCurrent;`,
+    )(2, () => "new text") as (generation: number, text: string) => boolean;
+    expect(isCurrent(1, "old text")).toBe(false);
+    expect(isCurrent(2, "old text")).toBe(false);
+    expect(isCurrent(2, "new text")).toBe(true);
+    expect(app).toContain("invalidateSemantic();");
+    expect(app).toContain('clearSemantic("error");');
+    expect(app).toContain("Recommender.setPaperVecs(null)");
+  });
+
   it("keeps ordinal score labels out of percentage language", () => {
     const template =
       readFileSync(join(REPO_ROOT, "site/template.html"), "utf8") +
