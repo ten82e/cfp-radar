@@ -28,6 +28,8 @@ import {
   EMBEDDING_MULTI_REVISION,
   EMBEDDING_REVISION,
   VENUE_PAPERS,
+  VENUE_PROFILE_ARTIFACT,
+  type VenueProfileArtifact,
 } from "./embeddings.ts";
 import {
   loadRecommender,
@@ -473,6 +475,8 @@ export interface RealPaperFixture {
   records: RealPaperRecord[];
 }
 
+type RealPaperProfiles = Record<string, string[]> | VenueProfileArtifact;
+
 export type RealPaperRanks = Record<RealPaperMode, number | null>;
 
 export interface RealPaperModeResult extends BenchV2ModeResult {}
@@ -588,7 +592,7 @@ export function validateRealPaperFixtures(
   dev: RealPaperFixture,
   heldout: RealPaperFixture,
   venueKeys: ReadonlySet<string> = new Set(Object.keys(VENUE_PAPERS)),
-  profiles: Record<string, string[]> = VENUE_PAPERS,
+  profiles: RealPaperProfiles = VENUE_PROFILE_ARTIFACT,
 ): void {
   for (const fixture of [dev, heldout]) {
     if (fixture?.version !== 1) throw new Error("real paper fixture version must be 1");
@@ -630,20 +634,40 @@ export function validateRealPaperFixtures(
     }
     titles.set(normalized, record.paper_id);
   }
-  for (const record of [...dev.records, ...heldout.records]) {
-    for (const [venue, paperTitles] of Object.entries(profiles)) {
-      for (const profileTitle of paperTitles) {
-        if (realPaperText(record.title) === realPaperText(profileTitle)) {
-          throw new Error(`real paper profile leakage: ${record.paper_id} / ${venue}`);
-        }
-        if (realPaperNearDuplicate(record.title, profileTitle)) {
-          throw new Error(
-            `real paper near-duplicate profile leakage: ${record.paper_id} / ${venue}`,
-          );
+  for (const fixture of [dev, heldout]) {
+    const eligibleProfiles = profileTitlesBefore(profiles, fixture.profile_year_max);
+    for (const record of fixture.records) {
+      for (const [venue, paperTitles] of Object.entries(eligibleProfiles)) {
+        for (const profileTitle of paperTitles) {
+          if (realPaperText(record.title) === realPaperText(profileTitle)) {
+            throw new Error(`real paper profile leakage: ${record.paper_id} / ${venue}`);
+          }
+          if (realPaperNearDuplicate(record.title, profileTitle)) {
+            throw new Error(
+              `real paper near-duplicate profile leakage: ${record.paper_id} / ${venue}`,
+            );
+          }
         }
       }
     }
   }
+}
+
+/** Return only profile records that were available at a fixture's cutoff. */
+export function profileTitlesBefore(
+  profiles: RealPaperProfiles,
+  sourceYearMax: number,
+): Record<string, string[]> {
+  if ("schema" in profiles && profiles.schema === 2) {
+    const artifact = profiles as VenueProfileArtifact;
+    return Object.fromEntries(
+      Object.entries(artifact.profiles).map(([venue, profile]) => [
+        venue,
+        profile.papers.filter((paper) => paper.year <= sourceYearMax).map((paper) => paper.title),
+      ]),
+    );
+  }
+  return profiles as Record<string, string[]>;
 }
 
 export function realPaperMetrics(
@@ -850,27 +874,30 @@ export async function runRealPaperBenchmark(
       throw new Error(`real paper embedding count mismatch for ${language}`);
   }
 
-  const rows = confs.map((conference) => ({
-    conf: {
-      key: conference.key,
-      title: conference.title,
-      full_name: conference.full_name,
-      tags: conference.tags ?? [],
-      papers: VENUE_PAPERS[conference.key] ?? [],
-    },
-    cats: conference.categories ?? [],
-    kind: "paper",
-    t: Date.UTC(2099, 0, 1),
-    tLast: Date.UTC(2099, 0, 1),
-    est: false,
-  }));
-  Recommender.setNameIdf(Recommender.buildNameIdf(rows.map((row) => row.conf)));
   Recommender.setPaperVecs(emb.paperVecs ?? null);
   Recommender.setExpandEnabled(true);
   const venueEmb = (language: RealPaperLanguage): Record<string, number[]> =>
     language === "jp" ? (emb.multi?.embeddings ?? {}) : emb.embeddings;
+  const rowsFor = (sourceYearMax: number) => {
+    const papers = profileTitlesBefore(VENUE_PROFILE_ARTIFACT, sourceYearMax);
+    return confs.map((conference) => ({
+      conf: {
+        key: conference.key,
+        title: conference.title,
+        full_name: conference.full_name,
+        tags: conference.tags ?? [],
+        papers: papers[conference.key] ?? [],
+      },
+      cats: conference.categories ?? [],
+      kind: "paper",
+      t: Date.UTC(2099, 0, 1),
+      tLast: Date.UTC(2099, 0, 1),
+      est: false,
+    }));
+  };
   const recommend = (
     record: RealPaperRecord,
+    rows: ReturnType<typeof rowsFor>,
   ): {
     rankings: RealPaperRanks;
     confidence: string;
@@ -932,8 +959,10 @@ export async function runRealPaperBenchmark(
   } => {
     const rankings: Record<string, RealPaperRanks> = {};
     const confidence: Record<string, string> = {};
+    const rows = rowsFor(fixture.profile_year_max);
+    Recommender.setNameIdf(Recommender.buildNameIdf(rows.map((row) => row.conf)));
     for (const record of fixture.records) {
-      const evaluation = recommend(record);
+      const evaluation = recommend(record, rows);
       rankings[record.paper_id] = evaluation.rankings;
       confidence[record.paper_id] = evaluation.confidence;
     }
@@ -942,7 +971,9 @@ export async function runRealPaperBenchmark(
   try {
     const evaluations = { dev: evaluate(dev), heldout: evaluate(heldout) };
     const repeatStart = performance.now();
-    if (dev.records[0]) recommend(dev.records[0]);
+    const repeatRows = rowsFor(dev.profile_year_max);
+    Recommender.setNameIdf(Recommender.buildNameIdf(repeatRows.map((row) => row.conf)));
+    if (dev.records[0]) recommend(dev.records[0], repeatRows);
     const repeatRecommendationMs = Number((performance.now() - repeatStart).toFixed(2));
     return {
       result: buildRealPaperResult(dev, heldout, evaluations),
