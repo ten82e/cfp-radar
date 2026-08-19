@@ -11,11 +11,14 @@ import { describe, expect, it } from "vitest";
 import recommender from "../site/recommender.js";
 import {
   main as benchMain,
+  buildRealPaperResult,
   contentWords,
   norm,
   parseBenchArgs,
+  realPaperMetrics,
   runBenchmarkV2,
   topicWords,
+  validateRealPaperFixtures,
 } from "../src/bench-recommender.ts";
 import { main as embeddingsMain, venuePapersHash } from "../src/embeddings.ts";
 import { REPO_ROOT } from "./helpers.ts";
@@ -1773,6 +1776,21 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(
       parseBenchArgs(["node", "bench-recommender.ts", "--v2", "tests/fixtures/bench-v2.json"]).v2,
     ).toBe("tests/fixtures/bench-v2.json");
+    expect(
+      parseBenchArgs([
+        "node",
+        "bench-recommender.ts",
+        "--real-v2-dev",
+        "data/benchmarks/real-paper-dev.json",
+        "--real-v2-heldout",
+        "data/benchmarks/real-paper-heldout.json",
+      ]),
+    ).toEqual(
+      expect.objectContaining({
+        realV2Dev: "data/benchmarks/real-paper-dev.json",
+        realV2Heldout: "data/benchmarks/real-paper-heldout.json",
+      }),
+    );
   });
 
   it("runBenchmarkV2 reports deterministic venue-level ranking metrics", () => {
@@ -1809,6 +1827,95 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     );
     fixture.queries[1].title = fixture.queries[0].title;
     expect(() => runBenchmarkV2(fixture)).toThrow(/leak|duplicate|split/);
+  });
+
+  it("validates real-paper dev/heldout fixtures and rejects leakage", () => {
+    const dev = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "real-paper-dev.json"), "utf8"),
+    );
+    const heldout = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "real-paper-heldout.json"), "utf8"),
+    );
+    const venues = new Set(["nsdi", "osdi", "ndss", "usenix-security"]);
+    validateRealPaperFixtures(dev, heldout, venues, {});
+    expect(dev.records.every((record: Record<string, unknown>) => !("semantic" in record))).toBe(
+      true,
+    );
+
+    const leaked = JSON.parse(JSON.stringify(heldout));
+    leaked.records[0].title = dev.records[0].title;
+    expect(() => validateRealPaperFixtures(dev, leaked, venues, {})).toThrow(
+      /exact-title|duplicate/,
+    );
+
+    const timeLeaked = JSON.parse(JSON.stringify(heldout));
+    timeLeaked.records[0].year = 2024;
+    timeLeaked.profile_year_max = 2023;
+    expect(() => validateRealPaperFixtures(dev, timeLeaked, venues, {})).toThrow(
+      /strictly ordered/,
+    );
+  });
+
+  it("computes required real-paper ranking metrics and stable strata", () => {
+    const dev = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "real-paper-dev.json"), "utf8"),
+    );
+    const heldout = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "real-paper-heldout.json"), "utf8"),
+    );
+    const records = dev.records.slice(0, 2);
+    const rankings = Object.fromEntries(
+      records.map((record: { paper_id: string }, index: number) => [
+        record.paper_id,
+        { lexical: index === 0 ? 1 : null, semantic: 2, fused: index === 0 ? 1 : null },
+      ]),
+    );
+    expect(realPaperMetrics(records, rankings).fused).toEqual(
+      expect.objectContaining({
+        queries: 2,
+        mrr: 0.5,
+        coverage: 0.5,
+        "recall@1": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "ndcg@5": 0.5,
+        "ndcg@10": 0.5,
+      }),
+    );
+    const evaluation = {
+      dev: {
+        rankings,
+        confidence: Object.fromEntries(
+          records.map((record: { paper_id: string }) => [record.paper_id, "sufficient"]),
+        ),
+      },
+      heldout: {
+        rankings: Object.fromEntries(
+          heldout.records.map((record: { paper_id: string }) => [
+            record.paper_id,
+            { lexical: 1, semantic: 1, fused: 1 },
+          ]),
+        ),
+        confidence: Object.fromEntries(
+          heldout.records.map((record: { paper_id: string }) => [record.paper_id, "insufficient"]),
+        ),
+      },
+    };
+    const devSubset = { ...dev, records };
+    const first = buildRealPaperResult(devSubset, heldout, evaluation);
+    const second = buildRealPaperResult(devSubset, heldout, evaluation);
+    expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+    expect(first.splits.dev.strata.language.en.fused.mrr).toBe(0.5);
+    expect(first.splits.dev.strata.language.en.lexical.queries).toBe(2);
+    expect(first.splits.dev.strata.domain.networking.fused.queries).toBe(1);
+    expect(first.splits.heldout.abstention).toEqual(
+      expect.objectContaining({
+        total: heldout.records.length,
+        abstained: heldout.records.length,
+        coverage: 0,
+      }),
+    );
+    expect(first.timing).toEqual({ firstLoadMs: null, repeatRecommendationMs: null });
   });
 
   it("parseBenchArgs parses flags and equal-joined options", () => {

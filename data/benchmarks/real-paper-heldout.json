@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "split": "heldout",
+  "profile_year_max": 2024,
+  "records": [
+    {
+      "paper_id": "nsdi25-pred",
+      "year": 2025,
+      "title": "PRED: Performance-oriented Random Early Detection for Consistently Stable Performance in Datacenters",
+      "abstract": "PRED automatically adjusts random early detection parameters for changing datacenter traffic, targeting stable queueing and lower tail flow-completion time.",
+      "keywords": ["datacenter networks", "active queue management", "congestion control", "tail latency"],
+      "primary_venue": "nsdi",
+      "acceptable_venues": ["nsdi", "osdi"],
+      "language": "en",
+      "domains": ["networking", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.usenix.org/conference/nsdi25/presentation/du"
+    },
+    {
+      "paper_id": "osdi25-qimeng-xpiler",
+      "year": 2025,
+      "title": "QiMeng-Xpiler: Transcompiling Tensor Programs for Deep Learning Systems with a Neural-Symbolic Approach",
+      "abstract": "QiMeng-Xpiler combines large language models, symbolic repair, and autotuning to translate tensor programs across heterogeneous deep learning systems.",
+      "keywords": ["tensor programs", "neural-symbolic synthesis", "LLM", "GPU", "autotuning"],
+      "primary_venue": "osdi",
+      "acceptable_venues": ["osdi", "nsdi"],
+      "language": "en",
+      "domains": ["ai", "systems", "hpc"],
+      "venue_kind": "conference",
+      "source": "https://www.usenix.org/conference/osdi25/presentation/dong"
+    },
+    {
+      "paper_id": "ndss25-counterseveillance",
+      "year": 2025,
+      "title": "CounterSEVeillance: Performance-Counter Attacks on AMD SEV-SNP",
+      "abstract": "CounterSEVeillance studies exposed performance counters in AMD SEV-SNP and demonstrates instruction-level side-channel recovery from protected virtual machines.",
+      "keywords": ["AMD SEV-SNP", "side channel", "performance counters", "confidential computing"],
+      "primary_venue": "ndss",
+      "acceptable_venues": ["ndss", "usenix-security"],
+      "language": "en",
+      "domains": ["security", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.ndss-symposium.org/ndss-program/symposium-2025/"
+    },
+    {
+      "paper_id": "ndss25-bootloader-safety",
+      "year": 2025,
+      "title": "A Comprehensive Memory Safety Analysis of Bootloaders",
+      "abstract": "A broad analysis examines memory-safety weaknesses in bootloader code and their consequences for system security.",
+      "keywords": ["bootloaders", "memory safety", "vulnerability analysis", "embedded systems"],
+      "primary_venue": "ndss",
+      "acceptable_venues": ["ndss", "usenix-security"],
+      "language": "en",
+      "domains": ["security", "systems"],
+      "venue_kind": "conference",
+      "source": "https://www.ndss-symposium.org/ndss2025/accepted-papers/"
+    }
+  ]
+}

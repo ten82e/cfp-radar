@@ -16,11 +16,19 @@
  *   npm run bench -- --sw nameOnce         # 会議名一致を先頭 1 語の固定加点のみに
  *   npm run bench -- --golden-en           # 実採択論文タイトル（DBLP 由来）で真の精度を測定
  *   npm run bench -- --no-idf              # IDF 減衰を無効化（既定は本番と同じく有効）
+ *   --v2                                   # #454 の合成 smoke/plumbing 評価
+ *   --real-v2-dev ... --real-v2-heldout ... # 実論文の固定 revision 評価
  */
 
 import { readFileSync } from "node:fs";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
-import { EMBEDDING_MODEL, EMBEDDING_MULTI_MODEL, VENUE_PAPERS } from "./embeddings.ts";
+import {
+  EMBEDDING_MODEL,
+  EMBEDDING_MULTI_MODEL,
+  EMBEDDING_MULTI_REVISION,
+  EMBEDDING_REVISION,
+  VENUE_PAPERS,
+} from "./embeddings.ts";
 import {
   loadRecommender,
   type RecommenderApi,
@@ -50,6 +58,8 @@ export interface BenchArgs {
   goldenEn: boolean;
   paperMax: boolean;
   v2: string | null;
+  realV2Dev: string | null;
+  realV2Heldout: string | null;
 }
 
 // 不正な数値（負・非整数・非数値）を既定値へフォールバック。
@@ -116,6 +126,8 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     // （英語のみ）。実測で golden EN top1 15.8→26.3 / top5 63.2→71.9。既定オン。
     paperMax: true,
     v2: null,
+    realV2Dev: null,
+    realV2Heldout: null,
   };
   if (!argv || !Array.isArray(argv)) return args;
 
@@ -169,6 +181,8 @@ export function parseBenchArgs(argv: string[] | null | undefined): BenchArgs {
     else if (a === "--paper-max") args.paperMax = parseBool(eqVal, true);
     else if (a === "--no-paper-max") args.paperMax = false;
     else if (a === "--v2" || a === "--bench-v2") args.v2 = nextVal() ?? null;
+    else if (a === "--real-v2-dev") args.realV2Dev = nextVal() ?? null;
+    else if (a === "--real-v2-heldout") args.realV2Heldout = nextVal() ?? null;
     else if (a === "--sw") {
       args.sw = nextVal() ?? null;
       // 例: "name=25,venue=80,domain=0,tags=0" または "nameOnce"（会議名一致を先頭 1 語のみ）
@@ -429,6 +443,515 @@ export function runBenchmarkV2(fixture: BenchV2Fixture): BenchV2Result {
       ]),
     ) as BenchV2Result["splits"],
   };
+}
+
+const REAL_PAPER_LANGUAGES = ["en", "jp"] as const;
+const REAL_PAPER_KINDS = ["conference", "workshop", "journal"] as const;
+const REAL_PAPER_MODES = ["lexical", "semantic", "fused"] as const;
+type RealPaperLanguage = (typeof REAL_PAPER_LANGUAGES)[number];
+type RealPaperKind = (typeof REAL_PAPER_KINDS)[number];
+type RealPaperMode = (typeof REAL_PAPER_MODES)[number];
+
+export interface RealPaperRecord {
+  paper_id: string;
+  year: number;
+  title: string;
+  abstract?: string;
+  keywords: string | string[];
+  primary_venue: string;
+  acceptable_venues: string[];
+  language: RealPaperLanguage;
+  domains: string[];
+  venue_kind: RealPaperKind;
+  source?: string;
+}
+
+export interface RealPaperFixture {
+  version: 1;
+  split: "dev" | "heldout";
+  profile_year_max: number;
+  records: RealPaperRecord[];
+}
+
+export type RealPaperRanks = Record<RealPaperMode, number | null>;
+
+export interface RealPaperModeResult extends BenchV2ModeResult {}
+
+export interface RealPaperAbstention {
+  mode: "fused";
+  total: number;
+  abstained: number;
+  coverage: number;
+  conditionalPrecision: number | null;
+  "conditionalRecall@5": number | null;
+}
+
+export interface RealPaperSplitResult {
+  queries: number;
+  modes: Record<RealPaperMode, RealPaperModeResult>;
+  strata: {
+    language: Record<string, Record<RealPaperMode, RealPaperModeResult>>;
+    domain: Record<string, Record<RealPaperMode, RealPaperModeResult>>;
+    venueKind: Record<string, Record<RealPaperMode, RealPaperModeResult>>;
+  };
+  abstention: RealPaperAbstention;
+}
+
+export interface RealPaperResult {
+  benchmark: "real-paper-v1";
+  version: 1;
+  models: {
+    en: { model: string; revision: string };
+    jp: { model: string; revision: string };
+  };
+  splits: { dev: RealPaperSplitResult; heldout: RealPaperSplitResult };
+  timing: { firstLoadMs: null; repeatRecommendationMs: null };
+}
+
+export interface RealPaperRun {
+  result: RealPaperResult;
+  timing: { firstLoadMs: number; repeatRecommendationMs: number };
+}
+
+function realPaperText(value: unknown): string {
+  return String(value ?? "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+function realPaperTitleTokens(value: unknown): Set<string> {
+  return new Set(
+    realPaperText(value)
+      .split(/\s+/)
+      .filter((word) => word.length > 2 && !STOP.has(word)),
+  );
+}
+
+function realPaperNearDuplicate(left: string, right: string): boolean {
+  const a = realPaperTitleTokens(left);
+  const b = realPaperTitleTokens(right);
+  if (a.size < 4 || b.size < 4) return false;
+  const smaller = a.size <= b.size ? a : b;
+  const larger = smaller === a ? b : a;
+  let overlap = 0;
+  for (const token of smaller) if (larger.has(token)) overlap++;
+  return overlap / smaller.size >= 0.8;
+}
+
+function validateRealPaperRecord(
+  record: RealPaperRecord,
+  split: RealPaperFixture["split"],
+  index: number,
+  venueKeys: ReadonlySet<string>,
+): void {
+  if (!record || typeof record !== "object")
+    throw new Error(`real paper ${split}[${index}] is invalid`);
+  if (!record.paper_id?.trim()) throw new Error(`real paper ${split}[${index}] missing paper_id`);
+  if (!Number.isInteger(record.year) || record.year < 1900 || record.year > 2100) {
+    throw new Error(`real paper ${record.paper_id} has invalid year`);
+  }
+  if (!record.title?.trim()) throw new Error(`real paper ${record.paper_id} missing title`);
+  if (!record.abstract?.trim() && toStringArray(record.keywords).length === 0) {
+    throw new Error(`real paper ${record.paper_id} needs abstract or keywords`);
+  }
+  if (!venueKeys.has(record.primary_venue)) {
+    throw new Error(
+      `real paper ${record.paper_id} has unknown primary venue: ${record.primary_venue}`,
+    );
+  }
+  const acceptable = toStringArray(record.acceptable_venues);
+  if (!acceptable.length || !acceptable.includes(record.primary_venue)) {
+    throw new Error(
+      `real paper ${record.paper_id} needs acceptable_venues including primary venue`,
+    );
+  }
+  if (new Set(acceptable).size !== acceptable.length) {
+    throw new Error(`real paper ${record.paper_id} has duplicate acceptable venue`);
+  }
+  for (const key of acceptable) {
+    if (!venueKeys.has(key))
+      throw new Error(`real paper ${record.paper_id} has unknown venue: ${key}`);
+  }
+  if (!REAL_PAPER_LANGUAGES.includes(record.language)) {
+    throw new Error(`real paper ${record.paper_id} has invalid language`);
+  }
+  if (!REAL_PAPER_KINDS.includes(record.venue_kind)) {
+    throw new Error(`real paper ${record.paper_id} has invalid venue_kind`);
+  }
+  if (!toStringArray(record.domains).length)
+    throw new Error(`real paper ${record.paper_id} needs domains`);
+}
+
+export function validateRealPaperFixtures(
+  dev: RealPaperFixture,
+  heldout: RealPaperFixture,
+  venueKeys: ReadonlySet<string> = new Set(Object.keys(VENUE_PAPERS)),
+  profiles: Record<string, string[]> = VENUE_PAPERS,
+): void {
+  for (const fixture of [dev, heldout]) {
+    if (fixture?.version !== 1) throw new Error("real paper fixture version must be 1");
+    if (fixture.split !== "dev" && fixture.split !== "heldout") {
+      throw new Error(`real paper fixture has invalid split: ${fixture.split}`);
+    }
+    if (!Number.isInteger(fixture.profile_year_max)) {
+      throw new Error(`real paper ${fixture.split} profile_year_max must be an integer`);
+    }
+    if (!Array.isArray(fixture.records) || fixture.records.length === 0) {
+      throw new Error(`real paper ${fixture.split} records must be non-empty`);
+    }
+    const minYear = Math.min(...fixture.records.map((record) => record.year));
+    if (!(fixture.profile_year_max < minYear)) {
+      throw new Error(`real paper ${fixture.split} profile must precede evaluation year`);
+    }
+    const ids = new Set<string>();
+    for (const [index, record] of fixture.records.entries()) {
+      validateRealPaperRecord(record, fixture.split, index, venueKeys);
+      if (ids.has(record.paper_id)) throw new Error(`real paper duplicate id: ${record.paper_id}`);
+      ids.add(record.paper_id);
+    }
+  }
+  const devEnd = Math.max(...dev.records.map((record) => record.year));
+  const heldoutStart = Math.min(...heldout.records.map((record) => record.year));
+  if (!(devEnd < heldoutStart))
+    throw new Error("real paper dev/heldout years must be strictly ordered");
+
+  const titles = new Map<string, string>();
+  for (const record of [...dev.records, ...heldout.records]) {
+    const normalized = realPaperText(record.title);
+    const previous = titles.get(normalized);
+    if (previous)
+      throw new Error(`real paper exact-title leakage: ${record.paper_id} / ${previous}`);
+    for (const [otherTitle, otherId] of titles) {
+      if (realPaperNearDuplicate(record.title, otherTitle)) {
+        throw new Error(`real paper near-duplicate leakage: ${record.paper_id} / ${otherId}`);
+      }
+    }
+    titles.set(normalized, record.paper_id);
+  }
+  for (const record of [...dev.records, ...heldout.records]) {
+    for (const [venue, paperTitles] of Object.entries(profiles)) {
+      for (const profileTitle of paperTitles) {
+        if (realPaperText(record.title) === realPaperText(profileTitle)) {
+          throw new Error(`real paper profile leakage: ${record.paper_id} / ${venue}`);
+        }
+        if (realPaperNearDuplicate(record.title, profileTitle)) {
+          throw new Error(
+            `real paper near-duplicate profile leakage: ${record.paper_id} / ${venue}`,
+          );
+        }
+      }
+    }
+  }
+}
+
+export function realPaperMetrics(
+  records: RealPaperRecord[],
+  rankings: Record<string, RealPaperRanks>,
+): Record<RealPaperMode, RealPaperModeResult> {
+  const byMode = Object.fromEntries(
+    REAL_PAPER_MODES.map((mode) => [
+      mode,
+      benchV2Metrics(
+        records.map((record) => {
+          const ranks = rankings[record.paper_id];
+          if (!ranks) throw new Error(`real paper ranking missing: ${record.paper_id}`);
+          return ranks[mode];
+        }),
+      ),
+    ]),
+  ) as Record<RealPaperMode, RealPaperModeResult>;
+  return byMode;
+}
+
+function realPaperStrata(
+  records: RealPaperRecord[],
+  rankings: Record<string, RealPaperRanks>,
+): RealPaperSplitResult["strata"] {
+  const dimensions = {
+    language: (record: RealPaperRecord): string[] => [record.language],
+    domain: (record: RealPaperRecord): string[] => toStringArray(record.domains).sort(),
+    venueKind: (record: RealPaperRecord): string[] => [record.venue_kind],
+  } as const;
+  const result = {} as RealPaperSplitResult["strata"];
+  for (const [dimension, values] of Object.entries(dimensions)) {
+    const groups: Record<string, RealPaperRecord[]> = {};
+    for (const record of records) {
+      for (const value of values(record)) {
+        groups[value] ??= [];
+        groups[value]!.push(record);
+      }
+    }
+    result[dimension as keyof RealPaperSplitResult["strata"]] = Object.fromEntries(
+      Object.keys(groups)
+        .sort()
+        .map((value) => [value, realPaperMetrics(groups[value]!, rankings)]),
+    ) as never;
+  }
+  return result;
+}
+
+function realPaperAbstention(
+  records: RealPaperRecord[],
+  rankings: Record<string, RealPaperRanks>,
+  confidence: Record<string, string>,
+): RealPaperAbstention {
+  const eligible = records.filter((record) => confidence[record.paper_id] === "sufficient");
+  const metrics = eligible.map((record) => rankings[record.paper_id]!.fused);
+  return {
+    mode: "fused",
+    total: records.length,
+    abstained: records.length - eligible.length,
+    coverage: benchV2Round(eligible.length / records.length),
+    conditionalPrecision:
+      eligible.length > 0
+        ? benchV2Round(metrics.filter((rank) => rank === 1).length / eligible.length)
+        : null,
+    "conditionalRecall@5":
+      eligible.length > 0
+        ? benchV2Round(
+            metrics.filter((rank) => rank !== null && rank <= 5).length / eligible.length,
+          )
+        : null,
+  };
+}
+
+function realPaperSplitResult(
+  records: RealPaperRecord[],
+  rankings: Record<string, RealPaperRanks>,
+  confidence: Record<string, string>,
+): RealPaperSplitResult {
+  const metrics = realPaperMetrics(records, rankings);
+  return {
+    queries: records.length,
+    modes: metrics,
+    strata: realPaperStrata(records, rankings),
+    abstention: realPaperAbstention(records, rankings, confidence),
+  };
+}
+
+export function buildRealPaperResult(
+  dev: RealPaperFixture,
+  heldout: RealPaperFixture,
+  evaluations: {
+    dev: { rankings: Record<string, RealPaperRanks>; confidence: Record<string, string> };
+    heldout: { rankings: Record<string, RealPaperRanks>; confidence: Record<string, string> };
+  },
+): RealPaperResult {
+  return {
+    benchmark: "real-paper-v1",
+    version: 1,
+    models: {
+      en: { model: EMBEDDING_MODEL, revision: EMBEDDING_REVISION },
+      jp: { model: EMBEDDING_MULTI_MODEL, revision: EMBEDDING_MULTI_REVISION },
+    },
+    splits: {
+      dev: realPaperSplitResult(dev.records, evaluations.dev.rankings, evaluations.dev.confidence),
+      heldout: realPaperSplitResult(
+        heldout.records,
+        evaluations.heldout.rankings,
+        evaluations.heldout.confidence,
+      ),
+    },
+    // Wall-clock values are intentionally kept out of machine-readable JSON.
+    timing: { firstLoadMs: null, repeatRecommendationMs: null },
+  };
+}
+
+function realPaperRank(
+  recommendations: VenueRecommendation[],
+  acceptable: ReadonlySet<string>,
+): number | null {
+  const index = recommendations.findIndex((recommendation) =>
+    acceptable.has(recommendation.venueKey),
+  );
+  return index < 0 ? null : index + 1;
+}
+
+export async function runRealPaperBenchmark(
+  dev: RealPaperFixture,
+  heldout: RealPaperFixture,
+  data: { conferences: Conf[] },
+  emb: {
+    manifest?: { models?: Record<string, { model?: string; revision?: string; dim?: number }> };
+    embeddings: Record<string, number[]>;
+    multi?: { embeddings: Record<string, number[]> };
+    paperVecs?: Record<string, number[][]>;
+  },
+): Promise<RealPaperRun> {
+  const confs = data.conferences ?? [];
+  const venueKeys = new Set(confs.map((conference) => conference.key));
+  validateRealPaperFixtures(dev, heldout, venueKeys);
+  const records = [...dev.records, ...heldout.records];
+  const usedLanguages = [...new Set(records.map((record) => record.language))].sort();
+  const modelFor = (
+    language: RealPaperLanguage,
+  ): { model: string; revision: string; key: string } =>
+    language === "jp"
+      ? { model: EMBEDDING_MULTI_MODEL, revision: EMBEDDING_MULTI_REVISION, key: "multi" }
+      : { model: EMBEDDING_MODEL, revision: EMBEDDING_REVISION, key: "en" };
+  for (const language of usedLanguages) {
+    const expected = modelFor(language);
+    const actual = emb.manifest?.models?.[expected.key];
+    if (actual?.model !== expected.model || actual.revision !== expected.revision) {
+      throw new Error(
+        `real paper embedding manifest mismatch for ${language}; rebuild pinned embeddings`,
+      );
+    }
+    const embeddingSet = language === "jp" ? (emb.multi?.embeddings ?? {}) : emb.embeddings;
+    for (const conference of confs) {
+      const vector = embeddingSet[conference.key];
+      if (
+        !Array.isArray(vector) ||
+        vector.length === 0 ||
+        vector.some((value) => !Number.isFinite(value))
+      ) {
+        throw new Error(`real paper embedding missing or invalid: ${language}/${conference.key}`);
+      }
+    }
+  }
+  const extractors = new Map<RealPaperLanguage, FeatureExtractionPipeline>();
+  const loadStart = performance.now();
+  for (const language of usedLanguages) {
+    const model = modelFor(language);
+    extractors.set(
+      language,
+      (await pipeline("feature-extraction", model.model, {
+        revision: model.revision,
+      })) as FeatureExtractionPipeline,
+    );
+  }
+  const firstLoadMs = Number((performance.now() - loadStart).toFixed(2));
+  const vectors = new Map<string, number[]>();
+  for (const language of usedLanguages) {
+    const group = records.filter((record) => record.language === language);
+    const extractor = extractors.get(language)!;
+    const output = await extractor(
+      group.map(
+        (record) =>
+          `${record.title} ${record.abstract ?? ""} ${toStringArray(record.keywords).join(" ")}`,
+      ),
+      { pooling: "mean", normalize: true },
+    );
+    const tensors = Array.isArray(output) ? output : [output];
+    let index = 0;
+    for (const tensor of tensors) {
+      const count = tensor.dims[0] ?? 1;
+      const width = tensor.dims[1] ?? 384;
+      const values = Array.from(tensor.data as Float32Array | ArrayLike<number>);
+      for (let row = 0; row < count; row++) {
+        const record = group[index++];
+        if (!record) throw new Error(`real paper embedding count mismatch for ${language}`);
+        vectors.set(record.paper_id, values.slice(row * width, (row + 1) * width));
+      }
+    }
+    if (index !== group.length)
+      throw new Error(`real paper embedding count mismatch for ${language}`);
+  }
+
+  const rows = confs.map((conference) => ({
+    conf: {
+      key: conference.key,
+      title: conference.title,
+      full_name: conference.full_name,
+      tags: conference.tags ?? [],
+      papers: VENUE_PAPERS[conference.key] ?? [],
+    },
+    cats: conference.categories ?? [],
+    kind: "paper",
+    t: Date.UTC(2099, 0, 1),
+    tLast: Date.UTC(2099, 0, 1),
+    est: false,
+  }));
+  Recommender.setNameIdf(Recommender.buildNameIdf(rows.map((row) => row.conf)));
+  Recommender.setPaperVecs(emb.paperVecs ?? null);
+  Recommender.setExpandEnabled(true);
+  const venueEmb = (language: RealPaperLanguage): Record<string, number[]> =>
+    language === "jp" ? (emb.multi?.embeddings ?? {}) : emb.embeddings;
+  const recommend = (
+    record: RealPaperRecord,
+  ): {
+    rankings: RealPaperRanks;
+    confidence: string;
+  } => {
+    const vector = vectors.get(record.paper_id);
+    if (!vector) throw new Error(`real paper vector missing: ${record.paper_id}`);
+    const lines = Recommender.parsePaperLines(
+      JSON.stringify([
+        {
+          title: record.title,
+          abstract: record.abstract ?? "",
+          keywords: toStringArray(record.keywords),
+          venue: "",
+        },
+      ]),
+    );
+    const semanticScores = Object.fromEntries(
+      confs.map((conference) => [
+        conference.key,
+        Recommender.semanticScore(conference.key, vector, venueEmb(record.language)),
+      ]),
+    );
+    const recommendations = Recommender.venueRecommendations(
+      rows,
+      lines,
+      semanticScores,
+      Date.UTC(record.year, 0, 1),
+      { topN: rows.length },
+    ) as VenueRecommendation[];
+    const acceptable = new Set(record.acceptable_venues);
+    const lexical = recommendations
+      .filter((recommendation) => recommendation.fit.lexicalScore > 0)
+      .sort(
+        (left, right) =>
+          right.fit.lexicalScore - left.fit.lexicalScore ||
+          left.venueKey.localeCompare(right.venueKey),
+      );
+    const semantic = recommendations
+      .filter((recommendation) => recommendation.fit.semanticScore > 0)
+      .sort(
+        (left, right) =>
+          right.fit.semanticScore - left.fit.semanticScore ||
+          left.venueKey.localeCompare(right.venueKey),
+      );
+    return {
+      rankings: {
+        lexical: realPaperRank(lexical, acceptable),
+        semantic: realPaperRank(semantic, acceptable),
+        fused: realPaperRank(recommendations, acceptable),
+      },
+      confidence: String(recommendations[0]?.fit.confidence ?? "insufficient"),
+    };
+  };
+  const evaluate = (
+    fixture: RealPaperFixture,
+  ): {
+    rankings: Record<string, RealPaperRanks>;
+    confidence: Record<string, string>;
+  } => {
+    const rankings: Record<string, RealPaperRanks> = {};
+    const confidence: Record<string, string> = {};
+    for (const record of fixture.records) {
+      const evaluation = recommend(record);
+      rankings[record.paper_id] = evaluation.rankings;
+      confidence[record.paper_id] = evaluation.confidence;
+    }
+    return { rankings, confidence };
+  };
+  try {
+    const evaluations = { dev: evaluate(dev), heldout: evaluate(heldout) };
+    const repeatStart = performance.now();
+    if (dev.records[0]) recommend(dev.records[0]);
+    const repeatRecommendationMs = Number((performance.now() - repeatStart).toFixed(2));
+    return {
+      result: buildRealPaperResult(dev, heldout, evaluations),
+      timing: { firstLoadMs, repeatRecommendationMs },
+    };
+  } finally {
+    Recommender.setNameIdf(null);
+    Recommender.setPaperVecs(null);
+  }
 }
 
 export function norm(s: string | null | undefined): string {
@@ -1087,7 +1610,7 @@ export async function main(argv: string[] | null | undefined = process.argv): Pr
   const rawArgs = extractArgvRest(safeArgv);
   if (rawArgs.includes("--help") || rawArgs.includes("-h") || rawArgs.includes("help")) {
     console.log(
-      "usage: node src/bench-recommender.ts [--data <path>] [--emb <path>] [--v2 <fixture>] [--samples <n>] [--failures <n>] [--topk <n>] [--lang <en|jp>] [--golden-en] [--no-idf]",
+      "usage: node src/bench-recommender.ts [--data <path>] [--emb <path>] [--v2 <fixture>] [--real-v2-dev <fixture>] [--real-v2-heldout <fixture>] [--samples <n>] [--failures <n>] [--topk <n>] [--lang <en|jp>] [--golden-en] [--no-idf]",
     );
     return 0;
   }
@@ -1100,6 +1623,32 @@ export async function main(argv: string[] | null | undefined = process.argv): Pr
     } catch (error) {
       process.stderr.write(
         `bench v2 failed: ${error instanceof Error ? error.message : String(error)}\n`,
+      );
+      return 1;
+    }
+  }
+  if (args.realV2Dev || args.realV2Heldout) {
+    if (!args.realV2Dev || !args.realV2Heldout) {
+      process.stderr.write("real bench requires --real-v2-dev and --real-v2-heldout together\n");
+      return 1;
+    }
+    try {
+      const dev = JSON.parse(readFileSync(args.realV2Dev, "utf8")) as RealPaperFixture;
+      const heldout = JSON.parse(readFileSync(args.realV2Heldout, "utf8")) as RealPaperFixture;
+      const data = JSON.parse(readFileSync(args.data, "utf8")) as { conferences: Conf[] };
+      const emb = JSON.parse(readFileSync(args.emb, "utf8")) as Parameters<
+        typeof runRealPaperBenchmark
+      >[3];
+      const run = await runRealPaperBenchmark(dev, heldout, data, emb);
+      console.log(JSON.stringify(run.result, null, 2));
+      process.stderr.write(
+        `real-bench: dev=${run.result.splits.dev.queries} heldout=${run.result.splits.heldout.queries} ` +
+          `first_load_ms=${run.timing.firstLoadMs} repeat_recommendation_ms=${run.timing.repeatRecommendationMs}\n`,
+      );
+      return 0;
+    } catch (error) {
+      process.stderr.write(
+        `real bench failed: ${error instanceof Error ? error.message : String(error)}\n`,
       );
       return 1;
     }
