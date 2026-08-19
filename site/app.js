@@ -365,12 +365,34 @@
   var semModel = null;         // transformers.js の pipeline
   var semLoadedModel = "";    // ロード済みモデル ID（言語適応で切り替え）
   var semEmbeddings = null;   // 言語に応じた埋め込み表（en / multi）
-  var semBusy = false;
+  var semGeneration = 0;
   var semState = "idle";       // idle | loading | ready | error（AI 状態の表示用）
   var semProbeCache = {};       // model@revision -> probe compatibility
   var semLastText = "";       // 最後に埋め込み計算したテキスト（再計算判定用）
   var lastIsJp = false;        // 直近の論文テキストが日本語か（合成比・閾値の表示用）
   var lastLen = 0;             // 直近の論文テキストの内容語数（英語の合成比の適応用）
+
+  function currentPaperText() {
+    var pe = $("paperText");
+    return pe ? pe.value : "";
+  }
+
+  function semanticIsCurrent(generation, text) {
+    return generation === semGeneration && currentPaperText() === text;
+  }
+
+  function clearSemantic(nextState) {
+    semQuery = null;
+    semEmbeddings = null;
+    semLastText = "";
+    if (Recommender && Recommender.setPaperVecs) Recommender.setPaperVecs(null);
+    if (nextState) semState = nextState;
+  }
+
+  function invalidateSemantic() {
+    semGeneration += 1;
+    clearSemantic("idle");
+  }
 
   function loadEmbeddings(cb) {
     if (EMBEDDINGS) { cb(); return; }
@@ -380,20 +402,34 @@
       .catch(() => { cb(); }); // 無ければ語彙スコアのみで動作
   }
 
-  function loadTransformers(modelMeta, cb) {
+  function loadTransformers(modelMeta, generation, cb) {
     var modelId = modelMeta.model;
     var revision = modelMeta.revision;
     var modelKey = modelId + "@" + revision;
-    if (semLoadedModel === modelKey) { cb(); return; }
-    if (semState === "error") { cb(); return; } // 失敗は再試行しない（リロードで復帰）
+    if (semLoadedModel === modelKey && semModel) {
+      if (generation === semGeneration) cb(true);
+      return;
+    }
+    if (generation !== semGeneration) return;
+    if (semState === "error") { cb(false); return; }
     semState = "loading";
     // jsdelivr の素のパッケージ URL は Node 向けバンドルで window.transformers を
     // 公開しない（実行しても undefined になる）。ESM ビルド（+esm）を動的 import する。
     var transformersUrl = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm";
     import(transformersUrl)
       .then((m) => m.pipeline("feature-extraction", modelId, { revision: revision }))
-      .then((mdl) => { semModel = mdl; semLoadedModel = modelKey; semState = "ready"; cb(); })
-      .catch(() => { semState = "error"; cb(); });
+      .then((mdl) => {
+        if (generation !== semGeneration) return;
+        semModel = mdl;
+        semLoadedModel = modelKey;
+        semState = "ready";
+        cb(true);
+      })
+      .catch(() => {
+        if (generation !== semGeneration) return;
+        semState = "error";
+        cb(false);
+      });
   }
 
   function checkSemanticProbe(modelMeta, cb) {
@@ -415,30 +451,51 @@
   // 言語適応: 日本語を含む論文は多言語モデル、それ以外は英語モデルで埋め込む
   // （実測: EN は英語モデル 80.1% > 多言語 76.2%、JP は多言語 42.9% > 英語 19.0%）。
   function scheduleSemantic() {
-    var pe = $("paperText");
-    var text = pe ? pe.value : "";
-    if (!text.trim() || !Recommender) { semQuery = null; return; }
-    if (semBusy) return; // 計算中はスキップし、終了後の finally で最新テキストを再計算する
+    var generation = ++semGeneration;
+    var text = currentPaperText();
+    clearSemantic("idle");
+    if (!text.trim() || !Recommender) return;
+    semState = "loading";
     loadEmbeddings(() => {
-      if (!EMBEDDINGS) return;
+      if (!semanticIsCurrent(generation, text)) return;
+      if (!EMBEDDINGS) {
+        clearSemantic("error");
+        render();
+        return;
+      }
       var isJp = Recommender.hasJapanese(text);
       var language = isJp && EMBEDDINGS.multi ? "multi" : "en";
       var embSet = language === "multi" ? EMBEDDINGS.multi : EMBEDDINGS;
-      if (!Recommender.embeddingSetCompatible(EMBEDDINGS, language)) return;
+      if (!Recommender.embeddingSetCompatible(EMBEDDINGS, language)) {
+        clearSemantic("error");
+        render();
+        return;
+      }
       var modelMeta = EMBEDDINGS.manifest.models[language];
-      loadTransformers(modelMeta, () => {
-        if (semLoadedModel !== modelMeta.model + "@" + modelMeta.revision || !semModel) return;
-        semBusy = true;
+      loadTransformers(modelMeta, generation, (loaded) => {
+        if (!semanticIsCurrent(generation, text)) return;
+        if (!loaded || semLoadedModel !== modelMeta.model + "@" + modelMeta.revision || !semModel) {
+          clearSemantic("error");
+          render();
+          return;
+        }
         checkSemanticProbe(modelMeta, (probeOk) => {
-          if (!probeOk) { semBusy = false; return; }
-          var q = Recommender.queryText(Recommender.parsePaperLines(text));
+          if (!semanticIsCurrent(generation, text)) return;
+          if (!probeOk) {
+            clearSemantic("error");
+            render();
+            return;
+          }
+          var lines = Recommender.parsePaperLines(text);
+          var q = Recommender.queryText(lines);
           semModel(q, { pooling: "mean", normalize: true })
           .then((out) => {
-            semQuery = Array.from(out.data);
+            if (!semanticIsCurrent(generation, text)) return;
+            var nextQuery = Array.from(out.data);
             // 擬似関連性フィードバック（PRF）: 掲載先タグ付き論文がある場合、
             // その会議の埋め込みを 0.3 混ぜる（「自分が載せた所と似た会議」を拾う）。
             // 実測: タグ付きクエリで正解会議 #1 が 78.9% → 92.2% に改善。
-            var tagged = Recommender.parsePaperLines(text).filter((p) => p.venue);
+            var tagged = lines.filter((p) => p.venue);
             if (tagged.length && activeData && activeData.conferences) {
               var matched = [];
               tagged.forEach((p) => {
@@ -451,22 +508,23 @@
                   for (var j = 0; j < avg.length; j++) avg[j] += mvecs[i][j];
                 }
                 avg = avg.map((x) => x / mvecs.length);
-                semQuery = Recommender.blendVectors(semQuery, avg, 0.7);
+                nextQuery = Recommender.blendVectors(nextQuery, avg, 0.7);
               }
             }
+            if (!semanticIsCurrent(generation, text)) return;
+            semQuery = nextQuery;
             semEmbeddings = embSet.embeddings;
             // R16: 論文個別ベクトル（max 類似度）は英語クエリのみ。日本語クエリは
             // 多言語モデルなので英語モデルの論文ベクトルを混ぜない（言語別分離設計）。
             Recommender.setPaperVecs(isJp ? null : EMBEDDINGS.paperVecs);
             semLastText = text;
+            semState = "ready";
             render();
           })
-          .catch(() => {})
-          .finally(() => {
-            semBusy = false;
-            // 計算中に入力が変わっていたら、最新テキストで埋め込みをやり直す
-            var pe2 = $("paperText");
-            if (pe2 && pe2.value.trim() && pe2.value !== semLastText) { scheduleSemantic(); }
+          .catch(() => {
+            if (!semanticIsCurrent(generation, text)) return;
+            clearSemantic("error");
+            render();
           });
         });
       });
@@ -1205,12 +1263,14 @@
     timer = setTimeout(apply, 180);
   });
   $("paperText").addEventListener("input", () => {
+    invalidateSemantic();
     clearTimeout(timer);
     timer = setTimeout(() => { apply(); scheduleSemantic(); }, 200);
   });
   ["paperPrimaryTitle", "paperPrimaryAbstract", "paperPrimaryKeywords", "paperReferences"].forEach((id) => {
     $(id).addEventListener("input", () => {
       syncPaperText();
+      invalidateSemantic();
       clearTimeout(timer);
       timer = setTimeout(() => { apply(); scheduleSemantic(); }, 200);
     });
@@ -1239,6 +1299,7 @@
     $("paperReferences").value = "";
     paperFiles.value = "";
     document.getElementById("paperFileLabel").textContent = "未選択";
+    invalidateSemantic();
     toForm();
     writeUrl();
     render();
