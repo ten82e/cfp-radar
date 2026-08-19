@@ -7,7 +7,7 @@
  * 公開 API:
  *   parsePaperLines(text)      → [{title, keywords, venue}]  (1行1論文、| 区切り)
  *   autoDetectCats(lines)      → [catKey, ...]  分野自動判定（ヒット数の降順、0 件なら []）
- *   scorePapers(r, lines)      → number 0..100  (行平均。掲載先タグ一致はブースト)
+ *   scorePapers(r, lines)      → number 0..100  (primary/reference weighted topic score)
  *   breakdown(r, lines)        → {score, venueHit, perLine: [...]}  デバッグ/表示用
  *   safeExternalUrl(value)     → HTTP/HTTPS または相対 URL、不正な URL は ""
  */
@@ -305,6 +305,34 @@
     return [p && p.title, p && p.abstract, p && p.keywords].filter(Boolean).join(" ").trim();
   }
 
+  function paperIdentity(p) {
+    var title = String((p && p.title) || "").toLowerCase().replace(/\s+/g, " ").trim();
+    if (title) return title;
+    return [p && p.abstract, p && p.keywords]
+      .map((value) => String(value || "").toLowerCase().replace(/\s+/g, " ").trim())
+      .filter(Boolean)
+      .join("\u0001");
+  }
+
+  function paperWeights(lines) {
+    var seen = new Set();
+    var referenceTotal = 0;
+    return (lines || []).map((paper, index) => {
+      var id = paperIdentity(paper);
+      if (index === 0) {
+        if (id) seen.add(id);
+        return { role: "primary", weight: 1 };
+      }
+      if (!id || seen.has(id) || referenceTotal >= 0.4) {
+        return { role: "reference", weight: 0 };
+      }
+      seen.add(id);
+      var weight = Math.min(0.2, 0.4 - referenceTotal);
+      referenceTotal += weight;
+      return { role: "reference", weight: weight };
+    });
+  }
+
   /* 掲載先・会議名の照合用正規化。機能語（the/of/and/& 等）を除いて
    * 「Security & Privacy」と「Security and Privacy」のような表記ゆれを吸収する。
    * 両側（venue 側・会議側）を同じ規則で正規化するので一致判定は一貫する。
@@ -545,6 +573,11 @@
     var aliases;
     var hl;
     var c;
+    var categories =
+      (r && Array.isArray(r.cats) && r.cats) ||
+      (r && Array.isArray(r.categories) && r.categories) ||
+      (r && r.conf && Array.isArray(r.conf.categories) && r.conf.categories) ||
+      [];
 
     // 注: 日本語→英語展開（expandJp）はスコアリングに使わない。
     // 実測（ベンチマーク A/B）: 展開語が英語名の会議に広く一致して誤爆し、
@@ -554,7 +587,7 @@
     // 分野シグナル: 論文にキーワードがあり、会議がそのカテゴリを持つ。
     // ヒット数ではなく「カテゴリにヒットしたか」で +SIG_WEIGHTS.domain（累積しない）。
     Object.keys(DOMAIN_SIGNAL).forEach((dom) => {
-      if ((r.cats || []).indexOf(dom) === -1) return;
+      if (categories.indexOf(dom) === -1) return;
       var hit = DOMAIN_SIGNAL[dom].some((kw) => signalInText(pt, kw));
       if (hit) {
         score += SIG_WEIGHTS.domain;
@@ -671,7 +704,6 @@
         }
       }
       if (venueHit) {
-        score += SIG_WEIGHTS.venue;
         details.venue += SIG_WEIGHTS.venue;
       }
     }
@@ -684,14 +716,20 @@
   function scorePapers(r, lines) {
     if (!r || !lines || !lines.length) return 0;
     var conf = confHay(r);
-    var sum = 0,
-      max = 0;
+    var weights = paperWeights(lines);
+    var sum = 0;
+    var total = 0;
+    var max = 0;
     for (var i = 0; i < lines.length; i++) {
       var s = scoreLine(r, lines[i], conf).score;
-      sum += s;
-      if (s > max) max = s;
+      var weight = weights[i].weight;
+      if (!weight) continue;
+      sum += s * weight;
+      total += weight;
+      if (s * weight > max) max = s * weight;
     }
-    var avg = sum / lines.length;
+    if (!total) return 0;
+    var avg = sum / total;
     return Math.round(avg * 0.6 + max * 0.4);
   }
 
@@ -848,6 +886,7 @@
     if (!r)
       return {
         score: 0,
+        topicScore: 0,
         venueScore: 0,
         venueHit: false,
         perLine: [],
@@ -855,18 +894,27 @@
         agg: { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 },
       };
     var conf = confHay(r);
+    var weights = paperWeights(lines);
     var perLine = [];
-    var venueHitAny = false;
     var agg = { domain: 0, name: 0, paper: 0, jp: 0, tags: 0, venue: 0 };
     for (var i = 0; i < (lines || []).length; i++) {
       var s = scoreLine(r, lines[i], conf);
-      if (s.venueHit) venueHitAny = true;
-      perLine.push({ score: s.score, venueHit: s.venueHit, details: s.details });
+      var weight = weights[i] || { role: "reference", weight: 0 };
+      perLine.push({
+        score: s.score,
+        role: weight.role,
+        weight: weight.weight,
+        venueHit: s.venueHit,
+        details: s.details,
+      });
+      if (!weight.weight) continue;
       Object.keys(agg).forEach((k) => {
-        agg[k] += s.details[k];
+        if (k !== "venue") agg[k] += s.details[k] * weight.weight;
       });
     }
     var venue = venueEvidence(perLine, lines);
+    agg.venue = venue.priorVenue;
+    var topicScore = scorePapers(r, lines);
     var signalEvidence = [];
     var evidenceTypes = {
       domain: "domain",
@@ -883,9 +931,10 @@
     agg.name += agg.paper;
     agg.venueName = venueName;
     return {
-      score: scorePapers(r, lines),
+      score: topicScore + venue.priorVenue,
+      topicScore: topicScore,
       venueScore: venue.score,
-      venueHit: venueHitAny,
+      venueHit: venue.venueHit,
       perLine: perLine,
       evidence: venue.evidence,
       signalEvidence: signalEvidence,
@@ -900,14 +949,15 @@
     var evidence = (perLine || [])
       .map((line, index) => ({
         lineIndex: index,
-        score: line.score,
+        score: line.score * (line.weight === undefined ? 1 : line.weight),
+        weight: line.weight === undefined ? 1 : line.weight,
         venueHit: line.venueHit,
         details: line.details,
         key: [lines && lines[index] && lines[index].title, lines && lines[index] && lines[index].keywords, lines && lines[index] && lines[index].venue]
           .map((value) => String(value || "").toLowerCase())
           .join("\u0000"),
       }))
-      .filter((line) => line.score > 0)
+      .filter((line) => line.weight > 0 && (line.score > 0 || line.venueHit))
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         if (a.key < b.key) return -1;
@@ -924,14 +974,29 @@
       delete line.key;
     });
     var score = Math.round(100 * k * fused);
-    if (venueHit) score += SIG_WEIGHTS.venue;
-    return { score: Math.min(100, score), evidence: evidence };
+    var priorVenue = venueHit ? SIG_WEIGHTS.venue : 0;
+    return {
+      score: Math.min(100, score + priorVenue),
+      priorVenue: priorVenue,
+      venueHit: venueHit,
+      evidence: evidence,
+    };
   }
 
-  function fitLabel(score) {
-    if (score >= 70) return "strong candidate";
-    if (score >= 40) return "candidate";
-    return "peripheral candidate";
+  var CONFIDENCE_TOPIC_MIN = 40;
+  var CONFIDENCE_SUFFICIENT_MIN = 55;
+  var CONFIDENCE_MARGIN_MIN = 10;
+
+  function confidenceState(evidenceStrength, margin) {
+    if (!Number.isFinite(evidenceStrength) || evidenceStrength < CONFIDENCE_TOPIC_MIN) return "insufficient";
+    if (evidenceStrength < CONFIDENCE_SUFFICIENT_MIN || margin < CONFIDENCE_MARGIN_MIN) return "ambiguous";
+    return "sufficient";
+  }
+
+  function fitLabel(confidence) {
+    if (confidence === "sufficient") return "十分な一致";
+    if (confidence === "ambiguous") return "候補を絞り切れません";
+    return "入力内容から十分な一致を確認できません";
   }
 
   function availability(row, now) {
@@ -972,7 +1037,15 @@
       var semantic = semanticScores && Number.isFinite(semanticScores[key])
         ? semanticScores[key]
         : 0;
-      return { key, row, match, lexicalScore, semantic, boosted };
+      return {
+        key,
+        row,
+        match,
+        lexicalScore,
+        semantic,
+        evidenceStrength: Math.max(match.topicScore || 0, semantic || 0),
+        boosted,
+      };
     });
     var lexical = entries.slice().sort((a, b) => b.lexicalScore - a.lexicalScore || a.key.localeCompare(b.key));
     var semantic = entries
@@ -992,6 +1065,11 @@
     Object.keys(semanticRanks).forEach((key) => {
       if (keys.indexOf(key) < 0) keys.push(key);
     });
+    var evidenceOrder = keys
+      .map((key) => entries.find((entry) => entry.key === key))
+      .sort((a, b) => b.evidenceStrength - a.evidenceStrength || a.key.localeCompare(b.key));
+    var topEvidence = evidenceOrder[0] ? evidenceOrder[0].evidenceStrength : 0;
+    var secondEvidence = evidenceOrder[1] ? evidenceOrder[1].evidenceStrength : 0;
     var k = 60;
     return keys.map((key) => {
       var entry = entries.find((item) => item.key === key);
@@ -1002,6 +1080,10 @@
       var score = hasSemantic
         ? Math.round(Math.min(100, rrf * 100 * (k + 1) / 2))
         : entry.lexicalScore;
+      var margin = entry === evidenceOrder[0]
+        ? (evidenceOrder.length > 1 ? topEvidence - secondEvidence : Infinity)
+        : entry.evidenceStrength - topEvidence;
+      var confidence = confidenceState(entry.evidenceStrength, margin);
       var evidence = (entry.match.signalEvidence || entry.match.evidence).slice();
       if (semanticRank) evidence.push({ type: "semantic", rank: semanticRank, contribution: entry.semantic });
       return {
@@ -1009,7 +1091,10 @@
         row: entry.row,
         fit: {
           score,
-          label: fitLabel(score),
+          rankingScore: score,
+          evidenceStrength: entry.evidenceStrength,
+          confidence,
+          label: fitLabel(confidence),
           lexicalScore: entry.lexicalScore,
           semanticScore: entry.semantic,
           lexicalRank,
@@ -1438,8 +1523,10 @@
     autoDetectCats: autoDetectCats,
     venueCategories: venueCategories,
     scorePapers: scorePapers,
+    paperWeights: paperWeights,
     breakdown: breakdown,
     venueRecommendations: venueRecommendations,
+    confidenceState: confidenceState,
     fitLabel: fitLabel,
     journalRows: journalRows,
     rankMatches: rankMatches,

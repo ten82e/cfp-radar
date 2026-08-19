@@ -722,7 +722,7 @@
     if (r._matchScore && r._matchScore >= 10) {
       var ms = document.createElement("span");
       // match-trigger: クリックで行内展開（この会議が選ばれた理由の内訳）
-      ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + (r._fitLabel || "candidate") + " ▾";
+      ms.className = "tag match match-trigger"; ms.textContent = "一致評価 " + (r._fitLabel || "評価保留") + " ▾";
       if (r._match && r._match.agg) {
         var agg = r._match.agg;
         var parts = [];
@@ -731,7 +731,7 @@
         if (agg.paper > 0) parts.push("採択論文一致 +" + agg.paper);
         if (agg.jp > 0) parts.push("日本語一致 +" + agg.jp);
         if (agg.tags > 0) parts.push("領域タグ +" + agg.tags);
-        if (agg.venue > 0) parts.push("掲載先一致 +" + agg.venue);
+        if (agg.venue > 0) parts.push("過去掲載先一致");
         if (r._semScore > 0) parts.push("AI類似度 " + r._semScore + "点");
         if (parts.length) ms.title = parts.join(" ／ ");
       }
@@ -739,7 +739,7 @@
     }
     if (r._match && r._match.venueHit) {
       var vh = document.createElement("span");
-      vh.className = "tag match"; vh.textContent = "掲載先一致";
+      vh.className = "tag match"; vh.textContent = "過去掲載先一致";
       tags.appendChild(vh);
     }
     if (r.est) {
@@ -798,7 +798,7 @@
     return tr;
   }
 
-  // ---- 推薦理由の行内展開（適合度タグのクリックで開閉） ----
+  // ---- 推薦理由の行内展開（一致評価タグのクリックで開閉） ----
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
@@ -828,16 +828,16 @@
     if (agg.paper > 0) chips.push(["採択論文一致", "+" + agg.paper, "この会議の代表採択論文の語彙と一致"]);
     if (agg.jp > 0) chips.push(["日本語一致", "+" + agg.jp, "日本語の会議名・論文語が一致"]);
     if (agg.tags > 0) chips.push(["領域タグ", "+" + agg.tags, "会議の領域タグ（real-time 等）が論文に含まれる"]);
-    if (agg.venue > 0) chips.push(["掲載先一致", "+" + agg.venue, "論文の掲載先タグとこの会議が一致（強いシグナル）"]);
+    if (agg.venue > 0) chips.push(["過去掲載先一致", "補助", "過去に同じ掲載先が確認された補助シグナル（トピック一致とは別）"]);
     if (r._semScore > 0) chips.push(["semantic 候補", "rank " + (r._semanticRank || "—"), "埋め込み検索の候補順位を RRF に加算"]);
     if (r._boosted) chips.push(["同分野ブースト", "+10", "掲載先タグから推定した分野とこの会議が一致"]);
     if (!chips.length) chips.push(["一致要素なし", "—", "低スコアでも閾値を超えたため表示"]);
 
     var html = '<div class="detail-inner">';
-    html += '<div class="detail-head">適合度 ' + esc(r._fitLabel || "candidate") + ' の内訳 — この会議が選ばれた理由</div>';
+    html += '<div class="detail-head">一致評価 ' + esc(r._fitLabel || "評価保留") + ' の内訳 — この会議が選ばれた理由</div>';
     var comp;
     if (r._semanticRank) {
-      comp = 'RRF: 語彙 rank ' + (r._lexicalRank || '—') + ' + semantic rank ' + r._semanticRank + ' → 適合度 ' + esc(r._fitLabel || "candidate");
+      comp = 'RRF: 語彙 rank ' + (r._lexicalRank || '—') + ' + semantic rank ' + r._semanticRank + ' → 一致評価 ' + esc(r._fitLabel || "評価保留");
     } else if (semState === "loading") {
       comp = '語彙スコア ' + r._vocabScore + '点（AI 類似度 計算中…）';
     } else if (semState === "error") {
@@ -861,13 +861,13 @@
           if (pl.details.paper > 0) parts.push("採択論文 +" + pl.details.paper);
           if (pl.details.jp > 0) parts.push("日本語 +" + pl.details.jp);
           if (pl.details.tags > 0) parts.push("タグ +" + pl.details.tags);
-          if (pl.details.venue > 0) parts.push("掲載先 +" + pl.details.venue);
+          if (pl.details.venue > 0) parts.push("過去掲載先");
         }
         html += '<div class="perline-item">' +
           '<span class="perline-idx">' + (i + 1) + '</span>' +
           '<span class="perline-title">' + esc(p.title || "") + '</span>' +
           '<span class="perline-score">' + sc + '点</span>' +
-          (pl && pl.venueHit ? '<span class="perline-venue">掲載先一致' + (p.venue ? " (" + esc(p.venue) + ")" : "") + '</span>' : "") +
+          (pl && pl.venueHit ? '<span class="perline-venue">過去掲載先一致' + (p.venue ? " (" + esc(p.venue) + ")" : "") + '</span>' : "") +
           (parts.length ? '<span class="perline-parts">' + parts.join(" ・ ") + '</span>' : "") +
           '</div>';
       }
@@ -941,7 +941,7 @@
     meta.className = "card-meta";
     var fit = document.createElement("span");
     fit.className = "tag match";
-    fit.textContent = "適合度 " + (r._fitLabel || "candidate");
+    fit.textContent = "一致評価 " + (r._fitLabel || "評価保留");
     meta.appendChild(fit);
     var availability = document.createElement("span");
     availability.className = "tag";
@@ -953,8 +953,9 @@
     var agg = match.agg || {};
     var reasons = [];
     [["分野シグナル", agg.domain], ["会議名一致", agg.venueName], ["採択論文一致", agg.paper],
-      ["日本語一致", agg.jp], ["領域タグ", agg.tags], ["掲載先一致", agg.venue]]
+      ["日本語一致", agg.jp], ["領域タグ", agg.tags]]
       .forEach((item) => { if (item[1] > 0) reasons.push(item[0] + " +" + item[1]); });
+    if (agg.venue > 0) reasons.push("過去掲載先一致");
     if (r._semanticRank) reasons.push("semantic rank " + r._semanticRank);
     if (r._boosted) reasons.push("同分野ブースト");
     line(card, reasons.length ? "選定理由: " + reasons.join(" / ") : "選定理由: 一致要素を確認できる候補", "card-section");

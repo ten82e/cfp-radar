@@ -97,6 +97,54 @@ describe("parsePaperLines", () => {
   });
 });
 
+describe("paper roles and confidence", () => {
+  const topicRow = {
+    conf: { key: "gpu", title: "GPU Systems", full_name: "", tags: [] },
+    cats: ["hpc"],
+  };
+
+  it("makes the first paper primary and caps unique reference weight", () => {
+    const lines = R.parsePaperLines(
+      "GPU scheduling | gpu\nReference A | parallel\nReference B | kernel\nReference B | kernel",
+    );
+    expect(R.paperWeights(lines)).toEqual([
+      { role: "primary", weight: 1 },
+      { role: "reference", weight: 0.2 },
+      { role: "reference", weight: 0.2 },
+      { role: "reference", weight: 0 },
+    ]);
+    expect(R.scorePapers(topicRow, R.parsePaperLines("GPU scheduling | gpu"))).toBeGreaterThan(
+      R.scorePapers(topicRow, R.parsePaperLines("Unrelated | text\nGPU scheduling | gpu")),
+    );
+    expect(
+      R.scorePapers(
+        topicRow,
+        R.parsePaperLines("GPU scheduling | gpu\nGPU scheduling | gpu\nGPU scheduling | gpu"),
+      ),
+    ).toBe(R.scorePapers(topicRow, R.parsePaperLines("GPU scheduling | gpu")));
+  });
+
+  it("keeps prior-venue evidence out of topic strength and applies it once", () => {
+    const row = {
+      conf: { key: "rtss", title: "RTSS", full_name: "Real-Time Systems Symposium", tags: [] },
+      cats: [],
+    };
+    const result = R.breakdown(row, R.parsePaperLines("Unrelated paper | unrelated | RTSS"));
+    expect(result.score).toBe(40);
+    expect(result.topicScore).toBe(0);
+    expect(result.venueScore).toBe(40);
+    expect(result.agg.venue).toBe(40);
+    expect(result.signalEvidence).toContainEqual({ type: "prior-venue", contribution: 40 });
+  });
+
+  it("classifies weak, close, and strong absolute evidence deterministically", () => {
+    expect(R.confidenceState(39, 100)).toBe("insufficient");
+    expect(R.confidenceState(40, 9)).toBe("ambiguous");
+    expect(R.confidenceState(55, 10)).toBe("sufficient");
+    expect(R.confidenceState(70, 9)).toBe("ambiguous");
+  });
+});
+
 describe("bounded PDF paper extraction", () => {
   const item = (str: string, size: number, y: number, x = 0) => ({
     str,
@@ -856,8 +904,10 @@ describe("score labels and transient UI state", () => {
     const template =
       readFileSync(join(REPO_ROOT, "site/template.html"), "utf8") +
       readFileSync(join(REPO_ROOT, "site/app.js"), "utf8");
-    expect(template).toContain('"適合度 " + (r._fitLabel || "candidate")');
+    expect(template).toContain('"一致評価 " + (r._fitLabel || "評価保留")');
     expect(template).not.toContain('"適合度 " + r._matchScore + "%');
+    expect(template).not.toContain("strong candidate");
+    expect(template).toContain("過去掲載先一致");
     expect(template).toContain("r._boosted = false;");
     expect(template).toContain("return (ar === br ? 0 : ar > br ? 1 : -1) * mult;");
     expect(template).toContain('var PDFJS_VERSION = "3.11.174";');
@@ -993,6 +1043,44 @@ describe("venue recommendation fusion", () => {
     );
     expect(result).toHaveLength(1);
     expect(result[0].availability).toMatchObject({ status: "ongoing" });
+  });
+
+  it("exposes ranking score separately from evidence strength and confidence", () => {
+    const result = R.venueRecommendations(
+      [row("top", "GPU Systems"), row("close", "GPU Systems")],
+      R.parsePaperLines("GPU scheduling | gpu"),
+      { top: 60, close: 55 },
+      NOW,
+    );
+    expect(result).toHaveLength(2);
+    expect(result[0].fit.rankingScore).toBe(result[0].fit.score);
+    expect(result.map((item: any) => item.fit.confidence)).toEqual(["ambiguous", "ambiguous"]);
+    expect(result.every((item: any) => item.fit.label !== "strong candidate")).toBe(true);
+  });
+
+  it("does not call weak or prior-venue-only evidence sufficient", () => {
+    const weak = R.venueRecommendations(
+      [row("weak", "Unrelated")],
+      R.parsePaperLines("GPU scheduling | gpu"),
+      { weak: 10 },
+      NOW,
+    )[0];
+    const prior = R.venueRecommendations(
+      [
+        {
+          ...row("rtss", "RTSS"),
+          conf: { key: "rtss", title: "RTSS", full_name: "Real-Time Systems Symposium", tags: [] },
+          cats: [],
+        },
+      ],
+      R.parsePaperLines("Unrelated | keywords | RTSS"),
+      null,
+      NOW,
+    )[0];
+    expect(weak.fit.confidence).toBe("insufficient");
+    expect(prior.fit.confidence).toBe("insufficient");
+    expect(prior.fit.lexicalScore).toBe(40);
+    expect(prior.fit.evidenceStrength).toBe(0);
   });
 });
 
