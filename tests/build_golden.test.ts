@@ -709,6 +709,48 @@ it("embeddingsStale は profile と manifest の不一致を再生成する", ()
   const fresh = emb(["a", "b", "c"]);
   // 同一キー集合 → stale でない
   expect(embeddingsStale(fresh.file, fresh.data)).toBe(false);
+
+  const paperData = {
+    categories: {},
+    conferences: [
+      {
+        key: "rtss",
+        title: "RTSS",
+        full_name: "Real-Time Systems Symposium",
+        categories: [],
+        tags: [],
+      },
+    ],
+  };
+  const paperProbe = new Array(EMBEDDING_DIM).fill(0);
+  const paperFile = {
+    model: EMBEDDING_MODEL,
+    dim: EMBEDDING_DIM,
+    venuePapersHash: venuePapersHash(),
+    embeddings: { rtss: paperProbe },
+    multi: { model: EMBEDDING_MULTI_MODEL, dim: EMBEDDING_DIM, embeddings: { rtss: paperProbe } },
+    paperVecs: { rtss: [paperProbe, paperProbe.slice()] },
+    manifest: embeddingManifest(paperData, { en: paperProbe, multi: paperProbe }),
+  };
+  // paperVecs は flat vector map ではなく、複数の paper vector を持つ nested map。
+  expect(embeddingsStale(paperFile, paperData)).toBe(false);
+  expect(
+    embeddingsStale(
+      {
+        ...paperFile,
+        manifest: { ...paperFile.manifest, runtime_version: "old-runtime" },
+      },
+      paperData,
+    ),
+  ).toBe(true);
+  expect(embeddingsStale({ ...paperFile, paperVecs: { rtss: paperProbe } }, paperData)).toBe(true);
+  expect(
+    embeddingsStale(
+      { ...paperFile, paperVecs: { rtss: [paperProbe, paperProbe.slice(0, -1)] } },
+      paperData,
+    ),
+  ).toBe(true);
+
   // 数が同じでもキーが入れ替わったら stale（数比較だと見逃す）
   expect(embeddingsStale(fresh.file, emb(["a", "b", "d"]).data)).toBe(true);
   expect(embeddingsStale(fresh.file, emb(["a", "c", "b"]).data)).toBe(false); // 順序は無関係
@@ -740,6 +782,17 @@ it("embeddingsStale は profile と manifest の不一致を再生成する", ()
       fresh.data,
     ),
   ).toBe(true);
+});
+
+it("workflow restores and validates a recommendation bundle before Pages upload", () => {
+  const workflow = readFileSync(join(REPO_ROOT, ".github/workflows/update.yml"), "utf8");
+  expect(workflow).toContain("--no-embeddings");
+  expect(workflow).toContain("embeddingBundleKey");
+  expect(workflow).toContain("actions/cache/restore@v4");
+  expect(workflow).toContain("actions/cache/save@v4");
+  expect(workflow).toContain("embeddingsStale");
+  expect(workflow).toContain("!cancelled() && steps.build.outcome == 'success'");
+  expect(workflow).toContain("steps.validate-recommendation.outcome == 'success'");
 });
 
 it("DEFAULT_CATEGORIES contains all 9 taxonomy domains", () => {

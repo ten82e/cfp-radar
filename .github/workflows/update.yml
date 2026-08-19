@@ -41,11 +41,47 @@ jobs:
         run: node src/fetch-primary.ts --apply
 
       # 上流取得に失敗しても、コミット済み data/snapshot.json から生成を続ける
-      # (SPEC.md 3.5)。退避にも失敗したときは cli が非ゼロで終了し、後続の
-      # Upload / Deploy がスキップされて前回の公開内容がそのまま残る。
-      - name: Build
+      # (SPEC.md 3.5)。推薦 bundle は後段で cache から復元・検証する。
+      - name: Build deadline bundle
         id: build
-        run: node src/cli.ts build --out public
+        run: node src/cli.ts build --out public --no-embeddings
+
+      - name: Compute recommendation bundle key
+        id: recommendation-key
+        run: |
+          bundle_key=$(node --input-type=module -e 'import { readFileSync } from "node:fs"; import { embeddingBundleKey, embeddingProfileHash } from "./src/embeddings.ts"; const data = JSON.parse(readFileSync("public/data.json", "utf8")); process.stdout.write(embeddingBundleKey(embeddingProfileHash(data)));')
+          echo "key=$bundle_key" >> "$GITHUB_OUTPUT"
+
+      - name: Restore recommendation bundle
+        id: restore-recommendation
+        uses: actions/cache/restore@v4
+        with:
+          path: public/embeddings.json
+          key: ${{ steps.recommendation-key.outputs.key }}
+
+      - name: Generate recommendation bundle
+        if: ${{ steps.restore-recommendation.outputs.cache-hit != 'true' }}
+        run: node src/embeddings.ts public/data.json public/embeddings.json
+
+      - name: Validate recommendation bundle
+        id: validate-recommendation
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+          import { embeddingsStale } from "./src/build.ts";
+          const data = JSON.parse(readFileSync("public/data.json", "utf8"));
+          const embeddings = JSON.parse(readFileSync("public/embeddings.json", "utf8"));
+          if (embeddingsStale(embeddings, data)) {
+            throw new Error("recommendation bundle is missing or stale");
+          }
+          NODE
+
+      - name: Save recommendation bundle
+        if: ${{ success() && steps.restore-recommendation.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: public/embeddings.json
+          key: ${{ steps.recommendation-key.outputs.key }}
 
       # スナップショットは上流が変わった日にだけ更新される。
       # SPEC.md 6 のとおり、活動を偽装するハートビートコミットは実装しない。
@@ -89,14 +125,14 @@ jobs:
       # 配信はビルドの成否だけに依存させる。コミット/push の失敗で
       # その日の配信ごと落とさない。
       - name: Upload Pages artifact
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' }}
         uses: actions/deploy-pages@v5
 
   # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、
