@@ -78,6 +78,12 @@ it("build is deterministic", () => {
   }
 }, 300_000);
 
+it("publishes the same browser runtime that the site typecheck validates", () => {
+  expect(readFileSync(join(site, "app.js"))).toEqual(
+    readFileSync(join(REPO_ROOT, "site", "app.js")),
+  );
+});
+
 // --- data.json -------------------------------------------------------------
 
 it("data.json has the spec top-level shape", () => {

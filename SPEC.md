@@ -228,10 +228,12 @@ kamiyobi/
 │   ├── build.ts                 # JSON/CSV/MD/llms.txt/HTML 出力          [担当C]
 │   └── cli.ts                   # エントリポイント                        [担当C]
 ├── site/
+│   ├── tsconfig.json             # ブラウザ runtime の checkJs 設定         [担当D]
 │   ├── template.html            # コア UI（表・絞り込み。外部 CDN なし）  [担当D]
 │   ├── app.js                   # 型検査対象のブラウザUI runtime       [担当D]
 │   ├── recommender.js           # 論文推薦（§10。任意 CDN）              [担当D]
-│   └── recommender.d.ts         # 推薦ランタイムのグローバル型宣言       [担当C]
+│   ├── recommender.d.ts         # 推薦ランタイムのグローバル型宣言       [担当C]
+│   └── runtime.d.ts             # ブラウザ・生成データの型境界           [担当D]
 ├── scripts/
 │   └── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
 ├── public/                      # 生成物(git 管理外)

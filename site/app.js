@@ -41,7 +41,11 @@
     est: false, domestic: false, past: false
   };
 
-  function $(id) { return document.getElementById(id); }
+  /**
+   * @param {string} id
+   * @returns {SiteElement}
+   */
+  function $(id) { return /** @type {SiteElement} */ (document.getElementById(id)); }
 
   function pad(n) { return (n < 10 ? "0" : "") + n; }
 
@@ -140,7 +144,7 @@
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         e.stopPropagation();
-        toggleSort(th.getAttribute("data-sort"));
+        window.toggleSort(th.getAttribute("data-sort"));
       }
     });
   });
@@ -148,7 +152,7 @@
   // Drawer Controls
   function openDrawer(r) {
     // フォーカス管理: 開く直前の要素を保存し、ドロワー内（閉じるボタン）へフォーカスを移す（#218）。
-    window._prevFocus = document.activeElement;
+    window._prevFocus = /** @type {HTMLElement|null} */ (document.activeElement);
     $("drawerBackdrop").classList.add("active");
     $("drawerTitle").textContent = titleWithYear(r.conf.title || r.conf.key, r.ed.year);
     $("drawerFullName").textContent = r.conf.full_name || "";
@@ -318,14 +322,14 @@
   var rows = buildRows(DATA);
 
   // Update Summary Dashboard Stats
-  $("statConfs").textContent = (DATA.conferences || []).length;
+  $("statConfs").textContent = String((DATA.conferences || []).length);
   var nowMs = Date.now();
   var next30 = rows.filter((r) => (r.kind === "abstract" || r.kind === "paper") && !r.est && r.t >= nowMs && (r.t - nowMs) <= 30*DAY).length;
-  $("statUpcoming").textContent = next30;
+  $("statUpcoming").textContent = String(next30);
   var nicheCount = (DATA.conferences || []).filter((c) => (c.tags || []).indexOf("niche") !== -1).length;
-  $("statNiche").textContent = nicheCount;
+  $("statNiche").textContent = String(nicheCount);
   var domCount = (DATA.conferences || []).filter((c) => (c.tags || []).indexOf("domestic-jp") !== -1).length;
-  $("statDomestic").textContent = domCount;
+  $("statDomestic").textContent = String(domCount);
 
   // ---- REMAIN / STATUS ----
   function remain(ms) {
@@ -376,7 +380,8 @@
     semState = "loading";
     // jsdelivr の素のパッケージ URL は Node 向けバンドルで window.transformers を
     // 公開しない（実行しても undefined になる）。ESM ビルド（+esm）を動的 import する。
-    import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm")
+    var transformersUrl = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm";
+    import(transformersUrl)
       .then((m) => m.pipeline("feature-extraction", modelId, { revision: revision }))
       .then((mdl) => { semModel = mdl; semLoadedModel = modelKey; semState = "ready"; cb(); })
       .catch(() => { semState = "error"; cb(); });
@@ -465,7 +470,7 @@
     var q = state.q.toLowerCase();
     var isWinFuture = state.win === "future";
     var limit = (state.win === "all" || isWinFuture) ? Infinity : now + parseInt(state.win, 10) * DAY;
-    var pElem = (typeof document !== 'undefined') ? document.getElementById("paperText") : null;
+    var pElem = (typeof document !== 'undefined') ? $("paperText") : null;
     var pText = state.mode === "recommend" && pElem ? pElem.value.trim() : "";
     // 単体抽出テスト（node probe）でも動くよう、filter 内では window 経由で解決する
     var Rec = (typeof window !== "undefined" && window.Recommender) || null;
@@ -596,11 +601,12 @@
     var tr = document.createElement("tr");
     tr.tabIndex = -1; // スクリプトからのフォーカス受付（#218: ドロワー開閉時のフォーカス復元先）
     tr.onclick = (e) => {
-      if (e.target.classList && e.target.classList.contains("match-trigger")) {
+      var target = /** @type {HTMLElement} */ (e.target);
+      if (target.classList && target.classList.contains("match-trigger")) {
         toggleDetail(r, tr);
         return;
       }
-      if (e.target.tagName !== "A") { openDrawer(r); }
+      if (target.tagName !== "A") { openDrawer(r); }
     };
     var rem = remain(r.t);
     // 常時受付ジャーナルは締切の概念がないため「本日終了」等の誤解を与えない表示にする
@@ -647,14 +653,14 @@
       // match-trigger: クリックで行内展開（この会議が選ばれた理由の内訳）
       ms.className = "tag match match-trigger"; ms.textContent = "適合度 " + (r._fitLabel || "candidate") + " ▾";
       if (r._match && r._match.agg) {
-        var a = r._match.agg;
+        var agg = r._match.agg;
         var parts = [];
-        if (a.domain > 0) parts.push("分野シグナル +" + a.domain);
-        if ((a.venueName || 0) > 0) parts.push("会議名一致 +" + a.venueName);
-        if (a.paper > 0) parts.push("採択論文一致 +" + a.paper);
-        if (a.jp > 0) parts.push("日本語一致 +" + a.jp);
-        if (a.tags > 0) parts.push("領域タグ +" + a.tags);
-        if (a.venue > 0) parts.push("掲載先一致 +" + a.venue);
+        if (agg.domain > 0) parts.push("分野シグナル +" + agg.domain);
+        if ((agg.venueName || 0) > 0) parts.push("会議名一致 +" + agg.venueName);
+        if (agg.paper > 0) parts.push("採択論文一致 +" + agg.paper);
+        if (agg.jp > 0) parts.push("日本語一致 +" + agg.jp);
+        if (agg.tags > 0) parts.push("領域タグ +" + agg.tags);
+        if (agg.venue > 0) parts.push("掲載先一致 +" + agg.venue);
         if (r._semScore > 0) parts.push("AI類似度 " + r._semScore + "点");
         if (parts.length) ms.title = parts.join(" ／ ");
       }
@@ -1119,12 +1125,14 @@
     );
   }
   function syncPaperText() {
+    /** @type {SitePaperRecord} */
     var primary = {
       title: $("paperPrimaryTitle").value.trim(),
       abstract: $("paperPrimaryAbstract").value.trim(),
       keywords: $("paperPrimaryKeywords").value.trim(),
       venue: paperPrimaryVenue,
     };
+    /** @type {SitePaperRecord[]} */
     var records = primary.title || primary.abstract || primary.keywords ? [primary] : [];
     records = records.concat(Recommender.parsePaperLines($("paperReferences").value));
     $("paperText").value = records.length ? JSON.stringify(records) : "";
@@ -1135,8 +1143,8 @@
     $("paperPrimaryKeywords").value = record && record.keywords || "";
     paperPrimaryVenue = record && record.venue || "";
   }
-  var paperFiles = document.getElementById("paperFiles");
-  var cancelPdf = document.getElementById("cancelPdf");
+  var paperFiles = /** @type {HTMLInputElement} */ ($("paperFiles"));
+  var cancelPdf = $("cancelPdf");
   cancelPdf.addEventListener("click", () => {
     if (pdfAbortController) pdfAbortController.abort();
   });
@@ -1149,6 +1157,7 @@
     var job = ++pdfJob;
     pdfAbortController = new AbortController();
     var signal = pdfAbortController.signal;
+    /** @type {Promise<void>} */
     var load = files.some((file) => !/\.txt$/i.test(file.name))
       ? new Promise((resolve, reject) => loadPdfJs((ok) => ok ? resolve() : reject(new Error("pdfjs unavailable"))))
       : Promise.resolve();
@@ -1239,4 +1248,3 @@
   toForm();
   render();
 })();
-
