@@ -240,6 +240,15 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   const outdir = resolve(args.out);
   const stats = await buildAll(confs, config, outdir, now, {
     noEmbeddings: Boolean(args.noEmbeddings),
+    health: {
+      sourceStatus: Object.fromEntries(
+        sourceInstances().map((source) => [
+          source.name,
+          failed.has(source.name) ? "failed" : "success",
+        ]),
+      ),
+      parseWarnings: warningCounts(),
+    },
   });
   // 統合件数は出力に載った会議のぶんだけ数える。
   const byKey = mergeStats.merged_by_key ?? {};
