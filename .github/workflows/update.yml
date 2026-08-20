@@ -41,7 +41,8 @@ jobs:
         run: node src/fetch-primary.ts --apply
 
       # 上流取得に失敗しても、コミット済み data/snapshot.json から生成を続ける
-      # (SPEC.md 3.5)。推薦 bundle は後段で cache から復元・検証する。
+      # (SPEC.md 3.5)。推薦 bundle は後段で cache から復元・検証し、失敗時は
+      # recommendation-index.json だけを残してサイトの語彙 fallback を使う。
       - name: Build deadline bundle
         id: build
         run: node src/cli.ts build --out public --no-embeddings
@@ -61,27 +62,35 @@ jobs:
 
       - name: Generate recommendation bundle
         if: ${{ steps.restore-recommendation.outputs.cache-hit != 'true' }}
+        continue-on-error: true
         run: node src/embeddings.ts public/data.json public/embeddings.json
 
       - name: Validate recommendation bundle
         id: validate-recommendation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        continue-on-error: true
         run: |
           node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
+          import { readFileSync, rmSync } from "node:fs";
           import { embeddingsStale } from "./src/build.ts";
-          const data = JSON.parse(readFileSync("public/data.json", "utf8"));
-          const embeddings = JSON.parse(readFileSync("public/embeddings.json", "utf8"));
-          if (embeddingsStale(embeddings, data)) {
-            throw new Error("recommendation bundle is missing or stale");
+          try {
+            const data = JSON.parse(readFileSync("public/data.json", "utf8"));
+            const embeddings = JSON.parse(readFileSync("public/embeddings.json", "utf8"));
+            if (embeddingsStale(embeddings, data)) {
+              throw new Error("recommendation bundle is missing or stale");
+            }
+          } catch (error) {
+            rmSync("public/embeddings.json", { force: true });
+            throw error;
           }
           NODE
 
       # 公開済み health.json を last-known-good として、致命的なデータ縮退を
-      # Pages artifact に載せる前に止める。初回公開や一時的な Pages 障害では
-      # current report 単独の fail-closed 条件を検査する。
+      # Pages artifact に載せる前に止める。推薦 bundle の失敗に関係なく、
+      # deadline build が成功したときは health gate を検査する。
       - name: Health gate
         id: health-gate
-        if: ${{ steps.validate-recommendation.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --location --retry 2 \
@@ -94,7 +103,7 @@ jobs:
           fi
 
       - name: Save recommendation bundle
-        if: ${{ success() && steps.restore-recommendation.outputs.cache-hit != 'true' }}
+        if: ${{ always() && steps.validate-recommendation.outcome == 'success' && steps.restore-recommendation.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
           path: public/embeddings.json
@@ -139,17 +148,18 @@ jobs:
           echo 'could not push the deadline data' >&2
           exit 1
 
-      # 配信は build・recommendation 検証・health gate の成否で決める。
+      # 配信は締切 build と health gate の成否で決める。推薦埋め込みが無い
+      # 場合も recommendation-index.json と語彙 fallback は公開する。
       # データ commit/push の失敗でその日の配信ごと落とさない。
       - name: Upload Pages artifact
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' && steps.health-gate.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.health-gate.outcome == 'success' }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' && steps.health-gate.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.health-gate.outcome == 'success' }}
         uses: actions/deploy-pages@v5
 
   # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、

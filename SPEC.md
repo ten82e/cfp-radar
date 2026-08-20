@@ -808,9 +808,11 @@ conferences:
 
 - `on: {schedule: [{cron: '17 20 * * *'}], workflow_dispatch: }`（20:17 UTC = 05:17 JST）
 - `permissions: {contents: write, pages: write, id-token: write}`
-- build と推薦 bundle の検証後、`scripts/health-gate.ts` が公開済み `health.json` を
-  last-known-good として比較し、確定締切の大幅減少、必須会議欠落、警告急増、
-  profile 不一致、snapshot 無しのソース障害を検出した場合は Pages への配信を止める。
+- deadline build の後、任意の推薦 bundle を cache から復元・生成・検証する。
+  埋め込みの生成または検証に失敗した場合は `public/embeddings.json` を公開物から除き、
+  `recommendation-index.json` と締切一覧を語彙 fallback 付きで残す。`scripts/health-gate.ts`
+  は公開済み `health.json` を last-known-good として比較し、確定締切の大幅減少、必須会議欠落、
+  警告急増、profile 不一致、snapshot 無しのソース障害を検出した場合だけ Pages への配信を止める。
 - `concurrency: {group: pages, cancel-in-progress: false}`（**update.yml にのみ付ける**。
   concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
   デプロイと直列化して不利益になる）
@@ -874,7 +876,8 @@ on:
   `https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/+esm`、
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js`、
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`。
-  CDN が使えないときは語彙スコアと TXT 入力だけで動く。
+  CDN または `embeddings.json` が使えないときは画面に AI 類似度の利用不可を表示し、
+  語彙スコアと TXT 入力だけで動く。締切モードは推薦用埋め込みの有無に依存しない。
 - `index.html` は `Content-Security-Policy` を持ち、script / worker / model 接続を上記の
   固定 origin に限定する。`unsafe-inline` は単一テンプレート内の既存 inline script/style
   を維持するためだけに使い、外部 origin の wildcard は許可しない。
