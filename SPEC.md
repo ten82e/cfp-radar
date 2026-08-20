@@ -236,6 +236,7 @@ kamiyobi/
 │   └── runtime.d.ts             # ブラウザ・生成データの型境界           [担当D]
 ├── scripts/
 │   ├── compare-head.ts          # snapshot / primary_overrides の実質差分 [担当E]
+│   ├── health-gate.ts           # last-known-good との配信前健全性ゲート [担当E]
 │   └── generate-venue-profiles.ts # provenance付き profile artifact の再生成 [担当C]
 ├── public/                      # 生成物(git 管理外)
 ├── tests/                       # vitest                                 [担当F]
@@ -630,6 +631,11 @@ predatory 疑い付きで一覧する。
 | `app.js` | ブラウザUI runtime（TypeScript の `allowJs` 対象） |
 | `.nojekyll` | Pages の Jekyll 処理を無効化 |
 
+`health.json` は `profile_hash`、`confirmed_future_deadlines`、`estimated_future_deadlines`、
+`source_failures`、`snapshot_fallback`、`parse_warning_count`、カテゴリ別件数、
+必須会議の存在状態を持つ。last-known-good との比較では確定値の崩落だけを配信阻止対象とし、
+推定値の増減だけでは阻止しない。
+
 `index.html` に埋め込む JSON は `catalog.json` と同一である。推薦モードは
 `recommendation-index.json` を遅延取得し、`embeddings.json` を参照する。
 `data.json` は全履歴を含む機械可読の正典として、サイトシェルには埋め込まない。
@@ -658,7 +664,22 @@ predatory 疑い付きで一覧する。
      "editions":[{"year":2026,"id":"sigcomm26","place":"...","link":"...",
        "event_start":"2026-08-17","event_end":"2026-08-21","estimated":false,
        "deadlines":[{"kind":"paper","label":"...","utc":"2026-02-06T23:59:59Z",
-                     "aoe":"2026-02-06 23:59:59 AoE","tz_raw":"AoE","round":1}]}]}
+                     "aoe":"2026-02-06 23:59:59 AoE","tz_raw":"AoE","round":1,
+                     "status":"confirmed",
+                     "selection_rule":"source_priority_then_nearest_within_configured_window",
+                     "evidence":[{"source_name":"ccfddl",
+                       "source_url":"https://github.com/ccfddl/ccf-deadlines",
+                       "observed_at":"2026-08-09T00:00:00Z",
+                       "original_value":"2026-02-06 23:59:59 AoE",
+                       "confidence":"aggregator"}],
+                     "conflicts":[{"at_utc":"2026-02-06T23:59:00Z",
+                       "label":"Paper submission","source":"aideadlines",
+                       "original_value":"2026-02-06T23:59:00Z",
+                       "evidence":[{"source_name":"aideadlines",
+                         "source_url":"https://github.com/huggingface/ai-deadlines",
+                         "observed_at":"2026-08-09T00:00:00Z",
+                         "original_value":"2026-02-06T23:59:00Z",
+                         "confidence":"aggregator"}]}]}]}]}
   ]
 }
 ```
@@ -787,6 +808,9 @@ conferences:
 
 - `on: {schedule: [{cron: '17 20 * * *'}], workflow_dispatch: }`（20:17 UTC = 05:17 JST）
 - `permissions: {contents: write, pages: write, id-token: write}`
+- build と推薦 bundle の検証後、`scripts/health-gate.ts` が公開済み `health.json` を
+  last-known-good として比較し、確定締切の大幅減少、必須会議欠落、警告急増、
+  profile 不一致、snapshot 無しのソース障害を検出した場合は Pages への配信を止める。
 - `concurrency: {group: pages, cancel-in-progress: false}`（**update.yml にのみ付ける**。
   concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
   デプロイと直列化して不利益になる）

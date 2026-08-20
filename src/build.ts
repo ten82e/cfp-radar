@@ -22,6 +22,7 @@ import {
   VENUE_PAPERS,
   venuePapersHash,
 } from "./embeddings.ts";
+import { DEADLINE_SELECTION_RULE } from "./merge.ts";
 import {
   addDays,
   type Conference,
@@ -343,7 +344,42 @@ export function toJson(
   const domain = String(site.domain ?? "conf-deadlines");
   const baseUrl = String(site.base_url ?? `https://${domain}`).replace(/\/+$/, "");
   const categories = (safeConfig.categories as Record<string, string> | null) ?? DEFAULT_CATEGORIES;
-  const sources = (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
+  const sources: Array<Record<string, unknown>> =
+    (safeConfig.sources as Array<Record<string, unknown>> | null) ?? DEFAULT_SOURCES;
+  const sourceByName = new Map(sources.map((source) => [String(source.name ?? ""), source]));
+  const observedAt = fmtUTC(safeNow, "%Y-%m-%dT%H:%M:%SZ");
+  const evidenceOf = (
+    sourceName: string,
+    at: Date,
+    rawValue: string,
+    estimated: boolean,
+  ): Record<string, unknown> => {
+    const source = sourceByName.get(sourceName);
+    const sourceUrl = String(
+      source?.url ??
+        (sourceName === "override"
+          ? `${baseUrl}/data/overrides.yaml`
+          : sourceName === "local"
+            ? `${baseUrl}/data/extra.yaml`
+            : String(source?.repo ?? "").startsWith("http")
+              ? String(source?.repo)
+              : source?.repo
+                ? `https://github.com/${String(source.repo)}`
+                : ""),
+    );
+    const confidence = estimated
+      ? "estimated"
+      : sourceName === "local" || sourceName === "override"
+        ? "official"
+        : "aggregator";
+    return {
+      source_name: sourceName,
+      source_url: sourceUrl,
+      observed_at: observedAt,
+      original_value: rawValue || fmtUTC(at, "%Y-%m-%dT%H:%M:%SZ"),
+      confidence,
+    };
+  };
   const outConfs: unknown[] = [];
   for (const conf of [...(confs ?? [])].sort((a, b) => cmpStr(a?.key ?? "", b?.key ?? ""))) {
     if (!conf || typeof conf !== "object") continue;
@@ -370,6 +406,30 @@ export function toJson(
           tz_raw: dl.tz_raw,
           round: dl.round,
           comment: dl.comment,
+          status: ed.estimated ? "estimated" : "confirmed",
+          selection_rule: dl.selection_rule ?? DEADLINE_SELECTION_RULE,
+          evidence: dl.evidence?.length
+            ? dl.evidence.map((item) => ({ ...item }))
+            : [evidenceOf(ed.source, dl.at_utc, dl.raw_value ?? "", ed.estimated)],
+          ...(dl.conflicts?.length
+            ? {
+                conflicts: dl.conflicts.map((conflict) => ({
+                  at_utc: fmtUTC(conflict.at_utc, "%Y-%m-%dT%H:%M:%SZ"),
+                  label: conflict.label,
+                  source: conflict.source,
+                  original_value:
+                    conflict.raw_value || fmtUTC(conflict.at_utc, "%Y-%m-%dT%H:%M:%SZ"),
+                  evidence:
+                    conflict.evidence ??
+                    evidenceOf(
+                      conflict.source,
+                      conflict.at_utc,
+                      conflict.raw_value ?? "",
+                      ed.estimated,
+                    ),
+                })),
+              }
+            : {}),
         })),
       });
     }
@@ -537,20 +597,34 @@ export interface HealthOutputFile {
 export interface HealthReport {
   schema_version: 1;
   generated_at: string;
+  profile_hash: string;
   source_status: Record<string, HealthSourceStatus>;
+  source_failures: string[];
   tracked_venues: number;
   future_confirmed_venues: number;
   future_estimated_venues: number;
   confirmed_deadlines: number;
   estimated_deadlines: number;
+  confirmed_future_deadlines: number;
+  estimated_future_deadlines: number;
+  venues_with_confirmed_future_deadline: number;
+  snapshot_fallback: boolean;
   parse_warnings: Record<string, number>;
+  parse_warning_count: number;
   category_distribution: Record<string, number>;
+  category_counts: Record<string, number>;
+  required_venues: Record<string, "present" | "missing">;
   output_files: Record<string, HealthOutputFile>;
 }
 
 export interface HealthReportOptions {
   sourceStatus?: Record<string, HealthSourceStatus>;
+  sourceFailures?: string[];
+  snapshotFallback?: boolean;
   parseWarnings?: Record<string, number>;
+  parseWarningCount?: number;
+  requiredVenues?: string[];
+  profileHash?: string;
   outputFiles?: Record<string, HealthOutputFile>;
 }
 
@@ -570,13 +644,23 @@ export function healthReport(
       .sort(cmpStr)
       .map((name) => [name, options.sourceStatus?.[name] ?? "success"]),
   ) as Record<string, HealthSourceStatus>;
+  const sourceFailures = [
+    ...new Set([
+      ...Object.entries(sourceStatus)
+        .filter(([, status]) => status === "failed")
+        .map(([name]) => name),
+      ...(options.sourceFailures ?? []),
+    ]),
+  ].sort(cmpStr);
   const categoryCounts: Record<string, number> = {};
+  const presentVenues = new Set<string>();
   const confirmedVenues = new Set<string>();
   const estimatedVenues = new Set<string>();
   let confirmedDeadlines = 0;
   let estimatedDeadlines = 0;
   for (const conference of conferences) {
     const key = String(conference.key ?? "").trim();
+    if (key) presentVenues.add(key);
     for (const category of jsonStrings(conference.categories)) {
       categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
     }
@@ -598,23 +682,155 @@ export function healthReport(
       .filter(([, count]) => Number.isFinite(count) && count > 0)
       .sort(([a], [b]) => cmpStr(a, b)),
   );
+  const sortedCategories = Object.fromEntries(
+    Object.entries(categoryCounts).sort(([a], [b]) => cmpStr(a, b)),
+  );
+  const required = [
+    ...new Set((options.requiredVenues ?? []).map((key) => String(key).trim()).filter(Boolean)),
+  ].sort(cmpStr);
+  const parseWarningCount =
+    options.parseWarningCount ??
+    Object.values(parseWarnings).reduce((sum, count) => sum + count, 0);
+  const profileHash =
+    options.profileHash ?? embeddingProfileHash(data as Parameters<typeof embeddingProfileHash>[0]);
   return {
     schema_version: 1,
     generated_at: String(data.generated_at ?? ""),
+    profile_hash: profileHash,
     source_status: sourceStatus,
+    source_failures: sourceFailures,
     tracked_venues: conferences.length,
     future_confirmed_venues: confirmedVenues.size,
     future_estimated_venues: estimatedVenues.size,
     confirmed_deadlines: confirmedDeadlines,
     estimated_deadlines: estimatedDeadlines,
+    confirmed_future_deadlines: confirmedDeadlines,
+    estimated_future_deadlines: estimatedDeadlines,
+    venues_with_confirmed_future_deadline: confirmedVenues.size,
+    snapshot_fallback: Boolean(options.snapshotFallback),
     parse_warnings: parseWarnings,
-    category_distribution: Object.fromEntries(
-      Object.entries(categoryCounts).sort(([a], [b]) => cmpStr(a, b)),
+    parse_warning_count: Math.max(0, Number(parseWarningCount) || 0),
+    category_distribution: sortedCategories,
+    category_counts: sortedCategories,
+    required_venues: Object.fromEntries(
+      required.map((key) => [key, presentVenues.has(key) ? "present" : "missing"]),
     ),
     output_files: Object.fromEntries(
       Object.entries(options.outputFiles ?? {}).sort(([a], [b]) => cmpStr(a, b)),
     ),
   };
+}
+
+export interface HealthGateResult {
+  ok: boolean;
+  reasons: string[];
+}
+
+function reportNumber(report: Partial<HealthReport>, primary: string, fallback: string): number {
+  const value = report[primary as keyof HealthReport];
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  const oldValue = report[fallback as keyof HealthReport];
+  return typeof oldValue === "number" && Number.isFinite(oldValue) ? oldValue : 0;
+}
+
+function reportSourceFailures(report: Partial<HealthReport>): string[] {
+  return [
+    ...new Set([
+      ...(Array.isArray(report.source_failures) ? report.source_failures : []),
+      ...Object.entries(report.source_status ?? {})
+        .filter(([, status]) => status === "failed")
+        .map(([name]) => name),
+    ]),
+  ].sort(cmpStr);
+}
+
+function reportWarningCount(report: Partial<HealthReport>): number {
+  if (typeof report.parse_warning_count === "number") return report.parse_warning_count;
+  return Object.values(report.parse_warnings ?? {}).reduce(
+    (sum, count) => sum + (Number.isFinite(count) ? count : 0),
+    0,
+  );
+}
+
+function reportRequiredVenues(
+  report: Partial<HealthReport>,
+): Record<string, "present" | "missing"> {
+  return report.required_venues ?? {};
+}
+
+/** Compare a new report with the last known good report before deployment. */
+export function evaluateHealthGate(
+  current: HealthReport,
+  previous: HealthReport | null | undefined,
+): HealthGateResult {
+  const currentReport = current as Partial<HealthReport>;
+  const reasons: string[] = [];
+  const currentProfile = String(currentReport.profile_hash ?? "");
+  if (!currentProfile) reasons.push("profile hash is missing");
+  if (
+    currentReport.confirmed_future_deadlines !== undefined &&
+    currentReport.confirmed_deadlines !== undefined &&
+    currentReport.confirmed_future_deadlines !== currentReport.confirmed_deadlines
+  ) {
+    reasons.push("confirmed deadline health metadata is inconsistent");
+  }
+  if (
+    currentReport.category_counts &&
+    currentReport.category_distribution &&
+    JSON.stringify(currentReport.category_counts) !==
+      JSON.stringify(currentReport.category_distribution)
+  ) {
+    reasons.push("category health metadata is inconsistent");
+  }
+  if (Object.values(reportRequiredVenues(currentReport)).some((status) => status === "missing")) {
+    reasons.push("required venue is missing");
+  }
+  const currentFailures = reportSourceFailures(currentReport);
+  if (currentFailures.length > 0 && !currentReport.snapshot_fallback) {
+    reasons.push(`source failure without snapshot fallback: ${currentFailures.join(",")}`);
+  }
+  const currentGeneratedAt = Date.parse(String(currentReport.generated_at ?? ""));
+  if (!Number.isFinite(currentGeneratedAt)) reasons.push("generated_at is invalid");
+  if (!previous) return { ok: reasons.length === 0, reasons };
+
+  const previousReport = previous as Partial<HealthReport>;
+  const previousProfile = String(previousReport.profile_hash ?? "");
+  if (previousProfile && currentProfile && currentProfile !== previousProfile) {
+    reasons.push("health/data profile metadata changed");
+  }
+  const previousGeneratedAt = Date.parse(String(previousReport.generated_at ?? ""));
+  if (
+    Number.isFinite(currentGeneratedAt) &&
+    Number.isFinite(previousGeneratedAt) &&
+    currentGeneratedAt < previousGeneratedAt
+  ) {
+    reasons.push("generated_at moved backwards");
+  }
+  const previousConfirmed = reportNumber(
+    previousReport,
+    "confirmed_future_deadlines",
+    "confirmed_deadlines",
+  );
+  const currentConfirmed = reportNumber(
+    currentReport,
+    "confirmed_future_deadlines",
+    "confirmed_deadlines",
+  );
+  if (previousConfirmed > 0 && currentConfirmed <= previousConfirmed * 0.6) {
+    reasons.push("confirmed future deadlines dropped by 40% or more");
+  }
+  const previousRequired = reportRequiredVenues(previousReport);
+  const currentRequired = reportRequiredVenues(currentReport);
+  for (const [venue, status] of Object.entries(previousRequired)) {
+    if (status === "present" && currentRequired[venue] !== "present") {
+      reasons.push(`required venue disappeared: ${venue}`);
+    }
+  }
+  const previousWarnings = reportWarningCount(previousReport);
+  if (reportWarningCount(currentReport) > previousWarnings * 2 + 5) {
+    reasons.push("parse warnings increased sharply");
+  }
+  return { ok: reasons.length === 0, reasons };
 }
 
 export function healthMarkdown(report: HealthReport): string {
@@ -630,12 +846,17 @@ export function healthMarkdown(report: HealthReport): string {
     `| Future estimated venues | ${report.future_estimated_venues} |`,
     `| Confirmed deadlines | ${report.confirmed_deadlines} |`,
     `| Estimated deadlines | ${report.estimated_deadlines} |`,
+    `| Parse warning count | ${report.parse_warning_count} |`,
+    `| Snapshot fallback | ${report.snapshot_fallback ? "yes" : "no"} |`,
+    `| Profile hash | ${report.profile_hash} |`,
     "",
     "## Source status",
     "",
     "| Source | Status |",
     "|---|---|",
     ...Object.entries(report.source_status).map(([source, status]) => `| ${source} | ${status} |`),
+    "",
+    `Source failures: ${report.source_failures.length > 0 ? report.source_failures.join(", ") : "none"}`,
     "",
     "## Categories",
     "",
@@ -649,6 +870,12 @@ export function healthMarkdown(report: HealthReport): string {
     "",
     ...(Object.entries(report.parse_warnings).length
       ? Object.entries(report.parse_warnings).map(([message, count]) => `- ${count}× ${message}`)
+      : ["- none"]),
+    "",
+    "## Required venues",
+    "",
+    ...(Object.entries(report.required_venues).length
+      ? Object.entries(report.required_venues).map(([venue, status]) => `- ${venue}: ${status}`)
       : ["- none"]),
     "",
     "## Output files",
@@ -848,6 +1075,7 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "## 出力一覧",
     "",
     "- data.json — 正規化データ全体（機械可読の正）。",
+    "- health.json — 配信前ゲートにも使う確定/推定締切とソース状態の健全性レポート。",
     "- catalog.json — 締切画面向けの現在・近日期間カタログ。",
     "- recommendation-index.json — 投稿先推薦の会議プロフィールと埋め込み参照。",
     "- app.js — ブラウザUI runtime（TypeScript の allowJs 対象）。",
@@ -896,6 +1124,10 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "      - tz_raw: string — 上流の元タイムゾーン表記。",
     "      - round: integer — 1 起点。複数投稿ラウンドを持つ会議がある。",
     "      - comment: string|null — 上流の注記。",
+    "      - status: 'confirmed'|'estimated' — 開催回の確定/推定状態。",
+    "      - selection_rule: string — 採用値を選んだ決定規則。",
+    "      - evidence: array — source_name/source_url/observed_at/original_value/confidence。",
+    "      - conflicts: array — 採用しなかった候補値とその evidence（存在時のみ）。",
     "",
     "## 利用上の注意",
     "",

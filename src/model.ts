@@ -38,6 +38,16 @@ export const KINDS: readonly string[] = [
   "other",
 ];
 
+export type DeadlineConfidence = "official" | "aggregator" | "estimated";
+
+export interface DeadlineEvidence {
+  source_name: string;
+  source_url: string;
+  observed_at: string;
+  original_value: string;
+  confidence: DeadlineConfidence;
+}
+
 export interface Deadline {
   kind: DeadlineKind;
   label: string;
@@ -46,6 +56,19 @@ export interface Deadline {
   tz_raw: string;
   round: number;
   comment: string | null;
+  /** Raw candidate value retained for provenance during serialization. */
+  raw_value?: string;
+  evidence?: DeadlineEvidence[];
+  conflicts?: DeadlineConflict[];
+  selection_rule?: string;
+}
+
+export interface DeadlineConflict {
+  at_utc: Date;
+  label: string;
+  source: string;
+  raw_value?: string;
+  evidence?: DeadlineEvidence;
 }
 
 export interface DeadlineEstimate {
@@ -885,6 +908,68 @@ export function conferencesFromJson(
         const dl = dlRaw as Record<string, unknown>;
         const at = parseInstant(dl.utc, "UTC");
         if (at === null) continue;
+        const evidence = (Array.isArray(dl.evidence) ? dl.evidence : [])
+          .filter((item): item is Record<string, unknown> =>
+            Boolean(item && typeof item === "object"),
+          )
+          .map(
+            (item): DeadlineEvidence => ({
+              source_name: String(item.source_name ?? ""),
+              source_url: String(item.source_url ?? ""),
+              observed_at: String(item.observed_at ?? ""),
+              original_value: String(item.original_value ?? ""),
+              confidence:
+                item.confidence === "official" ||
+                item.confidence === "estimated" ||
+                item.confidence === "aggregator"
+                  ? item.confidence
+                  : "aggregator",
+            }),
+          )
+          .filter((item) => item.source_name && item.original_value);
+        const conflicts = (Array.isArray(dl.conflicts) ? dl.conflicts : [])
+          .filter((item): item is Record<string, unknown> =>
+            Boolean(item && typeof item === "object"),
+          )
+          .map((item) => {
+            const rawEvidence =
+              item.evidence && typeof item.evidence === "object"
+                ? (item.evidence as Record<string, unknown>)
+                : {};
+            const conflictAt = parseInstant(
+              item.at_utc ?? item.atUtc ?? item.original_value ?? rawEvidence.original_value,
+              "UTC",
+            );
+            if (conflictAt === null) return null;
+            const rawValue = String(
+              item.original_value ?? rawEvidence.original_value ?? conflictAt.toISOString(),
+            );
+            const source = String(item.source ?? rawEvidence.source_name ?? "");
+            const conflictEvidence: DeadlineEvidence | undefined =
+              rawEvidence.source_name || rawEvidence.original_value
+                ? {
+                    source_name: String(rawEvidence.source_name ?? source),
+                    source_url: String(rawEvidence.source_url ?? ""),
+                    observed_at: String(rawEvidence.observed_at ?? ""),
+                    original_value: String(rawEvidence.original_value ?? rawValue),
+                    confidence:
+                      rawEvidence.confidence === "official" ||
+                      rawEvidence.confidence === "estimated" ||
+                      rawEvidence.confidence === "aggregator"
+                        ? rawEvidence.confidence
+                        : "aggregator",
+                  }
+                : undefined;
+            const conflict: DeadlineConflict = {
+              at_utc: conflictAt,
+              label: String(item.label ?? ""),
+              source,
+              raw_value: rawValue,
+              ...(conflictEvidence ? { evidence: conflictEvidence } : {}),
+            };
+            return conflict;
+          })
+          .filter((item): item is DeadlineConflict => item !== null);
         deadlines.push({
           kind: kindOf(String(dl.kind ?? "other")),
           label: String(dl.label ?? ""),
@@ -892,6 +977,9 @@ export function conferencesFromJson(
           tz_raw: String(dl.tz_raw ?? ""),
           round: Number(dl.round ?? 1) || 1,
           comment: dl.comment === null || dl.comment === undefined ? null : String(dl.comment),
+          ...(evidence.length > 0 ? { evidence } : {}),
+          ...(conflicts.length > 0 ? { conflicts } : {}),
+          ...(typeof dl.selection_rule === "string" ? { selection_rule: dl.selection_rule } : {}),
         });
       }
       editions.push({

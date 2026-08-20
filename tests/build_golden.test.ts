@@ -10,12 +10,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
+import type { HealthReport } from "../src/build.ts";
 import {
   buildAll,
   DEFAULT_CATEGORIES,
   embeddingsStale,
   escapeMdCell,
   escapeMdUrl,
+  evaluateHealthGate,
   healthMarkdown,
   healthReport,
   ROOT,
@@ -92,7 +94,7 @@ it("healthReport separates future confirmed and estimated values", () => {
       outputFiles: { "data.json": { bytes: 10, sha256: "a".repeat(64) } },
     },
   );
-  expect(report).toEqual({
+  expect(report).toMatchObject({
     schema_version: 1,
     generated_at: "2026-08-09T00:00:00Z",
     source_status: { ccfddl: "failed" },
@@ -107,6 +109,131 @@ it("healthReport separates future confirmed and estimated values", () => {
   });
   expect(healthMarkdown(report)).toContain("| Confirmed deadlines | 1 |");
   expect(healthMarkdown(report)).toContain("| data.json | 10 |");
+});
+
+it("toJson preserves deadline evidence, conflicts, and selection rule", () => {
+  const payload = toJson(
+    [
+      makeConference({
+        key: "rtss",
+        title: "RTSS",
+        sources: ["aideadlines", "ccfddl"],
+        editions: [
+          makeEdition({
+            year: 2026,
+            source: "aideadlines",
+            deadlines: [
+              {
+                ...makeDeadline("paper", "Paper submission", utc(2026, 9, 1)),
+                raw_value: "September 1, 2026 23:59 UTC",
+                conflicts: [
+                  {
+                    at_utc: utc(2026, 8, 31),
+                    label: "Paper deadline",
+                    source: "ccfddl",
+                    raw_value: "2026-08-31T23:59:00Z",
+                  },
+                ],
+              },
+            ],
+          }),
+        ],
+      }),
+    ],
+    {
+      sources: [
+        { name: "aideadlines", url: "https://example.org/aideadlines" },
+        { name: "ccfddl", url: "https://example.org/ccfddl" },
+      ],
+    },
+    NOW,
+  );
+  const deadline = (payload.conferences as any[])[0].editions[0].deadlines[0];
+  expect(deadline.selection_rule).toBe("source_priority_then_nearest_within_configured_window");
+  expect(deadline.evidence[0]).toMatchObject({
+    source_name: "aideadlines",
+    source_url: "https://example.org/aideadlines",
+    observed_at: "2026-08-09T00:00:00Z",
+    original_value: "September 1, 2026 23:59 UTC",
+    confidence: "aggregator",
+  });
+  expect(deadline.conflicts[0]).toMatchObject({
+    at_utc: "2026-08-31T00:00:00Z",
+    original_value: "2026-08-31T23:59:00Z",
+    evidence: {
+      source_name: "ccfddl",
+      source_url: "https://example.org/ccfddl",
+      confidence: "aggregator",
+    },
+  });
+});
+
+it("evaluateHealthGate covers normal updates and every fail-closed regression", () => {
+  const previous: HealthReport = {
+    schema_version: 1,
+    generated_at: "2026-08-09T00:00:00Z",
+    profile_hash: "profile-a",
+    source_status: { ccfddl: "success" },
+    source_failures: [],
+    tracked_venues: 10,
+    future_confirmed_venues: 8,
+    future_estimated_venues: 2,
+    confirmed_deadlines: 10,
+    estimated_deadlines: 2,
+    confirmed_future_deadlines: 10,
+    estimated_future_deadlines: 2,
+    venues_with_confirmed_future_deadline: 8,
+    snapshot_fallback: false,
+    parse_warnings: { one: 1 },
+    parse_warning_count: 1,
+    category_distribution: { systems: 5 },
+    category_counts: { systems: 5 },
+    required_venues: { rtss: "present" },
+    output_files: {},
+  };
+  expect(evaluateHealthGate(previous, previous).ok).toBe(true);
+  expect(
+    evaluateHealthGate(
+      { ...previous, confirmed_future_deadlines: 6, confirmed_deadlines: 6 },
+      previous,
+    ).ok,
+  ).toBe(false);
+  expect(
+    evaluateHealthGate({ ...previous, required_venues: { rtss: "missing" } }, previous).ok,
+  ).toBe(false);
+  expect(
+    evaluateHealthGate(
+      { ...previous, parse_warning_count: 8, parse_warnings: { one: 8 } },
+      previous,
+    ).ok,
+  ).toBe(false);
+  expect(evaluateHealthGate({ ...previous, profile_hash: "profile-b" }, previous).ok).toBe(false);
+  expect(
+    evaluateHealthGate(
+      { ...previous, source_failures: ["ccfddl"], source_status: { ccfddl: "failed" } },
+      previous,
+    ).ok,
+  ).toBe(false);
+  expect(
+    evaluateHealthGate(
+      {
+        ...previous,
+        source_failures: ["ccfddl"],
+        source_status: { ccfddl: "failed" },
+        snapshot_fallback: true,
+      },
+      previous,
+    ).ok,
+  ).toBe(true);
+  expect(
+    evaluateHealthGate(
+      { ...previous, estimated_future_deadlines: 0, estimated_deadlines: 0 },
+      previous,
+    ).ok,
+  ).toBe(true);
+  expect(
+    evaluateHealthGate({ ...previous, generated_at: "2026-08-08T00:00:00Z" }, previous).ok,
+  ).toBe(false);
 });
 
 it("generated health files describe the deterministic build", () => {
@@ -343,7 +470,7 @@ it("upcoming.md is a table", () => {
 
 it("llms.txt indexes generated outputs", () => {
   const text = readFileSync(join(site, "llms.txt"), "utf8");
-  for (const name of ["data.json", "data.csv", "upcoming.md"]) {
+  for (const name of ["data.json", "health.json", "data.csv", "upcoming.md"]) {
     expect(text).toContain(name);
   }
   expect(text).not.toMatch(/\.ics/);

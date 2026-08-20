@@ -64,6 +64,7 @@ export function deadlinesOf(raw: Record<string, unknown> | null | undefined): De
       // A round named in the label wins over the explicit field.
       round: roundOf(label, Number(rec.round ?? 1) || 1),
       comment: rec.comment === null || rec.comment === undefined ? null : String(rec.comment),
+      raw_value: String(rec.date),
     });
   }
   if (out.length === 0) {
@@ -80,6 +81,7 @@ export function deadlinesOf(raw: Record<string, unknown> | null | undefined): De
               tz_raw: parentTz,
               round: roundOf(label, 1),
               comment: null,
+              raw_value: String(val),
             });
             break;
           }
