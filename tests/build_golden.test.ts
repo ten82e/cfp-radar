@@ -1004,6 +1004,26 @@ it("workflow keeps recommendation failure optional while protecting Pages public
   );
 });
 
+it("CI keeps required verification offline and live discovery optional", () => {
+  const ci = readFileSync(join(REPO_ROOT, ".github/workflows/ci.yml"), "utf8");
+  const testJob = ci.slice(ci.indexOf("  test:\n"), ci.indexOf("\n  # 実際の上流"));
+  const smokeJob = ci.slice(ci.indexOf("  # 実際の上流"));
+  const discover = readFileSync(join(REPO_ROOT, ".github/workflows/discover.yml"), "utf8");
+
+  expect(testJob).toContain("npm test");
+  expect(testJob).toContain("--offline");
+  expect(testJob).toContain("--no-embeddings");
+  expect(testJob).toContain("Check offline result");
+  expect(testJob).not.toContain("src/cli.ts discover");
+  expect(smokeJob).toContain("continue-on-error: true");
+  expect(smokeJob).toContain("--no-embeddings");
+  expect(smokeJob).not.toContain("--now 2026-08-09");
+  expect(smokeJob).toContain("source_status");
+  expect(discover).toContain(
+    "node src/cli.ts discover --candidate-out data/discovered_candidates.yaml",
+  );
+});
+
 it("DEFAULT_CATEGORIES contains all 9 taxonomy domains", () => {
   const expectedDomains = [
     "hpc",

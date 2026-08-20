@@ -80,14 +80,12 @@ describe("NicheDiscoverer", () => {
     expect(graphics).toContain("graphics");
   });
 
-  it("run discovery returns candidates with required fields", async () => {
-    const cands = await discoverer.runDiscovery(["systems"], 2026);
-    for (const c of cands) {
-      expect(c.key).toBeTruthy();
-      expect(c.title).toBeTruthy();
-      expect(c.link).toBeTruthy();
-    }
-  }, 120_000);
+  it("blocks unmocked network in required tests", async () => {
+    await expect(fetch("https://example.invalid")).rejects.toThrow(
+      "network access is disabled in required tests",
+    );
+  });
+
   it("discoverFromDblp decodes HTML entities and trims leading whitespace", async () => {
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async () =>
@@ -118,11 +116,15 @@ describe("NicheDiscoverer", () => {
         { status: 200 },
       )) as typeof fetch;
     try {
-      // 共有インスタンスは直前の live 実行 (run discovery) で knownKeys が
-      // 実 DBLP データで汚染され得るため、分離インスタンスで検証する。
+      // ネットワーク層は fixture response に差し替え、共有状態を持たないインスタンスで検証する。
       const isolated = new NicheDiscoverer(REPO_ROOT);
       const cands = await isolated.discoverFromDblp("workshop", 10);
 
+      for (const candidate of cands) {
+        expect(candidate.key).toBeTruthy();
+        expect(candidate.title).toBeTruthy();
+        expect(candidate.link).toBeTruthy();
+      }
       const fakews = cands.find((c) => c.key === "fakews");
       expect(fakews).toBeDefined();
       expect(fakews?.full_name).toBe('"Fake\'s & Foes" Workshop Series (FAKEWS)');
