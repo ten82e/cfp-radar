@@ -6,6 +6,7 @@
  * identical.  Ported from scripts/build.py (kamiyobi).
  */
 
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,6 +32,7 @@ import {
   type Edition,
   fmtDate,
   fmtUTC,
+  warningCounts,
 } from "./model.ts";
 
 export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -405,6 +407,12 @@ function jsonRecords(value: unknown): JsonRecord[] {
     : [];
 }
 
+function jsonStrings(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map((item) => String(item ?? "").trim()).filter(Boolean);
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return [];
+}
+
 function jsonTime(value: unknown): number | null {
   const time = Date.parse(String(value ?? ""));
   return Number.isFinite(time) ? time : null;
@@ -517,6 +525,154 @@ export function toRecommendationIndex(
     embedding_manifest: embeddingManifest(data as Parameters<typeof embeddingManifest>[0]),
     conferences,
   };
+}
+
+export type HealthSourceStatus = "success" | "failed";
+
+export interface HealthOutputFile {
+  bytes: number;
+  sha256: string;
+}
+
+export interface HealthReport {
+  schema_version: 1;
+  generated_at: string;
+  source_status: Record<string, HealthSourceStatus>;
+  tracked_venues: number;
+  future_confirmed_venues: number;
+  future_estimated_venues: number;
+  confirmed_deadlines: number;
+  estimated_deadlines: number;
+  parse_warnings: Record<string, number>;
+  category_distribution: Record<string, number>;
+  output_files: Record<string, HealthOutputFile>;
+}
+
+export interface HealthReportOptions {
+  sourceStatus?: Record<string, HealthSourceStatus>;
+  parseWarnings?: Record<string, number>;
+  outputFiles?: Record<string, HealthOutputFile>;
+}
+
+/** Build a deterministic health summary from the exact data payload being published. */
+export function healthReport(
+  data: Record<string, unknown>,
+  now: Date | null | undefined,
+  options: HealthReportOptions = {},
+): HealthReport {
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now.getTime() : Date.now();
+  const conferences = jsonRecords(data.conferences);
+  const sourceNames = jsonRecords(data.sources)
+    .map((source) => String(source.name ?? "").trim())
+    .filter(Boolean);
+  const sourceStatus = Object.fromEntries(
+    [...new Set([...sourceNames, ...Object.keys(options.sourceStatus ?? {})])]
+      .sort(cmpStr)
+      .map((name) => [name, options.sourceStatus?.[name] ?? "success"]),
+  ) as Record<string, HealthSourceStatus>;
+  const categoryCounts: Record<string, number> = {};
+  const confirmedVenues = new Set<string>();
+  const estimatedVenues = new Set<string>();
+  let confirmedDeadlines = 0;
+  let estimatedDeadlines = 0;
+  for (const conference of conferences) {
+    const key = String(conference.key ?? "").trim();
+    for (const category of jsonStrings(conference.categories)) {
+      categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
+    }
+    for (const edition of jsonRecords(conference.editions)) {
+      const estimated = Boolean(edition.estimated);
+      let hasFuture = false;
+      for (const deadline of jsonRecords(edition.deadlines)) {
+        const timestamp = jsonTime(deadline.utc);
+        if (timestamp === null || timestamp < safeNow) continue;
+        hasFuture = true;
+        if (estimated) estimatedDeadlines += 1;
+        else confirmedDeadlines += 1;
+      }
+      if (hasFuture && key) (estimated ? estimatedVenues : confirmedVenues).add(key);
+    }
+  }
+  const parseWarnings = Object.fromEntries(
+    Object.entries(options.parseWarnings ?? {})
+      .filter(([, count]) => Number.isFinite(count) && count > 0)
+      .sort(([a], [b]) => cmpStr(a, b)),
+  );
+  return {
+    schema_version: 1,
+    generated_at: String(data.generated_at ?? ""),
+    source_status: sourceStatus,
+    tracked_venues: conferences.length,
+    future_confirmed_venues: confirmedVenues.size,
+    future_estimated_venues: estimatedVenues.size,
+    confirmed_deadlines: confirmedDeadlines,
+    estimated_deadlines: estimatedDeadlines,
+    parse_warnings: parseWarnings,
+    category_distribution: Object.fromEntries(
+      Object.entries(categoryCounts).sort(([a], [b]) => cmpStr(a, b)),
+    ),
+    output_files: Object.fromEntries(
+      Object.entries(options.outputFiles ?? {}).sort(([a], [b]) => cmpStr(a, b)),
+    ),
+  };
+}
+
+export function healthMarkdown(report: HealthReport): string {
+  const lines = [
+    "# Build health",
+    "",
+    `Generated at: ${report.generated_at}`,
+    "",
+    "| Metric | Value |",
+    "|---|---:|",
+    `| Tracked venues | ${report.tracked_venues} |`,
+    `| Future confirmed venues | ${report.future_confirmed_venues} |`,
+    `| Future estimated venues | ${report.future_estimated_venues} |`,
+    `| Confirmed deadlines | ${report.confirmed_deadlines} |`,
+    `| Estimated deadlines | ${report.estimated_deadlines} |`,
+    "",
+    "## Source status",
+    "",
+    "| Source | Status |",
+    "|---|---|",
+    ...Object.entries(report.source_status).map(([source, status]) => `| ${source} | ${status} |`),
+    "",
+    "## Categories",
+    "",
+    "| Category | Venues |",
+    "|---|---:|",
+    ...Object.entries(report.category_distribution).map(
+      ([category, count]) => `| ${category} | ${count} |`,
+    ),
+    "",
+    "## Parse warnings",
+    "",
+    ...(Object.entries(report.parse_warnings).length
+      ? Object.entries(report.parse_warnings).map(([message, count]) => `- ${count}× ${message}`)
+      : ["- none"]),
+    "",
+    "## Output files",
+    "",
+    "| File | Bytes | SHA-256 |",
+    "|---|---:|---|",
+    ...Object.entries(report.output_files).map(
+      ([name, file]) => `| ${name} | ${file.bytes} | ${file.sha256} |`,
+    ),
+    "",
+  ];
+  return `${lines.join("\n")}\n`;
+}
+
+function outputFileManifest(outdir: string, names: string[]): Record<string, HealthOutputFile> {
+  return Object.fromEntries(
+    [...new Set(names)].sort(cmpStr).map((name) => {
+      const bytes = readFileSync(join(outdir, name));
+      return [
+        name,
+        { bytes: bytes.byteLength, sha256: createHash("sha256").update(bytes).digest("hex") },
+      ];
+    }),
+  );
 }
 
 export function csvField(value: string | number | boolean | null | undefined): string {
@@ -804,7 +960,7 @@ export async function buildAll(
   config: Record<string, unknown> | null | undefined,
   outdir: string,
   now: Date | null | undefined,
-  opts: { noEmbeddings?: boolean } = {},
+  opts: { noEmbeddings?: boolean; health?: HealthReportOptions } = {},
 ): Promise<BuildStats> {
   mkdirSync(outdir, { recursive: true });
 
@@ -926,6 +1082,14 @@ export async function buildAll(
   } else {
     console.warn(`warning: ${templatePath} が無いので index.html を生成しない`);
   }
+
+  const report = healthReport(data, nowUtc, {
+    ...opts.health,
+    parseWarnings: opts.health?.parseWarnings ?? warningCounts(),
+    outputFiles: outputFileManifest(outdir, written),
+  });
+  write("health.json", `${JSON.stringify(report, null, 2)}\n`);
+  write("health.md", healthMarkdown(report));
 
   const nDeadlines = records.filter((r) => r.type === "deadline").length;
   return {

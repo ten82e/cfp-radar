@@ -4,6 +4,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -15,6 +16,8 @@ import {
   embeddingsStale,
   escapeMdCell,
   escapeMdUrl,
+  healthMarkdown,
+  healthReport,
   ROOT,
   recordsOf,
   setRoot,
@@ -58,6 +61,69 @@ beforeAll(() => {
   site = outdir;
   data = JSON.parse(readFileSync(join(site, "data.json"), "utf8"));
 }, 300_000);
+
+it("healthReport separates future confirmed and estimated values", () => {
+  const report = healthReport(
+    {
+      generated_at: "2026-08-09T00:00:00Z",
+      sources: [{ name: "ccfddl" }],
+      conferences: [
+        {
+          key: "confirmed",
+          categories: ["systems"],
+          editions: [{ estimated: false, deadlines: [{ utc: "2026-09-01T00:00:00Z" }] }],
+        },
+        {
+          key: "estimated",
+          categories: ["systems", "hpc"],
+          editions: [{ estimated: true, deadlines: [{ utc: "2026-10-01T00:00:00Z" }] }],
+        },
+        {
+          key: "past",
+          categories: ["systems"],
+          editions: [{ estimated: false, deadlines: [{ utc: "2026-08-08T00:00:00Z" }] }],
+        },
+      ],
+    },
+    NOW,
+    {
+      sourceStatus: { ccfddl: "failed" },
+      parseWarnings: { malformed: 2 },
+      outputFiles: { "data.json": { bytes: 10, sha256: "a".repeat(64) } },
+    },
+  );
+  expect(report).toEqual({
+    schema_version: 1,
+    generated_at: "2026-08-09T00:00:00Z",
+    source_status: { ccfddl: "failed" },
+    tracked_venues: 3,
+    future_confirmed_venues: 1,
+    future_estimated_venues: 1,
+    confirmed_deadlines: 1,
+    estimated_deadlines: 1,
+    parse_warnings: { malformed: 2 },
+    category_distribution: { hpc: 1, systems: 3 },
+    output_files: { "data.json": { bytes: 10, sha256: "a".repeat(64) } },
+  });
+  expect(healthMarkdown(report)).toContain("| Confirmed deadlines | 1 |");
+  expect(healthMarkdown(report)).toContain("| data.json | 10 |");
+});
+
+it("generated health files describe the deterministic build", () => {
+  const report = JSON.parse(readFileSync(join(site, "health.json"), "utf8"));
+  expect(report).toMatchObject({
+    schema_version: 1,
+    generated_at: "2026-08-09T00:00:00Z",
+    tracked_venues: data.conferences.length,
+    source_status: { ccfddl: "success", aideadlines: "success", local: "success" },
+  });
+  const dataBytes = readFileSync(join(site, "data.json"));
+  expect(report.output_files["data.json"]).toEqual({
+    bytes: dataBytes.byteLength,
+    sha256: createHash("sha256").update(dataBytes).digest("hex"),
+  });
+  expect(readFileSync(join(site, "health.md"), "utf8")).toContain("# Build health");
+});
 
 // --- generated file set ----------------------------------------------------
 

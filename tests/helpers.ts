@@ -21,6 +21,8 @@ export const NOW_ARG = "2026-08-09T00:00:00Z";
 export const PUBLIC_FILES = [
   "index.html",
   "data.json",
+  "health.json",
+  "health.md",
   "catalog.json",
   "recommendation-index.json",
   "app.js",
