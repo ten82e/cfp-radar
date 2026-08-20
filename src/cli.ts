@@ -181,9 +181,11 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
 
   // SPEC.md section 3.5: an upstream outage must not gut the published site.
   const degraded = failed.size > 0;
+  let snapshotFallback = false;
   if (degraded) {
     const restored = restoreSnapshot(snapshot);
     if (restored.length > confs.length) {
+      snapshotFallback = restored.length > 0;
       process.stderr.write(
         `warning: 上流 ${[...failed].sort().join(",")} が取得できないため ${snapshot} から ${restored.length} 会議で生成する\n`,
       );
@@ -228,6 +230,7 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
         (c) => !liveKeys.has(c.key) && c.sources.some((s) => failed.has(s)),
       );
       if (extras.length > 0) {
+        snapshotFallback = true;
         confs = [...confs, ...extras];
         confs = applyOverrides(confs, overrides);
         confs = applyOverrides(confs, primary);
@@ -238,6 +241,10 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   }
 
   const outdir = resolve(args.out);
+  const healthConfig = (config.health as Record<string, unknown> | undefined) ?? {};
+  const requiredVenues = Array.isArray(healthConfig.required_venues)
+    ? healthConfig.required_venues.map((key) => String(key))
+    : [];
   const stats = await buildAll(confs, config, outdir, now, {
     noEmbeddings: Boolean(args.noEmbeddings),
     health: {
@@ -247,6 +254,9 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
           failed.has(source.name) ? "failed" : "success",
         ]),
       ),
+      sourceFailures: [...failed],
+      snapshotFallback,
+      requiredVenues,
       parseWarnings: warningCounts(),
     },
   });

@@ -76,6 +76,23 @@ jobs:
           }
           NODE
 
+      # 公開済み health.json を last-known-good として、致命的なデータ縮退を
+      # Pages artifact に載せる前に止める。初回公開や一時的な Pages 障害では
+      # current report 単独の fail-closed 条件を検査する。
+      - name: Health gate
+        id: health-gate
+        if: ${{ steps.validate-recommendation.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 \
+            'https://ten82e.github.io/kamiyobi/health.json' \
+            -o /tmp/last-known-good-health.json || rm -f /tmp/last-known-good-health.json
+          if [ -f /tmp/last-known-good-health.json ]; then
+            node scripts/health-gate.ts public/health.json /tmp/last-known-good-health.json /tmp/next-last-known-good-health.json
+          else
+            node scripts/health-gate.ts public/health.json '' /tmp/next-last-known-good-health.json
+          fi
+
       - name: Save recommendation bundle
         if: ${{ success() && steps.restore-recommendation.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
@@ -122,17 +139,17 @@ jobs:
           echo 'could not push the deadline data' >&2
           exit 1
 
-      # 配信はビルドの成否だけに依存させる。コミット/push の失敗で
-      # その日の配信ごと落とさない。
+      # 配信は build・recommendation 検証・health gate の成否で決める。
+      # データ commit/push の失敗でその日の配信ごと落とさない。
       - name: Upload Pages artifact
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' && steps.health-gate.outcome == 'success' }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' && steps.health-gate.outcome == 'success' }}
         uses: actions/deploy-pages@v5
 
   # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、

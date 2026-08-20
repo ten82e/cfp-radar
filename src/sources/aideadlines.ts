@@ -117,6 +117,7 @@ export function deadlinesOf(raw: Record<string, unknown> | null | undefined): De
         // is ever stated (SPEC.md 3.3).
         round: roundOf(label),
         comment: rec.comment === null || rec.comment === undefined ? null : String(rec.comment),
+        raw_value: String(rec.date),
       });
     }
     if (out.length > 0) return out;
@@ -125,7 +126,15 @@ export function deadlinesOf(raw: Record<string, unknown> | null | undefined): De
   for (const [kind, label, key] of LEGACY) {
     const at = parseInstant(raw[key], parentTz);
     if (at !== null) {
-      out.push({ kind, label, at_utc: at, tz_raw: parentTz, round: 1, comment: null });
+      out.push({
+        kind,
+        label,
+        at_utc: at,
+        tz_raw: parentTz,
+        round: 1,
+        comment: null,
+        raw_value: String(raw[key]),
+      });
     }
   }
   return out;

@@ -18,6 +18,10 @@
 
 source_priority: [local, aideadlines, ccfddl]
 
+# 配信前のデータ健全性レポートで存在を確認する主要会議。
+health:
+  required_venues: [rtss, nsdi]
+
 # 源が異なる 2 件の締切を「同じ締切の二重記載」とみなす条件 (SPEC.md 3.6)。
 #
 # 主たる規則は 1 対 1 である。同一版・同一 kind について源 X がちょうど 1 件、

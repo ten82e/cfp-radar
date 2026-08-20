@@ -81,7 +81,15 @@ export function deadlinesOf(
         if (raw === null || raw === undefined) continue;
         const at = parseInstant(raw, entryTz);
         if (at === null) continue;
-        out.push({ kind, label, at_utc: at, tz_raw: entryTz, round: rnd, comment });
+        out.push({
+          kind,
+          label,
+          at_utc: at,
+          tz_raw: entryTz,
+          round: rnd,
+          comment,
+          raw_value: String(raw),
+        });
       }
     }
     if (out.length > 0) return out;
@@ -108,7 +116,15 @@ export function deadlinesOf(
       if (raw === null || raw === undefined) continue;
       const at = parseInstant(raw, entryTz);
       if (at === null) continue;
-      out.push({ kind, label, at_utc: at, tz_raw: entryTz, round: 1, comment });
+      out.push({
+        kind,
+        label,
+        at_utc: at,
+        tz_raw: entryTz,
+        round: 1,
+        comment,
+        raw_value: String(raw),
+      });
     }
   }
 
