@@ -7,6 +7,7 @@
  * AI, and Security.  Ported from scripts/discover.py (kamiyobi).
  */
 
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { decode } from "html-entities";
@@ -204,7 +205,32 @@ export const WIKICFP_CATEGORY_MAP: Record<string, string[]> = {
   ],
 };
 
-export type CandidateStatus = "discovered" | "reviewed" | "accepted" | "rejected" | "superseded";
+export type CandidateStatus =
+  | "discovered"
+  | "reviewed"
+  | "accepted"
+  | "rejected"
+  | "superseded"
+  | "stale";
+
+export interface CandidateEvidence {
+  source: string;
+  source_item_id: string | null;
+  source_url: string;
+  observed_at: string;
+}
+
+export interface CandidateRegistry {
+  schema: 2;
+  candidates: Candidate[];
+}
+
+export interface CandidateFingerprintInput {
+  source: string;
+  sourceItemId: string | null;
+  normalizedTitle: string;
+  targetYear: number | null;
+}
 
 export interface Candidate {
   key: string;
@@ -217,6 +243,12 @@ export interface Candidate {
   evidence_url: string;
   status: CandidateStatus;
   discovered_at: string;
+  id?: string;
+  source?: string;
+  source_item_id?: string | null;
+  first_seen_at?: string;
+  last_seen_at?: string;
+  evidence?: CandidateEvidence[];
   review_notes?: string;
   date_text: string;
   /** 開催年。パース時にタイトル等から判明した正しい年 (date_text は締切日で開催年と
@@ -226,6 +258,173 @@ export interface Candidate {
   submission_deadline_text?: string;
   place: string;
   deadlines: Array<Record<string, unknown>>;
+}
+
+export const CANDIDATE_REGISTRY_SCHEMA = 2 as const;
+export const CANDIDATE_STALE_AFTER_DAYS = 90;
+
+const CANDIDATE_STATUSES = new Set<CandidateStatus>([
+  "discovered",
+  "reviewed",
+  "accepted",
+  "rejected",
+  "superseded",
+  "stale",
+]);
+
+function stringList(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function parsedCandidateYear(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isInteger(value) && value >= 2020 ? value : undefined;
+}
+
+function candidateYear(candidate: Candidate): number | null {
+  return parsedCandidateYear(candidate.year) ?? null;
+}
+
+export function normalizeCandidateTitle(title: string | null | undefined): string {
+  return String(title ?? "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+export function candidateFingerprint(input: CandidateFingerprintInput): string {
+  const payload = JSON.stringify([
+    input.source.trim().toLowerCase(),
+    input.sourceItemId?.trim() || null,
+    input.normalizedTitle,
+    input.targetYear,
+  ]);
+  return `candidate-${createHash("sha256").update(payload).digest("hex").slice(0, 24)}`;
+}
+
+function candidateSource(candidate: Candidate): string {
+  const explicit = String(candidate.source ?? "").trim();
+  if (explicit) return explicit.toLowerCase();
+  const value = candidate.evidence_url || candidate.link;
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    if (host.includes("wikicfp")) return "wikicfp";
+    if (host.includes("dblp")) return "dblp";
+    if (host.includes("openreview")) return "openreview";
+    if (host.includes("dbworld")) return "dbworld";
+    if (host.includes("easychair")) return "easychair";
+    if (host.includes("comsoc")) return "comsoc";
+    if (host.includes("ieice")) return "ieice";
+    if (host.includes("ipsj")) return "ipsj";
+    if (host) return host;
+  } catch {
+    // Candidate links are review input; a missing/invalid URL is still a candidate.
+  }
+  return "unknown";
+}
+
+function candidateSourceItemId(candidate: Candidate, source: string): string | null {
+  const explicit = candidate.source_item_id?.trim();
+  if (explicit) return explicit;
+  try {
+    const url = new URL(candidate.link || candidate.evidence_url);
+    if (source === "wikicfp") return url.searchParams.get("eventid") || candidate.key || null;
+    if (source === "openreview") return url.searchParams.get("id") || candidate.key || null;
+    return candidate.key || url.pathname || null;
+  } catch {
+    return candidate.key || null;
+  }
+}
+
+function candidateId(candidate: Candidate): string {
+  if (candidate.id?.trim()) return candidate.id.trim();
+  const source = candidateSource(candidate);
+  return candidateFingerprint({
+    source,
+    sourceItemId: candidateSourceItemId(candidate, source),
+    normalizedTitle: normalizeCandidateTitle(candidate.title || candidate.full_name),
+    targetYear: candidateYear(candidate),
+  });
+}
+
+function parseStatus(value: unknown): CandidateStatus {
+  const status = String(value ?? "discovered") as CandidateStatus;
+  return CANDIDATE_STATUSES.has(status) ? status : "discovered";
+}
+
+function evidenceList(value: unknown): CandidateEvidence[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null)
+    .map((item) => ({
+      source: String(item.source ?? "unknown"),
+      source_item_id:
+        item.source_item_id === null || item.source_item_id === undefined
+          ? null
+          : String(item.source_item_id),
+      source_url: String(item.source_url ?? ""),
+      observed_at: String(item.observed_at ?? ""),
+    }));
+}
+
+function candidateEvidence(candidate: Candidate, observedAt: string): CandidateEvidence {
+  const source = candidateSource(candidate);
+  return {
+    source,
+    source_item_id: candidateSourceItemId(candidate, source),
+    source_url: candidate.evidence_url || candidate.link || "",
+    observed_at: observedAt,
+  };
+}
+
+function mergeEvidence(...lists: CandidateEvidence[][]): CandidateEvidence[] {
+  const byIdentity = new Map<string, CandidateEvidence>();
+  for (const evidence of lists.flat()) {
+    const source = String(evidence.source || "unknown")
+      .trim()
+      .toLowerCase();
+    const sourceItemId = evidence.source_item_id?.trim() || null;
+    const sourceUrl = String(evidence.source_url || "").trim();
+    if (!source && !sourceUrl && !sourceItemId) continue;
+    const identity = JSON.stringify([source, sourceItemId, sourceUrl]);
+    const previous = byIdentity.get(identity);
+    byIdentity.set(identity, {
+      source,
+      source_item_id: sourceItemId,
+      source_url: sourceUrl,
+      observed_at: evidence.observed_at || previous?.observed_at || "",
+    });
+  }
+  return [...byIdentity.values()].sort((a, b) =>
+    JSON.stringify([a.source, a.source_item_id, a.source_url]).localeCompare(
+      JSON.stringify([b.source, b.source_item_id, b.source_url]),
+    ),
+  );
+}
+
+function recordCandidate(candidate: Candidate, fallbackObservedAt = ""): Candidate {
+  const discoveredAt = candidate.discovered_at || candidate.first_seen_at || fallbackObservedAt;
+  const firstSeenAt = candidate.first_seen_at || discoveredAt;
+  const lastSeenAt = candidate.last_seen_at || discoveredAt;
+  const source = candidateSource(candidate);
+  const sourceItemId = candidateSourceItemId(candidate, source);
+  return {
+    ...candidate,
+    id: candidateId(candidate),
+    source,
+    source_item_id: sourceItemId,
+    status: parseStatus(candidate.status),
+    discovered_at: discoveredAt,
+    first_seen_at: firstSeenAt,
+    last_seen_at: lastSeenAt,
+    evidence: mergeEvidence(
+      evidenceList(candidate.evidence),
+      candidate.evidence_url || candidate.link ? [candidateEvidence(candidate, lastSeenAt)] : [],
+    ),
+  };
 }
 
 export function makeCandidate(
@@ -250,6 +449,75 @@ export function makeCandidate(
   };
 }
 
+function candidateFromRecord(value: unknown): Candidate | null {
+  if (typeof value !== "object" || value === null) return null;
+  const record = value as Record<string, unknown>;
+  const editions = Array.isArray(record.editions)
+    ? record.editions.filter(
+        (item): item is Record<string, unknown> => typeof item === "object" && item !== null,
+      )
+    : [];
+  const edition = editions[0] ?? {};
+  const key = String(record.key ?? "").trim();
+  const title = String(record.title ?? record.full_name ?? "").trim();
+  if (!key || !title) return null;
+  const yearValue = record.target_year ?? record.year ?? edition.year;
+  const year = parsedCandidateYear(yearValue);
+  const rawDeadlines = record.deadlines ?? edition.deadlines;
+  const deadlines = Array.isArray(rawDeadlines)
+    ? rawDeadlines.filter(
+        (item): item is Record<string, unknown> => typeof item === "object" && item !== null,
+      )
+    : [];
+  return makeCandidate({
+    key,
+    title,
+    full_name: String(record.full_name ?? title),
+    link: String(record.link ?? edition.link ?? ""),
+    categories: stringList(record.categories),
+    tags: stringList(record.tags),
+    source_type: String(record.source_type ?? "conference"),
+    evidence_url: String(record.evidence_url ?? ""),
+    status: parseStatus(record.status ?? record.state),
+    discovered_at: String(record.discovered_at ?? record.first_seen_at ?? ""),
+    id: typeof record.id === "string" ? record.id : undefined,
+    source: typeof record.source === "string" ? record.source : undefined,
+    source_item_id:
+      record.source_item_id === null || record.source_item_id === undefined
+        ? undefined
+        : String(record.source_item_id),
+    first_seen_at: typeof record.first_seen_at === "string" ? record.first_seen_at : undefined,
+    last_seen_at: typeof record.last_seen_at === "string" ? record.last_seen_at : undefined,
+    evidence: evidenceList(record.evidence),
+    review_notes: typeof record.review_notes === "string" ? record.review_notes : undefined,
+    date_text: String(record.date_text ?? edition.date_text ?? ""),
+    year,
+    submission_deadline_text:
+      typeof record.submission_deadline_text === "string"
+        ? record.submission_deadline_text
+        : undefined,
+    place: String(record.place ?? edition.place ?? ""),
+    deadlines,
+  });
+}
+
+export function parseCandidateRegistry(value: unknown): CandidateRegistry {
+  if (typeof value !== "object" || value === null) {
+    return { schema: CANDIDATE_REGISTRY_SCHEMA, candidates: [] };
+  }
+  const record = value as Record<string, unknown>;
+  const rawCandidates = Array.isArray(record.candidates)
+    ? record.candidates
+    : Array.isArray(record.conferences)
+      ? record.conferences
+      : [];
+  const candidates = rawCandidates
+    .map(candidateFromRecord)
+    .filter((candidate): candidate is Candidate => candidate !== null)
+    .map((candidate) => recordCandidate(candidate));
+  return { schema: CANDIDATE_REGISTRY_SCHEMA, candidates };
+}
+
 /** Convert a candidate into data/extra.yaml format. */
 export function toYamlDict(c: Candidate | null | undefined): Record<string, unknown> {
   if (!c || typeof c !== "object") return {};
@@ -268,43 +536,160 @@ export function toYamlDict(c: Candidate | null | undefined): Record<string, unkn
     const m = /(20\d\d)/.exec(c.date_text || "");
     // 開催年がパース時に判明している場合は date_text（締切日）より優先する。
     // 締切が開催年の前年（秋締切等）だと date_text 由来の年が 1 年前にずれるため。
-    const year = c.year && c.year >= 2020 ? c.year : m ? Number(m[1]) : new Date().getUTCFullYear();
-    editions.push({
-      year,
-      id: `${c.key}${year % 100}`,
-      link: c.link,
-      place: c.place || "",
-      date_text: c.date_text || "",
-      deadlines: Array.isArray(c.deadlines) ? c.deadlines : [],
-    });
+    const year = c.year && c.year >= 2020 ? c.year : m ? Number(m[1]) : null;
+    if (year !== null) {
+      editions.push({
+        year,
+        id: `${c.key}${year % 100}`,
+        link: c.link,
+        place: c.place || "",
+        date_text: c.date_text || "",
+        deadlines: Array.isArray(c.deadlines) ? c.deadlines : [],
+      });
+    }
   }
   entry.editions = editions;
   return entry;
 }
 
-/** Serialize discovery-only records; these are not publication-ready conferences. */
+function mergeCandidateFields(current: Candidate, incoming: Candidate): Candidate {
+  const merged: Candidate = {
+    ...current,
+    id: current.id || incoming.id,
+    key: incoming.key || current.key,
+    title: incoming.title || current.title,
+    full_name: incoming.full_name || current.full_name,
+    link: incoming.link || current.link,
+    categories: incoming.categories.length > 0 ? incoming.categories : current.categories,
+    tags: incoming.tags.length > 0 ? incoming.tags : current.tags,
+    source_type: incoming.source_type || current.source_type,
+    evidence_url: incoming.evidence_url || current.evidence_url,
+    date_text: incoming.date_text || current.date_text,
+    place: incoming.place || current.place,
+    deadlines: incoming.deadlines.length > 0 ? incoming.deadlines : current.deadlines,
+    source: current.source || incoming.source,
+    source_item_id: current.source_item_id ?? incoming.source_item_id ?? null,
+  };
+  if (incoming.year !== undefined) merged.year = incoming.year;
+  if (incoming.submission_deadline_text) {
+    merged.submission_deadline_text = incoming.submission_deadline_text;
+  }
+  if (current.review_notes !== undefined) merged.review_notes = current.review_notes;
+  else if (incoming.review_notes !== undefined) merged.review_notes = incoming.review_notes;
+  return merged;
+}
+
+function candidateSort(a: Candidate, b: Candidate): number {
+  return `${a.key}\u0000${a.id ?? candidateId(a)}`.localeCompare(
+    `${b.key}\u0000${b.id ?? candidateId(b)}`,
+  );
+}
+
+function staleCandidate(candidate: Candidate, cutoff: number): Candidate {
+  if (!Number.isFinite(cutoff)) return candidate;
+  if (!["discovered", "reviewed", "stale"].includes(candidate.status)) return candidate;
+  const lastSeen = Date.parse(candidate.last_seen_at || candidate.discovered_at);
+  if (!Number.isFinite(lastSeen) || lastSeen >= cutoff) return candidate;
+  return { ...candidate, status: "stale" };
+}
+
+/** Merge one discovery run into the persistent candidate registry without mutating either input. */
+export function mergeCandidateRegistry(
+  existing: CandidateRegistry | null | undefined,
+  discovered: Candidate[] | null | undefined,
+  observedAt: string,
+): CandidateRegistry {
+  const byId = new Map<string, Candidate>();
+  for (const candidate of existing?.candidates ?? []) {
+    const normalized = recordCandidate(candidate);
+    byId.set(normalized.id!, normalized);
+  }
+
+  const incoming = Array.isArray(discovered) ? discovered : [];
+  if (incoming.length === 0) {
+    return { schema: CANDIDATE_REGISTRY_SCHEMA, candidates: [...byId.values()] };
+  }
+
+  const seenIds = new Set<string>();
+  for (const candidate of incoming) {
+    const normalized = recordCandidate(candidate, observedAt);
+    const id = normalized.id!;
+    seenIds.add(id);
+    const previous = byId.get(id);
+    if (!previous) {
+      byId.set(id, {
+        ...normalized,
+        discovered_at: normalized.discovered_at || observedAt,
+        first_seen_at: normalized.first_seen_at || normalized.discovered_at || observedAt,
+        last_seen_at: observedAt || normalized.last_seen_at,
+        evidence: mergeEvidence(normalized.evidence ?? [], [
+          candidateEvidence(normalized, observedAt),
+        ]),
+      });
+      continue;
+    }
+    const merged = mergeCandidateFields(previous, normalized);
+    byId.set(id, {
+      ...merged,
+      id,
+      status: previous.status === "stale" ? "discovered" : parseStatus(previous.status),
+      discovered_at: previous.discovered_at || normalized.discovered_at || observedAt,
+      first_seen_at:
+        previous.first_seen_at || previous.discovered_at || normalized.first_seen_at || observedAt,
+      last_seen_at: observedAt || previous.last_seen_at,
+      evidence: mergeEvidence(previous.evidence ?? [], normalized.evidence ?? [], [
+        candidateEvidence(normalized, observedAt),
+      ]),
+    });
+  }
+
+  const observed = Date.parse(observedAt);
+  const cutoff = observed - CANDIDATE_STALE_AFTER_DAYS * 86_400_000;
+  const candidates = [...byId.values()].map((candidate) =>
+    seenIds.has(candidate.id!) ? candidate : staleCandidate(candidate, cutoff),
+  );
+  return { schema: CANDIDATE_REGISTRY_SCHEMA, candidates: candidates.sort(candidateSort) };
+}
+
+/** Serialize the persistent discovery registry; candidates are never publication-ready data. */
+export function formatCandidateRegistry(registry: CandidateRegistry | null | undefined): string {
+  const records = (registry?.candidates ?? [])
+    .map((candidate) => recordCandidate(candidate))
+    .sort(candidateSort)
+    .map((candidate) => {
+      const source = candidateSource(candidate);
+      const record: Record<string, unknown> = {
+        ...toYamlDict(candidate),
+        id: candidate.id ?? candidateId(candidate),
+        source,
+        source_item_id: candidateSourceItemId(candidate, source),
+        status: parseStatus(candidate.status),
+        discovered_at: candidate.discovered_at || null,
+        first_seen_at: candidate.first_seen_at || candidate.discovered_at || null,
+        last_seen_at: candidate.last_seen_at || candidate.discovered_at || null,
+        target_year: candidateYear(candidate),
+        evidence: mergeEvidence(
+          evidenceList(candidate.evidence),
+          candidate.evidence_url || candidate.link
+            ? [candidateEvidence(candidate, candidate.last_seen_at || candidate.discovered_at)]
+            : [],
+        ),
+        evidence_url: candidate.evidence_url,
+      };
+      if (candidate.review_notes !== undefined) record.review_notes = candidate.review_notes;
+      return record;
+    });
+  return dumpYaml(
+    { schema: CANDIDATE_REGISTRY_SCHEMA, candidates: records },
+    { skipInvalid: true },
+  ) as string;
+}
+
+/** Backwards-compatible formatter for a single discovery batch. */
 export function formatCandidateYaml(candidates: Candidate[] | null | undefined): string {
-  const seenKeys = new Set<string>();
-  const seenEvidence = new Set<string>();
-  const records = (Array.isArray(candidates) ? candidates : [])
-    .filter((candidate) => {
-      const key = String(candidate?.key ?? "").trim();
-      const evidence = String(candidate?.evidence_url ?? "").trim();
-      if (!key || seenKeys.has(key) || (evidence && seenEvidence.has(evidence))) return false;
-      seenKeys.add(key);
-      if (evidence) seenEvidence.add(evidence);
-      return true;
-    })
-    .sort((a, b) => String(a.key).localeCompare(String(b.key)))
-    .map((c) => ({
-      ...toYamlDict(c),
-      status: c.status,
-      discovered_at: c.discovered_at,
-      ...(c.year ? { target_year: c.year } : {}),
-      ...(c.review_notes ? { review_notes: c.review_notes } : {}),
-      evidence_url: c.evidence_url,
-    }));
-  return dumpYaml({ schema: 1, candidates: records }, { skipInvalid: true }) as string;
+  return formatCandidateRegistry(
+    mergeCandidateRegistry({ schema: CANDIDATE_REGISTRY_SCHEMA, candidates: [] }, candidates, ""),
+  );
 }
 
 /** Date.UTC は不正な年月日を繰り上げてしまうため、暦の妥当性を検証してから返す。 */
@@ -443,7 +828,7 @@ interface WikiCfpEntry {
   categories: string[];
   date_text: string;
   place: string;
-  year: number;
+  year?: number;
 }
 
 /** wikiCFP カテゴリページをパースしてエントリ dict のリストを返す。 */
@@ -490,7 +875,7 @@ export function parseWikiCfpHtml(
     const [when, where, deadline] = cells;
     void when;
     if (deadline === "" || deadline === "N/A") continue;
-    let year = minYear;
+    let year: number | undefined;
     const tm = /(20\d\d)/.exec(title);
     if (tm) {
       year = Number(tm[1]);
@@ -498,7 +883,7 @@ export function parseWikiCfpHtml(
       const dm = /(20\d\d)/.exec(deadline);
       if (dm) year = Number(dm[1]);
     }
-    if (year < minYear) continue;
+    if (year !== undefined && year < minYear) continue;
     entries.push({
       key: slug(title),
       title,
@@ -695,8 +1080,8 @@ export async function discoverFromDbworld(
     const [cleaned, sourceType] = cleanDbworldTitle(subject);
     if (!cleaned) continue;
     const m = /(20\d\d)/.exec(cleaned);
-    const year = m ? Number(m[1]) : minYear;
-    if (year < minYear) continue;
+    const year = m ? Number(m[1]) : undefined;
+    if (year !== undefined && year < minYear) continue;
     entries.push({
       key: slug(cleaned),
       title: cleaned,
@@ -819,8 +1204,8 @@ export function easyChairEntriesFromRows(
     // 前年、例: DASFAA 2026 の締切 Oct 27, 2025）の会議を締切年で落とさない (#261)。
     const tm = /20\d\d/.exec(`${e.title} ${e.full_name}`);
     const dm = /(20\d\d)/.exec(e.date_text);
-    const year = tm ? Number(tm[0]) : dm ? Number(dm[1]) : minYear;
-    if (year < minYear) continue;
+    const year = tm ? Number(tm[0]) : dm ? Number(dm[1]) : undefined;
+    if (year !== undefined && year < minYear) continue;
     if (!inDomain(`${e.title} ${e.full_name} ${e.topics.join(" ")}`)) continue;
     entries.push({
       key: slug(e.title),
@@ -887,7 +1272,7 @@ export function parseComsocCfpHtml(
       source_type: "special_issue",
       date_text: deadline,
       place: "",
-      year: dm ? Number(dm[1]) : 0,
+      year: dm ? Number(dm[1]) : undefined,
     });
   }
   return entries;
@@ -1071,8 +1456,8 @@ export async function discoverFromImap(minYear: number): Promise<Array<Record<st
         const [cleaned, sourceType] = cleanDbworldTitle(subject);
         if (!cleaned) continue;
         const m2 = /(20\d\d)/.exec(cleaned);
-        const year = m2 ? Number(m2[1]) : minYear;
-        if (year < minYear) continue;
+        const year = m2 ? Number(m2[1]) : undefined;
+        if (year !== undefined && year < minYear) continue;
         entries.push({
           key: slug(cleaned),
           title: cleaned,
@@ -1170,13 +1555,13 @@ export class NicheDiscoverer {
 
   /** Classify candidate text into target categories. */
   classifyCategory(text: string | null | undefined): string[] {
-    if (!text) return ["systems"];
+    if (!text) return ["unknown"];
     const textLower = String(text).toLowerCase();
     const matched: string[] = [];
     for (const [cat, keywords] of Object.entries(DOMAIN_KEYWORDS)) {
       if (keywords.some((kw) => textLower.includes(kw))) matched.push(cat);
     }
-    return matched.length > 0 ? matched : ["systems"];
+    return matched.length > 0 ? matched : ["unknown"];
   }
 
   /** Query DBLP API for venue/publication candidates matching query. */
@@ -1333,7 +1718,7 @@ export class NicheDiscoverer {
             evidence_url: "https://dbworld.sigmod.org/browse.html",
             date_text: String(entry.date_text),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1361,7 +1746,7 @@ export class NicheDiscoverer {
             date_text: String(entry.date_text),
             submission_deadline_text: String(entry.submission_deadline_text ?? ""),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1387,7 +1772,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1413,7 +1798,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1439,7 +1824,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);
@@ -1465,7 +1850,7 @@ export class NicheDiscoverer {
             source_type: String(entry.source_type),
             date_text: String(entry.date_text),
             place: String(entry.place),
-            year: Number(entry.year),
+            year: parsedCandidateYear(entry.year),
           }),
         );
         this.knownKeys.add(candKey);

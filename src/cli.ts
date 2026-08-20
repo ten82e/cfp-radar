@@ -322,9 +322,13 @@ export function discoverWriteAction(
 }
 
 export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
-  const { NicheDiscoverer, formatCandidateYaml, formatDiscoveredYaml } = await import(
-    "./discover.ts"
-  );
+  const {
+    NicheDiscoverer,
+    formatCandidateRegistry,
+    formatDiscoveredYaml,
+    mergeCandidateRegistry,
+    parseCandidateRegistry,
+  } = await import("./discover.ts");
   const categories = args.categories ? args.categories.split(",").map((c) => c.trim()) : null;
   const discoverer = new NicheDiscoverer(ROOT);
   console.log(
@@ -338,7 +342,14 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
   }
 
   const yamlText = formatDiscoveredYaml(candidates);
-  const candidateYaml = formatCandidateYaml(candidates);
+  const candidatePath = args.candidateOut ?? join(ROOT, "data", "discovered_candidates.yaml");
+  const candidatePathResolved = isAbsolute(candidatePath)
+    ? candidatePath
+    : join(ROOT, candidatePath);
+  const existingRegistry = parseCandidateRegistry(
+    loadYamlFile(candidatePathResolved, { strict: true }),
+  );
+  const registry = mergeCandidateRegistry(existingRegistry, candidates, new Date().toISOString());
   const action = discoverWriteAction(candidates.length, args.append, args.out, args.dryRun);
 
   if (action === "append") {
@@ -361,12 +372,8 @@ export async function cmdDiscover(args: DiscoverArgs): Promise<number> {
     writeTextFile(outPath, yamlText);
     console.log(`\nSaved candidates YAML to ${outPath}`);
   }
-  if (!args.dryRun) {
-    const candidatePath = args.candidateOut ?? join(ROOT, "data", "discovered_candidates.yaml");
-    writeTextFile(
-      isAbsolute(candidatePath) ? candidatePath : join(ROOT, candidatePath),
-      candidateYaml,
-    );
+  if (!args.dryRun && candidates.length > 0) {
+    writeTextFile(candidatePathResolved, formatCandidateRegistry(registry));
   }
   return 0;
 }

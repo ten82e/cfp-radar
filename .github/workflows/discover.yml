@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Discover niche venues and journals
-        run: node src/cli.ts discover --out data/discovered_candidates.yaml
+        run: node src/cli.ts discover --candidate-out data/discovered_candidates.yaml
 
       - name: Upload Discovered Candidates Artifact
         uses: actions/upload-artifact@v7
