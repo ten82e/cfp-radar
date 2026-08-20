@@ -977,15 +977,31 @@ it("embeddingsStale は profile と manifest の不一致を再生成する", ()
   ).toBe(true);
 });
 
-it("workflow restores and validates a recommendation bundle before Pages upload", () => {
+it("workflow keeps recommendation failure optional while protecting Pages publication", () => {
   const workflow = readFileSync(join(REPO_ROOT, ".github/workflows/update.yml"), "utf8");
   expect(workflow).toContain("--no-embeddings");
   expect(workflow).toContain("embeddingBundleKey");
   expect(workflow).toContain("actions/cache/restore@v4");
   expect(workflow).toContain("actions/cache/save@v4");
   expect(workflow).toContain("embeddingsStale");
-  expect(workflow).toContain("!cancelled() && steps.build.outcome == 'success'");
-  expect(workflow).toContain("steps.validate-recommendation.outcome == 'success'");
+  expect(workflow).toContain("steps.restore-recommendation.outputs.cache-hit != 'true'");
+  expect(workflow).toMatch(
+    /name: Generate recommendation bundle[\s\S]*?continue-on-error: true[\s\S]*?run: node src\/embeddings\.ts/,
+  );
+  expect(workflow).toMatch(
+    /name: Validate recommendation bundle[\s\S]*?if: \$\{\{ always\(\) && steps\.build\.outcome == 'success' \}\}[\s\S]*?continue-on-error: true[\s\S]*?rmSync\("public\/embeddings\.json"/,
+  );
+  expect(workflow).toContain("if: $" + "{{ always() && steps.build.outcome == 'success' }}");
+  expect(workflow).toContain("always() && steps.validate-recommendation.outcome == 'success'");
+  expect(workflow).toContain(
+    "always() && steps.validate-recommendation.outcome == 'success' && steps.restore-recommendation.outputs.cache-hit != 'true'",
+  );
+  expect(workflow).toContain(
+    "!cancelled() && steps.build.outcome == 'success' && steps.health-gate.outcome == 'success'",
+  );
+  expect(workflow).not.toContain(
+    "steps.build.outcome == 'success' && steps.validate-recommendation.outcome == 'success' && steps.health-gate.outcome == 'success'",
+  );
 });
 
 it("DEFAULT_CATEGORIES contains all 9 taxonomy domains", () => {

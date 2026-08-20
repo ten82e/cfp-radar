@@ -918,7 +918,7 @@
     } else if (semState === "loading") {
       comp = '語彙スコア ' + r._vocabScore + '点（AI 類似度 計算中…）';
     } else if (semState === "error") {
-      comp = '語彙スコア ' + r._vocabScore + '点（オフラインのため AI 類似度なし）';
+      comp = '語彙スコア ' + r._vocabScore + '点（埋め込みが使えないため AI 類似度なし）';
     } else {
       comp = '語彙スコア ' + r._vocabScore + '点';
     }
@@ -1091,7 +1091,7 @@
       }
       // AI 類似度の状態を明示（初回はモデル読込に数秒かかる）
       if (semState === "loading") { cnt += " ｜ AI 類似度 計算中…"; }
-      else if (semState === "error") { cnt += " ｜ AI 類似度 利用不可（オフラインのため語彙のみ）"; }
+      else if (semState === "error") { cnt += " ｜ AI 類似度 利用不可（埋め込みが使えないため語彙のみ）"; }
     }
     $("count").textContent = cnt;
     var showHistoryStatus = !recMode && state.past && (historyStatus === "loading" || historyStatus === "error");
