@@ -855,11 +855,14 @@ on:
     paths-ignore: [data/snapshot.json]
 ```
 
-- job `test`（ネットワーク非依存）:
-  `npm ci` → `npm run typecheck` → `npm run check` → `npm test`。
-  テスト側に `tests/fixtures/` だけを源とする端から端までのビルド検証を含める。
+- job `test`（上流ネットワーク非依存）:
+  `npm ci` → `npm run typecheck` → `npm run check` → fetch guard 下の `npm test` →
+  `node src/cli.ts build --out /tmp/kamiyobi-offline-site --offline --no-embeddings ...`。
+  テスト側は `tests/fixtures/` と snapshot だけを源とし、discover の HTTP 呼び出しを含めない。
 - job `smoke`（`continue-on-error: true`・ネットワーク依存）:
-  実際の上流を取りにいく `node --experimental-strip-types src/cli.ts build --out /tmp/site --now 2026-08-09T00:00:00Z`。
+  実行時刻で実際の上流を取りにいく `node src/cli.ts build --out /tmp/site --no-embeddings`。
+  source status と health 件数を表示するが、必須 check ではない。
+- 候補探索の実運用は週次 `discover.yml` に分離し、必須 CI の test job から呼び出さない。
 - `paths-ignore` でスキップされたジョブは required check として Pending のまま残るため、
   ブランチ保護を掛ける場合は required check に指定しない旨を README に注記する。
 

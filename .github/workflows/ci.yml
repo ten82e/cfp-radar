@@ -37,6 +37,20 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Offline build
+        run: node src/cli.ts build --out /tmp/kamiyobi-offline-site --offline --no-embeddings --cache /tmp/kamiyobi-offline-cache --now 2026-08-09T00:00:00Z
+
+      - name: Check offline result
+        run: |
+          node -e '
+          const fs = require("node:fs");
+          const data = JSON.parse(fs.readFileSync("/tmp/kamiyobi-offline-site/data.json", "utf8"));
+          const health = JSON.parse(fs.readFileSync("/tmp/kamiyobi-offline-site/health.json", "utf8"));
+          if (!Array.isArray(data.conferences) || data.conferences.length < 150) process.exit(1);
+          if (!health || typeof health.confirmed_deadlines !== "number" || !health.output_files) process.exit(1);
+          console.log(JSON.stringify({ conferences: data.conferences.length, confirmed_deadlines: health.confirmed_deadlines, snapshot_fallback: health.snapshot_fallback }));
+          '
+
   # 実際の上流を取りに行く。上流障害で PR が赤くならないよう必須にしない。
   smoke:
     runs-on: ubuntu-latest
@@ -56,7 +70,7 @@ jobs:
         run: npm ci
 
       - name: Build against live upstream
-        run: node src/cli.ts build --out /tmp/site --now 2026-08-09T00:00:00Z
+        run: node src/cli.ts build --out /tmp/site --no-embeddings
 
       # 終了コードだけでは上流のスキーマ変更を検出できない(退避経路が働くと
       # 成功したまま件数だけ落ちる)ので、件数の下限を検査する。
@@ -65,7 +79,12 @@ jobs:
           node -e '
           const fs = require("node:fs");
           const data = JSON.parse(fs.readFileSync("/tmp/site/data.json", "utf8"));
+          const health = JSON.parse(fs.readFileSync("/tmp/site/health.json", "utf8"));
           const n = data.conferences.length;
-          console.log(`${n} conferences`);
-          process.exit(n >= 150 ? 0 : 1);
+          const bySource = {};
+          for (const conference of data.conferences) {
+            for (const source of conference.sources || []) bySource[source] = (bySource[source] || 0) + 1;
+          }
+          console.log(JSON.stringify({ conferences: n, by_source: bySource, source_status: health.source_status, confirmed_deadlines: health.confirmed_deadlines }));
+          process.exit(n >= 150 && health && health.output_files ? 0 : 1);
           '
