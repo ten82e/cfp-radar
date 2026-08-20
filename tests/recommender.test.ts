@@ -1634,29 +1634,28 @@ describe.skipIf(!hasData)("real data integration", () => {
   });
 });
 
-describe("GOLDEN_EN と VENUE_PAPERS のリークなし設計 (R12–R17)", () => {
-  it("golden テストセットのタイトルは強化用 VENUE_PAPERS と重複しない", () => {
-    // bench の GOLDEN_EN（実採択論文）と embeddings の VENUE_PAPERS（会議プロファイル強化）は
+describe("regression-known と VENUE_PAPERS のリークなし設計 (R12–R17)", () => {
+  it("regression-known のタイトルは強化用 VENUE_PAPERS と重複しない", () => {
+    // regression-known（実採択論文）と embeddings の VENUE_PAPERS（会議プロファイル強化）は
     // 完全分離が契約（テストに正解を学習させない）。タイトルを正規化して照合する。
     const norm = (s: string): string =>
       String(s ?? "")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, " ")
         .trim();
-    const benchSrc = readFileSync(join(REPO_ROOT, "src", "bench-recommender.ts"), "utf8");
+    const regressionFixture = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "regression-known.json"), "utf8"),
+    ) as { records: Array<{ title: string; key: string }> };
     const profileArtifact = JSON.parse(
       readFileSync(join(REPO_ROOT, "data", "venue-profiles.json"), "utf8"),
     ) as {
       profiles: Record<string, { papers: Array<{ title: string }> }>;
     };
-    // 保守性のため正規表現で抽出（構造変化時はここを更新）
-    const goldenTitles = [...benchSrc.matchAll(/title: "([^"]+)",\s*key: "([a-z-]+)"/g)].map((m) =>
-      norm(m[1]),
-    );
+    const goldenTitles = regressionFixture.records.map((record) => norm(record.title));
     const paperTitles = Object.values(profileArtifact.profiles)
       .flatMap((profile) => profile.papers.map((paper) => paper.title))
       .map(norm);
-    expect(goldenTitles.length).toBeGreaterThan(50); // GOLDEN_EN が実在する
+    expect(goldenTitles.length).toBe(92); // 旧 GOLDEN_EN の全件を既知回帰へ移管
     const overlap = goldenTitles.filter((t) => t.length > 10 && paperTitles.includes(t));
     expect(overlap).toEqual([]); // 完全分離
   });
@@ -1858,6 +1857,28 @@ describe("bench-recommender argument parsing and helper utilities", () => {
     expect(() => validateRealPaperFixtures(dev, timeLeaked, venues, {})).toThrow(
       /strictly ordered/,
     );
+
+    const known = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data", "benchmarks", "regression-known.json"), "utf8"),
+    );
+    const knownLeaked = JSON.parse(JSON.stringify(heldout));
+    knownLeaked.records[0].title = known.records[0].title;
+    expect(() => validateRealPaperFixtures(dev, knownLeaked, venues, {})).toThrow(
+      /regression-known/,
+    );
+
+    const nearKnownLeaked = JSON.parse(JSON.stringify(heldout));
+    nearKnownLeaked.records[0].title = known.records[0].title.replace("PRED:", "PREDX:");
+    expect(() => validateRealPaperFixtures(dev, nearKnownLeaked, venues, {})).toThrow(
+      /near-duplicate regression-known/,
+    );
+
+    const benchSource = readFileSync(join(REPO_ROOT, "src", "bench-recommender.ts"), "utf8");
+    const runStart = benchSource.indexOf("export async function runRealPaperBenchmark");
+    const runEnd = benchSource.indexOf("export function norm", runStart);
+    const runSource = benchSource.slice(runStart, runEnd);
+    expect(runSource).toContain("buildBenchmarkEmbeddingBundle");
+    expect(runSource).not.toMatch(/\bemb\./);
   });
 
   it("computes required real-paper ranking metrics and stable strata", () => {

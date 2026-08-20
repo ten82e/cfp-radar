@@ -4,56 +4,52 @@
   "profile_year_max": 2024,
   "records": [
     {
-      "paper_id": "nsdi25-pred",
-      "year": 2025,
-      "title": "PRED: Performance-oriented Random Early Detection for Consistently Stable Performance in Datacenters",
-      "abstract": "PRED automatically adjusts random early detection parameters for changing datacenter traffic, targeting stable queueing and lower tail flow-completion time.",
-      "keywords": ["datacenter networks", "active queue management", "congestion control", "tail latency"],
+      "paper_id": "nsdi26-net-p4ct",
+      "year": 2026,
+      "title": "Net-P4ct: Enhanced WAN Bandwidth Fair Sharing Using P4 Programmable Switches",
+      "keywords": ["WAN bandwidth", "fair sharing", "P4", "programmable switches"],
       "primary_venue": "nsdi",
       "acceptable_venues": ["nsdi", "osdi"],
       "language": "en",
       "domains": ["networking", "systems"],
       "venue_kind": "conference",
-      "source": "https://www.usenix.org/conference/nsdi25/presentation/du"
+      "source": "https://www.usenix.org/conference/nsdi26/spring-accepted-papers"
     },
     {
-      "paper_id": "osdi25-qimeng-xpiler",
-      "year": 2025,
-      "title": "QiMeng-Xpiler: Transcompiling Tensor Programs for Deep Learning Systems with a Neural-Symbolic Approach",
-      "abstract": "QiMeng-Xpiler combines large language models, symbolic repair, and autotuning to translate tensor programs across heterogeneous deep learning systems.",
-      "keywords": ["tensor programs", "neural-symbolic synthesis", "LLM", "GPU", "autotuning"],
-      "primary_venue": "osdi",
-      "acceptable_venues": ["osdi", "nsdi"],
+      "paper_id": "nsdi26-symi",
+      "year": 2026,
+      "title": "SYMI: Efficient Mixture-of-Experts Training via Model and Optimizer State Decoupling",
+      "keywords": ["mixture of experts", "distributed training", "model state", "optimizer state"],
+      "primary_venue": "nsdi",
+      "acceptable_venues": ["nsdi", "osdi"],
       "language": "en",
       "domains": ["ai", "systems", "hpc"],
       "venue_kind": "conference",
-      "source": "https://www.usenix.org/conference/osdi25/presentation/dong"
+      "source": "https://www.usenix.org/conference/nsdi26/spring-accepted-papers"
     },
     {
-      "paper_id": "ndss25-counterseveillance",
-      "year": 2025,
-      "title": "CounterSEVeillance: Performance-Counter Attacks on AMD SEV-SNP",
-      "abstract": "CounterSEVeillance studies exposed performance counters in AMD SEV-SNP and demonstrates instruction-level side-channel recovery from protected virtual machines.",
-      "keywords": ["AMD SEV-SNP", "side channel", "performance counters", "confidential computing"],
+      "paper_id": "ndss26-causal-jailbreak",
+      "year": 2026,
+      "title": "A Causal Perspective for Enhancing Jailbreak Attack and Defense",
+      "keywords": ["causal inference", "jailbreak attacks", "LLM security", "defense"],
       "primary_venue": "ndss",
       "acceptable_venues": ["ndss", "usenix-security"],
       "language": "en",
-      "domains": ["security", "systems"],
+      "domains": ["security", "ai"],
       "venue_kind": "conference",
-      "source": "https://www.ndss-symposium.org/ndss-program/symposium-2025/"
+      "source": "https://www.ndss-symposium.org/ndss2026/accepted-papers/"
     },
     {
-      "paper_id": "ndss25-bootloader-safety",
-      "year": 2025,
-      "title": "A Comprehensive Memory Safety Analysis of Bootloaders",
-      "abstract": "A broad analysis examines memory-safety weaknesses in bootloader code and their consequences for system security.",
-      "keywords": ["bootloaders", "memory safety", "vulnerability analysis", "embedded systems"],
+      "paper_id": "ndss26-ace-llm-apps",
+      "year": 2026,
+      "title": "ACE: A Security Architecture for LLM-Integrated App Systems",
+      "keywords": ["security architecture", "LLM-integrated applications", "application security"],
       "primary_venue": "ndss",
       "acceptable_venues": ["ndss", "usenix-security"],
       "language": "en",
-      "domains": ["security", "systems"],
+      "domains": ["security", "ai", "systems"],
       "venue_kind": "conference",
-      "source": "https://www.ndss-symposium.org/ndss2025/accepted-papers/"
+      "source": "https://www.ndss-symposium.org/ndss2026/accepted-papers/"
     }
   ]
 }

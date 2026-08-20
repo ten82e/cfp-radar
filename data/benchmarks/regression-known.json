@@ -1,0 +1,374 @@
+{
+  "version": 1,
+  "purpose": "regression-known",
+  "records": [
+    {
+      "title": "PRED: Performance-oriented Random Early Detection for Consistently Stable Performance in Datacenters",
+      "key": "nsdi"
+    },
+    {
+      "title": "Minder: Faulty Machine Detection for Large-scale Distributed Model Training",
+      "key": "nsdi"
+    },
+    {
+      "title": "AutoCCL: Automated Collective Communication Tuning for Accelerating Distributed and Parallel DNN Training",
+      "key": "nsdi"
+    },
+    {
+      "title": "Beehive: A Scalable Disaggregated Memory Runtime Exploiting Asynchrony of Multithreaded Programs",
+      "key": "nsdi"
+    },
+    {
+      "title": "One-Size-Fits-None: Understanding and Enhancing Slow Fault Tolerance in Modern Distributed Systems",
+      "key": "nsdi"
+    },
+    {
+      "title": "GREEN: Carbon-efficient Resource Scheduling for Machine Learning Clusters",
+      "key": "nsdi"
+    },
+    {
+      "title": "QiMeng-Xpiler: Transcompiling Tensor Programs for Deep Learning Systems with a Neural-Symbolic Approach",
+      "key": "osdi"
+    },
+    {
+      "title": "WLB-LLM: Workload-Balanced 4D Parallelism for Large Language Model Training",
+      "key": "osdi"
+    },
+    {
+      "title": "NanoFlow: Towards Optimal Large Language Model Serving Throughput",
+      "key": "osdi"
+    },
+    {
+      "title": "Mirage: A Multi-Level Superoptimizer for Tensor Programs",
+      "key": "osdi"
+    },
+    {
+      "title": "WaferLLM: Large Language Model Inference at Wafer Scale",
+      "key": "osdi"
+    },
+    {
+      "title": "Quake: Adaptive Indexing for Vector Search",
+      "key": "osdi"
+    },
+    {
+      "title": "Rearchitecting the Thread Model of In-Memory Key-Value Stores",
+      "key": "sosp"
+    },
+    {
+      "title": "Device-Assisted Live Migration of RDMA Devices",
+      "key": "sosp"
+    },
+    {
+      "title": "Mercury: Unlocking Multi-GPU Operator Optimization for LLMs via Remote Memory Scheduling",
+      "key": "sosp"
+    },
+    {
+      "title": "Demeter: A Scalable and Elastic Tiered Memory Solution for Virtualized Cloud via Guest Delegation",
+      "key": "sosp"
+    },
+    {
+      "title": "Sleeping with One Eye Open: Fast, Sustainable Storage with Sandman",
+      "key": "sosp"
+    },
+    {
+      "title": "LithOS: An Operating System for Efficient Machine Learning on GPUs",
+      "key": "sosp"
+    },
+    {
+      "title": "Scalable Far Memory: Balancing Faults and Evictions",
+      "key": "sosp"
+    },
+    {
+      "title": "Tiga: Accelerating Geo-Distributed Transactions with Synchronized Clocks",
+      "key": "sosp"
+    },
+    {
+      "title": "eBPF Misbehavior Detection: Fuzzing with a Specification-Based Oracle",
+      "key": "sosp"
+    },
+    {
+      "title": "FlexGuard: Fast Mutual Exclusion Independent of Subscription",
+      "key": "sosp"
+    },
+    {
+      "title": "A Comprehensive Memory Safety Analysis of Bootloaders",
+      "key": "ndss"
+    },
+    {
+      "title": "A Systematic Evaluation of Novel and Existing Cache Side Channels",
+      "key": "ndss"
+    },
+    {
+      "title": "CounterSEVeillance: Performance-Counter Attacks on AMD SEV-SNP",
+      "key": "ndss"
+    },
+    {
+      "title": "Alba: The Dawn of Scalable Bridges for Blockchains",
+      "key": "ndss"
+    },
+    {
+      "title": "BULKHEAD: Secure, Scalable, and Efficient Kernel Compartmentalization with PKS",
+      "key": "ndss"
+    },
+    {
+      "title": "Black-box Membership Inference Attacks against Fine-tuned Diffusion Models",
+      "key": "ndss"
+    },
+    {
+      "title": "Automatic Library Fuzzing through API Relation Evolvement",
+      "key": "ndss"
+    },
+    {
+      "title": "PAC-Bayesian Bounds on Rate-Efficient Classifiers",
+      "key": "icml"
+    },
+    {
+      "title": "Batched Dueling Bandits",
+      "key": "icml"
+    },
+    {
+      "title": "Deep Equilibrium Networks are Sensitive to Initialization Statistics",
+      "key": "icml"
+    },
+    {
+      "title": "Private Optimization in the Interpolation Regime: Faster Rates and Hardness Results",
+      "key": "icml"
+    },
+    {
+      "title": "data2vec: A General Framework for Self-supervised Learning in Speech, Vision and Language",
+      "key": "icml"
+    },
+    {
+      "title": "HCInfer: Hierarchical Coordination for Real-Time Collaborative Inference of LLM on the Edge",
+      "key": "rtss"
+    },
+    {
+      "title": "CoEdge-RAG: Optimizing Hierarchical Scheduling for Retrieval-Augmented LLMs in Collaborative Edge Computing",
+      "key": "rtss"
+    },
+    {
+      "title": "CF-DETR: Coarse-to-Fine Transformer for Real-Time Object Detection",
+      "key": "rtss"
+    },
+    {
+      "title": "WatwaOS: A Framework for Worst-Case-Aware Tailoring and Whole-System Analysis of Energy-Constrained Real-Time Systems",
+      "key": "rtss"
+    },
+    {
+      "title": "CARTEL: Consensus Adapting Real-Time and Efficient Logging",
+      "key": "rtss"
+    },
+    {
+      "title": "FALCON: FPGA Accelerated Real-Time Intelligent Controller for Autonomous Systems",
+      "key": "rtss"
+    },
+    {
+      "title": "Stability-Guaranteed Scheduling for Mesh Networked Control Systems with Fine-Grained Timing",
+      "key": "rtss"
+    },
+    {
+      "title": "Timely Classification of Hierarchical Classes",
+      "key": "rtss"
+    },
+    {
+      "title": "A Multi-UAV Router and Scheduler for Executing Spatially Scattered Real-Time Tasks",
+      "key": "ecrts"
+    },
+    {
+      "title": "Sensor Fusion Desynchronization Attacks",
+      "key": "ecrts"
+    },
+    {
+      "title": "Period Assignment for Real-Time Cascade Control Tasks Under Stability and Schedulability Constraints",
+      "key": "ecrts"
+    },
+    {
+      "title": "Exploring and Exploiting the Resource Isolation Attack Surface of WebAssembly Containers",
+      "key": "usenix-security"
+    },
+    {
+      "title": "Depth Gives a False Sense of Privacy: LLM Internal States Inversion",
+      "key": "usenix-security"
+    },
+    {
+      "title": "SoK: Automated Vulnerability Repair: Methods, Tools, and Assessments",
+      "key": "usenix-security"
+    },
+    {
+      "title": "Oblivious Digital Tokens",
+      "key": "usenix-security"
+    },
+    {
+      "title": "URL Inspection Tasks: Helping Users Detect Phishing Links in Emails",
+      "key": "usenix-security"
+    },
+    {
+      "title": "Towards Label-Only Membership Inference Attack against Pre-trained Large Language Models",
+      "key": "usenix-security"
+    },
+    {
+      "title": "I Can Tell Your Secrets: Inferring Privacy Attributes from Mini-app Interaction History in Super-apps",
+      "key": "usenix-security"
+    },
+    {
+      "title": "DarkGram: A Large-Scale Analysis of Cybercriminal Activity Channels on Telegram",
+      "key": "usenix-security"
+    },
+    {
+      "title": "Deanonymizing Ethereum Validators: The P2P Network Has a Privacy Issue",
+      "key": "usenix-security"
+    },
+    {
+      "title": "SafeSpeech: Robust and Universal Voice Protection Against Malicious Speech Synthesis",
+      "key": "usenix-security"
+    },
+    {
+      "title": "Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack",
+      "key": "usenix-security"
+    },
+    {
+      "title": "SelfDefend: LLMs Can Defend Themselves against Jailbreaking in a Practical Manner",
+      "key": "usenix-security"
+    },
+    {
+      "title": "InverCRS: Generative Audio Inversion Attack in Collaborative Recognition Systems",
+      "key": "icdcs"
+    },
+    {
+      "title": "BEyes: Unseen Eyes Snooping Pattern Lock via BFI",
+      "key": "icdcs"
+    },
+    {
+      "title": "Uncovering Hidden Proxy Smart Contracts for Finding Collision Vulnerabilities in Ethereum",
+      "key": "icdcs"
+    },
+    {
+      "title": "Physical Backdoor Attacks against mmWave-based Human Activity Recognition",
+      "key": "icdcs"
+    },
+    {
+      "title": "A Lightweight Secure Aggregation Protocol for Federated Learning Applications",
+      "key": "icdcs"
+    },
+    {
+      "title": "SGX-Enabled Encrypted Cross-Cloud Data Synchronization",
+      "key": "icdcs"
+    },
+    {
+      "title": "Shared memory consensus on a ring: Epigenetic Consensus",
+      "key": "icdcs"
+    },
+    {
+      "title": "Blind-Folded: Simple Power Analysis Attacks using Data with a Single Trace and no Training",
+      "key": "ches"
+    },
+    {
+      "title": "Leaky McEliece: Secret Key Recovery From Highly Erroneous Side-Channel Information",
+      "key": "ches"
+    },
+    {
+      "title": "Shortcut2Secrets: A Table-based Differential Fault Attack Framework",
+      "key": "ches"
+    },
+    {
+      "title": "VeloFHE: GPU Acceleration for FHEW and TFHE Bootstrapping",
+      "key": "ches"
+    },
+    {
+      "title": "Rejected Signatures' Challenges Pose New Challenges: Key Recovery of CRYSTALS-Dilithium via Side-Channel Attacks",
+      "key": "ches"
+    },
+    {
+      "title": "HIPR: Hardware IP Protection through Low-Overhead Fine-Grain Redaction",
+      "key": "ches"
+    },
+    {
+      "title": "Cros-Rt: Cross-Layer Priority Scheduling for Predictable Inter-Process Communication in Ros 2",
+      "key": "rtas"
+    },
+    {
+      "title": "Physics-Informed Mixed-Criticality Scheduling for F1Tenth Cars with Preemptable ROS 2 Executors",
+      "key": "rtas"
+    },
+    {
+      "title": "Handling System Overloads: An Empirical Evaluation of Deadline-Miss Handling Strategies",
+      "key": "rtas"
+    },
+    {
+      "title": "Arm Dynamiq Shared Unit and Real-Time: An Empirical Evaluation",
+      "key": "rtas"
+    },
+    {
+      "title": "LiME: The Linux Real-Time Task Model Extractor",
+      "key": "rtas"
+    },
+    {
+      "title": "ConvolutionalFixedSum: Uniformly Generating Random Values with a Fixed Sum Subject to Arbitrary Constraints",
+      "key": "rtas"
+    },
+    {
+      "title": "A Design Flow to Securely Isolate FPGA Bus Transactions in Heterogeneous SoCs",
+      "key": "rtas"
+    },
+    {
+      "title": "Janus: OS Support for a Secure, Fast Control-Plane",
+      "key": "rtas"
+    },
+    {
+      "title": "eNetSTL: Towards an In-kernel Library for High-Performance eBPF-based Network Functions",
+      "key": "eurosys"
+    },
+    {
+      "title": "Achilles: Efficient TEE-Assisted BFT Consensus via Rollback Resilient Recovery",
+      "key": "eurosys"
+    },
+    {
+      "title": "SkyServe: Serving AI Models across Regions and Clouds with Spot Instances",
+      "key": "eurosys"
+    },
+    {
+      "title": "Themis: Finding Imbalance Failures in Distributed File Systems via a Load Variance Model",
+      "key": "eurosys"
+    },
+    {
+      "title": "Fast State Restoration in LLM Serving with HCache",
+      "key": "eurosys"
+    },
+    {
+      "title": "Revealing the Unstable Foundations of eBPF-Based Kernel Extensions",
+      "key": "eurosys"
+    },
+    {
+      "title": "RoboRebound: Multi-Robot System Defense with Bounded-Time Interaction",
+      "key": "eurosys"
+    },
+    {
+      "title": "Accelerating GNNs on GPU Sparse Tensor Cores through N: M Sparsity-Oriented Graph Reordering",
+      "key": "ppopp"
+    },
+    {
+      "title": "Adaptive Parallel Training for Graph Neural Networks",
+      "key": "ppopp"
+    },
+    {
+      "title": "TurboFFT: Co-Designed High-Performance and Fault-Tolerant Fast Fourier Transform on GPUs",
+      "key": "ppopp"
+    },
+    {
+      "title": "Reciprocating Locks",
+      "key": "ppopp"
+    },
+    {
+      "title": "Aggregating Funnels for Faster Fetch&Add and Queues",
+      "key": "ppopp"
+    },
+    {
+      "title": "Publish on Ping: A Better Way to Publish Reservations in Memory Reclamation for Concurrent Data Structures",
+      "key": "ppopp"
+    },
+    {
+      "title": "AC-Cache: A Memory-Efficient Caching System for Small Objects via Exploiting Access Correlations",
+      "key": "ppopp"
+    }
+  ]
+}

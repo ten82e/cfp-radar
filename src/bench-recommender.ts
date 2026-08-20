@@ -14,7 +14,7 @@
  *   npm run bench -- --lang jp --jpw 0.35  # 日本語の語彙重みを 0.35 に（既定 0.5）
  *   npm run bench -- --sw name=25,venue=0  # サブシグナル点数を上書き（実測スイープ用）
  *   npm run bench -- --sw nameOnce         # 会議名一致を先頭 1 語の固定加点のみに
- *   npm run bench -- --golden-en           # 実採択論文タイトル（DBLP 由来）で真の精度を測定
+ *   npm run bench -- --golden-en           # regression-known の実採択論文で回帰を測定
  *   npm run bench -- --no-idf              # IDF 減衰を無効化（既定は本番と同じく有効）
  *   --v2                                   # #454 の合成 smoke/plumbing 評価
  *   --real-v2-dev ... --real-v2-heldout ... # 実論文の固定 revision 評価
@@ -23,6 +23,8 @@
 import { readFileSync } from "node:fs";
 import { type FeatureExtractionPipeline, pipeline } from "@huggingface/transformers";
 import {
+  type BenchmarkEmbeddingManifest,
+  buildBenchmarkEmbeddingBundle,
   EMBEDDING_MODEL,
   EMBEDDING_MULTI_MODEL,
   EMBEDDING_MULTI_REVISION,
@@ -509,6 +511,10 @@ export interface RealPaperResult {
     jp: { model: string; revision: string };
   };
   splits: { dev: RealPaperSplitResult; heldout: RealPaperSplitResult };
+  benchmark_embeddings?: {
+    dev: BenchmarkEmbeddingManifest;
+    heldout: BenchmarkEmbeddingManifest;
+  };
   timing: { firstLoadMs: null; repeatRecommendationMs: null };
 }
 
@@ -593,6 +599,7 @@ export function validateRealPaperFixtures(
   heldout: RealPaperFixture,
   venueKeys: ReadonlySet<string> = new Set(Object.keys(VENUE_PAPERS)),
   profiles: RealPaperProfiles = VENUE_PROFILE_ARTIFACT,
+  regressionKnown: RegressionKnownRecord[] = REGRESSION_KNOWN.records,
 ): void {
   for (const fixture of [dev, heldout]) {
     if (fixture?.version !== 1) throw new Error("real paper fixture version must be 1");
@@ -633,6 +640,18 @@ export function validateRealPaperFixtures(
       }
     }
     titles.set(normalized, record.paper_id);
+  }
+  for (const record of [...dev.records, ...heldout.records]) {
+    for (const known of regressionKnown) {
+      if (realPaperText(record.title) === realPaperText(known.title)) {
+        throw new Error(`real paper regression-known leakage: ${record.paper_id} / ${known.key}`);
+      }
+      if (realPaperNearDuplicate(record.title, known.title)) {
+        throw new Error(
+          `real paper near-duplicate regression-known leakage: ${record.paper_id} / ${known.key}`,
+        );
+      }
+    }
   }
   for (const fixture of [dev, heldout]) {
     const eligibleProfiles = profileTitlesBefore(profiles, fixture.profile_year_max);
@@ -762,6 +781,7 @@ export function buildRealPaperResult(
     dev: { rankings: Record<string, RealPaperRanks>; confidence: Record<string, string> };
     heldout: { rankings: Record<string, RealPaperRanks>; confidence: Record<string, string> };
   },
+  benchmarkEmbeddings?: { dev: BenchmarkEmbeddingManifest; heldout: BenchmarkEmbeddingManifest },
 ): RealPaperResult {
   return {
     benchmark: "real-paper-v1",
@@ -778,6 +798,7 @@ export function buildRealPaperResult(
         evaluations.heldout.confidence,
       ),
     },
+    ...(benchmarkEmbeddings ? { benchmark_embeddings: benchmarkEmbeddings } : {}),
     // Wall-clock values are intentionally kept out of machine-readable JSON.
     timing: { firstLoadMs: null, repeatRecommendationMs: null },
   };
@@ -796,13 +817,7 @@ function realPaperRank(
 export async function runRealPaperBenchmark(
   dev: RealPaperFixture,
   heldout: RealPaperFixture,
-  data: { conferences: Conf[] },
-  emb: {
-    manifest?: { models?: Record<string, { model?: string; revision?: string; dim?: number }> };
-    embeddings: Record<string, number[]>;
-    multi?: { embeddings: Record<string, number[]> };
-    paperVecs?: Record<string, number[][]>;
-  },
+  data: { conferences: Conf[]; categories?: Record<string, string> },
 ): Promise<RealPaperRun> {
   const confs = data.conferences ?? [];
   const venueKeys = new Set(confs.map((conference) => conference.key));
@@ -815,28 +830,13 @@ export async function runRealPaperBenchmark(
     language === "jp"
       ? { model: EMBEDDING_MULTI_MODEL, revision: EMBEDDING_MULTI_REVISION, key: "multi" }
       : { model: EMBEDDING_MODEL, revision: EMBEDDING_REVISION, key: "en" };
-  for (const language of usedLanguages) {
-    const expected = modelFor(language);
-    const actual = emb.manifest?.models?.[expected.key];
-    if (actual?.model !== expected.model || actual.revision !== expected.revision) {
-      throw new Error(
-        `real paper embedding manifest mismatch for ${language}; rebuild pinned embeddings`,
-      );
-    }
-    const embeddingSet = language === "jp" ? (emb.multi?.embeddings ?? {}) : emb.embeddings;
-    for (const conference of confs) {
-      const vector = embeddingSet[conference.key];
-      if (
-        !Array.isArray(vector) ||
-        vector.length === 0 ||
-        vector.some((value) => !Number.isFinite(value))
-      ) {
-        throw new Error(`real paper embedding missing or invalid: ${language}/${conference.key}`);
-      }
-    }
-  }
   const extractors = new Map<RealPaperLanguage, FeatureExtractionPipeline>();
   const loadStart = performance.now();
+  const catNames = data.categories ?? {};
+  const benchmarkEmbeddings = {
+    dev: await buildBenchmarkEmbeddingBundle(confs, catNames, dev.profile_year_max),
+    heldout: await buildBenchmarkEmbeddingBundle(confs, catNames, heldout.profile_year_max),
+  };
   for (const language of usedLanguages) {
     const model = modelFor(language);
     extractors.set(
@@ -874,10 +874,7 @@ export async function runRealPaperBenchmark(
       throw new Error(`real paper embedding count mismatch for ${language}`);
   }
 
-  Recommender.setPaperVecs(emb.paperVecs ?? null);
   Recommender.setExpandEnabled(true);
-  const venueEmb = (language: RealPaperLanguage): Record<string, number[]> =>
-    language === "jp" ? (emb.multi?.embeddings ?? {}) : emb.embeddings;
   const rowsFor = (sourceYearMax: number) => {
     const papers = profileTitlesBefore(VENUE_PROFILE_ARTIFACT, sourceYearMax);
     return confs.map((conference) => ({
@@ -898,12 +895,14 @@ export async function runRealPaperBenchmark(
   const recommend = (
     record: RealPaperRecord,
     rows: ReturnType<typeof rowsFor>,
+    bundle: (typeof benchmarkEmbeddings)["dev"],
   ): {
     rankings: RealPaperRanks;
     confidence: string;
   } => {
     const vector = vectors.get(record.paper_id);
     if (!vector) throw new Error(`real paper vector missing: ${record.paper_id}`);
+    Recommender.setPaperVecs(record.language === "en" ? bundle.paperVecs : null);
     const lines = Recommender.parsePaperLines(
       JSON.stringify([
         {
@@ -917,7 +916,11 @@ export async function runRealPaperBenchmark(
     const semanticScores = Object.fromEntries(
       confs.map((conference) => [
         conference.key,
-        Recommender.semanticScore(conference.key, vector, venueEmb(record.language)),
+        Recommender.semanticScore(
+          conference.key,
+          vector,
+          record.language === "jp" ? bundle.multi.embeddings : bundle.embeddings,
+        ),
       ]),
     );
     const recommendations = Recommender.venueRecommendations(
@@ -953,6 +956,7 @@ export async function runRealPaperBenchmark(
   };
   const evaluate = (
     fixture: RealPaperFixture,
+    bundle: (typeof benchmarkEmbeddings)["dev"],
   ): {
     rankings: Record<string, RealPaperRanks>;
     confidence: Record<string, string>;
@@ -962,21 +966,27 @@ export async function runRealPaperBenchmark(
     const rows = rowsFor(fixture.profile_year_max);
     Recommender.setNameIdf(Recommender.buildNameIdf(rows.map((row) => row.conf)));
     for (const record of fixture.records) {
-      const evaluation = recommend(record, rows);
+      const evaluation = recommend(record, rows, bundle);
       rankings[record.paper_id] = evaluation.rankings;
       confidence[record.paper_id] = evaluation.confidence;
     }
     return { rankings, confidence };
   };
   try {
-    const evaluations = { dev: evaluate(dev), heldout: evaluate(heldout) };
+    const evaluations = {
+      dev: evaluate(dev, benchmarkEmbeddings.dev),
+      heldout: evaluate(heldout, benchmarkEmbeddings.heldout),
+    };
     const repeatStart = performance.now();
     const repeatRows = rowsFor(dev.profile_year_max);
     Recommender.setNameIdf(Recommender.buildNameIdf(repeatRows.map((row) => row.conf)));
-    if (dev.records[0]) recommend(dev.records[0], repeatRows);
+    if (dev.records[0]) recommend(dev.records[0], repeatRows, benchmarkEmbeddings.dev);
     const repeatRecommendationMs = Number((performance.now() - repeatStart).toFixed(2));
     return {
-      result: buildRealPaperResult(dev, heldout, evaluations),
+      result: buildRealPaperResult(dev, heldout, evaluations, {
+        dev: benchmarkEmbeddings.dev.manifest,
+        heldout: benchmarkEmbeddings.heldout.manifest,
+      }),
       timing: { firstLoadMs, repeatRecommendationMs },
     };
   } finally {
@@ -1248,371 +1258,26 @@ const GOLDEN_JP: Array<{ title: string; keywords: string; key: string }> = [
   },
 ];
 
-/** golden EN（実採択論文タイトル、タイトルのみで測定）: 合成クエリは会議名の内容語から
+/** regression-known（実採択論文タイトル、タイトルのみで測定）: 合成クエリは会議名の内容語から
  * 作るため実論文より易しい。こちらは会議名チャンクを含まない実際の論文タイトルで
  * 真の精度を測る（R12 追加）。出典: USENIX NSDI/OSDI '25 technical sessions、
  * SOSP '25 accepted (sigops.org)、NDSS '25 accepted、ICML (PMLR v162)。 */
-const GOLDEN_EN: Array<{ title: string; key: string }> = [
-  // NSDI '25
-  {
-    title:
-      "PRED: Performance-oriented Random Early Detection for Consistently Stable Performance in Datacenters",
-    key: "nsdi",
-  },
-  {
-    title: "Minder: Faulty Machine Detection for Large-scale Distributed Model Training",
-    key: "nsdi",
-  },
-  {
-    title:
-      "AutoCCL: Automated Collective Communication Tuning for Accelerating Distributed and Parallel DNN Training",
-    key: "nsdi",
-  },
-  {
-    title:
-      "Beehive: A Scalable Disaggregated Memory Runtime Exploiting Asynchrony of Multithreaded Programs",
-    key: "nsdi",
-  },
-  {
-    title:
-      "One-Size-Fits-None: Understanding and Enhancing Slow Fault Tolerance in Modern Distributed Systems",
-    key: "nsdi",
-  },
-  {
-    title: "GREEN: Carbon-efficient Resource Scheduling for Machine Learning Clusters",
-    key: "nsdi",
-  },
-  // OSDI '25
-  {
-    title:
-      "QiMeng-Xpiler: Transcompiling Tensor Programs for Deep Learning Systems with a Neural-Symbolic Approach",
-    key: "osdi",
-  },
-  {
-    title: "WLB-LLM: Workload-Balanced 4D Parallelism for Large Language Model Training",
-    key: "osdi",
-  },
-  {
-    title: "NanoFlow: Towards Optimal Large Language Model Serving Throughput",
-    key: "osdi",
-  },
-  {
-    title: "Mirage: A Multi-Level Superoptimizer for Tensor Programs",
-    key: "osdi",
-  },
-  {
-    title: "WaferLLM: Large Language Model Inference at Wafer Scale",
-    key: "osdi",
-  },
-  {
-    title: "Quake: Adaptive Indexing for Vector Search",
-    key: "osdi",
-  },
-  // SOSP '25
-  { title: "Rearchitecting the Thread Model of In-Memory Key-Value Stores", key: "sosp" },
-  { title: "Device-Assisted Live Migration of RDMA Devices", key: "sosp" },
-  {
-    title:
-      "Mercury: Unlocking Multi-GPU Operator Optimization for LLMs via Remote Memory Scheduling",
-    key: "sosp",
-  },
-  {
-    title:
-      "Demeter: A Scalable and Elastic Tiered Memory Solution for Virtualized Cloud via Guest Delegation",
-    key: "sosp",
-  },
-  { title: "Sleeping with One Eye Open: Fast, Sustainable Storage with Sandman", key: "sosp" },
-  { title: "LithOS: An Operating System for Efficient Machine Learning on GPUs", key: "sosp" },
-  { title: "Scalable Far Memory: Balancing Faults and Evictions", key: "sosp" },
-  {
-    title: "Tiga: Accelerating Geo-Distributed Transactions with Synchronized Clocks",
-    key: "sosp",
-  },
-  { title: "eBPF Misbehavior Detection: Fuzzing with a Specification-Based Oracle", key: "sosp" },
-  { title: "FlexGuard: Fast Mutual Exclusion Independent of Subscription", key: "sosp" },
-  // NDSS '25
-  { title: "A Comprehensive Memory Safety Analysis of Bootloaders", key: "ndss" },
-  { title: "A Systematic Evaluation of Novel and Existing Cache Side Channels", key: "ndss" },
-  { title: "CounterSEVeillance: Performance-Counter Attacks on AMD SEV-SNP", key: "ndss" },
-  { title: "Alba: The Dawn of Scalable Bridges for Blockchains", key: "ndss" },
-  {
-    title: "BULKHEAD: Secure, Scalable, and Efficient Kernel Compartmentalization with PKS",
-    key: "ndss",
-  },
-  {
-    title: "Black-box Membership Inference Attacks against Fine-tuned Diffusion Models",
-    key: "ndss",
-  },
-  { title: "Automatic Library Fuzzing through API Relation Evolvement", key: "ndss" },
-  // ICML (PMLR v162)
-  { title: "PAC-Bayesian Bounds on Rate-Efficient Classifiers", key: "icml" },
-  { title: "Batched Dueling Bandits", key: "icml" },
-  {
-    title: "Deep Equilibrium Networks are Sensitive to Initialization Statistics",
-    key: "icml",
-  },
-  {
-    title: "Private Optimization in the Interpolation Regime: Faster Rates and Hardness Results",
-    key: "icml",
-  },
-  {
-    title:
-      "data2vec: A General Framework for Self-supervised Learning in Speech, Vision and Language",
-    key: "icml",
-  },
-  // RTSS '25（2025.rtss.org program）
-  {
-    title:
-      "HCInfer: Hierarchical Coordination for Real-Time Collaborative Inference of LLM on the Edge",
-    key: "rtss",
-  },
-  {
-    title:
-      "CoEdge-RAG: Optimizing Hierarchical Scheduling for Retrieval-Augmented LLMs in Collaborative Edge Computing",
-    key: "rtss",
-  },
-  {
-    title: "CF-DETR: Coarse-to-Fine Transformer for Real-Time Object Detection",
-    key: "rtss",
-  },
-  {
-    title:
-      "WatwaOS: A Framework for Worst-Case-Aware Tailoring and Whole-System Analysis of Energy-Constrained Real-Time Systems",
-    key: "rtss",
-  },
-  {
-    title: "CARTEL: Consensus Adapting Real-Time and Efficient Logging",
-    key: "rtss",
-  },
-  {
-    title: "FALCON: FPGA Accelerated Real-Time Intelligent Controller for Autonomous Systems",
-    key: "rtss",
-  },
-  {
-    title:
-      "Stability-Guaranteed Scheduling for Mesh Networked Control Systems with Fine-Grained Timing",
-    key: "rtss",
-  },
-  {
-    title: "Timely Classification of Hierarchical Classes",
-    key: "rtss",
-  },
-  // ECRTS '25（DROPS LIPIcs vol.335）
-  {
-    title: "A Multi-UAV Router and Scheduler for Executing Spatially Scattered Real-Time Tasks",
-    key: "ecrts",
-  },
-  {
-    title: "Sensor Fusion Desynchronization Attacks",
-    key: "ecrts",
-  },
-  {
-    title:
-      "Period Assignment for Real-Time Cascade Control Tasks Under Stability and Schedulability Constraints",
-    key: "ecrts",
-  },
-  // USENIX Security '25（arXiv コメントで採択確認。VENUE_PAPERS の 24 本と完全分離）
-  {
-    title:
-      "Exploring and Exploiting the Resource Isolation Attack Surface of WebAssembly Containers",
-    key: "usenix-security",
-  },
-  {
-    title: "Depth Gives a False Sense of Privacy: LLM Internal States Inversion",
-    key: "usenix-security",
-  },
-  {
-    title: "SoK: Automated Vulnerability Repair: Methods, Tools, and Assessments",
-    key: "usenix-security",
-  },
-  { title: "Oblivious Digital Tokens", key: "usenix-security" },
-  {
-    title: "URL Inspection Tasks: Helping Users Detect Phishing Links in Emails",
-    key: "usenix-security",
-  },
-  {
-    title:
-      "Towards Label-Only Membership Inference Attack against Pre-trained Large Language Models",
-    key: "usenix-security",
-  },
-  {
-    title:
-      "I Can Tell Your Secrets: Inferring Privacy Attributes from Mini-app Interaction History in Super-apps",
-    key: "usenix-security",
-  },
-  {
-    title: "DarkGram: A Large-Scale Analysis of Cybercriminal Activity Channels on Telegram",
-    key: "usenix-security",
-  },
-  {
-    title: "Deanonymizing Ethereum Validators: The P2P Network Has a Privacy Issue",
-    key: "usenix-security",
-  },
-  {
-    title: "SafeSpeech: Robust and Universal Voice Protection Against Malicious Speech Synthesis",
-    key: "usenix-security",
-  },
-  {
-    title: "Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack",
-    key: "usenix-security",
-  },
-  {
-    title: "SelfDefend: LLMs Can Defend Themselves against Jailbreaking in a Practical Manner",
-    key: "usenix-security",
-  },
-  // ICDCS '25（icdcs2025.icdcs.org/accepted-papers メイントラック。VENUE_PAPERS と完全分離）
-  {
-    title: "InverCRS: Generative Audio Inversion Attack in Collaborative Recognition Systems",
-    key: "icdcs",
-  },
-  {
-    title: "BEyes: Unseen Eyes Snooping Pattern Lock via BFI",
-    key: "icdcs",
-  },
-  {
-    title:
-      "Uncovering Hidden Proxy Smart Contracts for Finding Collision Vulnerabilities in Ethereum",
-    key: "icdcs",
-  },
-  {
-    title: "Physical Backdoor Attacks against mmWave-based Human Activity Recognition",
-    key: "icdcs",
-  },
-  {
-    title: "A Lightweight Secure Aggregation Protocol for Federated Learning Applications",
-    key: "icdcs",
-  },
-  {
-    title: "SGX-Enabled Encrypted Cross-Cloud Data Synchronization",
-    key: "icdcs",
-  },
-  {
-    title: "Shared memory consensus on a ring: Epigenetic Consensus",
-    key: "icdcs",
-  },
-  // CHES '25 = TCHES 2025 Issue 1-4（ches.iacr.org/2025/acceptedpapers.php。VENUE_PAPERS と完全分離）
-  {
-    title:
-      "Blind-Folded: Simple Power Analysis Attacks using Data with a Single Trace and no Training",
-    key: "ches",
-  },
-  {
-    title: "Leaky McEliece: Secret Key Recovery From Highly Erroneous Side-Channel Information",
-    key: "ches",
-  },
-  {
-    title: "Shortcut2Secrets: A Table-based Differential Fault Attack Framework",
-    key: "ches",
-  },
-  {
-    title: "VeloFHE: GPU Acceleration for FHEW and TFHE Bootstrapping",
-    key: "ches",
-  },
-  {
-    title:
-      "Rejected Signatures' Challenges Pose New Challenges: Key Recovery of CRYSTALS-Dilithium via Side-Channel Attacks",
-    key: "ches",
-  },
-  {
-    title: "HIPR: Hardware IP Protection through Low-Overhead Fine-Grain Redaction",
-    key: "ches",
-  },
-  // RTAS '25（dblp rtas2025 フルペーパー。VENUE_PAPERS と完全分離）
-  {
-    title:
-      "Cros-Rt: Cross-Layer Priority Scheduling for Predictable Inter-Process Communication in Ros 2",
-    key: "rtas",
-  },
-  {
-    title:
-      "Physics-Informed Mixed-Criticality Scheduling for F1Tenth Cars with Preemptable ROS 2 Executors",
-    key: "rtas",
-  },
-  {
-    title:
-      "Handling System Overloads: An Empirical Evaluation of Deadline-Miss Handling Strategies",
-    key: "rtas",
-  },
-  {
-    title: "Arm Dynamiq Shared Unit and Real-Time: An Empirical Evaluation",
-    key: "rtas",
-  },
-  {
-    title: "LiME: The Linux Real-Time Task Model Extractor",
-    key: "rtas",
-  },
-  {
-    title:
-      "ConvolutionalFixedSum: Uniformly Generating Random Values with a Fixed Sum Subject to Arbitrary Constraints",
-    key: "rtas",
-  },
-  {
-    title: "A Design Flow to Securely Isolate FPGA Bus Transactions in Heterogeneous SoCs",
-    key: "rtas",
-  },
-  {
-    title: "Janus: OS Support for a Secure, Fast Control-Plane",
-    key: "rtas",
-  },
-  // EuroSys '25（dblp eurosys2025、85 本。VENUE_PAPERS に eurosys は無い = リークなし）
-  {
-    title:
-      "eNetSTL: Towards an In-kernel Library for High-Performance eBPF-based Network Functions",
-    key: "eurosys",
-  },
-  {
-    title: "Achilles: Efficient TEE-Assisted BFT Consensus via Rollback Resilient Recovery",
-    key: "eurosys",
-  },
-  {
-    title: "SkyServe: Serving AI Models across Regions and Clouds with Spot Instances",
-    key: "eurosys",
-  },
-  {
-    title:
-      "Themis: Finding Imbalance Failures in Distributed File Systems via a Load Variance Model",
-    key: "eurosys",
-  },
-  {
-    title: "Fast State Restoration in LLM Serving with HCache",
-    key: "eurosys",
-  },
-  {
-    title: "Revealing the Unstable Foundations of eBPF-Based Kernel Extensions",
-    key: "eurosys",
-  },
-  {
-    title: "RoboRebound: Multi-Robot System Defense with Bounded-Time Interaction",
-    key: "eurosys",
-  },
-  // PPoPP '25（dblp ppopp2025、50 本。VENUE_PAPERS と完全分離 = リークなし）
-  {
-    title:
-      "Accelerating GNNs on GPU Sparse Tensor Cores through N: M Sparsity-Oriented Graph Reordering",
-    key: "ppopp",
-  },
-  {
-    title: "Adaptive Parallel Training for Graph Neural Networks",
-    key: "ppopp",
-  },
-  {
-    title:
-      "TurboFFT: Co-Designed High-Performance and Fault-Tolerant Fast Fourier Transform on GPUs",
-    key: "ppopp",
-  },
-  { title: "Reciprocating Locks", key: "ppopp" },
-  { title: "Aggregating Funnels for Faster Fetch&Add and Queues", key: "ppopp" },
-  {
-    title:
-      "Publish on Ping: A Better Way to Publish Reservations in Memory Reclamation for Concurrent Data Structures",
-    key: "ppopp",
-  },
-  {
-    title:
-      "AC-Cache: A Memory-Efficient Caching System for Small Objects via Exploiting Access Correlations",
-    key: "ppopp",
-  },
-];
+export interface RegressionKnownRecord {
+  title: string;
+  key: string;
+}
+
+export interface RegressionKnownFixture {
+  version: 1;
+  purpose: "regression-known";
+  records: RegressionKnownRecord[];
+}
+
+export const REGRESSION_KNOWN = JSON.parse(
+  readFileSync(new URL("../data/benchmarks/regression-known.json", import.meta.url), "utf8"),
+) as RegressionKnownFixture;
+
+const REGRESSION_EN = REGRESSION_KNOWN.records;
 
 /** 会議名から日本語の内容チャンクを取り出す（実論文が使う日本語語彙を模す）。
  * 助詞（と/の/を 等）で分割し、末尾の汎用語（研究会/システム 等）を落とす。 */
@@ -1666,11 +1331,11 @@ export async function main(argv: string[] | null | undefined = process.argv): Pr
     try {
       const dev = JSON.parse(readFileSync(args.realV2Dev, "utf8")) as RealPaperFixture;
       const heldout = JSON.parse(readFileSync(args.realV2Heldout, "utf8")) as RealPaperFixture;
-      const data = JSON.parse(readFileSync(args.data, "utf8")) as { conferences: Conf[] };
-      const emb = JSON.parse(readFileSync(args.emb, "utf8")) as Parameters<
-        typeof runRealPaperBenchmark
-      >[3];
-      const run = await runRealPaperBenchmark(dev, heldout, data, emb);
+      const data = JSON.parse(readFileSync(args.data, "utf8")) as {
+        conferences: Conf[];
+        categories?: Record<string, string>;
+      };
+      const run = await runRealPaperBenchmark(dev, heldout, data);
       console.log(JSON.stringify(run.result, null, 2));
       process.stderr.write(
         `real-bench: dev=${run.result.splits.dev.queries} heldout=${run.result.splits.heldout.queries} ` +
@@ -1714,7 +1379,7 @@ export async function main(argv: string[] | null | undefined = process.argv): Pr
   // golden EN モード: 実採択論文タイトル（タイトルのみ）で真の精度を測る。
   // 複数エントリが同じ会議キーを持つため、クエリ識別子（qid）で一意化する。
   const queries: BenchQuery[] = args.goldenEn
-    ? GOLDEN_EN.map((g, i) => ({ key: g.key, qid: `g${i}`, tw: [g.title], golden: true }))
+    ? REGRESSION_EN.map((g, i) => ({ key: g.key, qid: `g${i}`, tw: [g.title], golden: true }))
     : isJp
       ? confs
           .map((c) => ({ key: c.key, tw: jpChunks(`${c.title} ${c.full_name}`), conf: c }))
