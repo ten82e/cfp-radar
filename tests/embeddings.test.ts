@@ -5,6 +5,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  benchmarkEmbeddingCacheKey,
+  benchmarkEmbeddingManifest,
+  benchmarkProfileHash,
   EMBEDDING_MODEL,
   EMBEDDING_MULTI_MODEL,
   EMBEDDING_MULTI_REVISION,
@@ -19,6 +22,7 @@ import {
   VENUE_PAPERS,
   VENUE_PROFILE_ARTIFACT,
   validateVenueProfileArtifact,
+  venuePapersAtCutoff,
   venuePapersHash,
 } from "../src/embeddings.ts";
 
@@ -172,6 +176,46 @@ describe("generated venue profile artifact", () => {
 });
 
 describe("recommendation bundle contract", () => {
+  it("keeps benchmark profiles and manifest identities cutoff-bound", () => {
+    const base = JSON.parse(JSON.stringify(VENUE_PROFILE_ARTIFACT)) as any;
+    const future = JSON.parse(JSON.stringify(base)) as any;
+    const profileKey = Object.keys(future.profiles)[0];
+    future.profiles[profileKey].papers.push({
+      title: "Future-only profile paper",
+      year: 2026,
+      source: "fixture",
+      source_url: "https://example.test/future",
+      collected_at: "2026-08-20T00:00:00Z",
+    });
+    expect(venuePapersAtCutoff(2024, future)[profileKey]).not.toContain(
+      "Future-only profile paper",
+    );
+    const cutoffText = profileTexts(
+      [{ key: profileKey, title: "", full_name: "", categories: [], tags: [] }],
+      {},
+      false,
+      venuePapersAtCutoff(2024, future),
+    ).texts[0];
+    expect(cutoffText).not.toContain("Future-only profile paper");
+    expect(benchmarkProfileHash(2024, base)).toBe(benchmarkProfileHash(2024, future));
+    expect(benchmarkProfileHash(2024, base)).not.toBe(benchmarkProfileHash(2025, base));
+    expect(benchmarkEmbeddingCacheKey(2024)).not.toBe(benchmarkEmbeddingCacheKey(2025));
+
+    const manifest = benchmarkEmbeddingManifest(2024, ["rtss"]);
+    expect(manifest).toMatchObject({
+      schema: 1,
+      runtime_version: EMBEDDING_RUNTIME_VERSION,
+      profile_year_max: 2024,
+      models: {
+        en: { model: EMBEDDING_MODEL, revision: EMBEDDING_REVISION, dim: 384 },
+        multi: { model: EMBEDDING_MULTI_MODEL, revision: EMBEDDING_MULTI_REVISION, dim: 384 },
+      },
+      paper_vecs: { keys: ["rtss"], dim: 384 },
+    });
+    expect(manifest.profile_hash_at_cutoff).toBe(benchmarkProfileHash(2024));
+    expect(manifest.cache_key).toBe(benchmarkEmbeddingCacheKey(2024));
+  });
+
   it("pins model revisions and derives a complete cache key", () => {
     expect(EMBEDDING_REVISION).toMatch(/^[0-9a-f]{40}$/);
     expect(EMBEDDING_MULTI_REVISION).toMatch(/^[0-9a-f]{40}$/);

@@ -69,7 +69,7 @@ function hasJapanese(text: string): boolean {
  * 「会議の実際の採択領域」を埋め込みに反映できる。
  *
  * データ源: 公式採択リスト（SOSP '25 sigops.org / NDSS '25 / ICML PMLR）。
- * bench の golden EN テストセット（GOLDEN_EN, src/bench-recommender.ts）とは
+ * bench の regression-known テストセット（data/benchmarks/regression-known.json）とは
  * **完全に重複しないタイトルだけを使う**（リークなし検証）。
  */
 /** Versioned venue-profile artifact loaded by both embedding and benchmark consumers. */
@@ -279,6 +279,66 @@ export function venuePapersHash(): string {
   return VENUE_PROFILE_ARTIFACT.profiles_hash;
 }
 
+/** Profile titles available to a benchmark at its historical cutoff. */
+export function venuePapersAtCutoff(
+  sourceYearMax: number,
+  artifact: VenueProfileArtifact = VENUE_PROFILE_ARTIFACT,
+): Record<string, string[]> {
+  if (!Number.isInteger(sourceYearMax) || sourceYearMax < 1900) {
+    throw new Error("benchmark profile cutoff must be a valid year");
+  }
+  return Object.fromEntries(
+    Object.entries(artifact.profiles)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, profile]) => [
+        key,
+        profile.papers.filter((paper) => paper.year <= sourceYearMax).map((paper) => paper.title),
+      ]),
+  );
+}
+
+/** Hash the exact provenance-bearing profile slice used by a historical benchmark. */
+export function benchmarkProfileHash(
+  sourceYearMax: number,
+  artifact: VenueProfileArtifact = VENUE_PROFILE_ARTIFACT,
+): string {
+  if (!Number.isInteger(sourceYearMax) || sourceYearMax < 1900) {
+    throw new Error("benchmark profile cutoff must be a valid year");
+  }
+  const profiles = Object.fromEntries(
+    Object.entries(artifact.profiles)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, profile]) => [
+        key,
+        {
+          selection: {
+            method: profile.selection.method,
+            max_prototypes: profile.selection.max_prototypes,
+          },
+          papers: profile.papers.filter((paper) => paper.year <= sourceYearMax),
+        },
+      ]),
+  );
+  return createHash("sha256")
+    .update(JSON.stringify({ schema: artifact.schema, source_year_max: sourceYearMax, profiles }))
+    .digest("hex")
+    .slice(0, 16);
+}
+
+export function benchmarkEmbeddingCacheKey(sourceYearMax: number): string {
+  const safeModel = (model: string): string => model.replaceAll("/", "-");
+  return [
+    "benchmark-embedding",
+    sourceYearMax,
+    benchmarkProfileHash(sourceYearMax),
+    safeModel(EMBEDDING_MODEL),
+    EMBEDDING_REVISION,
+    safeModel(EMBEDDING_MULTI_MODEL),
+    EMBEDDING_MULTI_REVISION,
+    EMBEDDING_RUNTIME_VERSION,
+  ].join("-");
+}
+
 function toStringArray(val: unknown): string[] {
   if (Array.isArray(val)) {
     return val
@@ -297,14 +357,16 @@ function toStringArray(val: unknown): string[] {
  * 日本語クエリから検索可能にする。英語モデルは日本語キーワードがノイズになるため
  * 付与しない（言語別の埋め込みを実測で分離した設計）。 */
 export function profileTexts(
-  confs: Array<Record<string, unknown>> | null | undefined,
+  confs: unknown[] | null | undefined,
   catNames?: Record<string, string> | null,
   forMulti = false,
+  venuePapers: Record<string, string[]> = VENUE_PAPERS,
 ): { keys: string[]; texts: string[] } {
   const keys: string[] = [];
   const texts: string[] = [];
   const safeCats = catNames ?? {};
-  for (const c of confs ?? []) {
+  for (const raw of confs ?? []) {
+    const c = raw as Record<string, unknown>;
     if (!c || typeof c !== "object") continue;
     const key = String(c.key ?? "").trim();
     if (!key) continue;
@@ -328,7 +390,7 @@ export function profileTexts(
     // R17 A/B: icdcs を vocab-only にすると golden top5 65.7→62.9 に悪化（icdcs 自身の
     // golden 7 件を sem で拾う正の効果が奪取を上回る）→ 埋め込みは従来どおり維持。
     const skipEmb = SKIP_EMB_KEYS.has(key);
-    const papers = !forMulti && !skipEmb ? (VENUE_PAPERS[key] ?? []).slice(0, 8).join(" . ") : "";
+    const papers = !forMulti && !skipEmb ? (venuePapers[key] ?? []).slice(0, 8).join(" . ") : "";
     const tags = toStringArray(c.tags);
     const parts = [
       String(c.title ?? ""),
@@ -417,6 +479,79 @@ async function embedEach(model: string, texts: string[], revision: string): Prom
     }
   }
   return out;
+}
+
+export interface BenchmarkEmbeddingManifest {
+  schema: 1;
+  runtime_version: string;
+  profile_year_max: number;
+  profile_hash_at_cutoff: string;
+  cache_key: string;
+  models: {
+    en: { model: string; revision: string; dim: number };
+    multi: { model: string; revision: string; dim: number };
+  };
+  paper_vecs: { keys: string[]; dim: number };
+}
+
+export interface BenchmarkEmbeddingBundle {
+  manifest: BenchmarkEmbeddingManifest;
+  embeddings: Record<string, number[]>;
+  multi: { embeddings: Record<string, number[]> };
+  paperVecs: Record<string, number[][]>;
+}
+
+export function benchmarkEmbeddingManifest(
+  sourceYearMax: number,
+  paperVecKeys: string[],
+): BenchmarkEmbeddingManifest {
+  return {
+    schema: 1,
+    runtime_version: EMBEDDING_RUNTIME_VERSION,
+    profile_year_max: sourceYearMax,
+    profile_hash_at_cutoff: benchmarkProfileHash(sourceYearMax),
+    cache_key: benchmarkEmbeddingCacheKey(sourceYearMax),
+    models: {
+      en: { model: EMBEDDING_MODEL, revision: EMBEDDING_REVISION, dim: EMBEDDING_DIM },
+      multi: {
+        model: EMBEDDING_MULTI_MODEL,
+        revision: EMBEDDING_MULTI_REVISION,
+        dim: EMBEDDING_DIM,
+      },
+    },
+    paper_vecs: { keys: [...paperVecKeys].sort(), dim: EMBEDDING_DIM },
+  };
+}
+
+/** Build benchmark-only vectors; production embeddings are intentionally not accepted here. */
+export async function buildBenchmarkEmbeddingBundle(
+  confs: unknown[],
+  catNames: Record<string, string>,
+  sourceYearMax: number,
+): Promise<BenchmarkEmbeddingBundle> {
+  const papers = venuePapersAtCutoff(sourceYearMax);
+  const en = profileTexts(confs, catNames, false, papers);
+  const multi = profileTexts(confs, catNames, true, papers);
+  const embeddings = await embedSet(EMBEDDING_MODEL, en.texts, en.keys, EMBEDDING_REVISION);
+  const multiEmbeddings = await embedSet(
+    EMBEDDING_MULTI_MODEL,
+    multi.texts,
+    multi.keys,
+    EMBEDDING_MULTI_REVISION,
+  );
+  const paperVecs: Record<string, number[][]> = {};
+  for (const key of ["usenix-security", "rtss"]) {
+    const titles = papers[key] ?? [];
+    if (titles.length > 0) {
+      paperVecs[key] = await embedEach(EMBEDDING_MODEL, titles, EMBEDDING_REVISION);
+    }
+  }
+  return {
+    manifest: benchmarkEmbeddingManifest(sourceYearMax, Object.keys(paperVecs)),
+    embeddings,
+    multi: { embeddings: multiEmbeddings },
+    paperVecs,
+  };
 }
 
 const SKIP_EMB_KEYS = new Set(["rtss", "ecrts", "usenix-security"]);
