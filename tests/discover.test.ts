@@ -14,7 +14,9 @@ import {
   formatDiscoveredYaml,
   inDomain,
   makeCandidate,
+  mergeCandidateRegistry,
   NicheDiscoverer,
+  parseCandidateRegistry,
   parseComsocCfpHtml,
   parseDbworldHtml,
   parseDeadlineText,
@@ -158,7 +160,7 @@ describe("formatDiscoveredYaml", () => {
 });
 
 describe("formatCandidateYaml", () => {
-  it("writes lifecycle metadata, stable ordering, and removes duplicate keys/evidence", () => {
+  it("writes lifecycle metadata and does not deduplicate a shared listing URL", () => {
     const first = makeCandidate({
       key: "zeta",
       title: "Zeta Workshop",
@@ -166,6 +168,8 @@ describe("formatCandidateYaml", () => {
       link: "https://zeta.example/",
       categories: ["systems"],
       evidence_url: "https://evidence.example/zeta",
+      source: "wikicfp",
+      source_item_id: "event-1",
       discovered_at: "2026-08-19T00:00:00.000Z",
       year: 2027,
       status: "reviewed",
@@ -173,11 +177,14 @@ describe("formatCandidateYaml", () => {
     });
     const duplicateKey = makeCandidate({
       key: "zeta",
-      title: "Duplicate",
-      full_name: "Duplicate",
+      title: "Zeta Workshop",
+      full_name: "Zeta Workshop",
       link: "https://duplicate.example/",
       categories: ["systems"],
       evidence_url: "https://evidence.example/duplicate",
+      source: "wikicfp",
+      source_item_id: "event-1",
+      year: 2027,
     });
     const alpha = makeCandidate({
       key: "alpha",
@@ -186,18 +193,113 @@ describe("formatCandidateYaml", () => {
       link: "https://alpha.example/",
       categories: ["hpc"],
       evidence_url: "https://evidence.example/zeta",
+      source: "wikicfp",
+      source_item_id: "event-2",
     });
     const parsed = loadYaml(formatCandidateYaml([first, duplicateKey, alpha])) as any;
-    expect(parsed.schema).toBe(1);
-    expect(parsed.candidates).toHaveLength(1);
-    expect(parsed.candidates[0]).toMatchObject({
+    expect(parsed.schema).toBe(2);
+    expect(parsed.candidates).toHaveLength(2);
+    expect(parsed.candidates.find((c: any) => c.key === "zeta")).toMatchObject({
       key: "zeta",
       status: "reviewed",
       discovered_at: "2026-08-19T00:00:00.000Z",
+      first_seen_at: "2026-08-19T00:00:00.000Z",
       target_year: 2027,
       review_notes: "official CFP found",
-      evidence_url: "https://evidence.example/zeta",
     });
+    expect(parsed.candidates.find((c: any) => c.key === "zeta").evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source_url: "https://evidence.example/zeta" }),
+        expect.objectContaining({ source_url: "https://evidence.example/duplicate" }),
+      ]),
+    );
+  });
+
+  it("preserves lifecycle fields while merging a rediscovery and marks old records stale", () => {
+    const existing = parseCandidateRegistry({
+      schema: 1,
+      candidates: [
+        {
+          key: "reviewed",
+          title: "Reviewed Workshop",
+          full_name: "Reviewed Workshop",
+          link: "https://example.test/reviewed",
+          categories: ["systems"],
+          editions: [{ year: 2027, date_text: "May 1, 2027", deadlines: [] }],
+          status: "reviewed",
+          discovered_at: "2026-01-01T00:00:00.000Z",
+          review_notes: "keep this note",
+          evidence_url: "https://listing.test/cfp",
+        },
+        {
+          key: "rejected",
+          title: "Rejected Workshop",
+          full_name: "Rejected Workshop",
+          link: "https://example.test/rejected",
+          categories: ["systems"],
+          status: "rejected",
+          discovered_at: "2026-01-01T00:00:00.000Z",
+          evidence_url: "https://listing.test/cfp",
+        },
+        {
+          key: "old",
+          title: "Old Workshop",
+          full_name: "Old Workshop",
+          link: "https://example.test/old",
+          categories: ["systems"],
+          status: "discovered",
+          discovered_at: "2026-01-01T00:00:00.000Z",
+          evidence_url: "https://listing.test/cfp",
+        },
+      ],
+    });
+    const reviewed = existing.candidates.find((c) => c.key === "reviewed")!;
+    const merged = mergeCandidateRegistry(
+      existing,
+      [
+        makeCandidate({
+          key: reviewed.key,
+          title: reviewed.title,
+          full_name: reviewed.full_name,
+          link: reviewed.link,
+          categories: reviewed.categories,
+          source: reviewed.source,
+          source_item_id: reviewed.source_item_id,
+          year: reviewed.year,
+          evidence_url: "https://official.test/cfp",
+        }),
+      ],
+      "2026-08-20T00:00:00.000Z",
+    );
+    expect(merged.candidates.find((c) => c.key === "reviewed")).toMatchObject({
+      status: "reviewed",
+      review_notes: "keep this note",
+      first_seen_at: "2026-01-01T00:00:00.000Z",
+      last_seen_at: "2026-08-20T00:00:00.000Z",
+    });
+    expect(merged.candidates.find((c) => c.key === "reviewed")?.evidence).toHaveLength(2);
+    expect(merged.candidates.find((c) => c.key === "rejected")?.status).toBe("rejected");
+    expect(merged.candidates.find((c) => c.key === "old")?.status).toBe("stale");
+    expect(mergeCandidateRegistry(existing, [], "2026-08-20T00:00:00.000Z").candidates).toEqual(
+      existing.candidates,
+    );
+  });
+
+  it("does not invent a target year when the source has no year", () => {
+    const parsed = loadYaml(
+      formatCandidateYaml([
+        makeCandidate({
+          key: "unknown-year",
+          title: "Unknown Year Workshop",
+          full_name: "Unknown Year Workshop",
+          link: "https://example.test/unknown-year",
+          categories: ["unknown"],
+          date_text: "Date to be announced",
+        }),
+      ]),
+    ) as any;
+    expect(parsed.candidates[0].target_year).toBeNull();
+    expect(parsed.candidates[0].editions).toEqual([]);
   });
 });
 
@@ -1061,9 +1163,9 @@ describe("discover and review boundary handling", () => {
     expect(disc.isAlreadyTracked(undefined)).toBe(false);
     expect(disc.isAlreadyTracked("")).toBe(false);
 
-    expect(disc.classifyCategory(null)).toEqual(["systems"]);
-    expect(disc.classifyCategory(undefined)).toEqual(["systems"]);
-    expect(disc.classifyCategory("")).toEqual(["systems"]);
+    expect(disc.classifyCategory(null)).toEqual(["unknown"]);
+    expect(disc.classifyCategory(undefined)).toEqual(["unknown"]);
+    expect(disc.classifyCategory("")).toEqual(["unknown"]);
 
     expect(deadlineIsFuture(null, null)).toBe(false);
     expect(deadlineIsFuture(undefined, null)).toBe(false);

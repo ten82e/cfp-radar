@@ -153,7 +153,7 @@ jobs:
         uses: actions/deploy-pages@v5
 
   # 外部 CFP ソース (wikiCFP / DBLP / OpenReview) から新規会議候補を集め、
-  # data/discovered_candidates.yaml に追記する。収録(snapshot/サイト)には
+  # data/discovered_candidates.yaml に永続マージする。収録(snapshot/サイト)には
   # 影響しない。候補を extra.yaml に昇格するときは公式サイトで締切を裏取り
   # する(SPEC.md 3.7 の原則)。
   discover-candidates:
@@ -181,9 +181,7 @@ jobs:
           CFP_IMAP_PASS: ${{ secrets.CFP_IMAP_PASS }}
         run: |
           node src/cli.ts discover \
-            --min-year 2026 \
-            --out data/discovered_candidates.yaml \
-            --append || echo 'discovery failed; keeping previous candidates'
+            --candidate-out data/discovered_candidates.yaml || echo 'discovery failed; keeping previous candidates'
 
       - name: Commit candidates
         run: |

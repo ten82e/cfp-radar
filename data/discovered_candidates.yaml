@@ -1,4 +1,4 @@
-schema: 1
+schema: 2
 candidates:
   - key: >-
       3d-metasurface-assisted-wireless-communications-from-model-based-designs-to-ai-driven-approaches-ieee-wireless-communications
@@ -23,9 +23,22 @@ candidates:
         place: ''
         date_text: 1 January 2027
         deadlines: []
+    id: candidate-4c626b1c91bdd817f9683363
+    source: comsoc
+    source_item_id: >-
+      3d-metasurface-assisted-wireless-communications-from-model-based-designs-to-ai-driven-approaches-ieee-wireless-communications
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          3d-metasurface-assisted-wireless-communications-from-model-based-designs-to-ai-driven-approaches-ieee-wireless-communications
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-wireless-communications/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: 3dia
     title: 3DIA
@@ -37,8 +50,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-2366c4b02ffc94362b8a8bb7
+    source: dblp
+    source_item_id: 3dia
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 3dia
+        source_url: https://dblp.org/db/conf/3dica/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dica/
   - key: 3dph
     title: 3DPH
@@ -50,8 +74,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-ce9b5ec0de435b248b510ec7
+    source: dblp
+    source_item_id: 3dph
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 3dph
+        source_url: https://dblp.org/db/conf/3dph/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dph/
   - key: 3dpvt
     title: 3DPVT
@@ -63,8 +98,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-00f37e2f1ff71517ad6231aa
+    source: dblp
+    source_item_id: 3dpvt
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 3dpvt
+        source_url: https://dblp.org/db/conf/3dpvt/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dpvt/
   - key: 3dtv
     title: 3DTV
@@ -76,8 +122,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-4928858b759fded88c103e69
+    source: dblp
+    source_item_id: 3dtv
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 3dtv
+        source_url: https://dblp.org/db/conf/3dtv/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/3dtv/
   - key: 4or-quarterly-journal-of-operations-research
     title: '4OR: Quarterly Journal of Operations Research'
@@ -89,8 +146,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-927c0fe91869722eb1935619
+    source: dblp
+    source_item_id: 4or-quarterly-journal-of-operations-research
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 4or-quarterly-journal-of-operations-research
+        source_url: https://dblp.org/db/journals/4or/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/4or/
   - key: 5gwf
     title: 5GWF
@@ -102,8 +170,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-77d252403217cc4591aae68e
+    source: dblp
+    source_item_id: 5gwf
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 5gwf
+        source_url: https://dblp.org/db/conf/5gwf/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/5gwf/
   - key: 6g-summit
     title: 6G SUMMIT
@@ -115,8 +194,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-c75e41bfe061ce8b786eb2b4
+    source: dblp
+    source_item_id: 6g-summit
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: 6g-summit
+        source_url: https://dblp.org/db/conf/6gsummit/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/6gsummit/
   - key: aaai-fall-symposium-series
     title: AAAI Fall Symposium Series
@@ -128,8 +218,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-82460591d3b9ab2e1a7247be
+    source: dblp
+    source_item_id: aaai-fall-symposium-series
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: aaai-fall-symposium-series
+        source_url: https://dblp.org/db/conf/aaaifs/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaifs/
   - key: aaai-mobile-robot-competition
     title: AAAI Mobile Robot Competition
@@ -141,8 +242,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-41ebecf31e3be890a86322c8
+    source: dblp
+    source_item_id: aaai-mobile-robot-competition
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: aaai-mobile-robot-competition
+        source_url: https://dblp.org/db/conf/mrc/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/mrc/
   - key: aaai-spring-symposium-series
     title: AAAI Spring Symposium Series
@@ -154,8 +266,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-3ae031aff78b283423f0d636
+    source: dblp
+    source_item_id: aaai-spring-symposium-series
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: aaai-spring-symposium-series
+        source_url: https://dblp.org/db/conf/aaaiss/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaiss/
   - key: aaai-summer-symposium-series
     title: AAAI Summer Symposium Series
@@ -167,8 +290,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-5b23480eda5585110108189c
+    source: dblp
+    source_item_id: aaai-summer-symposium-series
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: aaai-summer-symposium-series
+        source_url: https://dblp.org/db/conf/aaaisus/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aaaisus/
   - key: acis-international-journal-of-computer-information-science
     title: ACIS International Journal of Computer & Information Science
@@ -180,8 +314,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-c74aa3e890aa20fc6dd50f56
+    source: dblp
+    source_item_id: acis-international-journal-of-computer-information-science
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acis-international-journal-of-computer-information-science
+        source_url: https://dblp.org/db/journals/acisj/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/acisj/
   - key: acm-communications-in-computer-algebra
     title: ACM Communications in Computer Algebra
@@ -193,8 +338,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-5ba4ee3c3d5d763616e11081
+    source: dblp
+    source_item_id: acm-communications-in-computer-algebra
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-communications-in-computer-algebra
+        source_url: https://dblp.org/db/journals/cca/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/cca/
   - key: acm-computing-surveys
     title: ACM Computing Surveys
@@ -206,8 +362,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-30a7e8407ca848f04da2b829
+    source: dblp
+    source_item_id: acm-computing-surveys
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-computing-surveys
+        source_url: https://dblp.org/db/journals/csur/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/csur/
   - key: acm-inroads
     title: ACM Inroads
@@ -219,8 +386,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-511de6dd9dc170d179084690
+    source: dblp
+    source_item_id: acm-inroads
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-inroads
+        source_url: https://dblp.org/db/journals/inroads/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/inroads/
   - key: acm-journal-on-computing-and-cultural-heritage
     title: ACM Journal on Computing and Cultural Heritage
@@ -232,8 +410,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-9f6bc496e6d74b17a921102c
+    source: dblp
+    source_item_id: acm-journal-on-computing-and-cultural-heritage
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-journal-on-computing-and-cultural-heritage
+        source_url: https://dblp.org/db/journals/jocch/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jocch/
   - key: acm-journal-on-emerging-technologies-in-computing-systems
     title: ACM Journal on Emerging Technologies in Computing Systems
@@ -245,8 +434,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-e6f815aabb5ec59a524bd25c
+    source: dblp
+    source_item_id: acm-journal-on-emerging-technologies-in-computing-systems
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-journal-on-emerging-technologies-in-computing-systems
+        source_url: https://dblp.org/db/journals/jetc/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jetc/
   - key: acm-queue
     title: ACM Queue
@@ -258,8 +458,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-8d9ed87eb4f390fb8e1e1895
+    source: dblp
+    source_item_id: acm-queue
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-queue
+        source_url: https://dblp.org/db/journals/queue/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/queue/
   - key: acm-sigaccess-accessibility-and-computing
     title: ACM SIGACCESS Accessibility and Computing
@@ -271,8 +482,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-783c3b894d3d88c234a2c54b
+    source: dblp
+    source_item_id: acm-sigaccess-accessibility-and-computing
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigaccess-accessibility-and-computing
+        source_url: https://dblp.org/db/journals/sigaccess/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigaccess/
   - key: acm-sigapl-apl-quote-quad
     title: ACM SIGAPL APL Quote Quad
@@ -284,8 +506,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-ec977f2bf644f379db720f78
+    source: dblp
+    source_item_id: acm-sigapl-apl-quote-quad
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigapl-apl-quote-quad
+        source_url: https://dblp.org/db/journals/sigapl/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigapl/
   - key: acm-sigchi-bulletin
     title: ACM SIGCHI Bulletin
@@ -297,8 +530,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-cb3f3f7d297bf62d605841d2
+    source: dblp
+    source_item_id: acm-sigchi-bulletin
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigchi-bulletin
+        source_url: https://dblp.org/db/journals/sigchi/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigchi/
   - key: acm-sigcse-bulletin
     title: ACM SIGCSE Bulletin
@@ -310,8 +554,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-09d08c235f5f81bcd618872d
+    source: dblp
+    source_item_id: acm-sigcse-bulletin
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigcse-bulletin
+        source_url: https://dblp.org/db/journals/sigcse/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/sigcse/
   - key: acm-siglog-news
     title: ACM SIGLOG News
@@ -323,8 +578,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-1ac1826e5c4e619f2f5ca713
+    source: dblp
+    source_item_id: acm-siglog-news
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-siglog-news
+        source_url: https://dblp.org/db/journals/siglog/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/siglog/
   - key: acm-sigme-symposium
     title: ACM SIGME Symposium
@@ -336,8 +602,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-edae2d5ea9bf4d22d7ecb73d
+    source: dblp
+    source_item_id: acm-sigme-symposium
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigme-symposium
+        source_url: https://dblp.org/db/conf/sigme/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/sigme/
   - key: acm-sigmis-database
     title: ACM SIGMIS Database
@@ -349,8 +626,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-9048cf3e9fd3ebed731cc97b
+    source: dblp
+    source_item_id: acm-sigmis-database
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigmis-database
+        source_url: https://dblp.org/db/journals/db/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/db/
   - key: acm-sigmod-digital-review
     title: ACM SIGMOD Digital Review
@@ -362,8 +650,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-e531d5ab3ad7a8b44dc67033
+    source: dblp
+    source_item_id: acm-sigmod-digital-review
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigmod-digital-review
+        source_url: https://dblp.org/db/journals/dr/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/dr/
   - key: acm-sigmod-digital-symposium-collection
     title: ACM SIGMOD Digital Symposium Collection
@@ -375,8 +674,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-dbe83f7d73e0892f36237bf6
+    source: dblp
+    source_item_id: acm-sigmod-digital-symposium-collection
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: acm-sigmod-digital-symposium-collection
+        source_url: https://dblp.org/db/journals/disc/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/disc/
   - key: >-
       agentic-ai-enabled-networking-for-heterogeneous-unmanned-systems-in-low-altitude-environments-ieee-wireless-communications
@@ -401,9 +711,22 @@ candidates:
         place: ''
         date_text: 1 September 2026
         deadlines: []
+    id: candidate-cb9488597a9b0ea086b2299e
+    source: comsoc
+    source_item_id: >-
+      agentic-ai-enabled-networking-for-heterogeneous-unmanned-systems-in-low-altitude-environments-ieee-wireless-communications
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          agentic-ai-enabled-networking-for-heterogeneous-unmanned-systems-in-low-altitude-environments-ieee-wireless-communications
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-wireless-communications/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ai-50
     title: AI@50
@@ -415,8 +738,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-a3afdc4c66bb898770dd27d2
+    source: dblp
+    source_item_id: ai-50
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: ai-50
+        source_url: https://dblp.org/db/conf/ai50/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/ai50/
   - key: >-
       ai-empowered-cognitive-digital-twin-for-future-network-ecosystems-ieee-network
@@ -439,9 +773,21 @@ candidates:
         place: ''
         date_text: 31 October 2026
         deadlines: []
+    id: candidate-4fc9294eb7e87d3f3ceb5930
+    source: comsoc
+    source_item_id: >-
+      ai-empowered-cognitive-digital-twin-for-future-network-ecosystems-ieee-network
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          ai-empowered-cognitive-digital-twin-for-future-network-ecosystems-ieee-network
+        source_url: https://www.comsoc.org/publications/magazines/ieee-network/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: >-
       ai-empowered-underwater-wireless-optical-communications-for-science-exploration-and-defense-applications-ieee-wireless-communications
@@ -466,9 +812,22 @@ candidates:
         place: ''
         date_text: 1 November 2026
         deadlines: []
+    id: candidate-50f408fe4938c74e4767e63a
+    source: comsoc
+    source_item_id: >-
+      ai-empowered-underwater-wireless-optical-communications-for-science-exploration-and-defense-applications-ieee-wireless-communications
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          ai-empowered-underwater-wireless-optical-communications-for-science-exploration-and-defense-applications-ieee-wireless-communications
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-wireless-communications/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: >-
       ai-native-smart-radio-environments-for-6g-evolving-from-conventional-architectures-to-self-governing-designs-ieee-network
@@ -491,9 +850,21 @@ candidates:
         place: ''
         date_text: 30 September 2026
         deadlines: []
+    id: candidate-def00833ee9b303c2b7ae052
+    source: comsoc
+    source_item_id: >-
+      ai-native-smart-radio-environments-for-6g-evolving-from-conventional-architectures-to-self-governing-designs-ieee-network
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          ai-native-smart-radio-environments-for-6g-evolving-from-conventional-architectures-to-self-governing-designs-ieee-network
+        source_url: https://www.comsoc.org/publications/magazines/ieee-network/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: aiide
     title: AIIDE
@@ -507,8 +878,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-70e259e44fc122100ca9b789
+    source: dblp
+    source_item_id: aiide
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: aiide
+        source_url: https://dblp.org/db/conf/aiide/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/aiide/
   - key: ccgrid2027
     title: CCGrid2027
@@ -526,9 +908,19 @@ candidates:
         place: Dallas Fort-Worth, Texas, United States
         date_text: May 24, 2027
         deadlines: []
+    id: candidate-56a62dffbceca328f8a7bb54
+    source: easychair
+    source_item_id: ccgrid2027
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
+    evidence:
+      - source: easychair
+        source_item_id: ccgrid2027
+        source_url: https://easychair.org/cfp/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://easychair.org/cfp/
   - key: chi-play
     title: CHI PLAY
@@ -542,8 +934,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-bc88554b924bd3c6d48b459f
+    source: dblp
+    source_item_id: chi-play
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: chi-play
+        source_url: https://dblp.org/db/conf/chiplay/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/chiplay/
   - key: compass
     title: COMPASS
@@ -555,8 +958,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-4480c01a5e153616865b604d
+    source: dblp
+    source_item_id: compass
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: compass
+        source_url: https://dblp.org/db/conf/dev/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/dev/
   - key: >-
       distributed-intelligence-and-collaborative-inference-for-foundation-models-over-wireless-edge-ieee-network
@@ -579,9 +993,21 @@ candidates:
         place: ''
         date_text: 31 December 2026
         deadlines: []
+    id: candidate-5437a34bfd81818246bbd20a
+    source: comsoc
+    source_item_id: >-
+      distributed-intelligence-and-collaborative-inference-for-foundation-models-over-wireless-edge-ieee-network
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          distributed-intelligence-and-collaborative-inference-for-foundation-models-over-wireless-edge-ieee-network
+        source_url: https://www.comsoc.org/publications/magazines/ieee-network/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: divanet
     title: DIVANet
@@ -595,8 +1021,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-8dd9f36196f3aafe23a840b2
+    source: dblp
+    source_item_id: divanet
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: divanet
+        source_url: https://dblp.org/db/conf/divanet/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/divanet/
   - key: enchires
     title: EnCHIReS
@@ -608,8 +1045,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-a87f454194bf1d38240dcb25
+    source: dblp
+    source_item_id: enchires
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: enchires
+        source_url: https://dblp.org/db/conf/eics/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/eics/
   - key: evolve
     title: EVOLVE
@@ -623,8 +1071,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-fad244dc9bed80f419d656de
+    source: dblp
+    source_item_id: evolve
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: evolve
+        source_url: https://dblp.org/db/conf/evolve/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/evolve/
   - key: haskell
     title: Haskell
@@ -636,8 +1095,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-38fae0215fcf21d21b3b8913
+    source: dblp
+    source_item_id: haskell
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: haskell
+        source_url: https://dblp.org/db/conf/haskell/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/haskell/
   - key: hcomp
     title: HCOMP
@@ -649,8 +1119,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-7eda05b023784d04b3f2a5fe
+    source: dblp
+    source_item_id: hcomp
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: hcomp
+        source_url: https://dblp.org/db/conf/hcomp/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/hcomp/
   - key: >-
       high-reliability-and-low-latency-communications-for-6g-network-isac-enabled-architectures-networking-and-services-ieee-network
@@ -673,9 +1154,21 @@ candidates:
         place: ''
         date_text: 31 August 2026
         deadlines: []
+    id: candidate-1b5cd487376d5bf234f87b78
+    source: comsoc
+    source_item_id: >-
+      high-reliability-and-low-latency-communications-for-6g-network-isac-enabled-architectures-networking-and-services-ieee-network
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          high-reliability-and-low-latency-communications-for-6g-network-isac-enabled-architectures-networking-and-services-ieee-network
+        source_url: https://www.comsoc.org/publications/magazines/ieee-network/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: icbinb
     title: ICBINB
@@ -687,8 +1180,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-1b11f386a89c818b9f1c3a52
+    source: dblp
+    source_item_id: icbinb
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: icbinb
+        source_url: https://dblp.org/db/conf/icbinb/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/icbinb/
   - key: >-
       in-orbit-computing-striding-into-the-era-of-space-centric-intelligence-ieee-wireless-communications
@@ -713,9 +1217,22 @@ candidates:
         place: ''
         date_text: 1 November 2026
         deadlines: []
+    id: candidate-2e09a379501d7cb7968ed437
+    source: comsoc
+    source_item_id: >-
+      in-orbit-computing-striding-into-the-era-of-space-centric-intelligence-ieee-wireless-communications
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          in-orbit-computing-striding-into-the-era-of-space-centric-intelligence-ieee-wireless-communications
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-wireless-communications/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: >-
       internet-of-agents-for-communications-and-networking-architectures-protocols-and-orchestration-ieee-communications-magazine
@@ -740,9 +1257,22 @@ candidates:
         place: ''
         date_text: 1 February 2027
         deadlines: []
+    id: candidate-595fdd58fbd4f795c97bcabc
+    source: comsoc
+    source_item_id: >-
+      internet-of-agents-for-communications-and-networking-architectures-protocols-and-orchestration-ieee-communications-magazine
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2027
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          internet-of-agents-for-communications-and-networking-architectures-protocols-and-orchestration-ieee-communications-magazine
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-communications-magazine/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ipsj-27-l
     title: 超知能と共に革新する新社会システムと高度交通システム（IPSJ 論文誌 特集号）
@@ -759,9 +1289,19 @@ candidates:
         place: ''
         date_text: '2026-08-28'
         deadlines: []
+    id: candidate-7db5e60b56a863dd2b727bd4
+    source: ipsj
+    source_item_id: ipsj-27-l
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: ipsj
+        source_item_id: ipsj-27-l
+        source_url: https://www.ipsj.or.jp/journal/cfp/27-L.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ipsj-27-m
     title: AIによって変わる社会基盤を支えるコンピュータセキュリティ技術（IPSJ 論文誌 特集号）
@@ -778,9 +1318,19 @@ candidates:
         place: ''
         date_text: '2026-11-27'
         deadlines: []
+    id: candidate-2920202f91e6284c6eab94b8
+    source: ipsj
+    source_item_id: ipsj-27-m
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: ipsj
+        source_item_id: ipsj-27-m
+        source_url: https://www.ipsj.or.jp/journal/cfp/27-M.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ipsj-27-n
     title: 情報システム論文（IPSJ 論文誌 特集号）
@@ -797,9 +1347,19 @@ candidates:
         place: ''
         date_text: '2026-08-28'
         deadlines: []
+    id: candidate-f82d9771783034a0d4ad20b2
+    source: ipsj
+    source_item_id: ipsj-27-n
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: ipsj
+        source_item_id: ipsj-27-n
+        source_url: https://www.ipsj.or.jp/journal/cfp/27-N.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ipsj-27-p
     title: ユビキタスコンピューティングシステム（XIV）（IPSJ 論文誌 特集号）
@@ -816,9 +1376,19 @@ candidates:
         place: ''
         date_text: '2026-12-04'
         deadlines: []
+    id: candidate-74267a785034543f1e2072c4
+    source: ipsj
+    source_item_id: ipsj-27-p
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: ipsj
+        source_item_id: ipsj-27-p
+        source_url: https://www.ipsj.or.jp/journal/cfp/27-P.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ipsj-27-r
     title: >-
@@ -839,9 +1409,19 @@ candidates:
         place: ''
         date_text: '2026-12-01'
         deadlines: []
+    id: candidate-d1f0dcafe5940a2d37135c88
+    source: ipsj
+    source_item_id: ipsj-27-r
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: ipsj
+        source_item_id: ipsj-27-r
+        source_url: https://www.ipsj.or.jp/journal/cfp/27-R.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ispd
     title: ISPD
@@ -853,8 +1433,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-1831d4c242fd72c36ecd7146
+    source: dblp
+    source_item_id: ispd
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: ispd
+        source_url: https://dblp.org/db/conf/ispd/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/ispd/
   - key: isvc
     title: ISVC
@@ -866,8 +1457,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-1f98210fe8bb8174b1b3fd49
+    source: dblp
+    source_item_id: isvc
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: isvc
+        source_url: https://dblp.org/db/conf/isvc/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/isvc/
   - key: jcd
     title: JCD
@@ -879,8 +1481,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-93ef3b23cc0d47599c39b63b
+    source: dblp
+    source_item_id: jcd
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: jcd
+        source_url: https://dblp.org/db/journals/jcd/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jcd/
   - key: jcss
     title: JCSS
@@ -892,8 +1505,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-6ab7da2978a2530263a5eadb
+    source: dblp
+    source_item_id: jcss
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: jcss
+        source_url: https://dblp.org/db/journals/acmjcss/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/acmjcss/
   - key: jea
     title: JEA
@@ -905,8 +1529,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-6858ea78d6f997108eb14112
+    source: dblp
+    source_item_id: jea
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: jea
+        source_url: https://dblp.org/db/journals/jea/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/jea/
   - key: login
     title: ';login:'
@@ -918,8 +1553,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-22e88a913a6448c1d50d9e9e
+    source: dblp
+    source_item_id: login
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: login
+        source_url: https://dblp.org/db/journals/usenix-login/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/usenix-login/
   - key: loplas
     title: LOPLAS
@@ -931,8 +1577,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-5b9ccf2de43023a587512dfb
+    source: dblp
+    source_item_id: loplas
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: loplas
+        source_url: https://dblp.org/db/journals/loplas/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/journals/loplas/
   - key: maps
     title: MAPS
@@ -944,8 +1601,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-ec2f0dde3a4fb5a94d42bbb2
+    source: dblp
+    source_item_id: maps
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: maps
+        source_url: https://dblp.org/db/conf/maps/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/maps/
   - key: mobiwac
     title: MobiWac
@@ -959,8 +1627,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-20725f3912e538ad0e7b4c4f
+    source: dblp
+    source_item_id: mobiwac
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: mobiwac
+        source_url: https://dblp.org/db/conf/mobiwac/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/mobiwac/
   - key: netpl
     title: NetPL
@@ -979,9 +1658,19 @@ candidates:
         place: Virtual
         date_text: October 10, 2026
         deadlines: []
+    id: candidate-1b0d25bcb1f9b8e1489b74d4
+    source: netpl.github.io
+    source_item_id: netpl
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: netpl.github.io
+        source_item_id: netpl
+        source_url: https://netpl.github.io/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: q2swinet
     title: Q2SWinet
@@ -995,8 +1684,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-d67e1fabdb962fd35029604f
+    source: dblp
+    source_item_id: q2swinet
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: q2swinet
+        source_url: https://dblp.org/db/conf/q2swinet/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/q2swinet/
   - key: radio-protocols-for-6g-ieee-communications-magazine
     title: Radio protocols for 6G（IEEE Communications Magazine 特集号）
@@ -1015,9 +1715,20 @@ candidates:
         place: ''
         date_text: 1 October 2026
         deadlines: []
+    id: candidate-94ec6e460feace8eb69bbe2c
+    source: comsoc
+    source_item_id: radio-protocols-for-6g-ieee-communications-magazine
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: radio-protocols-for-6g-ieee-communications-magazine
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-communications-magazine/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: resound
     title: RESOUND
@@ -1038,9 +1749,19 @@ candidates:
         place: Europe
         date_text: September 14, 2026
         deadlines: []
+    id: candidate-73ea5da4ad6fe63b64c423e4
+    source: www.resound-workshop.org
+    source_item_id: resound
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: www.resound-workshop.org
+        source_item_id: resound
+        source_url: https://www.resound-workshop.org/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: >-
       security-and-privacy-of-multimodal-embodied-iot-ieee-communications-magazine
@@ -1065,9 +1786,22 @@ candidates:
         place: ''
         date_text: 1 November 2026
         deadlines: []
+    id: candidate-d0090fd77cd6103f9dc507d1
+    source: comsoc
+    source_item_id: >-
+      security-and-privacy-of-multimodal-embodied-iot-ieee-communications-magazine
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          security-and-privacy-of-multimodal-embodied-iot-ieee-communications-magazine
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-communications-magazine/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: smile
     title: SMILE
@@ -1079,8 +1813,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-959dd534ab5bda17d3fd6206
+    source: dblp
+    source_item_id: smile
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: smile
+        source_url: https://dblp.org/db/conf/smile/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/smile/
   - key: sosr
     title: SOSR
@@ -1092,8 +1837,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-0e4cb130f08137c1922e24d3
+    source: dblp
+    source_item_id: sosr
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: sosr
+        source_url: https://dblp.org/db/conf/sosr/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/sosr/
   - key: spaca
     title: SPACA
@@ -1107,8 +1863,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-eb35aae41d715884534a7ade
+    source: dblp
+    source_item_id: spaca
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: spaca
+        source_url: https://dblp.org/db/conf/spaca/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/spaca/
   - key: splash
     title: SPLASH
@@ -1122,8 +1889,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-3b64a1fb3583443b6ab71fcc
+    source: dblp
+    source_item_id: splash
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: splash
+        source_url: https://dblp.org/db/conf/splash/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/splash/
   - key: ssp-2026
     title: SSP 2026
@@ -1143,9 +1921,19 @@ candidates:
         place: Würzburg
         date_text: Aug 24, 2026 (Aug 17, 2026)
         deadlines: []
+    id: candidate-a4e258f369fc172b47e12096
+    source: wikicfp
+    source_item_id: '202657'
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: wikicfp
+        source_item_id: '202657'
+        source_url: https://www.wikicfp.com
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://www.wikicfp.com
   - key: taco-special
     title: ACM TACO Special Issues
@@ -1160,8 +1948,19 @@ candidates:
       - niche
       - journal
     editions: []
+    id: candidate-5826affa748ccc2216f629ba
+    source: dl.acm.org
+    source_item_id: taco-special
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dl.acm.org
+        source_item_id: taco-special
+        source_url: https://dl.acm.org/journal/taco
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: >-
       third-international-workshop-on-integrated-wireless-networking-and-computing-2026
@@ -1178,9 +1977,21 @@ candidates:
       - niche
       - dbworld
     editions: []
+    id: candidate-94dd169e37614636a14f115f
+    source: dbworld
+    source_item_id: >-
+      third-international-workshop-on-integrated-wireless-networking-and-computing-2026
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: dbworld
+        source_item_id: >-
+          third-international-workshop-on-integrated-wireless-networking-and-computing-2026
+        source_url: https://dbworld.sigmod.org/browse.html
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dbworld.sigmod.org/browse.html
   - key: >-
       towards-intellicise-agent-communication-networks-autonomous-integration-and-evolution-of-humans-and-networks-ieee-network
@@ -1203,9 +2014,21 @@ candidates:
         place: ''
         date_text: 30 November 2026
         deadlines: []
+    id: candidate-0049037e023f2f6ba0403a0a
+    source: comsoc
+    source_item_id: >-
+      towards-intellicise-agent-communication-networks-autonomous-integration-and-evolution-of-humans-and-networks-ieee-network
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          towards-intellicise-agent-communication-networks-autonomous-integration-and-evolution-of-humans-and-networks-ieee-network
+        source_url: https://www.comsoc.org/publications/magazines/ieee-network/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''
   - key: ubicomp
     title: UbiComp
@@ -1219,8 +2042,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-429e1ab6ac11a9aa561e7614
+    source: dblp
+    source_item_id: ubicomp
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: ubicomp
+        source_url: https://dblp.org/db/conf/huc/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/huc/
   - key: vecos
     title: VECoS
@@ -1234,8 +2068,19 @@ candidates:
       - niche
       - conference
     editions: []
+    id: candidate-99d91daf8218bfe21c2ff83f
+    source: dblp
+    source_item_id: vecos
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
+    target_year: null
+    evidence:
+      - source: dblp
+        source_item_id: vecos
+        source_url: https://dblp.org/db/conf/vecos/
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: https://dblp.org/db/conf/vecos/
   - key: >-
       wireless-endogenous-security-for-ai-native-next-generation-wireless-networks-ieee-wireless-communications
@@ -1260,7 +2105,20 @@ candidates:
         place: ''
         date_text: 1 September 2026
         deadlines: []
+    id: candidate-ef0e61bc27639dd8d57caf03
+    source: comsoc
+    source_item_id: >-
+      wireless-endogenous-security-for-ai-native-next-generation-wireless-networks-ieee-wireless-communications
     status: discovered
     discovered_at: '2026-08-19T20:44:41.199Z'
+    first_seen_at: '2026-08-19T20:44:41.199Z'
+    last_seen_at: '2026-08-19T20:44:41.199Z'
     target_year: 2026
+    evidence:
+      - source: comsoc
+        source_item_id: >-
+          wireless-endogenous-security-for-ai-native-next-generation-wireless-networks-ieee-wireless-communications
+        source_url: >-
+          https://www.comsoc.org/publications/magazines/ieee-wireless-communications/cfp
+        observed_at: '2026-08-19T20:44:41.199Z'
     evidence_url: ''

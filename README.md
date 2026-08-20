@@ -65,19 +65,20 @@
 node src/cli.ts discover --dry-run
 ```
 
-探索結果を `extra.yaml` スキーマ互換の YAML に保存する場合:
+候補レジストリを永続化する場合:
 
 ```sh
-node src/cli.ts discover --out data/discovered_candidates.yaml
+node src/cli.ts discover --candidate-out data/discovered_candidates.yaml
 ```
 
-`--append` を付けると既存の候補を保持したまま key 重複なしで追記する。
+`--out` は明示的に `extra.yaml` 互換の一時出力を作る場合だけ使う。
+旧互換出力を追記する `--append` は、候補レジストリの更新には使わない。
 `.github/workflows/update.yml` の `discover-candidates` ジョブが毎日これを実行し、
-`data/discovered_candidates.yaml` に候補を溜めていく。
-候補のライフサイクル（発見・レビュー・採用・却下）を保持する artifact の出力先は
-`--candidate-out` で変更できる。候補は公式サイトで裏取りするまで `extra.yaml` には昇格しない。
+`data/discovered_candidates.yaml` に既存レコードをマージする。レビュー済みの状態・メモ・
+初回発見時刻は維持され、再発見時は最終発見時刻と証拠だけが更新される。
+候補は公式サイトで裏取りするまで `extra.yaml` には昇格しない。
 探索対象を分野や年で絞るには `--categories`（例: `hpc,systems`）と
-`--min-year`（既定 2026）を使う。
+`--min-year`（省略時は実行時の UTC 年）を使う。
 
 溜まった候補を締切昇順・重複・predatory 疑い付きで一覧するには `review` を使う。
 
