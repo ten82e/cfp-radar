@@ -11,14 +11,16 @@ import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
 import { runHealthGate } from "../scripts/health-gate.ts";
-import type { HealthReport } from "../src/build.ts";
+import type { HealthDeadlineRef, HealthReport } from "../src/build.ts";
 import {
   buildAll,
   DEFAULT_CATEGORIES,
+  deadlineSlotId,
   embeddingsStale,
   escapeMdCell,
   escapeMdUrl,
   evaluateHealthGate,
+  HEALTH_SCHEMA_VERSION,
   healthMarkdown,
   healthReport,
   ROOT,
@@ -96,7 +98,7 @@ it("healthReport separates future confirmed and estimated values", () => {
     },
   );
   expect(report).toMatchObject({
-    schema_version: 1,
+    schema_version: HEALTH_SCHEMA_VERSION,
     generated_at: "2026-08-09T00:00:00Z",
     source_status: { ccfddl: "failed" },
     tracked_venues: 3,
@@ -320,6 +322,185 @@ it("evaluateHealthGate compares deadline identity without profile churn", () => 
   ).toBe(false);
 });
 
+it("healthReport identifies deadline slots without embedding timestamps", () => {
+  const report = healthReport(
+    {
+      generated_at: "2026-08-09T00:00:00Z",
+      conferences: [
+        {
+          key: "rtss",
+          categories: ["systems"],
+          editions: [
+            {
+              year: 2026,
+              id: "rtss26",
+              estimated: false,
+              deadlines: [
+                {
+                  kind: "paper",
+                  label: "Paper submission",
+                  round: 1,
+                  utc: "2026-09-01T00:00:00Z",
+                },
+                {
+                  kind: "paper",
+                  label: "Paper submission Round 2",
+                  round: 2,
+                  utc: "2026-09-01T00:00:00Z",
+                },
+              ],
+            },
+            {
+              year: 2026,
+              id: "rtss26w",
+              estimated: false,
+              deadlines: [
+                {
+                  kind: "paper",
+                  label: "Workshop paper",
+                  round: 1,
+                  utc: "2026-09-01T00:00:00Z",
+                },
+              ],
+            },
+            {
+              year: 2025,
+              id: "rtss25",
+              estimated: false,
+              deadlines: [
+                { kind: "paper", label: "Paper submission", round: 1, utc: "2026-07-01T00:00:00Z" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    NOW,
+  );
+  expect(report.schema_version).toBe(HEALTH_SCHEMA_VERSION);
+  expect(new Set(report.deadline_refs?.map((ref) => ref.deadline_id))).toEqual(
+    new Set([
+      deadlineSlotId("rtss", "rtss26", "paper", 1, ""),
+      deadlineSlotId("rtss", "rtss26", "paper", 2, ""),
+      deadlineSlotId("rtss", "rtss26w", "paper", 1, "workshop-paper"),
+    ]),
+  );
+  for (const ref of report.deadline_refs ?? []) {
+    expect(ref.deadline_id.includes("2026-09-01")).toBe(false);
+    expect(ref.edition_year).toBe(2026);
+  }
+});
+
+it("evaluateHealthGate matches deadline slots independently of timestamps", () => {
+  const slot = (
+    deadlineId: string,
+    atUtc: string,
+    extra: Partial<HealthDeadlineRef> = {},
+  ): HealthDeadlineRef => ({
+    deadline_id: deadlineId,
+    at_utc: atUtc,
+    edition_year: 2026,
+    ...extra,
+  });
+  const paper1 = deadlineSlotId("rtss", "rtss26", "paper", 1, "");
+  const paper2 = deadlineSlotId("rtss", "rtss26", "paper", 2, "");
+  const workshop = deadlineSlotId("rtss", "rtss26w", "paper", 1, "workshop-paper");
+  const industry = deadlineSlotId("rtss", "rtss26", "paper", 1, "industry");
+  const industryTrack = deadlineSlotId("rtss", "rtss26", "paper", 1, "industry-track");
+  const base: HealthReport = {
+    schema_version: HEALTH_SCHEMA_VERSION,
+    generated_at: "2026-08-09T00:00:00Z",
+    profile_hash: "profile-a",
+    source_status: {},
+    source_failures: [],
+    tracked_venues: 1,
+    future_confirmed_venues: 1,
+    future_estimated_venues: 0,
+    confirmed_deadlines: 1,
+    estimated_deadlines: 0,
+    confirmed_future_deadlines: 1,
+    estimated_future_deadlines: 0,
+    venues_with_confirmed_future_deadline: 1,
+    snapshot_fallback: false,
+    parse_warnings: {},
+    parse_warning_count: 0,
+    category_distribution: { systems: 1 },
+    category_counts: { systems: 1 },
+    required_venues: {},
+    output_files: {},
+    deadline_refs: [slot(paper1, "2026-09-01T00:00:00.000Z")],
+  };
+  const withRefs = (
+    refs: HealthDeadlineRef[],
+    extra: Partial<HealthReport> = {},
+  ): HealthReport => ({
+    ...base,
+    confirmed_deadlines: refs.length,
+    confirmed_future_deadlines: refs.length,
+    deadline_refs: refs,
+    ...extra,
+  });
+
+  expect(evaluateHealthGate(withRefs([slot(paper1, "2026-09-08T00:00:00.000Z")]), base).ok).toBe(
+    true,
+  );
+
+  expect(evaluateHealthGate(withRefs([slot(paper1, "2026-08-31T00:00:00.000Z")]), base).ok).toBe(
+    false,
+  );
+  expect(
+    evaluateHealthGate(
+      withRefs([slot(paper1, "2026-08-31T00:00:00.000Z", { evidence_hash: "official-1" })]),
+      base,
+    ).ok,
+  ).toBe(true);
+
+  expect(
+    evaluateHealthGate(
+      withRefs([], {
+        generated_at: "2026-09-02T00:00:00Z",
+        confirmed_deadlines: 0,
+        confirmed_future_deadlines: 0,
+      }),
+      base,
+    ).ok,
+  ).toBe(true);
+
+  const sameInstantRounds = withRefs([
+    slot(paper1, "2026-09-01T00:00:00.000Z"),
+    slot(paper2, "2026-09-01T00:00:00.000Z"),
+  ]);
+  expect(sameInstantRounds.deadline_refs).toHaveLength(2);
+  expect(evaluateHealthGate(sameInstantRounds, sameInstantRounds).ok).toBe(true);
+
+  const twoEditions = withRefs([
+    slot(paper1, "2026-09-01T00:00:00.000Z"),
+    slot(workshop, "2026-09-01T00:00:00.000Z"),
+  ]);
+  expect(evaluateHealthGate(twoEditions, twoEditions).ok).toBe(true);
+  expect(
+    evaluateHealthGate(withRefs([slot(paper1, "2026-09-01T00:00:00.000Z")]), twoEditions).ok,
+  ).toBe(false);
+
+  expect(
+    evaluateHealthGate(
+      withRefs([slot(industryTrack, "2026-09-01T00:00:00.000Z")]),
+      withRefs([slot(industry, "2026-09-01T00:00:00.000Z")]),
+    ).ok,
+  ).toBe(true);
+
+  expect(
+    evaluateHealthGate(withRefs([slot(paper1, "2026-09-08T00:00:00.000Z")]), {
+      ...base,
+      schema_version: 1,
+      deadline_refs: undefined,
+      confirmed_deadline_refs: [
+        { id: "rtss|2026|paper|2026-09-01T00:00:00.000Z", at_utc: "2026-09-01T00:00:00.000Z" },
+      ],
+    }).ok,
+  ).toBe(true);
+});
+
 it("scheduled deployments require a usable baseline", () => {
   expect(runHealthGate(["current-health.json", "--require-baseline"])).toBe(1);
 });
@@ -327,11 +508,16 @@ it("scheduled deployments require a usable baseline", () => {
 it("generated health files describe the deterministic build", () => {
   const report = JSON.parse(readFileSync(join(site, "health.json"), "utf8"));
   expect(report).toMatchObject({
-    schema_version: 1,
+    schema_version: HEALTH_SCHEMA_VERSION,
     generated_at: "2026-08-09T00:00:00Z",
     tracked_venues: data.conferences.length,
     source_status: { ccfddl: "success", aideadlines: "success", local: "success" },
   });
+  expect(Array.isArray(report.deadline_refs)).toBe(true);
+  for (const ref of report.deadline_refs) {
+    expect(ref.deadline_id).not.toMatch(/T\d{2}:\d{2}:\d{2}/);
+    expect(ref.at_utc).toEqual(new Date(ref.at_utc).toISOString());
+  }
   const dataBytes = readFileSync(join(site, "data.json"));
   expect(report.output_files["data.json"]).toEqual({
     bytes: dataBytes.byteLength,
