@@ -10,6 +10,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { beforeAll, expect, it } from "vitest";
+import { runHealthGate } from "../scripts/health-gate.ts";
 import type { HealthReport } from "../src/build.ts";
 import {
   buildAll,
@@ -207,7 +208,7 @@ it("evaluateHealthGate covers normal updates and every fail-closed regression", 
       previous,
     ).ok,
   ).toBe(false);
-  expect(evaluateHealthGate({ ...previous, profile_hash: "profile-b" }, previous).ok).toBe(false);
+  expect(evaluateHealthGate({ ...previous, profile_hash: "profile-b" }, previous).ok).toBe(true);
   expect(
     evaluateHealthGate(
       { ...previous, source_failures: ["ccfddl"], source_status: { ccfddl: "failed" } },
@@ -234,6 +235,93 @@ it("evaluateHealthGate covers normal updates and every fail-closed regression", 
   expect(
     evaluateHealthGate({ ...previous, generated_at: "2026-08-08T00:00:00Z" }, previous).ok,
   ).toBe(false);
+});
+
+it("evaluateHealthGate compares deadline identity without profile churn", () => {
+  const base: HealthReport = {
+    schema_version: 1,
+    generated_at: "2026-08-09T00:00:00Z",
+    profile_hash: "profile-a",
+    source_status: {},
+    source_failures: [],
+    tracked_venues: 1,
+    future_confirmed_venues: 1,
+    future_estimated_venues: 0,
+    confirmed_deadlines: 1,
+    estimated_deadlines: 0,
+    confirmed_future_deadlines: 1,
+    estimated_future_deadlines: 0,
+    venues_with_confirmed_future_deadline: 1,
+    snapshot_fallback: false,
+    parse_warnings: {},
+    parse_warning_count: 0,
+    category_distribution: { systems: 1 },
+    category_counts: { systems: 1 },
+    required_venues: {},
+    output_files: {},
+    confirmed_deadline_refs: [
+      { id: "rtss|rtss26|paper|2026-08-10T00:00:00.000Z", at_utc: "2026-08-10T00:00:00.000Z" },
+    ],
+  };
+
+  // A newly tracked venue is an addition, not a regression.
+  expect(
+    evaluateHealthGate(
+      {
+        ...base,
+        tracked_venues: 2,
+        confirmed_deadlines: 2,
+        confirmed_future_deadlines: 2,
+        category_distribution: { systems: 2 },
+        category_counts: { systems: 2 },
+        confirmed_deadline_refs: [
+          ...base.confirmed_deadline_refs!,
+          { id: "new|new26|paper|2026-08-11T00:00:00.000Z", at_utc: "2026-08-11T00:00:00.000Z" },
+        ],
+      },
+      base,
+    ).ok,
+  ).toBe(true);
+
+  // A venue-profile change is provenance churn, not a lost deadline.
+  expect(evaluateHealthGate({ ...base, profile_hash: "profile-b" }, base).ok).toBe(true);
+
+  // The same deadline is still present, so its category correction passes.
+  expect(
+    evaluateHealthGate(
+      { ...base, category_distribution: { networking: 1 }, category_counts: { networking: 1 } },
+      base,
+    ).ok,
+  ).toBe(true);
+
+  // A future deadline vanished without reaching its published instant.
+  expect(evaluateHealthGate({ ...base, confirmed_deadline_refs: [] }, base).ok).toBe(false);
+
+  // That same transition becomes ordinary expiry after the instant passes.
+  expect(
+    evaluateHealthGate(
+      {
+        ...base,
+        generated_at: "2026-08-11T00:00:00Z",
+        confirmed_deadlines: 0,
+        confirmed_future_deadlines: 0,
+        confirmed_deadline_refs: [],
+      },
+      base,
+    ).ok,
+  ).toBe(true);
+
+  // Malformed semantic evidence cannot silently fall back to coarse counts.
+  expect(
+    evaluateHealthGate(
+      { ...base, confirmed_deadline_refs: [{ id: "broken", at_utc: "not-a-date" }] as any },
+      base,
+    ).ok,
+  ).toBe(false);
+});
+
+it("scheduled deployments require a usable baseline", () => {
+  expect(runHealthGate(["current-health.json", "--require-baseline"])).toBe(1);
 });
 
 it("generated health files describe the deterministic build", () => {

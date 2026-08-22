@@ -594,6 +594,11 @@ export interface HealthOutputFile {
   sha256: string;
 }
 
+export interface HealthDeadlineRef {
+  id: string;
+  at_utc: string;
+}
+
 export interface HealthReport {
   schema_version: 1;
   generated_at: string;
@@ -615,6 +620,7 @@ export interface HealthReport {
   category_counts: Record<string, number>;
   required_venues: Record<string, "present" | "missing">;
   output_files: Record<string, HealthOutputFile>;
+  confirmed_deadline_refs?: HealthDeadlineRef[];
 }
 
 export interface HealthReportOptions {
@@ -658,6 +664,7 @@ export function healthReport(
   const estimatedVenues = new Set<string>();
   let confirmedDeadlines = 0;
   let estimatedDeadlines = 0;
+  const confirmedDeadlineRefs: HealthDeadlineRef[] = [];
   for (const conference of conferences) {
     const key = String(conference.key ?? "").trim();
     if (key) presentVenues.add(key);
@@ -669,7 +676,19 @@ export function healthReport(
       let hasFuture = false;
       for (const deadline of jsonRecords(edition.deadlines)) {
         const timestamp = jsonTime(deadline.utc);
-        if (timestamp === null || timestamp < safeNow) continue;
+        if (timestamp === null) continue;
+        if (!estimated && key) {
+          confirmedDeadlineRefs.push({
+            id: [
+              key,
+              String(edition.year ?? ""),
+              String(deadline.kind ?? "other"),
+              new Date(timestamp).toISOString(),
+            ].join("|"),
+            at_utc: new Date(timestamp).toISOString(),
+          });
+        }
+        if (timestamp < safeNow) continue;
         hasFuture = true;
         if (estimated) estimatedDeadlines += 1;
         else confirmedDeadlines += 1;
@@ -693,6 +712,9 @@ export function healthReport(
     Object.values(parseWarnings).reduce((sum, count) => sum + count, 0);
   const profileHash =
     options.profileHash ?? embeddingProfileHash(data as Parameters<typeof embeddingProfileHash>[0]);
+  const uniqueDeadlineRefs = [
+    ...new Map(confirmedDeadlineRefs.map((ref) => [ref.id, ref])).values(),
+  ].sort((a, b) => cmpStr(a.id, b.id));
   return {
     schema_version: 1,
     generated_at: String(data.generated_at ?? ""),
@@ -718,6 +740,7 @@ export function healthReport(
     output_files: Object.fromEntries(
       Object.entries(options.outputFiles ?? {}).sort(([a], [b]) => cmpStr(a, b)),
     ),
+    confirmed_deadline_refs: uniqueDeadlineRefs,
   };
 }
 
@@ -758,6 +781,44 @@ function reportRequiredVenues(
   return report.required_venues ?? {};
 }
 
+function reportDeadlineRefs(report: Partial<HealthReport>): HealthDeadlineRef[] | null {
+  const value = report.confirmed_deadline_refs;
+  if (!Array.isArray(value)) return null;
+  const refs: HealthDeadlineRef[] = [];
+  for (const item of value) {
+    if (!item || typeof item !== "object") return null;
+    const { id, at_utc } = item as unknown as Record<string, unknown>;
+    if (typeof id !== "string" || !id.trim()) return null;
+    if (typeof at_utc !== "string" || !Number.isFinite(Date.parse(at_utc))) return null;
+    refs.push({ id, at_utc });
+  }
+  return refs;
+}
+
+function hasDeadlineRefs(report: Partial<HealthReport>): boolean {
+  return report.confirmed_deadline_refs !== undefined;
+}
+
+function semanticDeadlineRegressions(
+  previous: HealthDeadlineRef[],
+  current: Map<string, string>,
+  previousTime: number,
+  currentTime: number,
+): string[] {
+  const reasons: string[] = [];
+  for (const ref of previous) {
+    if (Date.parse(ref.at_utc) <= previousTime) continue;
+    if (!current.has(ref.id)) {
+      // If the current timestamp is unusable, fail closed rather than assuming
+      // that the deadline merely elapsed.
+      if (!Number.isFinite(currentTime) || Date.parse(ref.at_utc) > currentTime) {
+        reasons.push(`future deadline disappeared: ${ref.id}`);
+      }
+    }
+  }
+  return reasons;
+}
+
 /** Compare a new report with the last known good report before deployment. */
 export function evaluateHealthGate(
   current: HealthReport,
@@ -794,10 +855,8 @@ export function evaluateHealthGate(
   if (!previous) return { ok: reasons.length === 0, reasons };
 
   const previousReport = previous as Partial<HealthReport>;
-  const previousProfile = String(previousReport.profile_hash ?? "");
-  if (previousProfile && currentProfile && currentProfile !== previousProfile) {
-    reasons.push("health/data profile metadata changed");
-  }
+  // Profile hashes intentionally vary with venue-paper/profile updates; they
+  // are provenance metadata, not evidence that a deadline was lost.
   const previousGeneratedAt = Date.parse(String(previousReport.generated_at ?? ""));
   if (
     Number.isFinite(currentGeneratedAt) &&
@@ -816,8 +875,27 @@ export function evaluateHealthGate(
     "confirmed_future_deadlines",
     "confirmed_deadlines",
   );
-  if (previousConfirmed > 0 && currentConfirmed <= previousConfirmed * 0.6) {
+  const previousRefs = reportDeadlineRefs(previousReport);
+  const currentRefs = reportDeadlineRefs(currentReport);
+  if (hasDeadlineRefs(previousReport) && previousRefs === null) {
+    reasons.push("previous confirmed deadline references are malformed");
+  }
+  if (hasDeadlineRefs(currentReport) && currentRefs === null) {
+    reasons.push("current confirmed deadline references are malformed");
+  }
+  const hasSemanticRefs = previousRefs !== null && currentRefs !== null;
+  if (!hasSemanticRefs && previousConfirmed > 0 && currentConfirmed <= previousConfirmed * 0.6) {
     reasons.push("confirmed future deadlines dropped by 40% or more");
+  }
+  if (hasSemanticRefs) {
+    reasons.push(
+      ...semanticDeadlineRegressions(
+        previousRefs!,
+        new Map(currentRefs!.map((ref) => [ref.id, ref.at_utc])),
+        previousGeneratedAt,
+        currentGeneratedAt,
+      ),
+    );
   }
   const previousRequired = reportRequiredVenues(previousReport);
   const currentRequired = reportRequiredVenues(currentReport);
