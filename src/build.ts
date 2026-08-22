@@ -33,6 +33,7 @@ import {
   type Edition,
   fmtDate,
   fmtUTC,
+  slug,
   warningCounts,
 } from "./model.ts";
 
@@ -589,18 +590,29 @@ export function toRecommendationIndex(
 
 export type HealthSourceStatus = "success" | "failed";
 
+export const HEALTH_SCHEMA_VERSION = 2;
+export const HEALTH_DEADLINE_LOOKBACK_MS = 14 * DAY_MS;
+
 export interface HealthOutputFile {
   bytes: number;
   sha256: string;
 }
 
 export interface HealthDeadlineRef {
+  deadline_id: string;
+  at_utc: string;
+  evidence_hash?: string;
+  edition_year?: number;
+}
+
+/** Schema 1 last-known-good reports embedded the UTC instant in `id`. */
+export interface LegacyHealthDeadlineRef {
   id: string;
   at_utc: string;
 }
 
 export interface HealthReport {
-  schema_version: 1;
+  schema_version: 1 | typeof HEALTH_SCHEMA_VERSION;
   generated_at: string;
   profile_hash: string;
   source_status: Record<string, HealthSourceStatus>;
@@ -620,7 +632,8 @@ export interface HealthReport {
   category_counts: Record<string, number>;
   required_venues: Record<string, "present" | "missing">;
   output_files: Record<string, HealthOutputFile>;
-  confirmed_deadline_refs?: HealthDeadlineRef[];
+  deadline_refs?: HealthDeadlineRef[];
+  confirmed_deadline_refs?: Array<HealthDeadlineRef | LegacyHealthDeadlineRef>;
 }
 
 export interface HealthReportOptions {
@@ -632,6 +645,55 @@ export interface HealthReportOptions {
   requiredVenues?: string[];
   profileHash?: string;
   outputFiles?: Record<string, HealthOutputFile>;
+}
+
+const GENERIC_TRACK_KEYS = new Set([
+  "submission",
+  "deadline",
+  "paper-submission",
+  "paper-deadline",
+  "abstract-submission",
+  "abstract-deadline",
+  "camera-ready",
+  "camera-ready-deadline",
+]);
+
+export function normalizedTrackKey(label: string | null | undefined, kind: string): string {
+  const kindSlug = slug(kind) || "other";
+  const stripped = String(label ?? "")
+    .toLowerCase()
+    .replace(/\bround\s*\d+\b/g, " ")
+    .replace(/\br\s*\d+\b/g, " ");
+  const key = slug(stripped);
+  if (!key || key === kindSlug || key === `${kindSlug}-submission` || GENERIC_TRACK_KEYS.has(key)) {
+    return "";
+  }
+  return key;
+}
+
+export function deadlineSlotId(
+  venueId: string,
+  editionId: string,
+  kind: string,
+  round: number,
+  track: string,
+): string {
+  return [venueId, editionId, kind, String(round), track].join("|");
+}
+
+function deadlineRound(value: unknown): number {
+  const round = Number(value ?? 1);
+  return Number.isFinite(round) && round >= 1 ? Math.trunc(round) : 1;
+}
+
+function officialEvidenceHash(deadline: JsonRecord): string | undefined {
+  const items = jsonRecords(deadline.evidence)
+    .filter((item) => String(item.confidence ?? "") === "official")
+    .map((item) => `${String(item.source_url ?? "")}\n${String(item.original_value ?? "")}`)
+    .filter((row) => row !== "\n")
+    .sort(cmpStr);
+  if (items.length === 0) return undefined;
+  return createHash("sha256").update(items.join("\n")).digest("hex").slice(0, 16);
 }
 
 /** Build a deterministic health summary from the exact data payload being published. */
@@ -664,7 +726,8 @@ export function healthReport(
   const estimatedVenues = new Set<string>();
   let confirmedDeadlines = 0;
   let estimatedDeadlines = 0;
-  const confirmedDeadlineRefs: HealthDeadlineRef[] = [];
+  const deadlineRefs: HealthDeadlineRef[] = [];
+  const lookbackStart = safeNow - HEALTH_DEADLINE_LOOKBACK_MS;
   for (const conference of conferences) {
     const key = String(conference.key ?? "").trim();
     if (key) presentVenues.add(key);
@@ -674,19 +737,25 @@ export function healthReport(
     for (const edition of jsonRecords(conference.editions)) {
       const estimated = Boolean(edition.estimated);
       let hasFuture = false;
+      const editionYear = Number(edition.year);
+      const editionId =
+        String(edition.id ?? edition.edition_id ?? "").trim() ||
+        (Number.isInteger(editionYear) && editionYear > 0 ? String(editionYear) : "");
       for (const deadline of jsonRecords(edition.deadlines)) {
         const timestamp = jsonTime(deadline.utc);
         if (timestamp === null) continue;
-        if (!estimated && key) {
-          confirmedDeadlineRefs.push({
-            id: [
-              key,
-              String(edition.year ?? ""),
-              String(deadline.kind ?? "other"),
-              new Date(timestamp).toISOString(),
-            ].join("|"),
+        if (!estimated && key && timestamp >= lookbackStart) {
+          const kind = String(deadline.kind ?? "other").trim() || "other";
+          const round = deadlineRound(deadline.round);
+          const track = normalizedTrackKey(String(deadline.label ?? ""), kind);
+          const ref: HealthDeadlineRef = {
+            deadline_id: deadlineSlotId(key, editionId, kind, round, track),
             at_utc: new Date(timestamp).toISOString(),
-          });
+          };
+          if (Number.isInteger(editionYear) && editionYear > 0) ref.edition_year = editionYear;
+          const evidenceHash = officialEvidenceHash(deadline);
+          if (evidenceHash) ref.evidence_hash = evidenceHash;
+          deadlineRefs.push(ref);
         }
         if (timestamp < safeNow) continue;
         hasFuture = true;
@@ -713,10 +782,10 @@ export function healthReport(
   const profileHash =
     options.profileHash ?? embeddingProfileHash(data as Parameters<typeof embeddingProfileHash>[0]);
   const uniqueDeadlineRefs = [
-    ...new Map(confirmedDeadlineRefs.map((ref) => [ref.id, ref])).values(),
-  ].sort((a, b) => cmpStr(a.id, b.id));
+    ...new Map(deadlineRefs.map((ref) => [ref.deadline_id, ref])).values(),
+  ].sort((a, b) => cmpStr(a.deadline_id, b.deadline_id) || cmpStr(a.at_utc, b.at_utc));
   return {
-    schema_version: 1,
+    schema_version: HEALTH_SCHEMA_VERSION,
     generated_at: String(data.generated_at ?? ""),
     profile_hash: profileHash,
     source_status: sourceStatus,
@@ -740,7 +809,7 @@ export function healthReport(
     output_files: Object.fromEntries(
       Object.entries(options.outputFiles ?? {}).sort(([a], [b]) => cmpStr(a, b)),
     ),
-    confirmed_deadline_refs: uniqueDeadlineRefs,
+    deadline_refs: uniqueDeadlineRefs,
   };
 }
 
@@ -782,38 +851,222 @@ function reportRequiredVenues(
 }
 
 function reportDeadlineRefs(report: Partial<HealthReport>): HealthDeadlineRef[] | null {
-  const value = report.confirmed_deadline_refs;
+  const value = report.deadline_refs ?? report.confirmed_deadline_refs;
   if (!Array.isArray(value)) return null;
   const refs: HealthDeadlineRef[] = [];
   for (const item of value) {
     if (!item || typeof item !== "object") return null;
-    const { id, at_utc } = item as unknown as Record<string, unknown>;
-    if (typeof id !== "string" || !id.trim()) return null;
-    if (typeof at_utc !== "string" || !Number.isFinite(Date.parse(at_utc))) return null;
-    refs.push({ id, at_utc });
+    const rec = item as unknown as Record<string, unknown>;
+    const deadlineId = String(rec.deadline_id ?? rec.id ?? "").trim();
+    const atUtc = rec.at_utc;
+    if (!deadlineId) return null;
+    if (typeof atUtc !== "string" || !Number.isFinite(Date.parse(atUtc))) return null;
+    const ref: HealthDeadlineRef = {
+      deadline_id: deadlineId,
+      at_utc: new Date(Date.parse(atUtc)).toISOString(),
+    };
+    if (typeof rec.evidence_hash === "string" && rec.evidence_hash.trim()) {
+      ref.evidence_hash = rec.evidence_hash.trim();
+    }
+    if (typeof rec.edition_year === "number" && Number.isInteger(rec.edition_year)) {
+      ref.edition_year = rec.edition_year;
+    }
+    refs.push(ref);
   }
   return refs;
 }
 
 function hasDeadlineRefs(report: Partial<HealthReport>): boolean {
-  return report.confirmed_deadline_refs !== undefined;
+  return report.deadline_refs !== undefined || report.confirmed_deadline_refs !== undefined;
+}
+
+interface DeadlineSlot {
+  deadline_id: string;
+  venue: string;
+  edition: string;
+  kind: string;
+  round: number;
+  track: string;
+  year: number | null;
+  at_ms: number;
+  at_utc: string;
+  evidence_hash?: string;
+}
+
+function parseDeadlineSlot(ref: HealthDeadlineRef): DeadlineSlot | null {
+  const parts = ref.deadline_id.split("|");
+  if (parts.length >= 4 && Number.isFinite(Date.parse(parts[parts.length - 1] ?? ""))) {
+    parts.pop();
+  }
+  const venue = (parts[0] ?? "").trim();
+  const edition = (parts[1] ?? "").trim();
+  const kind = (parts[2] ?? "other").trim() || "other";
+  if (!venue || !kind) return null;
+  let round = 1;
+  let track = "";
+  if (parts.length >= 4 && /^\d+$/.test(parts[3] ?? "")) {
+    round = deadlineRound(parts[3]);
+    track = parts.slice(4).join("|");
+  } else if (parts.length >= 4) {
+    track = parts.slice(3).join("|");
+  }
+  const yearFromEdition = /^\d{4}$/.test(edition) ? Number(edition) : null;
+  const atMs = Date.parse(ref.at_utc);
+  if (!Number.isFinite(atMs)) return null;
+  return {
+    deadline_id: deadlineSlotId(venue, edition, kind, round, track),
+    venue,
+    edition,
+    kind,
+    round,
+    track,
+    year: ref.edition_year ?? yearFromEdition,
+    at_ms: atMs,
+    at_utc: new Date(atMs).toISOString(),
+    evidence_hash: ref.evidence_hash,
+  };
+}
+
+function slotMatchCost(previous: DeadlineSlot, current: DeadlineSlot): number {
+  const hours = Math.abs(previous.at_ms - current.at_ms) / 3_600_000;
+  return (
+    hours +
+    (previous.round === current.round ? 0 : 100) +
+    (previous.track === current.track ? 0 : 10)
+  );
+}
+
+function matchDeadlineSlots(
+  previous: DeadlineSlot[],
+  current: DeadlineSlot[],
+): {
+  pairs: Array<{ previous: DeadlineSlot; current: DeadlineSlot }>;
+  unmatchedPrevious: DeadlineSlot[];
+} {
+  const usedPrevious = new Set<number>();
+  const usedCurrent = new Set<number>();
+  const pairs: Array<{ previous: DeadlineSlot; current: DeadlineSlot }> = [];
+
+  const currentById = new Map<string, number[]>();
+  current.forEach((slot, index) => {
+    const list = currentById.get(slot.deadline_id) ?? [];
+    list.push(index);
+    currentById.set(slot.deadline_id, list);
+  });
+  previous.forEach((slot, previousIndex) => {
+    const candidates = (currentById.get(slot.deadline_id) ?? []).filter(
+      (index) => !usedCurrent.has(index),
+    );
+    if (candidates.length === 0) return;
+    candidates.sort(
+      (a, b) =>
+        Math.abs(current[a].at_ms - slot.at_ms) - Math.abs(current[b].at_ms - slot.at_ms) || a - b,
+    );
+    const currentIndex = candidates[0];
+    usedPrevious.add(previousIndex);
+    usedCurrent.add(currentIndex);
+    pairs.push({ previous: slot, current: current[currentIndex] });
+  });
+
+  const greedy = (keyOf: (slot: DeadlineSlot) => string | null): void => {
+    const previousLeft: Array<[DeadlineSlot, number]> = [];
+    const currentLeft: Array<[DeadlineSlot, number]> = [];
+    previous.forEach((slot, index) => {
+      if (!usedPrevious.has(index) && keyOf(slot) !== null) previousLeft.push([slot, index]);
+    });
+    current.forEach((slot, index) => {
+      if (!usedCurrent.has(index) && keyOf(slot) !== null) currentLeft.push([slot, index]);
+    });
+    const previousGroups = new Map<string, Array<[DeadlineSlot, number]>>();
+    for (const item of previousLeft) {
+      const key = keyOf(item[0]);
+      if (key === null) continue;
+      const list = previousGroups.get(key) ?? [];
+      list.push(item);
+      previousGroups.set(key, list);
+    }
+    const currentGroups = new Map<string, Array<[DeadlineSlot, number]>>();
+    for (const item of currentLeft) {
+      const key = keyOf(item[0]);
+      if (key === null) continue;
+      const list = currentGroups.get(key) ?? [];
+      list.push(item);
+      currentGroups.set(key, list);
+    }
+    for (const [key, previousItems] of previousGroups) {
+      const currentItems = currentGroups.get(key);
+      if (!currentItems) continue;
+      const edges: Array<{ previousIndex: number; currentIndex: number; cost: number }> = [];
+      for (const [previousSlot, previousIndex] of previousItems) {
+        for (const [currentSlot, currentIndex] of currentItems) {
+          if (previousSlot.round !== currentSlot.round) continue;
+          edges.push({
+            previousIndex,
+            currentIndex,
+            cost: slotMatchCost(previousSlot, currentSlot),
+          });
+        }
+      }
+      edges.sort(
+        (a, b) =>
+          a.cost - b.cost || a.previousIndex - b.previousIndex || a.currentIndex - b.currentIndex,
+      );
+      for (const edge of edges) {
+        if (usedPrevious.has(edge.previousIndex) || usedCurrent.has(edge.currentIndex)) continue;
+        usedPrevious.add(edge.previousIndex);
+        usedCurrent.add(edge.currentIndex);
+        pairs.push({
+          previous: previous[edge.previousIndex],
+          current: current[edge.currentIndex],
+        });
+      }
+    }
+  };
+
+  greedy((slot) => `${slot.venue}\0${slot.edition}\0${slot.kind}`);
+  greedy((slot) => (slot.year === null ? null : `${slot.venue}\0${slot.year}\0${slot.kind}`));
+
+  return {
+    pairs,
+    unmatchedPrevious: previous.filter((_, index) => !usedPrevious.has(index)),
+  };
 }
 
 function semanticDeadlineRegressions(
-  previous: HealthDeadlineRef[],
-  current: Map<string, string>,
+  previousRefs: HealthDeadlineRef[],
+  currentRefs: HealthDeadlineRef[],
   previousTime: number,
   currentTime: number,
 ): string[] {
   const reasons: string[] = [];
-  for (const ref of previous) {
-    if (Date.parse(ref.at_utc) <= previousTime) continue;
-    if (!current.has(ref.id)) {
-      // If the current timestamp is unusable, fail closed rather than assuming
-      // that the deadline merely elapsed.
-      if (!Number.isFinite(currentTime) || Date.parse(ref.at_utc) > currentTime) {
-        reasons.push(`future deadline disappeared: ${ref.id}`);
-      }
+  const previous: DeadlineSlot[] = [];
+  const current: DeadlineSlot[] = [];
+  for (const ref of previousRefs) {
+    const slot = parseDeadlineSlot(ref);
+    if (!slot) {
+      reasons.push(`previous confirmed deadline references are malformed`);
+      return reasons;
+    }
+    previous.push(slot);
+  }
+  for (const ref of currentRefs) {
+    const slot = parseDeadlineSlot(ref);
+    if (!slot) {
+      reasons.push(`current confirmed deadline references are malformed`);
+      return reasons;
+    }
+    current.push(slot);
+  }
+  const { pairs, unmatchedPrevious } = matchDeadlineSlots(previous, current);
+  for (const pair of pairs) {
+    if (pair.current.at_ms >= pair.previous.at_ms) continue;
+    if (pair.current.evidence_hash) continue;
+    reasons.push(`deadline pulled earlier without evidence: ${pair.previous.deadline_id}`);
+  }
+  for (const slot of unmatchedPrevious) {
+    if (slot.at_ms <= previousTime) continue;
+    if (!Number.isFinite(currentTime) || slot.at_ms > currentTime) {
+      reasons.push(`future deadline disappeared: ${slot.deadline_id}`);
     }
   }
   return reasons;
@@ -891,7 +1144,7 @@ export function evaluateHealthGate(
     reasons.push(
       ...semanticDeadlineRegressions(
         previousRefs!,
-        new Map(currentRefs!.map((ref) => [ref.id, ref.at_utc])),
+        currentRefs!,
         previousGeneratedAt,
         currentGeneratedAt,
       ),
