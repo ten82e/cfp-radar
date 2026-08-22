@@ -640,8 +640,11 @@ predatory 疑い付きで一覧する。
 
 `health.json` は `profile_hash`、`confirmed_future_deadlines`、`estimated_future_deadlines`、
 `source_failures`、`snapshot_fallback`、`parse_warning_count`、カテゴリ別件数、
-必須会議の存在状態を持つ。last-known-good との比較では確定値の崩落だけを配信阻止対象とし、
-推定値の増減だけでは阻止しない。
+必須会議の存在状態、および schema 2 の `deadline_refs` を持つ。各 ref の
+`deadline_id` は `venue|edition_id|kind|round|track` で、時刻は `at_utc` に分離する。
+last-known-good との比較では、同一 slot の延長は通し、公式 evidence のない前倒しと
+根拠のない未来 slot 消失だけを配信阻止対象とする。経過した締切の削除と推定値の増減では
+阻止しない。`deadline_refs` は現在未来の確定締切と短い lookback（14 日）に限る。
 
 `index.html` に埋め込む JSON は `catalog.json` と同一である。推薦モードは
 `recommendation-index.json` を遅延取得し、`embeddings.json` を参照する。
@@ -830,8 +833,10 @@ conferences:
 - deadline build の後、任意の推薦 bundle を cache から復元・生成・検証する。
   埋め込みの生成または検証に失敗した場合は `public/embeddings.json` を公開物から除き、
   `recommendation-index.json` と締切一覧を語彙 fallback 付きで残す。`scripts/health-gate.ts`
-  は公開済み `health.json` を last-known-good として比較し、確定締切の大幅減少、必須会議欠落、
-  警告急増、profile 不一致、snapshot 無しのソース障害を検出した場合だけ Pages への配信を止める。
+  は公開済み `health.json` を last-known-good として比較し、確定締切 slot の根拠のない消失や
+  evidence なしの前倒し、必須会議欠落、警告急増、snapshot 無しのソース障害を検出した場合だけ
+  Pages への配信を止める。同一 slot の延長、新 slot の追加、経過した締切の削除、
+  `profile_hash` の変化では止めない。
 - `concurrency: {group: pages, cancel-in-progress: false}`（**update.yml にのみ付ける**。
   concurrency group はリポジトリ全体で共有されるため、ci.yml に付けると CI が
   デプロイと直列化して不利益になる）
