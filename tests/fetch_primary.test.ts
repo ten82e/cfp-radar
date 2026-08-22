@@ -50,6 +50,29 @@ describe("fetch-primary extraction", () => {
     });
   });
 
+  it("captures wall-clock time when the source publishes it (#504)", () => {
+    // EasyChair 形式の時刻付き
+    expect(extractDeadline("Submission deadline: October 30, 2026 11:59 p.m. AoE", 2026)).toEqual({
+      kind: "paper",
+      label: "Paper submission",
+      date: "2026-10-30",
+      time: "23:59:00",
+      round: 1,
+      tz: "AoE",
+    });
+    // 12h 表記の正規化 (5pm -> 17:00)
+    expect(
+      extractDeadline("Paper submission deadline: August 16th, 2026 5:00 PM (AoE)", 2026)?.time,
+    ).toBe("17:00:00");
+    // 日付のみのページは time を載せない (build 側の観測ゲートで前回値維持になる)
+    expect(extractDeadline("Submission deadline May 10, 2026", 2026)?.time).toBeUndefined();
+    // 隣接行に時刻がある場合も窓経由で拾う
+    expect(
+      extractDeadline("Submission deadline\nOctober 15, 2026 23:59:59 AoE".replace("\n", " "), 2026)
+        ?.time,
+    ).toBe("23:59:59");
+  });
+
   it("abstract with round and tz", () => {
     const got = extractDeadline("Abstract submission (Round 2) deadline: Aug 16, 2026 (AoE)", 2026);
     expect(got).not.toBeNull();
