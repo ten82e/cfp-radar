@@ -83,13 +83,67 @@ export function deadlinesOf(raw: Record<string, unknown> | null | undefined): De
               comment: null,
               raw_value: String(val),
             });
-            break;
           }
+          break;
         }
       }
     }
   }
   return out;
+}
+
+/**
+ * パッチの deadlines フィールドを「受理行 / 棄却行」に分解して意味論を返す
+ * (#504 マージ層ガード)。parseInstant は timezone 欠落・曖昧で null を返し、
+ * deadlinesOf はその行を静かにスキップする。従来は「deadlines キーが在るだけで
+ * 配列を丸ごと置換」だったため、全行棄却のパッチが既存確定値を空配列で潰していた。
+ *
+ *   deadline フィールド無し            → keepExisting (メタデータのみパッチ)
+ *   deadline フィールド有・受理 >= 1   → replace (受理行のみ)
+ *   deadline フィールド有・受理 = 0    → keepExisting + 警告 (棄却行は観測として隔離)
+ *   clear_deadlines: true             → clear (明示的な空配列。既定 false)
+ */
+export interface PatchDeadlineSemantics {
+  action: "keep-existing" | "replace" | "clear";
+  accepted: Deadline[];
+  rejectedCount: number;
+}
+
+const DEADLINE_FIELD_PRESENT_KEYS = [
+  "deadlines",
+  "deadline",
+  "paper_deadline",
+  "abstract_deadline",
+];
+
+export function patchDeadlineSemantics(
+  patch: Record<string, unknown> | null | undefined,
+): PatchDeadlineSemantics {
+  if (!patch || typeof patch !== "object") {
+    return { action: "keep-existing", accepted: [], rejectedCount: 0 };
+  }
+  if (patch.clear_deadlines === true) {
+    return { action: "clear", accepted: [], rejectedCount: 0 };
+  }
+  const hasDeadlineField = DEADLINE_FIELD_PRESENT_KEYS.some((k) => k in patch);
+  if (!hasDeadlineField) {
+    return { action: "keep-existing", accepted: [], rejectedCount: 0 };
+  }
+  const accepted = deadlinesOf(patch);
+  const declared = Array.isArray(patch.deadlines)
+    ? patch.deadlines.length
+    : accepted.length === 0
+      ? 1
+      : 0;
+  const rejectedCount = Math.max(0, declared - accepted.length);
+  if (accepted.length > 0) {
+    return { action: "replace", accepted, rejectedCount };
+  }
+  warn(
+    `patch has deadline fields but every row was rejected ` +
+      `(${rejectedCount} unresolvable) — keeping existing deadlines`,
+  );
+  return { action: "keep-existing", accepted: [], rejectedCount };
 }
 
 export function editionOf(

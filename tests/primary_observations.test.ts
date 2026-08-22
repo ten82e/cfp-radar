@@ -321,3 +321,109 @@ describe("resolvePrimaryObservations (#504 acceptance)", () => {
     expect(staleYear).toBeNull();
   });
 });
+
+describe("applyOverrides merge-layer deadline guard (#504 P0-1)", () => {
+  const existing = [
+    makeConference({
+      key: "netflow",
+      title: "Network Flows",
+      editions: [
+        makeEdition({
+          year: 2026,
+          edition_id: "netflow26",
+          deadlines: [makeDeadline("paper", "Paper", utc(2026, 9, 15, 11, 59, 0), "AoE")],
+        }),
+      ],
+    }),
+  ];
+
+  it("keeps existing deadlines when a timezone-missing primary patch parses to nothing", () => {
+    const out = applyOverrides(existing, {
+      conferences: {
+        netflow: {
+          editions: {
+            2026: {
+              deadlines: [{ kind: "paper", label: "Paper submission", date: "2026-09-15 23:59" }],
+            },
+          },
+        },
+      },
+    });
+    expect(out[0].editions[0].deadlines).toHaveLength(1);
+    expect(out[0].editions[0].deadlines[0].at_utc.getTime()).toBe(
+      utc(2026, 9, 15, 11, 59, 0).getTime(),
+    );
+  });
+
+  it("keeps existing deadlines when a timezone-ambiguous primary patch parses to nothing", () => {
+    const out = applyOverrides(existing, {
+      conferences: {
+        netflow: {
+          editions: {
+            2026: {
+              deadlines: [
+                { kind: "paper", label: "Paper submission", date: "2026-09-15 23:59", tz: "CST" },
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(out[0].editions[0].deadlines).toHaveLength(1);
+    expect(out[0].editions[0].deadlines[0].tz_raw).toBe("AoE");
+  });
+
+  it("replaces existing deadlines when the primary patch is confirmed", () => {
+    const out = applyOverrides(existing, {
+      conferences: {
+        netflow: {
+          editions: {
+            2026: {
+              deadlines: [
+                {
+                  kind: "paper",
+                  label: "Paper submission (extended)",
+                  date: "2026-09-22 23:59",
+                  tz: "AoE",
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(out[0].editions[0].deadlines).toHaveLength(1);
+    expect(out[0].editions[0].deadlines[0].label).toBe("Paper submission (extended)");
+    expect(out[0].editions[0].deadlines[0].at_utc.getTime()).toBe(
+      utc(2026, 9, 23, 11, 59, 0).getTime(),
+    );
+  });
+
+  it("empties deadlines only when clear_deadlines is true", () => {
+    const out = applyOverrides(existing, {
+      conferences: {
+        netflow: {
+          editions: {
+            2026: { clear_deadlines: true },
+          },
+        },
+      },
+    });
+    expect(out[0].editions[0].deadlines).toEqual([]);
+  });
+
+  it("does not add a new edition that has neither accepted deadlines nor event metadata", () => {
+    const out = applyOverrides(existing, {
+      conferences: {
+        netflow: {
+          editions: {
+            2027: {
+              deadlines: [{ kind: "paper", label: "Paper submission", date: "2027-01-15" }],
+            },
+          },
+        },
+      },
+    });
+    expect(out[0].editions.map((edition) => edition.year)).toEqual([2026]);
+  });
+});

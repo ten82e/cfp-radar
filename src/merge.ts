@@ -16,8 +16,9 @@ import {
   type Edition,
   fmtDate,
   parseDateRange,
+  warn,
 } from "./model.ts";
-import { deadlinesOf } from "./sources/local.ts";
+import { patchDeadlineSemantics } from "./sources/local.ts";
 
 export const DEFAULT_SOURCE_PRIORITY = ["local", "aideadlines", "ccfddl"];
 export const DEFAULT_ONE_TO_ONE_MAX_S = 604800; // 7 d
@@ -562,13 +563,23 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
       next.estimated = Boolean(patch.estimated);
     }
     if (
+      patch.clear_deadlines === true ||
       "deadlines" in patch ||
       "deadline" in patch ||
       "paper_deadline" in patch ||
       "abstract_deadline" in patch
     ) {
       // 置換 (延長・訂正): 上流の古い締切を残さず差し替える (SPEC.md 3.5)。
-      next.deadlines = deadlinesOf(patch);
+      // ただし全行棄却のパッチ (timezone 欠落・曖昧で parseInstant が全滅) は
+      // 既存確定値を空配列で潰さない (#504 マージ層ガード)。明示的な空は
+      // clear_deadlines: true でのみ可能。
+      const semantics = patchDeadlineSemantics(patch);
+      if (semantics.action === "replace") {
+        next.deadlines = semantics.accepted;
+      } else if (semantics.action === "clear") {
+        next.deadlines = [];
+      }
+      // keep-existing: deadlines を触らない (メタデータのみパッチ)
     }
     fillEventFromDateText(next);
     kept.push(next);
@@ -581,6 +592,21 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
     if (typeof patch !== "object" || patch === null) continue;
     const rec = patch as Record<string, unknown>;
     if (rec.drop) continue;
+    // 新規 edition 追加 (#504): 受入条件「受理締切も会議/開催メタ情報も無い
+    // edition は追加しない」。全行棄却の deadlines のみで link/place/date_text/
+    // event_* も無いブロックは、空の確定版として公開する価値が無く、
+    // isFuture 判定や UI を汚すだけなのでスキップする。
+    const semantics = patchDeadlineSemantics(rec);
+    const hasMeta =
+      "link" in rec ||
+      "place" in rec ||
+      "date_text" in rec ||
+      "event_start" in rec ||
+      "event_end" in rec;
+    if (semantics.action !== "replace" && !hasMeta) {
+      warn(`override edition ${yearKey} has no accepted deadline and no metadata — not added`);
+      continue;
+    }
     const edition: Edition = {
       year,
       edition_id: rec.id ? String(rec.id) : `override-${year}`,
@@ -589,7 +615,12 @@ function patchEditions(editions: Edition[], patches: Record<string, unknown>): E
       date_text: "",
       event_start: null,
       event_end: null,
-      deadlines: deadlinesOf(rec),
+      deadlines:
+        semantics.action === "replace"
+          ? semantics.accepted
+          : semantics.action === "clear"
+            ? []
+            : [],
       estimated: Boolean(rec.estimated),
       source: "override",
     };
