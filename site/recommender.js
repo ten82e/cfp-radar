@@ -52,6 +52,8 @@
     ],
     networking: [
       "network",
+      "networking",
+      "ethernet",
       "sdn",
       "p4",
       "protocol",

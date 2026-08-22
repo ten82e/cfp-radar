@@ -1441,14 +1441,16 @@ describe.skipIf(!hasData)("real data integration", () => {
     const rows = loadRows();
     const lines = R.parsePaperLines(papers);
     const cats = R.autoDetectCats(lines);
+    // 本番 (venueRecommendations) と同じ経路: breakdown().venueScore で順位付け。
+    // scorePapers はタグ付き行を reference 重みで希釈するため、会議数が増えると
+    // 同点タイが崩れて venueHit 会議が圏外に沈む（#514 実測）。
     const scored = rows
-      .map((r) => ({
-        key: r.conf.key,
-        score: R.scorePapers(r, lines),
-        hit: R.breakdown(r, lines).venueHit,
-      }))
+      .map((r) => {
+        const b = R.breakdown(r, lines);
+        return { key: r.conf.key, score: b.venueScore, hit: b.venueHit };
+      })
       .filter((x) => x.score >= 10)
-      .sort((a, b) => b.score - a.score);
+      .sort((a, b) => b.score - a.score || a.key.localeCompare(b.key));
     return { cats, top: scored.slice(0, topN), n: scored.length };
   };
 
