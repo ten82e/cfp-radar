@@ -16,7 +16,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { load as loadYaml } from "js-yaml";
 import { describe, expect, it } from "vitest";
-import { parseDateRange, parseInstant, resetWarnings, warningCounts } from "../src/model.ts";
+import {
+  isConfirmedTimezone,
+  parseDateRange,
+  parseInstant,
+  resetWarnings,
+  warningCounts,
+} from "../src/model.ts";
 import { REPO_ROOT } from "./helpers.ts";
 
 interface RawDeadline {
@@ -93,6 +99,11 @@ describe("local source data integrity", () => {
     expect(rows.length).toBeGreaterThan(100);
 
     for (const row of rows) {
+      if (row.src === "primary_overrides.yaml" && !isConfirmedTimezone(row.tz)) {
+        // fetch-primary records the source verbatim; a missing zone is not UTC.
+        expect(parseInstant(row.date, row.tz)).toBeNull();
+        continue;
+      }
       const at = parseInstant(row.date, row.tz);
       expect(
         at,

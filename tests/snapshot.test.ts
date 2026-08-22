@@ -264,7 +264,53 @@ describe("snapshot fallback", () => {
     const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
       conferences: unknown[];
     };
-    expect(data.conferences.length).toBe(snapshot.conferences.length);
+    // Restoring a snapshot applies the same confirmed-timezone contract as
+    // live ingestion; observations without an exact zone are not published.
+    expect(data.conferences.length).toBeLessThanOrEqual(snapshot.conferences.length);
+  });
+
+  it("restoring a snapshot drops unconfirmed timezone observations", async () => {
+    const root = isolatedRepo();
+    setRoot(root);
+    writeFileSync(
+      join(root, "data", "snapshot.json"),
+      JSON.stringify({
+        conferences: [
+          {
+            key: "restore-zone-test",
+            title: "Restore Zone Test",
+            categories: ["ai"],
+            sources: ["ccfddl"],
+            editions: [
+              {
+                year: 2027,
+                id: "confirmed27",
+                deadlines: [{ kind: "paper", utc: "2027-01-01T00:00:00Z", tz_raw: "UTC" }],
+              },
+              {
+                year: 2028,
+                id: "missing28",
+                deadlines: [{ kind: "paper", utc: "2028-01-01T00:00:00Z", tz_raw: "" }],
+              },
+            ],
+          },
+        ],
+      }),
+      "utf8",
+    );
+    allUpstreamsDown();
+    const outdir = join(mkdtempSync("/tmp/cfp-snap-zone-"), "out");
+    expect(await cmdBuild(args(outdir))).toBe(0);
+    const data = JSON.parse(readFileSync(join(outdir, "data.json"), "utf8")) as {
+      conferences: Array<{
+        key: string;
+        editions: Array<{ id: string; deadlines: unknown[] }>;
+      }>;
+    };
+    const restored = data.conferences.find((conf) => conf.key === "restore-zone-test")!;
+    const editions = Object.fromEntries(restored.editions.map((edition) => [edition.id, edition]));
+    expect(editions.confirmed27?.deadlines).toHaveLength(1);
+    expect(editions.missing28?.deadlines).toEqual([]);
   });
 
   it("degraded builds still apply overrides to the restored snapshot", async () => {
@@ -613,7 +659,7 @@ describe("snapshot fallback", () => {
               {
                 year: 2027,
                 id: "stale27",
-                deadlines: [{ kind: "paper", utc: "2026-10-01T23:59:59Z" }],
+                deadlines: [{ kind: "paper", utc: "2026-10-01T23:59:59Z", tz_raw: "UTC" }],
               },
             ],
           },
@@ -626,7 +672,7 @@ describe("snapshot fallback", () => {
               {
                 year: 2027,
                 id: "aio27",
-                deadlines: [{ kind: "paper", utc: "2026-12-01T23:59:59Z" }],
+                deadlines: [{ kind: "paper", utc: "2026-12-01T23:59:59Z", tz_raw: "UTC" }],
               },
             ],
           },

@@ -209,7 +209,6 @@ export function slug(title: string | null | undefined): string {
 // --------------------------------------------------------------------------
 
 const TZ_FIXED: Record<string, number> = {
-  "": 0,
   utc: 0,
   gmt: 0,
   ut: 0,
@@ -217,41 +216,66 @@ const TZ_FIXED: Record<string, number> = {
   aoe: AOE_OFFSET_MINUTES,
 };
 
+/** Abbreviations whose standard/daylight meaning is explicit. */
+const TZ_FIXED_ABBREVIATIONS: Record<string, number> = {
+  pst: -8 * 60,
+  pdt: -7 * 60,
+  mst: -7 * 60,
+  mdt: -6 * 60,
+  est: -5 * 60,
+  edt: -4 * 60,
+  cet: 60,
+  cest: 120,
+  akst: -9 * 60,
+  akdt: -8 * 60,
+  hst: -10 * 60,
+};
+
 const TZ_NAMED: Record<string, string> = {
   pt: "America/Los_Angeles",
-  pst: "America/Los_Angeles",
-  pdt: "America/Los_Angeles",
   mt: "America/Denver",
-  mst: "America/Denver",
-  mdt: "America/Denver",
   ct: "America/Chicago",
-  cst: "America/Chicago",
   cdt: "America/Chicago",
   et: "America/New_York",
-  est: "America/New_York",
-  edt: "America/New_York",
-  bst: "Europe/London",
-  cet: "Europe/Paris",
-  cest: "Europe/Paris",
   jst: "Asia/Tokyo",
   kst: "Asia/Seoul",
-  ist: "Asia/Kolkata",
   sgt: "Asia/Singapore",
   hkt: "Asia/Hong_Kong",
 };
 
+/** These abbreviations name different zones unless the source gives context. */
+const TZ_AMBIGUOUS = new Set(["cst", "ist", "bst"]);
+
 const TZ_OFFSET_RE = /^(?:utc|gmt)?\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?$/;
 
 export type Tz = { kind: "fixed"; offsetMinutes: number } | { kind: "iana"; name: string };
+export type TzResolution = { status: "confirmed"; tz: Tz } | { status: "unconfirmed" };
 
-/** Map an upstream timezone string to a tz descriptor. Unknown values -> UTC. */
-export function resolveTz(tzRaw: string | null | undefined): Tz {
-  if (tzRaw === null || tzRaw === undefined) return { kind: "fixed", offsetMinutes: 0 };
+/** Classify whether an upstream zone is precise enough to publish as UTC. */
+export function resolveTzStatus(tzRaw: string | null | undefined): TzResolution {
+  if (tzRaw === null || tzRaw === undefined) return { status: "unconfirmed" };
   const raw = String(tzRaw).trim();
   const low = raw.toLowerCase();
 
-  if (low in TZ_FIXED) return { kind: "fixed", offsetMinutes: TZ_FIXED[low] };
-  if (low in TZ_NAMED) return { kind: "iana", name: TZ_NAMED[low] };
+  if (!raw || TZ_AMBIGUOUS.has(low)) return { status: "unconfirmed" };
+  if (low in TZ_FIXED) {
+    return {
+      status: "confirmed",
+      tz: { kind: "fixed", offsetMinutes: TZ_FIXED[low] },
+    };
+  }
+  if (low in TZ_FIXED_ABBREVIATIONS) {
+    return {
+      status: "confirmed",
+      tz: { kind: "fixed", offsetMinutes: TZ_FIXED_ABBREVIATIONS[low] },
+    };
+  }
+  if (low in TZ_NAMED) {
+    return {
+      status: "confirmed",
+      tz: { kind: "iana", name: TZ_NAMED[low] },
+    };
+  }
 
   const m = TZ_OFFSET_RE.exec(low);
   if (m) {
@@ -262,7 +286,10 @@ export function resolveTz(tzRaw: string | null | undefined): Tz {
     // instead of silently shifting the deadline; fall through to the
     // unknown-timezone warning and UTC fallback below.
     if (hours <= 23 && minutes <= 59) {
-      return { kind: "fixed", offsetMinutes: sign * (hours * 60 + minutes) };
+      return {
+        status: "confirmed",
+        tz: { kind: "fixed", offsetMinutes: sign * (hours * 60 + minutes) },
+      };
     }
   }
 
@@ -270,15 +297,26 @@ export function resolveTz(tzRaw: string | null | undefined): Tz {
     try {
       // Intl throws RangeError for unknown timezone names.
       new Intl.DateTimeFormat("en-US", { timeZone: raw });
-      return { kind: "iana", name: raw };
+      return { status: "confirmed", tz: { kind: "iana", name: raw } };
     } catch {
       warn(`unknown IANA timezone ${JSON.stringify(raw)}; using UTC`);
-      return { kind: "fixed", offsetMinutes: 0 };
+      return { status: "unconfirmed" };
     }
   }
 
   warn(`unknown timezone ${JSON.stringify(raw)}; using UTC`);
-  return { kind: "fixed", offsetMinutes: 0 };
+  return { status: "unconfirmed" };
+}
+
+/** Backward-compatible resolver for code that only needs a usable zone. */
+export function resolveTz(tzRaw: string | null | undefined): Tz {
+  const resolution = resolveTzStatus(tzRaw);
+  return resolution.status === "confirmed" ? resolution.tz : { kind: "fixed", offsetMinutes: 0 };
+}
+
+/** Whether `parseInstant` will accept this zone as a confirmed instant. */
+export function isConfirmedTimezone(tzRaw: string | null | undefined): boolean {
+  return resolveTzStatus(tzRaw).status === "confirmed";
 }
 
 /** Offset of `tz` at instant `utcMs`, in minutes. */
@@ -415,7 +453,9 @@ export function parseInstant(text: unknown, tzRaw: string | null | undefined): D
     warn(`unparsable deadline ${JSON.stringify(String(text))}`);
     return null;
   }
-  return applyTz(ms, resolveTz(tzRaw));
+  const resolution = resolveTzStatus(tzRaw);
+  if (resolution.status !== "confirmed") return null;
+  return applyTz(ms, resolution.tz);
 }
 
 // --------------------------------------------------------------------------
@@ -906,6 +946,7 @@ export function conferencesFromJson(
       for (const dlRaw of (ed.deadlines as unknown[] | undefined) ?? []) {
         if (!dlRaw || typeof dlRaw !== "object") continue;
         const dl = dlRaw as Record<string, unknown>;
+        if (!isConfirmedTimezone(String(dl.tz_raw ?? ""))) continue;
         const at = parseInstant(dl.utc, "UTC");
         if (at === null) continue;
         const evidence = (Array.isArray(dl.evidence) ? dl.evidence : [])
