@@ -109,6 +109,23 @@ jobs:
           path: public/embeddings.json
           key: ${{ steps.recommendation-key.outputs.key }}
 
+      # publish.json は復元・生成後の最終成果物を対象にする。初期 build の
+      # lexical-only マニフェストをここで確定ハッシュ付きの状態へ置き換える。
+      - name: Write final publish manifest
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.health-gate.outcome == 'success' }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+          import { join } from "node:path";
+          import { writePublishManifest } from "./src/build.ts";
+          const data = JSON.parse(readFileSync("public/data.json", "utf8"));
+          const files = readdirSync("public").filter((name) =>
+            statSync(join("public", name)).isFile(),
+          );
+          const semanticStatus = existsSync("public/embeddings.json") ? "ready" : "lexical-only";
+          writePublishManifest("public", files, new Date(data.generated_at), semanticStatus);
+          NODE
+
       # スナップショットは上流が変わった日にだけ更新される。
       # SPEC.md 6 のとおり、活動を偽装するハートビートコミットは実装しない。
       # snapshot と primary_overrides のどちらかに実質変更があるときだけ
