@@ -808,7 +808,10 @@ conferences:
   検証を通らない行は edition パッチの `deadlines` キーごと消えるため、
   applyOverrides はメタデータのみパッチし、**既存の確定値（手書き overrides /
   上流）が保持される**。検証済み観測があるときだけ一次ソースの実測が確定値を
-  上書きする。値の手訂正は data/overrides.yaml、tz 補完は data/primary.yaml の
+  上書きする。マージ層 (`src/merge.ts` の `patchDeadlineSemantics`) でも同じ
+  保護を二重に持ち、全行棄却のパッチが既存配列を空で置換しない。既存締切の
+  明示的な空化は `clear_deadlines: true` のときのみ許可する（#504）。
+  値の手訂正は data/overrides.yaml、tz 補完は data/primary.yaml の
   tz ヒント（公式明記のみ。曖昧略称は fetch-primary 側でも外して警告）が担う。
 - 抽出した edition が上流に存在しない場合、`_patch_editions` が新規 edition として
   追加する（`source: override`・`estimated: false`）。rollforward はその実測を基準に
