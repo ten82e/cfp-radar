@@ -672,7 +672,9 @@ describe("apply_overrides", () => {
               link: "https://www.setta2026.sg",
               place: "Singapore",
               date_text: "December 2-4, 2026",
-              deadlines: [{ kind: "paper", label: "Paper submission", date: "2026-05-10" }],
+              deadlines: [
+                { kind: "paper", label: "Paper submission", date: "2026-05-10", tz: "UTC" },
+              ],
             },
           },
         },
@@ -782,6 +784,7 @@ describe("apply_overrides", () => {
               place: "Tokyo, Japan",
               deadline: "2027-02-15 23:59:00",
               notification: "2027-04-15 23:59:00",
+              tz: "UTC",
             },
           },
         },
@@ -820,6 +823,7 @@ describe("apply_overrides", () => {
             2026: {
               id: "testconf26-new",
               paper_deadline: "2026-03-01 23:59:00",
+              tz: "UTC",
             },
           },
         },

@@ -4,7 +4,15 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { applyTz, resetWarnings, resolveTz, type Tz, warningCounts } from "../src/model.ts";
+import {
+  applyTz,
+  isConfirmedTimezone,
+  parseInstant,
+  resetWarnings,
+  resolveTz,
+  type Tz,
+  warningCounts,
+} from "../src/model.ts";
 
 const WINTER = new Date(Date.UTC(2026, 0, 15, 12, 0, 0));
 const SUMMER = new Date(Date.UTC(2026, 6, 15, 12, 0, 0));
@@ -22,7 +30,7 @@ describe("resolve_tz", () => {
     expect(offset(resolveTz("AOE"))).toBe(-12 * 60);
   });
 
-  it.each(["UTC", "GMT", "utc", "", null])("UTC-like value %j resolves to 0", (raw) => {
+  it.each(["UTC", "GMT", "utc"])("UTC-like value %j resolves to 0", (raw) => {
     expect(offset(resolveTz(raw))).toBe(0);
   });
 
@@ -87,35 +95,27 @@ describe("resolve_tz", () => {
     expect(offset(resolveTz(raw))).toBe(minutes);
   });
 
-  it.each(["PT", "PST", "PDT"])("pacific alias %s observes DST", (raw) => {
+  it.each(["PT", "ET", "CT", "MT"])("floating regional alias %s observes DST", (raw) => {
     const tz = resolveTz(raw);
-    expect(offset(tz, WINTER)).toBe(-8 * 60);
-    expect(offset(tz, SUMMER)).toBe(-7 * 60);
     expect(offset(tz, WINTER)).not.toBe(offset(tz, SUMMER));
   });
 
-  it.each(["EST", "ET"])("eastern alias %s", (raw) => {
-    const tz = resolveTz(raw);
-    expect(offset(tz, WINTER)).toBe(-5 * 60);
-    expect(offset(tz, SUMMER)).toBe(-4 * 60);
+  it.each([
+    ["PST", -8 * 60],
+    ["PDT", -7 * 60],
+    ["EDT", -4 * 60],
+    ["MDT", -6 * 60],
+    ["CET", 60],
+    ["CEST", 120],
+  ] as Array<[string, number]>)("DST-specific abbreviation %j is literal", (raw, minutes) => {
+    expect(isConfirmedTimezone(raw)).toBe(true);
+    expect(offset(resolveTz(raw), WINTER)).toBe(minutes);
+    expect(offset(resolveTz(raw), SUMMER)).toBe(minutes);
   });
 
-  it.each(["CT", "CST", "CDT"])("central alias %s observes DST", (raw) => {
-    const tz = resolveTz(raw);
-    expect(offset(tz, WINTER)).toBe(-6 * 60);
-    expect(offset(tz, SUMMER)).toBe(-5 * 60);
-  });
-
-  it.each(["MT", "MST", "MDT"])("mountain alias %s observes DST", (raw) => {
-    const tz = resolveTz(raw);
-    expect(offset(tz, WINTER)).toBe(-7 * 60);
-    expect(offset(tz, SUMMER)).toBe(-6 * 60);
-  });
-
-  it("BST alias observes DST", () => {
-    const tz = resolveTz("BST");
-    expect(offset(tz, WINTER)).toBe(0);
-    expect(offset(tz, SUMMER)).toBe(60);
+  it.each(["CST", "IST", "BST"])("context-free abbreviation %j is ambiguous", (raw) => {
+    expect(isConfirmedTimezone(raw)).toBe(false);
+    expect(parseInstant("2026-07-15 12:00:00", raw)).toBeNull();
   });
 
   it("JST and KST aliases resolve to UTC+9", () => {
@@ -124,19 +124,9 @@ describe("resolve_tz", () => {
     expect(offset(resolveTz("KST"))).toBe(9 * 60);
   });
 
-  it("IST alias resolves to UTC+5:30", () => {
-    expect(offset(resolveTz("IST"))).toBe(5 * 60 + 30);
-  });
-
   it("SGT and HKT aliases resolve to UTC+8", () => {
     expect(offset(resolveTz("SGT"))).toBe(8 * 60);
     expect(offset(resolveTz("HKT"))).toBe(8 * 60);
-  });
-
-  it("CET alias", () => {
-    const tz = resolveTz("CET");
-    expect(offset(tz, WINTER)).toBe(60);
-    expect(offset(tz, SUMMER)).toBe(120);
   });
 
   it("IANA names", () => {
@@ -157,6 +147,20 @@ describe("resolve_tz", () => {
     const total = Object.values(counts).reduce((a, b) => a + b, 0);
     expect(total).toBeGreaterThanOrEqual(1);
     resetWarnings();
+  });
+
+  it("parser rejects unknown and missing zones", () => {
+    expect(parseInstant("2026-07-15 12:00:00", "Mars/Olympus_Mons")).toBeNull();
+    expect(parseInstant("2026-07-15 12:00:00", "")).toBeNull();
+    expect(parseInstant("2026-07-15 12:00:00", null)).toBeNull();
+    expect(parseInstant("2026-07-15 12:00:00", undefined)).toBeNull();
+  });
+
+  it("July PST and PT produce different confirmed instants", () => {
+    const pst = parseInstant("2026-07-15 12:00:00", "PST")!.getTime();
+    const pt = parseInstant("2026-07-15 12:00:00", "PT")!.getTime();
+    expect(pst).toBe(Date.UTC(2026, 6, 15, 20, 0, 0));
+    expect(pt).toBe(Date.UTC(2026, 6, 15, 19, 0, 0));
   });
 
   it("unknown value is not reported repeatedly", () => {

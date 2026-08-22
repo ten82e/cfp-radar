@@ -344,19 +344,26 @@ export type Tz =
   | { kind: "fixed"; offsetMinutes: number }
   | { kind: "iana"; name: string };
 
-export function resolveTz(tzRaw: string | null | undefined): Tz;
+export type TzResolution =
+  | { status: "confirmed"; tz: Tz }
+  | { status: "unconfirmed" };
+
+export function resolveTzStatus(tzRaw: string | null | undefined): TzResolution;
+export function isConfirmedTimezone(tzRaw: string | null | undefined): boolean;
 // 'AoE'/'aoe' -> {kind:'fixed', offsetMinutes:-720}
-// 'UTC' / 'GMT' / '' / null / undefined -> {kind:'fixed', offsetMinutes:0}
+// 'UTC' / 'GMT' -> {kind:'fixed', offsetMinutes:0}
 // 'UTC+8' 'UTC-08' 'GMT+02' 'UTC+0' 'UTC+05:30' -> 固定オフセット
 //   （ゼロ埋め・1〜2桁・コロン区切りの全てを受ける）
-// 'PT' 'PST' 'PDT' -> {kind:'iana', name:'America/Los_Angeles'} ※固定オフセット禁止
-// 'EST'/'EDT'/'ET' -> 'America/New_York', 'CET'/'CEST' -> 'Europe/Paris'
+// 'PT'/'ET'/'CT'/'MT' は IANA 地域帯として DST を観測する
+// 'PST'/'PDT'/'EST'/'EDT'/'CET'/'CEST' 等は文字どおり固定オフセット
+// 文脈の無い 'CST'/'IST'/'BST'、未知・欠落は unconfirmed
 // IANA 名（'/' を含む）-> {kind:'iana', name: <そのまま>}
-// 不明 -> UTC を返し、警告を 1 回だけ記録
+// resolveTz は旧互換フォールバックとして unconfirmed を UTC に寄せる
 
 export function parseInstant(text: unknown, tzRaw: string | null | undefined): Date | null;
 // 'YYYY-MM-DD HH:MM:SS' / 'YYYY-MM-DD HH:MM' / 'YYYY-MM-DD' を受ける
-// naive として読み、resolveTz の tz を付与し、UTC に変換して返す
+// confirmed な timezone の naive 値だけを UTC に変換して返す
+// ambiguous / unknown / 欠落 timezone は確定値にしないため null
 // 'TBD' 等パース不能は null（例外にしない）
 // 日付のみの場合は 23:59:59 とみなす
 

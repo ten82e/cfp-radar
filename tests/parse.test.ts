@@ -189,12 +189,10 @@ describe("parse_instant", () => {
     expect(parseInstant("TBD", null)).toBeNull();
   });
 
-  // Issue #31: rejected numeric offsets use UTC and must not throw.
-  it("rejected numeric timezone offset uses UTC and does not throw", () => {
+  // Issue #31: rejected numeric offsets remain unconfirmed and do not throw.
+  it("rejected numeric timezone offset does not produce a confirmed instant", () => {
     resetWarnings();
-    expect(parseInstant("2026-01-15 12:00:00", "UTC+25")?.toISOString()).toBe(
-      "2026-01-15T12:00:00.000Z",
-    );
+    expect(parseInstant("2026-01-15 12:00:00", "UTC+25")).toBeNull();
     resetWarnings();
   });
 });
@@ -764,6 +762,7 @@ describe("ccfddl parsing", () => {
           id: "sigcomm26",
           link: "https://conferences.sigcomm.org/sigcomm/2026/",
           date: "August 17-21, 2026",
+          timezone: "UTC",
           timeline: [{ deadline: "2026-02-06 23:59:59" }],
         },
       ],
@@ -799,6 +798,21 @@ describe("ccfddl parsing", () => {
     expect(ed.deadlines.length).toBe(1);
     expect(ed.deadlines[0].tz_raw).toBe("AoE");
     expect(ed.deadlines[0].at_utc.toISOString()).toBe("2026-09-25T11:59:59.000Z");
+  });
+
+  it("excludes deadlines with a missing timezone from confirmed output", () => {
+    const rawConf = {
+      title: "No Zone",
+      confs: [
+        {
+          year: 2026,
+          date: "August 17-21, 2026",
+          timeline: [{ deadline: "2026-07-15 12:00:00" }],
+        },
+      ],
+    };
+    const conf = ccfddlConferenceOf(rawConf);
+    expect(conf?.editions[0].deadlines).toEqual([]);
   });
 
   it("timeline entry specific timezone overrides edition timezone", () => {
