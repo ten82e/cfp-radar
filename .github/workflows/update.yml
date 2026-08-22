@@ -97,9 +97,9 @@ jobs:
             'https://ten82e.github.io/kamiyobi/health.json' \
             -o /tmp/last-known-good-health.json || rm -f /tmp/last-known-good-health.json
           if [ -f /tmp/last-known-good-health.json ]; then
-            node scripts/health-gate.ts public/health.json /tmp/last-known-good-health.json /tmp/next-last-known-good-health.json
+            node scripts/health-gate.ts public/health.json --require-baseline /tmp/last-known-good-health.json /tmp/next-last-known-good-health.json
           else
-            node scripts/health-gate.ts public/health.json '' /tmp/next-last-known-good-health.json
+            node scripts/health-gate.ts public/health.json --require-baseline '' /tmp/next-last-known-good-health.json
           fi
 
       - name: Save recommendation bundle
