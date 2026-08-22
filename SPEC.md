@@ -628,6 +628,7 @@ predatory 疑い付きで一覧する。
 | `data.json` | 正規化データ全体（機械可読の正）。推定版も含む |
 | `health.json` | 確定・推定締切、ソース状態、警告、カテゴリ、出力ファイルの健全性レポート |
 | `health.md` | `health.json` の人間向け要約 |
+| `publish.json` | 埋め込み復元・生成後の最終成果物ハッシュと `semantic_status` |
 | `catalog.json` | 締切画面向けの現在・近日期間カタログ。履歴と論文プロフィールを含めず、全履歴の `history_ref` を持つ |
 | `recommendation-index.json` | 投稿先推薦用の会議プロフィール、代表締切、埋め込みマニフェスト参照 |
 | `data.csv` | 1 行 1 締切の平坦な表。推定版も含む |
@@ -645,6 +646,10 @@ predatory 疑い付きで一覧する。
 last-known-good との比較では、同一 slot の延長は通し、公式 evidence のない前倒しと
 根拠のない未来 slot 消失だけを配信阻止対象とする。経過した締切の削除と推定値の増減では
 阻止しない。`deadline_refs` は現在未来の確定締切と短い lookback（14 日）に限る。
+
+`publish.json` は最終的な公開セットを検査する。`semantic_status` は埋め込みが有効なとき
+`ready`、省略または検証に失敗したとき `lexical-only` になる。`artifacts` は `publish.json`
+自身を除く各公開ファイルのバイト数と SHA-256 を持つ。
 
 `index.html` に埋め込む JSON は `catalog.json` と同一である。推薦モードは
 `recommendation-index.json` を遅延取得し、`embeddings.json` を参照する。

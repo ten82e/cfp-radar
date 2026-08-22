@@ -598,6 +598,20 @@ export interface HealthOutputFile {
   sha256: string;
 }
 
+export type SemanticStatus = "ready" | "lexical-only";
+
+export interface PublishArtifact {
+  bytes: number;
+  sha256: string;
+}
+
+export interface PublishManifest {
+  schema_version: 1;
+  generated_at: string;
+  semantic_status: SemanticStatus;
+  artifacts: Record<string, PublishArtifact>;
+}
+
 export interface HealthDeadlineRef {
   deadline_id: string;
   at_utc: string;
@@ -1233,6 +1247,36 @@ function outputFileManifest(outdir: string, names: string[]): Record<string, Hea
   );
 }
 
+/** Hash the final publish set after every optional artifact has been restored or generated. */
+export function writePublishManifest(
+  outdir: string,
+  names: string[],
+  now: Date | null | undefined,
+  semanticStatus: SemanticStatus,
+): PublishManifest {
+  const artifacts = Object.fromEntries(
+    [...new Set(names)]
+      .filter((name) => name !== "publish.json")
+      .sort(cmpStr)
+      .map((name) => {
+        const bytes = readFileSync(join(outdir, name));
+        return [
+          name,
+          { bytes: bytes.byteLength, sha256: createHash("sha256").update(bytes).digest("hex") },
+        ];
+      }),
+  );
+  const safeNow = now instanceof Date && !Number.isNaN(now.getTime()) ? now : new Date();
+  const manifest: PublishManifest = {
+    schema_version: 1,
+    generated_at: safeNow.toISOString(),
+    semantic_status: semanticStatus,
+    artifacts,
+  };
+  writeFileSync(join(outdir, "publish.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  return manifest;
+}
+
 export function csvField(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined) return "";
   const s = String(value);
@@ -1407,6 +1451,7 @@ export function toLlmsTxt(config: Record<string, unknown> | null | undefined): s
     "",
     "- data.json — 正規化データ全体（機械可読の正）。",
     "- health.json — 配信前ゲートにも使う確定/推定締切とソース状態の健全性レポート。",
+    "- publish.json — 最終公開セットのハッシュと semantic_status（ready / lexical-only）。",
     "- catalog.json — 締切画面向けの現在・近日期間カタログ。",
     "- recommendation-index.json — 投稿先推薦の会議プロフィールと埋め込み参照。",
     "- app.js — ブラウザUI runtime（TypeScript の allowJs 対象）。",
@@ -1653,6 +1698,13 @@ export async function buildAll(
   });
   write("health.json", `${JSON.stringify(report, null, 2)}\n`);
   write("health.md", healthMarkdown(report));
+  writePublishManifest(
+    outdir,
+    written,
+    nowUtc,
+    written.includes("embeddings.json") ? "ready" : "lexical-only",
+  );
+  if (!written.includes("publish.json")) written.push("publish.json");
 
   const nDeadlines = records.filter((r) => r.type === "deadline").length;
   return {

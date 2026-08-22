@@ -46,9 +46,11 @@ jobs:
           const fs = require("node:fs");
           const data = JSON.parse(fs.readFileSync("/tmp/kamiyobi-offline-site/data.json", "utf8"));
           const health = JSON.parse(fs.readFileSync("/tmp/kamiyobi-offline-site/health.json", "utf8"));
+          const publish = JSON.parse(fs.readFileSync("/tmp/kamiyobi-offline-site/publish.json", "utf8"));
           if (!Array.isArray(data.conferences) || data.conferences.length < 150) process.exit(1);
           if (!health || typeof health.confirmed_deadlines !== "number" || !health.output_files) process.exit(1);
-          console.log(JSON.stringify({ conferences: data.conferences.length, confirmed_deadlines: health.confirmed_deadlines, snapshot_fallback: health.snapshot_fallback }));
+          if (publish?.semantic_status !== "lexical-only" || !publish.artifacts["data.json"]) process.exit(1);
+          console.log(JSON.stringify({ conferences: data.conferences.length, confirmed_deadlines: health.confirmed_deadlines, snapshot_fallback: health.snapshot_fallback, semantic_status: publish.semantic_status }));
           '
 
   # 実際の上流を取りに行く。上流障害で PR が赤くならないよう必須にしない。
