@@ -23,6 +23,7 @@ import { type Conference, cmpStr, conferencesFromJson, warn, warningCounts } fro
 import { AideadlinesSource } from "./sources/aideadlines.ts";
 import { CcfddlSource } from "./sources/ccfddl.ts";
 import { LocalSource } from "./sources/local.ts";
+import { resolvePrimaryObservations } from "./sources/primary.ts";
 
 // ROOT はテストから差し替え可能（let）。
 export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -152,7 +153,11 @@ export async function cmdBuild(args: BuildArgs): Promise<number> {
   // overrides は手編集なのでパース失敗で中断する（strict）。primary は
   // 自動生成のため従来どおり警告続行（2026-08-12 whpc の趣旨）。
   const overrides = loadYamlFile(join(ROOT, "data", "overrides.yaml"), { strict: true });
-  const primary = loadYamlFile(join(ROOT, "data", "primary_overrides.yaml"));
+  // 一次ソースの自動抽出は「検証済み観測」だけを確定値として扱う (#504):
+  // 日付のみ・曖昧 tz・年不一致の行はここで落とし、既存の確定値を保持する。
+  const primary = resolvePrimaryObservations(
+    loadYamlFile(join(ROOT, "data", "primary_overrides.yaml")),
+  );
   // data/extra.yaml も手編集入力（#19/#20 の対象外だった）。破損時に
   // local 会議 ~169 件が消えた縮退サイトを配信してしまうため、overrides と
   // 同格に strict 検証して中断する（2026-08-15 実証: 349 vs 518 会議・exit 0）。

@@ -1,5 +1,8 @@
 # 一次ソースレジストリ。src/fetch-primary.ts が巡回して data/primary_overrides.yaml
-# を自動生成する (build は overrides.yaml の後に primary_overrides.yaml を適用)。
+# を自動生成する (build は overrides.yaml の後に primary_overrides.yaml を適用。
+# #504 以降、時刻の無い行・曖昧 tz・年不一致の観測は build 時に検証ゲートで落とされ
+# 既存確定値が保持される。tz フィールドは公式が明記した表記のみ書くこと — 曖昧
+# 略称 (CST/BST 等) は fetch-primary が外して警告する)。
 #
 # 登録方法: 会議の公式ページ (CFP / Important Dates / EasyChair CFP) の URL と edition
 # 年を書くだけ。以後その会議の締切はこの URL から自動抽出・自動訂正される。

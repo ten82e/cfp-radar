@@ -787,9 +787,21 @@ conferences:
   （URL の発見だけが人間の仕事。データの訂正は以後自動）。
 - `src/fetch-primary.ts` が各 URL を取得し、「deadline キーワード行の近傍
   （前後 1 行）の日付」だけを保守的に抽出して `data/primary_overrides.yaml`
-  （自動生成・手編集禁止）を書く。
-- build (`src/cli.ts` の `cmdBuild`) は `overrides.yaml` → `primary_overrides.yaml`
-  の順に適用し、**一次ソースの実測を最優先**にする。
+  （自動生成・手編集禁止）を書く。日付と一緒に壁時計の時刻
+  (`HH:MM[:SS]`、12h 表記は 24h に正規化) も `time` フィールドで保存する。
+  ページが時刻を公表していない場合は `time` を載せない（#504）。
+- build (`src/cli.ts` の `cmdBuild`) は読み込んだ primary_overrides を
+  `resolvePrimaryObservations` (src/sources/primary.ts) で「検証済み観測」だけに
+  フィルタしてから `overrides.yaml` → primary の順に適用する（#504）。観測は次の
+  すべてを満たすときだけ確定締切として扱われる:
+  1. 日付に壁時計の時刻が伴う（日付のみの証拠から 23:59 等の時刻を捏造しない）
+  2. tz が confirmed（AoE・IANA 名等。CST/IST/BST 等の曖昧略称は不確認）
+  3. 観測年 = 適用先 edition 年（ページ年の食い違いは隔離して警告）
+  検証を通らない行は edition パッチの `deadlines` キーごと消えるため、
+  applyOverrides はメタデータのみパッチし、**既存の確定値（手書き overrides /
+  上流）が保持される**。検証済み観測があるときだけ一次ソースの実測が確定値を
+  上書きする。値の手訂正は data/overrides.yaml、tz 補完は data/primary.yaml の
+  tz ヒント（公式明記のみ。曖昧略称は fetch-primary 側でも外して警告）が担う。
 - 抽出した edition が上流に存在しない場合、`_patch_editions` が新規 edition として
   追加する（`source: override`・`estimated: false`）。rollforward はその実測を基準に
   次 edition を推定する。

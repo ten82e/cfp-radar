@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dump as dumpYaml, load as loadYaml } from "js-yaml";
-import { roundOf, warn } from "./model.ts";
+import { resolveTzStatus, roundOf, warn } from "./model.ts";
 
 export let ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -51,6 +51,29 @@ const LABELS: Record<string, string> = {
   supplementary: "Supplementary material",
   rebuttal_end: "Rebuttal deadline",
 };
+
+/**
+ * 壁時計の時刻 (HH:MM[:SS]、12h 表記は 24h に正規化) を抜き出す (#504)。
+ * 見つからなければ null — 日付のみの証拠として扱い、時刻は捏造しない。
+ * 実装は src/sources/primary.ts と同じ規約。単一実装を輸出し両側から使う。
+ */
+const OBS_TIME_RE = /\b(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp]\.?[Mm]\.?)?/;
+
+export function extractObservationTime(text: string | null | undefined): string | null {
+  if (!text) return null;
+  const m = OBS_TIME_RE.exec(String(text).trim());
+  if (!m) return null;
+  let h = Number(m[1]);
+  const min = Number(m[2]);
+  const sec = m[3] ? Number(m[3]) : 0;
+  const ap = (m[4] ?? "").replace(/\./g, "").toLowerCase();
+  if (min > 59 || sec > 59 || h > 23) return null;
+  if (ap === "pm" && h < 12) h += 12;
+  if (ap === "am" && h === 12) h = 0;
+  if (h > 23) return null;
+  const pad = (n: number): string => String(n).padStart(2, "0");
+  return `${pad(h)}:${pad(min)}:${pad(sec)}`;
+}
 
 export async function fetchPage(url: string, timeout = 30_000): Promise<string> {
   const res = await fetch(url, {
@@ -161,6 +184,7 @@ export interface PrimaryDeadline {
   kind: string;
   label: string;
   date: string;
+  time?: string;
   tz?: string;
   round?: number;
 }
@@ -257,12 +281,16 @@ export function extractDeadline(
         ? "AoE"
         : raw.toUpperCase();
   }
+  // 日付を含む側の行から壁時計の時刻を取る (#504)。無ければ time を載せない。
+  const timeSrc = kindHint && parsePrimaryDate(kindHint) ? kindHint : window;
+  const obsTime = extractObservationTime(timeSrc);
   const out: PrimaryDeadline = {
     kind,
     label,
     date: `${extractedYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
     round: roundNo,
   };
+  if (obsTime) out.time = obsTime;
   if (tz) out.tz = tz;
   return out;
 }
@@ -369,6 +397,15 @@ export async function runFetchPrimary(
         if (d.tz === undefined && hint) d.tz = String(hint);
         if (d.tz === undefined) delete d.tz;
         if (d.round === 1) delete d.round;
+        // tz ヒントは「公式が明記した」場合だけ補完に使う (#504)。曖昧略称
+        // (CST/BST 等) を載せても build 側の観測ゲートで落ちるため、ここで
+        // 先に外して警告を出す (レジストリの tz を直す契機になる)。
+        if (d.tz !== undefined && resolveTzStatus(d.tz).status !== "confirmed") {
+          process.stderr.write(
+            `warning: ${key}: tz ヒント "${d.tz}" が曖昧のため外した (registry の tz を公式表記に直すこと)\n`,
+          );
+          delete d.tz;
+        }
       }
     } catch (exc) {
       process.stderr.write(
